@@ -1,0 +1,291 @@
+{
+  "id": 1,
+  "key": "muertos",
+  "color": "#F28C28",
+  "name": {
+    "en": "Season 1: Day of the Dead",
+    "es": "Temporada 1: Día de Muertos"
+  },
+  "window": {
+    "start": "2026-11-01",
+    "end": "2026-11-30"
+  },
+  "palette": [
+    {
+      "hex": "#1A1226",
+      "name": "Noche · contorno",
+      "role": "Muro, cordel, juntas"
+    },
+    {
+      "hex": "#261A36",
+      "name": "Noche · sombra",
+      "role": "Muro (textura)"
+    },
+    {
+      "hex": "#33234A",
+      "name": "Noche · base",
+      "role": "Muro de adobe"
+    },
+    {
+      "hex": "#231A2C",
+      "name": "Suelo",
+      "role": "Baldosa"
+    },
+    {
+      "hex": "#2A1614",
+      "name": "Barro · contorno",
+      "role": "Zócalo, peldaño"
+    },
+    {
+      "hex": "#4A2620",
+      "name": "Barro · sombra",
+      "role": "Zócalo"
+    },
+    {
+      "hex": "#7A4A38",
+      "name": "Barro · base",
+      "role": "Zócalo; fondo Terracota"
+    },
+    {
+      "hex": "#6A2A08",
+      "name": "Cempasúchil · contorno",
+      "role": "Flores, llamas"
+    },
+    {
+      "hex": "#D9661A",
+      "name": "Cempasúchil · sombra",
+      "role": "Flores"
+    },
+    {
+      "hex": "#F28C28",
+      "name": "Cempasúchil · base",
+      "role": "Flores, color de temporada"
+    },
+    {
+      "hex": "#FFC24A",
+      "name": "Cempasúchil · brillo",
+      "role": "Pétalos, llama"
+    },
+    {
+      "hex": "#4A0E36",
+      "name": "Rosa · contorno",
+      "role": "Papel picado, cojín"
+    },
+    {
+      "hex": "#B01E78",
+      "name": "Rosa · sombra",
+      "role": "Papel picado, capa"
+    },
+    {
+      "hex": "#E0409A",
+      "name": "Rosa · base",
+      "role": "Papel picado, capa"
+    },
+    {
+      "hex": "#F27AB8",
+      "name": "Rosa · brillo",
+      "role": "Marco exclusivo"
+    },
+    {
+      "hex": "#0E3A40",
+      "name": "Turquesa · contorno",
+      "role": "Papel picado, capa"
+    },
+    {
+      "hex": "#1E7A80",
+      "name": "Turquesa · sombra",
+      "role": "Azulejo, capa"
+    },
+    {
+      "hex": "#3AB4B0",
+      "name": "Turquesa · base",
+      "role": "Pintura del trono"
+    },
+    {
+      "hex": "#1E4014",
+      "name": "Lima · contorno",
+      "role": "Papel picado, capa"
+    },
+    {
+      "hex": "#3E8A2A",
+      "name": "Lima · sombra",
+      "role": "Capa"
+    },
+    {
+      "hex": "#6CC04A",
+      "name": "Lima · base",
+      "role": "Papel picado"
+    },
+    {
+      "hex": "#2A1650",
+      "name": "Violeta · contorno",
+      "role": "Cuencas de calavera"
+    },
+    {
+      "hex": "#5A36A0",
+      "name": "Violeta · sombra",
+      "role": "Capa"
+    },
+    {
+      "hex": "#8A62D8",
+      "name": "Violeta · base",
+      "role": "Papel picado"
+    },
+    {
+      "hex": "#0C1E26",
+      "name": "Madera pintada · contorno",
+      "role": "Trono"
+    },
+    {
+      "hex": "#163644",
+      "name": "Madera pintada · sombra",
+      "role": "Trono"
+    },
+    {
+      "hex": "#1F4E5E",
+      "name": "Madera pintada · base",
+      "role": "Trono"
+    },
+    {
+      "hex": "#4A3466",
+      "name": "Fondo Noche",
+      "role": "Fondo de avatar"
+    },
+    {
+      "hex": "#2E6A5A",
+      "name": "Fondo Jade",
+      "role": "Fondo de avatar"
+    },
+    {
+      "hex": "#6A3656",
+      "name": "Fondo Ciruela",
+      "role": "Fondo de avatar"
+    },
+    {
+      "hex": "#3A4A7A",
+      "name": "Fondo Añil",
+      "role": "Fondo de avatar"
+    }
+  ],
+  "stone": {
+    "o": "#0C1E26",
+    "s1": "#163644",
+    "b": "#1F4E5E",
+    "h": "#1E7A80",
+    "hh": "#3AB4B0"
+  },
+  "banner": {
+    "o": "#4A0E36",
+    "s1": "#B01E78",
+    "b": "#E0409A",
+    "h": "#F27AB8"
+  },
+  "ring": {
+    "o": "#6A2A08",
+    "s1": "#D9661A",
+    "b": "#F28C28",
+    "h": "#FFC24A"
+  },
+  "$doc": "Temporada 1 · Día de Muertos. Solo declara lo que reemplaza respecto a la T0; el resto (interfaz, núcleo del arte, rangos, medallas permanentes) no cambia.",
+  "status": "final",
+  "replaces": {
+    "scene": {
+      "generator": "scene1 (prototypes/season-lib.js)",
+      "svg": "assets/scenes/t1/{W}x{H}-{seat|empty|empty-spot|bare}.svg",
+      "note": "Misma geometría que T0: trono 64×68 anclado abajo al centro; retrato en (W/2−22, H−62)."
+    },
+    "throne": "assets/thrones/t1.svg · t1-seat.svg",
+    "crownAvatar": "assets/crowns/avatar-t1-sugar-skull.svg (sustituye a las 3 coronas base mientras dura la temporada)",
+    "crownSprite": "assets/crowns/sprite-t1-sugar-skull.svg · -locked.svg",
+    "avatarBackgrounds": [
+      {
+        "id": "night",
+        "es": "Noche",
+        "hex": "#4A3466"
+      },
+      {
+        "id": "jade",
+        "es": "Jade",
+        "hex": "#2E6A5A"
+      },
+      {
+        "id": "plum",
+        "es": "Ciruela",
+        "hex": "#6A3656"
+      },
+      {
+        "id": "indigo",
+        "es": "Añil",
+        "hex": "#3A4A7A"
+      },
+      {
+        "id": "terracotta",
+        "es": "Terracota",
+        "hex": "#7A4A38"
+      }
+    ],
+    "capeColors": [
+      {
+        "id": "mexican-pink",
+        "es": "Rosa mexicano",
+        "o": "#4A0E36",
+        "s2": "#4A0E36",
+        "s1": "#B01E78",
+        "b": "#E0409A",
+        "h": "#E0409A"
+      },
+      {
+        "id": "turquoise",
+        "es": "Turquesa",
+        "o": "#0E3A40",
+        "s2": "#0E3A40",
+        "s1": "#1E7A80",
+        "b": "#3AB4B0",
+        "h": "#3AB4B0"
+      },
+      {
+        "id": "lime",
+        "es": "Lima",
+        "o": "#1E4014",
+        "s2": "#1E4014",
+        "s1": "#3E8A2A",
+        "b": "#6CC04A",
+        "h": "#6CC04A"
+      },
+      {
+        "id": "violet",
+        "es": "Violeta",
+        "o": "#2A1650",
+        "s2": "#2A1650",
+        "s1": "#5A36A0",
+        "b": "#8A62D8",
+        "h": "#8A62D8"
+      },
+      {
+        "id": "marigold",
+        "es": "Cempasúchil",
+        "o": "#6A2A08",
+        "s2": "#6A2A08",
+        "s1": "#D9661A",
+        "b": "#F28C28",
+        "h": "#F28C28"
+      }
+    ],
+    "stone": "stone (sello, franja de piedra del pie, pedestales del podio)",
+    "banner": "banner (retrato-estandarte de fin de temporada)",
+    "seal": "assets/seal/seal-t1.svg",
+    "stoneBand": "assets/seal/stone-band-t1.svg"
+  },
+  "adds": {
+    "frame": "assets/frames/season-t1-marigold.svg · -locked.svg",
+    "medal": {
+      "key": "remembered",
+      "rarity": "seasonal",
+      "on": "assets/medals/remembered-on.svg",
+      "off": "assets/medals/remembered-off.svg"
+    }
+  },
+  "keeps": "Interfaz, tokens, rangos y sus marcos, 13 medallas permanentes, banderas, íconos. Las medallas y marcos de otras temporadas se ven con su arte de origen.",
+  "paletteCount": 31,
+  "next": 2
+}

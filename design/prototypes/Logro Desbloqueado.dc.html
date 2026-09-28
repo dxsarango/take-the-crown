@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700&family=Pixelify+Sans:wght@500;700&display=swap" rel="stylesheet">
+<script src="season-lib.js"></script>
+<script src="avatar-lib.js"></script>
+<script src="throne-lib.js"></script>
+<script src="medal-lib.js"></script>
+<style>
+body{margin:0;background:#0E0C14;-webkit-font-smoothing:antialiased}
+a{color:#F3EDE2;text-decoration-color:#3D3550}a:hover{color:#F3EDE2;text-decoration-color:#F3EDE2}
+</style>
+</helmet>
+<section id="turn10" data-screen-label="Logro desbloqueado" style="background:#0E0C14;padding:72px;display:flex;flex-direction:column;gap:48px;font-family:Manrope,sans-serif;color:#F3EDE2;width:max-content">
+  <div style="display:flex;flex-direction:column;gap:8px;max-width:980px">
+    <div style="font-size:28px;font-weight:700">Paso 7 · Aviso de logro desbloqueado</div>
+    <div style="font-size:16px;line-height:1.5;color:#A89FB8;text-wrap:pretty">Prototipo animado: en bucle salen las cuatro rarezas, una tras otra, sobre la portada. Pulsa una rareza para verla sola. Al pasar el cursor se pausa la cuenta atrás; «Share» copia el enlace y la X lo cierra.</div>
+  </div>
+
+  <div style="width:2070px;display:flex;align-items:center;gap:24px;flex-wrap:wrap;padding:20px 24px;background:#14111C;box-shadow:inset 0 4px 0 #1E1A29;box-sizing:border-box">
+    <div style="display:flex;align-items:center;gap:10px">
+      <div style="font-size:12px;color:#A89FB8">Rareza</div>
+      <div style="display:flex;gap:8px">
+        <sc-for list="{{ triggers }}" as="o" hint-placeholder-count="5">
+          <button onClick="{{ o.on }}" style="position:relative;height:44px;padding:0 14px;margin:4px;border:0;display:flex;align-items:center;gap:8px;background:{{ o.bg }};color:#F3EDE2;font-family:'Pixelify Sans',sans-serif;font-size:14px;font-weight:500;cursor:pointer;box-shadow:{{ o.sh }}" style-focus="outline:2px solid #F3EDE2;outline-offset:6px" style-before="content:'';position:absolute;left:50%;top:50%;width:max(100%, 44px);height:max(100%, 44px);transform:translate(-50%, -50%)"><div style="width:10px;height:10px;background:{{ o.hex }}"></div>{{ o.label }}</button>
+        </sc-for>
+      </div>
+      <button onClick="{{ playAll }}" style="position:relative;height:44px;padding:0 16px;margin:4px;border:0;background:{{ allBg }};color:#F3EDE2;font-family:Manrope,sans-serif;font-size:14px;font-weight:700;cursor:pointer;box-shadow:{{ allSh }}" style-focus="outline:2px solid #F3EDE2;outline-offset:6px" style-before="content:'';position:absolute;left:50%;top:50%;width:max(100%, 44px);height:max(100%, 44px);transform:translate(-50%, -50%)">Las cuatro en bucle</button>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px">
+      <div style="font-size:12px;color:#A89FB8">Movimiento</div>
+      <div style="display:flex;gap:4px;padding:4px;background:#0E0C14;box-shadow:0 0 0 2px #3D3550">
+        <sc-for list="{{ modes }}" as="o" hint-placeholder-count="2"><button onClick="{{ o.on }}" style="position:relative;height:36px;padding:0 14px;border:0;cursor:pointer;font-family:Manrope,sans-serif;font-size:14px;font-weight:700;background:{{ o.bg }};color:{{ o.fg }};box-shadow:{{ o.sh }}" style-focus="outline:2px solid #F3EDE2;outline-offset:4px" style-before="content:'';position:absolute;left:50%;top:50%;width:max(100%, 44px);height:max(100%, 44px);transform:translate(-50%, -50%)">{{ o.label }}</button></sc-for>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px">
+      <div style="font-size:12px;color:#A89FB8">Idioma</div>
+      <div style="display:flex;gap:4px;padding:4px;background:#0E0C14;box-shadow:0 0 0 2px #3D3550">
+        <sc-for list="{{ langs }}" as="o" hint-placeholder-count="2"><button onClick="{{ o.on }}" style="position:relative;height:36px;min-width:48px;padding:0 12px;border:0;cursor:pointer;font-family:Manrope,sans-serif;font-size:14px;font-weight:700;background:{{ o.bg }};color:{{ o.fg }};box-shadow:{{ o.sh }}" style-focus="outline:2px solid #F3EDE2;outline-offset:4px" style-before="content:'';position:absolute;left:50%;top:50%;width:max(100%, 44px);height:max(100%, 44px);transform:translate(-50%, -50%)">{{ o.label }}</button></sc-for>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:flex;gap:240px;align-items:flex-start">
+    <!-- MÓVIL -->
+    <div style="display:flex;flex-direction:column;gap:16px;flex:none">
+      <div style="display:flex;align-items:center;gap:12px"><div style="font-size:14px;font-weight:700;background:#F3EDE2;color:#14111C;padding:4px 10px;border-radius:4px">Móvil</div><div style="font-size:16px;color:#A89FB8">390×664 · abajo, a todo lo ancho</div></div>
+      <div data-screen-label="Aviso móvil" style="position:relative;width:390px;height:664px;background:#14111C;overflow:hidden;box-shadow:0 0 0 1px #3D3550">
+        <div style="height:56px;padding:0 16px;display:flex;align-items:center;justify-content:space-between;background:#1E1A29;box-shadow:inset 0 -4px 0 #14111C">
+          <div style="font-family:'Pixelify Sans',sans-serif;font-size:20px;font-weight:700">Crown</div>
+          <div style="font-size:12px;color:#A89FB8">{{ t.seasonShort }}</div>
+        </div>
+        <div style="width:390px;height:288px;overflow:hidden"><img src="{{ sceneM }}" width="392" height="288" style="display:block;margin-left:-1px;image-rendering:pixelated"></div>
+        <div style="padding:16px;display:flex;flex-direction:column;gap:14px">
+          <div style="display:flex;align-items:center;gap:10px"><div style="font-size:20px;font-weight:700">nadia.builds</div><img src="{{ flagES }}" width="24" height="16" style="display:block;image-rendering:pixelated"></div>
+          <div style="display:flex;flex-direction:column;gap:4px"><div style="font-size:14px;color:#A89FB8">{{ t.reigning }}</div><div style="font-family:'Pixelify Sans',sans-serif;font-size:64px;font-weight:700;line-height:1">0h 02m</div></div>
+          <div style="font-family:'Pixelify Sans',sans-serif;font-size:40px;font-weight:700;line-height:1;color:#F2C14E">$38</div>
+        </div>
+
+        <sc-if value="{{ show }}">
+          <div onMouseEnter="{{ hoverOn }}" onMouseLeave="{{ hoverOff }}" role="status" aria-live="polite" style="position:absolute;left:12px;right:12px;bottom:12px;transform:translateY({{ ty }}px);opacity:{{ op }};background:#1E1A29;box-shadow:inset 0 4px 0 {{ cur.hex }},0 0 0 4px #14111C">
+            <div style="padding:16px 4px 12px 16px;display:flex;align-items:center;gap:14px">
+              <div style="position:relative;width:72px;height:72px;flex:none;background:#14111C">
+                <sc-for list="{{ sparks }}" as="p" hint-placeholder-count="0"><div style="position:absolute;left:{{ p.x }}px;top:{{ p.y }}px;width:6px;height:6px;background:{{ p.c }}"></div></sc-for>
+                <sc-if value="{{ medalOn }}"><img src="{{ cur.src }}" width="{{ mSize }}" height="{{ mSize }}" style="position:absolute;left:{{ mOff }}px;top:{{ mOffY }}px;display:block;image-rendering:pixelated"></sc-if>
+              </div>
+              <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:6px;opacity:{{ txtOp }};transform:translateX({{ txtX }}px)">
+                <div style="font-size:12px;color:#A89FB8">{{ t.unlocked }}</div>
+                <div style="font-size:18px;font-weight:700;line-height:1.2">{{ cur.name }}</div>
+                <div style="display:flex"><div style="height:24px;padding:0 8px;display:flex;align-items:center;gap:6px;border:1px solid #3D3550;border-radius:4px"><div style="width:8px;height:8px;background:{{ cur.hex }}"></div><div style="font-family:'Pixelify Sans',sans-serif;font-size:12px;font-weight:500">{{ cur.rar }}</div></div></div>
+              </div>
+              <button onClick="{{ close }}" aria-label="{{ t.close }}" style="position:relative;width:44px;height:44px;align-self:flex-start;flex:none;border:0;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center" style-hover="background:#2A2438" style-focus="outline:2px solid #F3EDE2;outline-offset:-2px" style-before="content:'';position:absolute;left:50%;top:50%;width:max(100%, 44px);height:max(100%, 44px);transform:translate(-50%, -50%)"><img src="{{ closeIcon }}" width="12" height="12" style="display:block;image-rendering:pixelated"></button>
+            </div>
+            <div style="padding:0 16px 14px;display:flex;align-items:center;justify-content:space-between;gap:12px;opacity:{{ txtOp }}">
+              <div style="font-size:12px;line-height:1.4;color:#A89FB8;min-width:0">{{ cur.cond }}</div>
+              <button onClick="{{ share }}" style="position:relative;height:40px;flex:none;padding:0 14px;margin:4px;border:0;display:flex;align-items:center;gap:8px;background:#2A2438;color:#F3EDE2;font-family:Manrope,sans-serif;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 -4px 0 #3D3550,-4px 0 0 #3D3550,0 4px 0 #14111C,4px 0 0 #14111C" style-hover="background:#3D3550" style-active="background:#14111C" style-focus="outline:2px solid #F3EDE2;outline-offset:6px" style-before="content:'';position:absolute;left:50%;top:50%;width:max(100%, 44px);height:max(100%, 44px);transform:translate(-50%, -50%)"><sc-if value="{{ copied }}"><div style="width:12px;height:12px;display:flex;align-items:center;justify-content:center;background:#3DD68C"><img src="{{ checkIcon }}" width="8" height="6" style="display:block;image-rendering:pixelated"></div></sc-if>{{ shareLabel }}</button>
+            </div>
+            <div style="display:flex;gap:2px;padding:0 16px 12px"><sc-for list="{{ drain }}" as="g" hint-placeholder-count="20"><div style="flex:1;height:4px;background:{{ g }}"></div></sc-for></div>
+          </div>
+        </sc-if>
+      </div>
+    </div>
+
+    <!-- ESCRITORIO -->
+    <div style="display:flex;flex-direction:column;gap:16px;flex:none">
+      <div style="display:flex;align-items:center;gap:12px"><div style="font-size:14px;font-weight:700;background:#F3EDE2;color:#14111C;padding:4px 10px;border-radius:4px">Escritorio</div><div style="font-size:16px;color:#A89FB8">1440×900 · esquina inferior derecha, 400 px</div></div>
+      <div data-screen-label="Aviso escritorio" style="position:relative;width:1440px;height:900px;background:#14111C;overflow:hidden;box-shadow:0 0 0 1px #3D3550">
+        <div style="height:72px;padding:0 48px;display:flex;align-items:center;justify-content:space-between;background:#1E1A29;box-shadow:inset 0 -4px 0 #14111C">
+          <div style="display:flex;align-items:center;gap:24px"><div style="font-family:'Pixelify Sans',sans-serif;font-size:28px;font-weight:700">Crown</div><div style="height:28px;padding:0 10px;display:flex;align-items:center;background:#14111C;font-size:14px;color:#A89FB8">{{ t.seasonLong }}</div></div>
+        </div>
+        <img src="{{ sceneD }}" width="1440" height="504" style="display:block;image-rendering:pixelated">
+        <div style="padding:32px 72px;display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:48px;align-items:end">
+          <div style="display:flex;align-items:center;gap:12px"><div style="font-size:28px;font-weight:700">nadia.builds</div><img src="{{ flagES }}" width="24" height="16" style="display:block;image-rendering:pixelated"></div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:6px"><div style="font-size:16px;color:#A89FB8">{{ t.reigning }}</div><div style="font-family:'Pixelify Sans',sans-serif;font-size:64px;font-weight:700;line-height:1">0h 02m 41s</div></div>
+          <div style="display:flex;justify-content:flex-end"><div style="font-family:'Pixelify Sans',sans-serif;font-size:40px;font-weight:700;line-height:1;color:#F2C14E">$38</div></div>
+        </div>
+
+        <sc-if value="{{ show }}">
+          <div onMouseEnter="{{ hoverOn }}" onMouseLeave="{{ hoverOff }}" role="status" aria-live="polite" style="position:absolute;right:24px;bottom:24px;width:400px;transform:translateY({{ ty }}px);opacity:{{ op }};background:#1E1A29;box-shadow:inset 0 4px 0 {{ cur.hex }},0 0 0 4px #14111C,8px 8px 0 4px #0B0910">
+            <div style="padding:20px 4px 12px 20px;display:flex;align-items:center;gap:16px">
+              <div style="position:relative;width:72px;height:72px;flex:none;background:#14111C">
+                <sc-for list="{{ sparks }}" as="p" hint-placeholder-count="0"><div style="position:absolute;left:{{ p.x }}px;top:{{ p.y }}px;width:6px;height:6px;background:{{ p.c }}"></div></sc-for>
+                <sc-if value="{{ medalOn }}"><img src="{{ cur.src }}" width="{{ mSize }}" height="{{ mSize }}" style="position:absolute;left:{{ mOff }}px;top:{{ mOffY }}px;display:block;image-rendering:pixelated"></sc-if>
+              </div>
+              <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:6px;opacity:{{ txtOp }};transform:translateX({{ txtX }}px)">
+                <div style="font-size:12px;color:#A89FB8">{{ t.unlocked }}</div>
+                <div style="font-size:20px;font-weight:700;line-height:1.2">{{ cur.name }}</div>
+                <div style="display:flex"><div style="height:24px;padding:0 8px;display:flex;align-items:center;gap:6px;border:1px solid #3D3550;border-radius:4px"><div style="width:8px;height:8px;background:{{ cur.hex }}"></div><div style="font-family:'Pixelify Sans',sans-serif;font-size:12px;font-weight:500">{{ cur.rar }}</div></div></div>
+              </div>
+              <button onClick="{{ close }}" aria-label="{{ t.close }}" style="position:relative;width:44px;height:44px;align-self:flex-start;flex:none;border:0;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center" style-hover="background:#2A2438" style-focus="outline:2px solid #F3EDE2;outline-offset:-2px" style-before="content:'';position:absolute;left:50%;top:50%;width:max(100%, 44px);height:max(100%, 44px);transform:translate(-50%, -50%)"><img src="{{ closeIcon }}" width="12" height="12" style="display:block;image-rendering:pixelated"></button>
+            </div>
+            <div style="padding:0 20px 16px;display:flex;align-items:center;justify-content:space-between;gap:16px;opacity:{{ txtOp }}">
+              <div style="font-size:12px;line-height:1.4;color:#A89FB8;min-width:0">{{ cur.cond }}</div>
+              <button onClick="{{ share }}" style="position:relative;height:40px;flex:none;padding:0 16px;margin:4px;border:0;display:flex;align-items:center;gap:8px;background:#2A2438;color:#F3EDE2;font-family:Manrope,sans-serif;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 -4px 0 #3D3550,-4px 0 0 #3D3550,0 4px 0 #14111C,4px 0 0 #14111C" style-hover="background:#3D3550" style-active="background:#14111C" style-focus="outline:2px solid #F3EDE2;outline-offset:6px" style-before="content:'';position:absolute;left:50%;top:50%;width:max(100%, 44px);height:max(100%, 44px);transform:translate(-50%, -50%)"><sc-if value="{{ copied }}"><div style="width:12px;height:12px;display:flex;align-items:center;justify-content:center;background:#3DD68C"><img src="{{ checkIcon }}" width="8" height="6" style="display:block;image-rendering:pixelated"></div></sc-if>{{ shareLabel }}</button>
+            </div>
+            <div style="display:flex;gap:2px;padding:0 20px 14px"><sc-for list="{{ drain }}" as="g" hint-placeholder-count="20"><div style="flex:1;height:4px;background:{{ g }}"></div></sc-for></div>
+          </div>
+        </sc-if>
+      </div>
+    </div>
+  </div>
+
+  <!-- Referencia estática -->
+  <div data-screen-label="Referencia por rareza" style="width:2070px;display:flex;flex-direction:column;gap:20px;padding-top:32px;box-shadow:inset 0 4px 0 #1E1A29">
+    <div style="display:flex;flex-direction:column;gap:6px"><div style="font-size:20px;font-weight:700">Un ejemplo por rareza</div><div style="font-size:14px;line-height:1.5;color:#A89FB8;max-width:1100px;text-wrap:pretty">Solo es una muestra de las 5 rarezas. En el producto, el aviso aparece únicamente cuando el usuario gana la medalla. El ejemplo «De temporada» es la medalla de la temporada activa: Fundador en la T0 (aro verdín) y Recordado en la T1 (aro cempasúchil).</div></div>
+    <div style="display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:24px">
+      <sc-for list="{{ ref }}" as="r" hint-placeholder-count="5">
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <div style="background:#1E1A29;box-shadow:inset 0 4px 0 {{ r.hex }}">
+            <div style="padding:20px 4px 12px 20px;display:flex;align-items:center;gap:16px">
+              <div style="width:72px;height:72px;flex:none;background:#14111C"><img src="{{ r.src }}" width="72" height="72" style="display:block;image-rendering:pixelated"></div>
+              <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:6px">
+                <div style="font-size:12px;color:#A89FB8">{{ t.unlocked }}</div>
+                <div style="font-size:20px;font-weight:700;line-height:1.2">{{ r.name }}</div>
+                <div style="display:flex"><div style="height:24px;padding:0 8px;display:flex;align-items:center;gap:6px;border:1px solid #3D3550;border-radius:4px"><div style="width:8px;height:8px;background:{{ r.hex }}"></div><div style="font-family:'Pixelify Sans',sans-serif;font-size:12px;font-weight:500">{{ r.rar }}</div></div></div>
+              </div>
+              <div style="width:44px;height:44px;align-self:flex-start;flex:none;display:flex;align-items:center;justify-content:center"><img src="{{ closeIcon }}" width="12" height="12" style="display:block;image-rendering:pixelated"></div>
+            </div>
+            <div style="padding:0 20px 16px;display:flex;align-items:center;justify-content:space-between;gap:16px">
+              <div style="font-size:12px;line-height:1.4;color:#A89FB8">{{ r.cond }}</div>
+              <div style="height:40px;flex:none;padding:0 16px;margin:4px;display:flex;align-items:center;background:#2A2438;font-size:14px;font-weight:700;box-shadow:0 -4px 0 #3D3550,-4px 0 0 #3D3550,0 4px 0 #14111C,4px 0 0 #14111C">{{ t.share }}</div>
+            </div>
+            <div style="display:flex;gap:2px;padding:0 20px 14px"><sc-for list="{{ r.bar }}" as="g" hint-placeholder-count="20"><div style="flex:1;height:4px;background:{{ g }}"></div></sc-for></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:#A89FB8"><div style="width:10px;height:10px;background:{{ r.hex }}"></div>{{ r.rarEs }} · {{ r.hex }}</div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+
+  <div style="width:2070px;display:flex;flex-direction:column;gap:20px;padding-top:32px;box-shadow:inset 0 4px 0 #1E1A29">
+    <div style="font-size:20px;font-weight:700">Rebote de la medalla: solo escalas enteras</div>
+    <div style="display:flex;align-items:flex-end;gap:40px">
+      <sc-for list="{{ story }}" as="s" hint-placeholder-count="5">
+        <div style="display:flex;flex-direction:column;gap:10px;align-items:flex-start">
+          <div style="width:112px;height:112px;background:#14111C;display:flex;align-items:center;justify-content:center;position:relative">
+            <sc-for list="{{ s.sparks }}" as="p" hint-placeholder-count="0"><div style="position:absolute;left:{{ p.x }}px;top:{{ p.y }}px;width:6px;height:6px;background:{{ p.c }}"></div></sc-for>
+            <sc-if value="{{ s.has }}"><img src="{{ s.src }}" width="{{ s.size }}" height="{{ s.size }}" style="display:block;image-rendering:pixelated"></sc-if>
+          </div>
+          <div style="font-family:'Pixelify Sans',sans-serif;font-size:14px;font-weight:500">{{ s.label }}</div>
+          <div style="font-size:12px;color:#A89FB8">{{ s.ms }}</div>
+        </div>
+      </sc-for>
+      <div style="flex:1;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:32px;font-size:14px;line-height:1.5;color:#A89FB8;padding-left:40px">
+        <div style="display:flex;flex-direction:column;gap:4px"><div style="color:#F3EDE2;font-weight:700">Entrada</div><div>El aviso sube 24 px en pasos de 4 px (200 ms). La medalla salta ×1 → ×2 → ×4 → ×3, siempre en múltiplos enteros, y suelta 4 chispas del color de su rareza. Después entra el texto.</div></div>
+        <div style="display:flex;flex-direction:column;gap:4px"><div style="color:#F3EDE2;font-weight:700">Permanencia</div><div>6 s, con una barra de 20 tramos que se vacía; se pausa al pasar el cursor o al enfocar. Si llegan varios logros, se muestran en cola, uno detrás de otro. No lleva oro salvo en el legendario, cuyo color de rareza es el oro.</div></div>
+        <div style="display:flex;flex-direction:column;gap:4px"><div style="color:#F3EDE2;font-weight:700">Movimiento reducido</div><div>Fundido de 200 ms con la medalla ya a ×3: sin rebote, sin chispas y sin desplazamiento. En los dos modos lo anuncia el lector de pantalla (aria-live).</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { ready: false, lang: 'en', mode: 'full', loop: true, idx: 0, t: 0, showing: false, copied: false };
+  el = 0;
+  DWELL = 6000;
+  GAP = 700;
+  get KEYS() { const s = window.CrownSeasons ? window.CrownSeasons.current().id : 0; return [['owl', 'common'], ['regicide', 'rare'], ['firstBlood', 'epic'], ['g3', 'legendary'], s >= 1 ? ['remembered', 'seasonal'] : ['founder', 'seasonal0']]; }
+  HEX = { common: '#9AA3AE', rare: '#4A90E2', epic: '#9B5DE5', legendary: '#F2C14E', seasonal: '#F28C28', seasonal0: '#4FA39B' };
+
+  dict = {
+    en: { seasonShort: 'Season 0 · 34 days left', seasonLong: 'Season 0: Genesis · 34 days left', reigning: 'Reigning for', unlocked: 'Achievement unlocked', share: 'Share', copied: 'Link copied', close: 'Close',
+      rar: { common: 'Common', rare: 'Rare', epic: 'Epic', legendary: 'Legendary', seasonal: 'Seasonal', seasonal0: 'Seasonal' },
+      items: { owl: ['Night Owl', 'Took the crown between 3 and 5 a.m.'], regicide: ['Regicide', 'Dethroned a king who reigned over 24h.'], firstBlood: ['First Blood', 'First king of the season.'], g3: ['Guardian III', 'Reigned 72h straight.'], founder: ['Founder', 'Reigned during Season 0.'], remembered: ['Remembered', 'Reigned during Season 1: Day of the Dead.'] } },
+    es: { seasonShort: 'T0 · quedan 34 días', seasonLong: 'Temporada 0: Génesis · quedan 34 días', reigning: 'Reina desde hace', unlocked: 'Logro desbloqueado', share: 'Compartir', copied: 'Enlace copiado', close: 'Cerrar',
+      rar: { common: 'Común', rare: 'Raro', epic: 'Épico', legendary: 'Legendario', seasonal: 'De temporada', seasonal0: 'De temporada' },
+      items: { owl: ['Noctámbulo', 'Tomaste la corona entre las 3 y las 5 a. m.'], regicide: ['Regicida', 'Destronaste a un rey de más de 24 h.'], firstBlood: ['Primera sangre', 'Primer rey de la temporada.'], g3: ['Guardián III', 'Reinaste 72 h seguidas.'], founder: ['Fundador', 'Reinaste en la Temporada 0.'] , remembered: ['Recordado', 'Reinaste en la Temporada 1: Día de Muertos.'] } }
+  };
+
+  componentDidMount() {
+    const reduce = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+    if (reduce) this.setState({ mode: 'reduced' });
+    const ok = () => window.CrownAvatarLib && window.CrownThroneLib && window.CrownMedalLib && window.CrownSeasons;
+    const init = () => { this.setup(); this.setState({ ready: true }); this.start(0); };
+    if (ok()) init(); else this.poll = setInterval(() => { if (ok()) { clearInterval(this.poll); init(); } }, 50);
+    this.raf = requestAnimationFrame(this.loop);
+  }
+  componentWillUnmount() { cancelAnimationFrame(this.raf); clearInterval(this.poll); clearTimeout(this.cT); }
+
+  setup() {
+    const lib = window.CrownAvatarLib(), T = window.CrownThroneLib, ML = window.CrownMedalLib();
+    const cN = { ...lib.gen('nadia.builds'), cr: 0 };
+    const frame = T.frameCol('peasant', lib.avatar(cN, 'A', null, true));
+    const icon = (rows, color) => { const c = []; rows.forEach(r => [...r].forEach(ch => c.push(ch === '#' ? color : null))); return T.enc(rows[0].length, rows.length, c); };
+    this.art = {
+      sceneM: T.sceneSrc(98, 72, { frame }), sceneD: T.sceneSrc(240, 84, { frame }), flagES: T.flag('ES'),
+      medals: Object.fromEntries([...this.KEYS, ['founder', 'seasonal0']].map(([k, r]) => [k, ML.medal(k, r, false)])),
+      close: icon(['##....##', '###..###', '.######.', '..####..', '..####..', '.######.', '###..###', '##....##'], '#F3EDE2'),
+      check: icon(['.......#', '......##', '#....##.', '##..##..', '.####...', '..##....'], '#14111C')
+    };
+  }
+
+  start(idx) { this.el = 0; this.paused = false; this.setState({ idx, t: 0, showing: true, copied: false }); }
+
+  loop = ts => {
+    this.raf = requestAnimationFrame(this.loop);
+    const dt = this.last ? Math.min(100, ts - this.last) : 0; this.last = ts;
+    if (!this.state.ready) return;
+    const endIn = this.DWELL, endOut = this.DWELL + (this.state.mode === 'full' ? 200 : 200);
+    if (this.state.showing) {
+      const inDwell = this.el > 600 && this.el < endIn;
+      if (!(this.paused && inDwell)) this.el += dt;
+      if (this.el >= endOut) {
+        this.setState({ showing: false, t: 0 });
+        this.gapT = 0;
+      } else if (Math.floor(this.el / 16) !== Math.floor(this.state.t / 16) || this.el > endIn) this.setState({ t: this.el });
+    } else if (this.state.loop) {
+      this.gapT = (this.gapT || 0) + dt;
+      if (this.gapT > this.GAP) this.start((this.state.idx + 1) % 4);
+    }
+  };
+
+  frameAt(t, mode) {
+    const cl = v => Math.max(0, Math.min(1, v)), D = this.DWELL;
+    if (mode === 'reduced') {
+      const op = t < 200 ? cl(t / 200) : t > D ? 1 - cl((t - D) / 200) : 1;
+      return { ty: 0, op, scale: 3, medalOn: true, sparks: 0, txtOp: 1, txtX: 0 };
+    }
+    let ty = 0, op = 1;
+    if (t < 200) { const s = Math.floor(t / 33); ty = 24 - Math.min(6, s) * 4; op = cl(t / 150); }
+    else if (t > D) { const s = Math.floor((t - D) / 33); ty = Math.min(6, s) * 4; op = 1 - cl((t - D) / 200); }
+    const scale = t < 160 ? 0 : t < 220 ? 1 : t < 280 ? 2 : t < 380 ? 4 : 3;
+    const sparks = t >= 280 && t < 460 ? 1 + Math.floor((t - 280) / 60) : 0;
+    const tu = cl((t - 220) / 140);
+    return { ty, op, scale, medalOn: scale > 0, sparks, txtOp: tu, txtX: Math.round((1 - tu) * 3) * 4 };
+  }
+
+  sparkList(step, hex, box) {
+    if (!step) return [];
+    const c = box / 2, r = 36 + step * 6;
+    return [[-1, -1], [1, -1], [-1, 1], [1, 1]].map(([dx, dy]) => ({ x: Math.round(c + dx * r * 0.7 - 3), y: Math.round(c + dy * r * 0.7 - 3), c: step === 3 ? '#F3EDE2' : hex }));
+  }
+
+  renderVals() {
+    const s = this.state, t = { ...this.dict[s.lang], ...(k => { const U = ((window.CrownSeasons && window.CrownSeasons.current().ui) || {})[k] || {}; return { seasonLong: U.seasonLong, seasonShort: U.seasonShort }; })(s.lang) }, A = this.art;
+    const seg = on => (on ? { bg: '#2A2438', fg: '#F3EDE2', sh: 'inset 4px 4px 0 #3D3550, inset -4px -4px 0 #1E1A29' } : { bg: 'transparent', fg: '#A89FB8', sh: 'none' });
+    const rel = on => (on ? { bg: '#3D3550', sh: '0 -4px 0 #14111C,-4px 0 0 #14111C,0 4px 0 #574C70,4px 0 0 #574C70' } : { bg: '#2A2438', sh: '0 -4px 0 #3D3550,-4px 0 0 #3D3550,0 4px 0 #14111C,4px 0 0 #14111C' });
+    const item = i => { const [k, r] = this.KEYS[i]; return { name: t.items[k][0], cond: t.items[k][1], rar: t.rar[r], rarEs: this.dict.es.rar[r], hex: this.HEX[r], src: A ? A.medals[k] : null }; };
+    const f = this.frameAt(s.t, s.mode);
+    const cur = item(s.idx);
+    const mSize = 24 * f.scale;
+    const left = Math.max(0, Math.min(20, Math.round(((this.DWELL - Math.max(600, s.t)) / (this.DWELL - 600)) * 20)));
+    const drain = Array.from({ length: 20 }, (_, i) => (i < left ? cur.hex : '#2A2438'));
+    const base = {
+      t, cur, show: s.ready && s.showing,
+      ty: f.ty, op: f.op, medalOn: f.medalOn, mSize, mOff: (72 - mSize) / 2, mOffY: (72 - mSize) / 2,
+      sparks: this.sparkList(f.sparks, cur.hex, 72), txtOp: f.txtOp, txtX: f.txtX, drain,
+      copied: s.copied, shareLabel: s.copied ? t.copied : t.share,
+      share: () => { this.setState({ copied: true }); clearTimeout(this.cT); this.cT = setTimeout(() => this.setState({ copied: false }), 1600); },
+      close: () => { if (this.el < this.DWELL) this.el = this.DWELL; },
+      hoverOn: () => { this.paused = true; }, hoverOff: () => { this.paused = false; },
+      triggers: this.KEYS.map(([k, r], i) => ({ label: t.rar[r], hex: this.HEX[r], ...rel(!s.loop && s.idx === i), on: () => { this.setState({ loop: false }); this.start(i); } })),
+      playAll: () => { this.setState({ loop: true }); this.start(0); },
+      allBg: rel(s.loop).bg, allSh: rel(s.loop).sh,
+      modes: [['full', 'Completo'], ['reduced', 'Reducido']].map(([m, label]) => ({ label, ...seg(s.mode === m), on: () => { this.setState({ mode: m }); this.start(s.idx); } })),
+      langs: [['en', 'EN'], ['es', 'ES']].map(([l, label]) => ({ label, ...seg(s.lang === l), on: () => this.setState({ lang: l }) })),
+      ref: [0, 1, 2, 3, 4].map(i => { const it = item(i); return { ...it, bar: Array.from({ length: 20 }, (_, j) => (j < 14 ? it.hex : '#2A2438')) }; })
+    };
+    if (!A) return { ...base, sceneM: null, sceneD: null, flagES: null, closeIcon: null, checkIcon: null, story: [] };
+    const leg = A.medals.founder;
+    const story = [[0, '×0', '0–160 ms', 0], [1, '×1', '160 ms', 0], [2, '×2', '220 ms', 0], [4, '×4', '280 ms', 2], [3, '×3', '380 ms · reposo', 0]]
+      .map(([sc, label, ms, sp]) => ({ has: sc > 0, src: leg, size: 24 * sc, label, ms, sparks: this.sparkList(sp, '#F2C14E', 112) }));
+    return { ...base, sceneM: A.sceneM, sceneD: A.sceneD, flagES: A.flagES, closeIcon: A.close, checkIcon: A.check, story };
+  }
+}
+</script>
+</body>
+</html>

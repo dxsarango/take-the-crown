@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700&family=Pixelify+Sans:wght@500;700&display=swap" rel="stylesheet">
+<script src="season-lib.js"></script>
+<script src="avatar-lib.js"></script>
+<script src="throne-lib.js"></script>
+<style>
+body{margin:0;background:#0E0C14;-webkit-font-smoothing:antialiased}
+a{color:#F3EDE2;text-decoration-color:#3D3550}a:hover{color:#F3EDE2;text-decoration-color:#F3EDE2}
+</style>
+</helmet>
+<section id="turn9" data-screen-label="Coronación" style="background:#0E0C14;padding:72px;display:flex;flex-direction:column;gap:40px;font-family:Manrope,sans-serif;color:#F3EDE2;width:max-content">
+  <div style="display:flex;flex-direction:column;gap:8px;max-width:980px">
+    <div style="font-size:28px;font-weight:700">Paso 6b · Momento de coronación</div>
+    <div style="font-size:16px;line-height:1.5;color:#A89FB8;text-wrap:pretty">Prototipo en bucle: nadia.builds acaba de pagar en el <a href="Modal de Pago.dc.html" style-focus="outline:2px solid #F3EDE2;outline-offset:2px">modal</a> y le quita la corona a valeruiz. Todo se dibuja en la cuadrícula de la escena (×4 en móvil, ×6 en escritorio), así que la corona avanza píxel a píxel de escena, sin suavizado. Dura 1,8 s. La versión de movimiento reducido es un fundido de 0,4 s y se elige sola si el sistema tiene activado «reducir movimiento».</div>
+  </div>
+
+  <div style="width:2070px;display:flex;flex-direction:column;gap:16px;padding:24px;background:#14111C;box-shadow:inset 0 4px 0 #1E1A29;box-sizing:border-box">
+    <div style="display:flex;align-items:center;gap:24px;flex-wrap:wrap">
+      <button onClick="{{ replay }}" style="height:48px;padding:0 20px;margin:4px;border:0;background:#2A2438;color:#F3EDE2;font-family:Manrope,sans-serif;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 -4px 0 #3D3550,-4px 0 0 #3D3550,0 4px 0 #1E1A29,4px 0 0 #1E1A29" style-hover="background:#3D3550" style-active="background:#1E1A29;box-shadow:0 -4px 0 #14111C,-4px 0 0 #14111C,0 4px 0 #3D3550,4px 0 0 #3D3550" style-focus="outline:2px solid #F3EDE2;outline-offset:6px">{{ replayLabel }}</button>
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="font-size:12px;color:#A89FB8">Movimiento</div>
+        <div style="display:flex;gap:4px;padding:4px;background:#0E0C14;box-shadow:0 0 0 2px #3D3550">
+          <sc-for list="{{ modes }}" as="o" hint-placeholder-count="2"><button onClick="{{ o.on }}" style="height:36px;padding:0 14px;border:0;cursor:pointer;font-family:Manrope,sans-serif;font-size:14px;font-weight:700;background:{{ o.bg }};color:{{ o.fg }};box-shadow:{{ o.sh }}" style-focus="outline:2px solid #F3EDE2;outline-offset:4px">{{ o.label }}</button></sc-for>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="font-size:12px;color:#A89FB8">Velocidad</div>
+        <div style="display:flex;gap:4px;padding:4px;background:#0E0C14;box-shadow:0 0 0 2px #3D3550">
+          <sc-for list="{{ speeds }}" as="o" hint-placeholder-count="3"><button onClick="{{ o.on }}" style="height:36px;min-width:56px;padding:0 12px;border:0;cursor:pointer;font-family:'Pixelify Sans',sans-serif;font-size:14px;font-weight:500;background:{{ o.bg }};color:{{ o.fg }};box-shadow:{{ o.sh }}" style-focus="outline:2px solid #F3EDE2;outline-offset:4px">{{ o.label }}</button></sc-for>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="font-size:12px;color:#A89FB8">Idioma</div>
+        <div style="display:flex;gap:4px;padding:4px;background:#0E0C14;box-shadow:0 0 0 2px #3D3550">
+          <sc-for list="{{ langs }}" as="o" hint-placeholder-count="2"><button onClick="{{ o.on }}" style="height:36px;min-width:48px;padding:0 12px;border:0;cursor:pointer;font-family:Manrope,sans-serif;font-size:14px;font-weight:700;background:{{ o.bg }};color:{{ o.fg }};box-shadow:{{ o.sh }}" style-focus="outline:2px solid #F3EDE2;outline-offset:4px">{{ o.label }}</button></sc-for>
+        </div>
+      </div>
+      <div style="margin-left:auto;font-family:'Pixelify Sans',sans-serif;font-size:20px;font-weight:700;font-variant-numeric:tabular-nums">{{ readout }}</div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <input type="range" min="0" max="{{ dur }}" step="10" value="{{ tInt }}" onChange="{{ onScrub }}" aria-label="Posición de la animación" style="width:100%;margin:0;accent-color:#F3EDE2;cursor:pointer" style-focus="outline:2px solid #F3EDE2;outline-offset:2px"></input>
+      <div style="display:flex;gap:4px">
+        <sc-for list="{{ phases }}" as="p" hint-placeholder-count="5">
+          <div style="flex:{{ p.ms }};min-width:0;display:flex;flex-direction:column;gap:6px">
+            <div style="height:8px;background:{{ p.bar }}"></div>
+            <div style="display:flex;flex-direction:column;gap:2px;min-width:0">
+              <div style="font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:{{ p.fg }}">{{ p.label }}</div>
+              <div style="font-family:'Pixelify Sans',sans-serif;font-size:12px;font-weight:500;color:#A89FB8;white-space:nowrap">{{ p.range }}</div>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:flex;gap:240px;align-items:flex-start">
+    <div style="display:flex;flex-direction:column;gap:16px;flex:none">
+      <div style="display:flex;align-items:center;gap:12px"><div style="font-size:14px;font-weight:700;background:#F3EDE2;color:#14111C;padding:4px 10px;border-radius:4px">Móvil</div><div style="font-size:16px;color:#A89FB8">390 px · escena 98×72 ×4</div></div>
+      <div data-screen-label="Coronación móvil" style="width:390px;background:#14111C;overflow:hidden;box-shadow:0 0 0 1px #3D3550">
+        <div style="height:56px;padding:0 16px;display:flex;align-items:center;justify-content:space-between;background:#1E1A29;box-shadow:inset 0 -4px 0 #14111C">
+          <div style="font-family:'Pixelify Sans',sans-serif;font-size:20px;font-weight:700">Crown</div>
+          <div style="font-size:12px;color:#A89FB8">{{ t.seasonShort }}</div>
+        </div>
+        <div style="width:390px;height:288px;overflow:hidden;background:#14111C"><div style="margin-left:-1px">{{ canvasM }}</div></div>
+        <div style="padding:16px 16px 24px;display:flex;flex-direction:column;gap:16px">
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+            <div style="font-size:20px;font-weight:700">{{ k.name }}</div>
+            <img src="{{ k.flag }}" width="24" height="16" style="display:block;image-rendering:pixelated;box-shadow:0 0 0 2px #1E1A29">
+            <div style="height:28px;padding:0 10px;display:flex;align-items:center;gap:8px;border:1px solid #3D3550;border-radius:4px"><div style="width:10px;height:10px;background:{{ k.sw }}"></div><div style="font-family:'Pixelify Sans',sans-serif;font-size:14px;font-weight:500">{{ k.rank }}</div></div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:4px">
+            <div style="font-size:14px;color:#A89FB8">{{ t.reigning }}</div>
+            <div style="display:flex;align-items:baseline;gap:14px">
+              <sc-for list="{{ clock }}" as="c" hint-placeholder-count="3"><div style="display:flex;align-items:baseline;gap:2px"><div style="font-family:'Pixelify Sans',sans-serif;font-size:64px;font-weight:700;line-height:1;font-variant-numeric:tabular-nums">{{ c.v }}</div><div style="font-family:'Pixelify Sans',sans-serif;font-size:28px;font-weight:500;color:#A89FB8">{{ c.u }}</div></div></sc-for>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
+            <div style="font-family:'Pixelify Sans',sans-serif;font-size:40px;font-weight:700;line-height:1;color:#F2C14E">{{ k.price }}</div>
+            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px"><div style="font-size:14px;font-weight:500">{{ t.dropping }}</div><div style="font-size:12px;color:#A89FB8">{{ t.floor }}</div></div>
+          </div>
+          <div style="height:56px;margin:4px;display:flex;align-items:center;justify-content:center;background:#F2C14E;color:#14111C;font-size:18px;font-weight:700;box-shadow:0 -4px 0 #F7D57F,-4px 0 0 #F7D57F,0 4px 0 #C9962C,4px 0 0 #C9962C">{{ k.take }}</div>
+        </div>
+        <div style="margin:0 16px;padding:16px 0 24px;box-shadow:inset 0 4px 0 #1E1A29;display:flex;flex-direction:column;gap:10px">
+          <div style="font-size:16px;line-height:1.5;text-wrap:pretty">“{{ k.msg }}”</div>
+          <div style="font-size:14px;font-weight:700;text-decoration:underline;text-decoration-color:#3D3550;text-decoration-thickness:2px;text-underline-offset:5px">{{ k.link }}</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:16px;flex:none">
+      <div style="display:flex;align-items:center;gap:12px"><div style="font-size:14px;font-weight:700;background:#F3EDE2;color:#14111C;padding:4px 10px;border-radius:4px">Escritorio</div><div style="font-size:16px;color:#A89FB8">1440 px · escena 240×84 ×6</div></div>
+      <div data-screen-label="Coronación escritorio" style="width:1440px;background:#14111C;overflow:hidden;box-shadow:0 0 0 1px #3D3550">
+        <div style="height:72px;padding:0 48px;display:flex;align-items:center;justify-content:space-between;background:#1E1A29;box-shadow:inset 0 -4px 0 #14111C">
+          <div style="display:flex;align-items:center;gap:24px"><div style="font-family:'Pixelify Sans',sans-serif;font-size:28px;font-weight:700">Crown</div><div style="height:28px;padding:0 10px;display:flex;align-items:center;background:#14111C;font-size:14px;color:#A89FB8">{{ t.seasonLong }}</div></div>
+        </div>
+        {{ canvasD }}
+        <div style="padding:32px 72px 56px;display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:48px;align-items:end">
+          <div style="display:flex;flex-direction:column;gap:12px;min-width:0">
+            <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+              <div style="font-size:28px;font-weight:700;line-height:1.1">{{ k.name }}</div>
+              <img src="{{ k.flag }}" width="24" height="16" style="display:block;image-rendering:pixelated;box-shadow:0 0 0 2px #1E1A29">
+              <div style="height:28px;padding:0 10px;display:flex;align-items:center;gap:8px;border:1px solid #3D3550;border-radius:4px"><div style="width:10px;height:10px;background:{{ k.sw }}"></div><div style="font-family:'Pixelify Sans',sans-serif;font-size:14px;font-weight:500">{{ k.rank }}</div></div>
+            </div>
+            <div style="font-size:20px;font-weight:500;line-height:1.4;max-width:440px;text-wrap:pretty">“{{ k.msg }}”</div>
+            <div style="font-size:16px;font-weight:700;text-decoration:underline;text-decoration-color:#3D3550;text-decoration-thickness:2px;text-underline-offset:5px">{{ k.link }}</div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+            <div style="font-size:16px;color:#A89FB8">{{ t.reigning }}</div>
+            <div style="display:flex;align-items:baseline;gap:16px">
+              <sc-for list="{{ clock }}" as="c" hint-placeholder-count="3"><div style="display:flex;align-items:baseline;gap:2px"><div style="font-family:'Pixelify Sans',sans-serif;font-size:64px;font-weight:700;line-height:1;font-variant-numeric:tabular-nums">{{ c.v }}</div><div style="font-family:'Pixelify Sans',sans-serif;font-size:28px;font-weight:500;color:#A89FB8">{{ c.u }}</div></div></sc-for>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:16px">
+            <div style="display:flex;align-items:center;gap:20px">
+              <div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px"><div style="font-size:14px;font-weight:500">{{ t.dropping }}</div><div style="font-size:12px;color:#A89FB8">{{ t.floor }}</div></div>
+              <div style="font-family:'Pixelify Sans',sans-serif;font-size:40px;font-weight:700;line-height:1;color:#F2C14E">{{ k.price }}</div>
+            </div>
+            <div style="height:56px;min-width:340px;padding:0 28px;margin:4px;display:flex;align-items:center;justify-content:center;background:#F2C14E;color:#14111C;font-size:18px;font-weight:700;box-shadow:0 -4px 0 #F7D57F,-4px 0 0 #F7D57F,0 4px 0 #C9962C,4px 0 0 #C9962C">{{ k.take }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="width:2070px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:32px;padding-top:32px;box-shadow:inset 0 4px 0 #1E1A29;font-size:14px;line-height:1.5;color:#A89FB8">
+    <div style="display:flex;flex-direction:column;gap:4px"><div style="color:#F3EDE2;font-weight:700">Relevo y arco</div><div>El rey anterior sale hacia la izquierda con la corona puesta y el nuevo entra por la derecha. La corona se levanta 6 px y vuela en parábola, con una estela de dos chispas.</div></div>
+    <div style="display:flex;flex-direction:column;gap:4px"><div style="color:#F3EDE2;font-weight:700">Aterrizaje</div><div>Baja 1 px de más y rebota, se ilumina con el Oro brillo durante 80 ms y lanza 5 rayos hacia arriba y hacia los lados. Nunca hacia la cara.</div></div>
+    <div style="display:flex;flex-direction:column;gap:4px"><div style="color:#F3EDE2;font-weight:700">Confeti y salida</div><div>Unas 30 partículas de 1–2 px con colores de la paleta T0, con gravedad y aleteo. El rey anterior se disuelve con un tramado 4×4, sin transparencias. Todo termina a los 1,8 s.</div></div>
+    <div style="display:flex;flex-direction:column;gap:4px"><div style="color:#F3EDE2;font-weight:700">Interfaz</div><div>Nombre, reloj y precio cambian justo al aterrizar la corona, o a mitad del fundido en movimiento reducido. El reloj vuelve a cero y el precio sube de $34 a $38.</div></div>
+  </div>
+</section>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { ready: !!(window.CrownAvatarLib && window.CrownThroneLib && window.CrownSeasons), mode: 'full', speed: 1, lang: 'en', t: 0, playing: true, crowned: false, now: Date.now() };
+  refM = React.createRef();
+  refD = React.createRef();
+  cyc = 0;
+  PRE = 700;
+  HOLD = 1700;
+  dur(m) { return (m || this.state.mode) === 'full' ? 1800 : 400; }
+  landAt(m) { return (m || this.state.mode) === 'full' ? 1300 : 200; }
+
+  dict = {
+    en: { seasonShort: 'Season 0 · 34 days left', seasonLong: 'Season 0: Genesis · 34 days left', reigning: 'Reigning for', dropping: 'Dropping 2% every hour', floor: 'Floor price $5', take: p => `Take the crown for ${p}` },
+    es: { seasonShort: 'T0 · quedan 34 días', seasonLong: 'Temporada 0: Génesis · quedan 34 días', reigning: 'Reina desde hace', dropping: 'Baja 2% cada hora', floor: 'Precio mínimo $5', take: p => `Toma la corona por ${p}` }
+  };
+
+  componentDidMount() {
+    try { const p = JSON.parse(localStorage.getItem('crown-coronation-prefs') || 'null'); if (p) this.setState({ speed: p.speed || 1, mode: p.mode || 'full' }); } catch (e) {}
+    const reduce = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+    if (reduce) this.setState({ mode: 'reduced' });
+    this.mountAt = Date.now();
+    if (!this.state.ready) this.poll = setInterval(() => { if (window.CrownAvatarLib && window.CrownThroneLib && window.CrownSeasons) { clearInterval(this.poll); this.setState({ ready: true }); } }, 50);
+    this.raf = requestAnimationFrame(this.loop);
+  }
+  componentWillUnmount() { cancelAnimationFrame(this.raf); clearInterval(this.poll); }
+  savePrefs(o) { try { localStorage.setItem('crown-coronation-prefs', JSON.stringify({ speed: this.state.speed, mode: this.state.mode, ...o })); } catch (e) {} }
+
+  setup() {
+    const lib = window.CrownAvatarLib(), T = window.CrownThroneLib;
+    const rgb = c => { const n = parseInt(c.slice(1), 16); return [n >> 16, (n >> 8) & 255, n & 255]; };
+    const cO = lib.gen('valeruiz'); if (cO.cr < 0) cO.cr = 0;
+    const cN = { ...lib.gen('nadia.builds'), cr: cO.cr };
+    const fO = T.frameCol('duke', lib.avatar({ ...cO, cr: -1 }, 'A', null, true));
+    const fN = T.frameCol('peasant', lib.avatar({ ...cN, cr: -1 }, 'A', null, true));
+    const cr = lib.avatar(cO, 'A', 'crown', true);
+    let x0 = 99, y0 = 99, x1 = -1, y1 = -1;
+    cr.forEach((c, i) => { if (!c) return; const x = i % 32, y = (i / 32) | 0; x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y); });
+    const sprite = (col, w, ox = 0, oy = 0, sub) => { const L = []; col.forEach((c, i) => { if (c) L.push([(i % w) - ox, ((i / w) | 0) - oy, rgb(sub && sub[c] ? sub[c] : c)]); }); return L; };
+    const crown = sprite(cr, 32, x0, y0);
+    const crownFlash = sprite(cr, 32, x0, y0, { '#F2C14E': '#F7D57F', '#C9962C': '#F2C14E', '#5A3A12': '#C9962C' });
+    const cw = x1 - x0 + 1, ch = y1 - y0 + 1, cOff = { x: 6 + x0, y: 6 + y0 };
+    const PAL = ['#F2C14E', '#F7D57F', '#B3263B', '#F3EDE2', '#4A90E2', '#C9962C'].map(rgb);
+    const mkStage = (W, H, cfg) => {
+      const P0 = T.portraitAt(W, H);
+      const base = T.scene(W, H, { bare: true });
+      const baseData = new Uint8ClampedArray(W * H * 4);
+      base.forEach((c, i) => { const [r, g, b] = rgb(c); baseData.set([r, g, b, 255], i * 4); });
+      let seed = cfg.seed;
+      const rnd = () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; };
+      const parts = Array.from({ length: cfg.n }, (_, i) => ({ vx: (rnd() * 2 - 1) * cfg.vx, vy: -(cfg.vy0 + rnd() * cfg.vy1), life: 0.3 + rnd() * 0.2, col: PAL[i % PAL.length], ph: (rnd() * 4) | 0 }));
+      const full = (frame, withCrown) => { const c = document.createElement('canvas'); c.width = W; c.height = H; const x = c.getContext('2d'); const im = x.createImageData(W, H); im.data.set(baseData); const put = (px, py, v) => { if (px < 0 || py < 0 || px >= W || py >= H) return; im.data.set([v[0], v[1], v[2], 255], (py * W + px) * 4); }; sprite(frame, 44).forEach(([dx, dy, v]) => put(P0.x + dx, P0.y + dy, v)); if (withCrown) crown.forEach(([dx, dy, v]) => put(P0.x + cOff.x + dx, P0.y + cOff.y + dy, v)); x.putImageData(im, 0, 0); return c; };
+      return { W, H, P0, baseData, parts, ...cfg, oldS: sprite(fO, 44), newS: sprite(fN, 44), A: full(fO, true), B: full(fN, true) };
+    };
+    this.art = {
+      crown, crownFlash, cw, ch, cOff,
+      M: mkStage(98, 72, { oldEnd: -14, newStart: 98, lift: 6, apex: 9, n: 24, vx: 45, vy0: 30, vy1: 50, g: 240, seed: 7 }),
+      D: mkStage(240, 84, { oldEnd: 14, newStart: 240, lift: 6, apex: 22, n: 34, vx: 70, vy0: 40, vy1: 70, g: 300, seed: 11 }),
+      flags: { AR: T.flag('AR'), ES: T.flag('ES') }
+    };
+  }
+
+  crownPos(st, t) {
+    const A = this.art, P0 = st.P0, cl = v => Math.max(0, Math.min(1, v));
+    const eo = u => 1 - Math.pow(1 - u, 3), ei = u => u * u, eio = u => 0.5 - 0.5 * Math.cos(Math.PI * u);
+    const oldX = Math.round(P0.x + (st.oldEnd - P0.x) * eo(cl(t / 350)));
+    const bx = st.oldEnd + A.cOff.x, ex = P0.x + A.cOff.x, by = P0.y + A.cOff.y;
+    if (t < 350) return [oldX + A.cOff.x, by];
+    if (t < 500) return [bx, by - Math.round(st.lift * eo((t - 350) / 150))];
+    if (t < 1150) { const u = eio((t - 500) / 650); return [Math.round(bx + (ex - bx) * u), Math.round(by - st.lift - st.apex * 4 * u * (1 - u))]; }
+    if (t < 1260) return [ex, Math.round(by - st.lift + (st.lift + 1) * ei((t - 1150) / 110))];
+    if (t < 1300) return [ex, by + 1];
+    return [ex, by];
+  }
+
+  draw(st, ctx, t, mode) {
+    if (!ctx) return;
+    if (mode === 'reduced') {
+      const a = Math.max(0, Math.min(1, t / 400));
+      ctx.globalAlpha = 1; ctx.drawImage(st.A, 0, 0);
+      ctx.globalAlpha = a; ctx.drawImage(st.B, 0, 0); ctx.globalAlpha = 1;
+      return;
+    }
+    const A = this.art, { W, H, P0 } = st, cl = v => Math.max(0, Math.min(1, v));
+    if (!st.img) st.img = ctx.createImageData(W, H);
+    const d = st.img.data; d.set(st.baseData);
+    const put = (x, y, v) => { if (x < 0 || y < 0 || x >= W || y >= H) return; const i = (y * W + x) * 4; d[i] = v[0]; d[i + 1] = v[1]; d[i + 2] = v[2]; d[i + 3] = 255; };
+    const BAY = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5];
+    const eo = u => 1 - Math.pow(1 - u, 3);
+    const u1 = eo(cl(t / 350));
+    const oldX = Math.round(P0.x + (st.oldEnd - P0.x) * u1), newX = Math.round(st.newStart + (P0.x - st.newStart) * u1);
+    const fade = cl((t - 1300) / 500);
+    if (fade < 1) st.oldS.forEach(([dx, dy, v]) => { const x = oldX + dx, y = P0.y + dy; if (fade > 0 && (BAY[(y & 3) * 4 + (x & 3)] + 0.5) / 16 < fade) return; put(x, y, v); });
+    st.newS.forEach(([dx, dy, v]) => put(newX + dx, P0.y + dy, v));
+    if (t > 560 && t < 1270) [[60, [247, 213, 127]], [120, [201, 150, 44]]].forEach(([lag, v]) => { const tt = t - lag; if (tt < 500) return; const [x, y] = this.crownPos(st, tt); put(x + (A.cw >> 1), y + (A.ch >> 1), v); });
+    const [cx, cy] = this.crownPos(st, t);
+    (t >= 1300 && t < 1380 ? A.crownFlash : A.crown).forEach(([dx, dy, v]) => put(cx + dx, cy + dy, v));
+    const tau = (t - 1300) / 1000;
+    if (tau >= 0 && tau <= 0.22) {
+      const rOut = 3 + Math.round(Math.min(tau / 0.1, 1) * 9), rIn = 3 + Math.round(Math.max(0, (tau - 0.08) / 0.14) * 9);
+      const mx = cx + (A.cw >> 1), my = cy + (A.ch >> 1), L = cx - 1, Rr = cx + A.cw, Tp = cy - 1;
+      const rays = [r => [L - r, my], r => [Rr + r, my], r => [L - r, Tp - r], r => [Rr + r, Tp - r], r => [mx - 1, Tp - r], r => [mx, Tp - r]];
+      rays.forEach(f => { for (let r = rIn - 2; r <= rOut - 2; r++) { const [x, y] = f(r); put(x, y, r < (rIn + rOut) / 2 - 2 ? [247, 213, 127] : [242, 193, 78]); } });
+    }
+    if (tau >= 0 && tau <= 0.5) {
+      const ox = cx + (A.cw >> 1), oy = cy;
+      st.parts.forEach((p, i) => {
+        if (tau > p.life) return;
+        const x = Math.round(ox + p.vx * tau), y = Math.round(oy + p.vy * tau + 0.5 * st.g * tau * tau);
+        if (y > H - 6) return;
+        const f = (Math.floor(tau * 14) + p.ph) % 3;
+        put(x, y, p.col);
+        if (f === 0) put(x + 1, y, p.col); else if (f === 1) put(x, y + 1, p.col);
+      });
+    }
+    ctx.putImageData(st.img, 0, 0);
+  }
+
+  loop = ts => {
+    this.raf = requestAnimationFrame(this.loop);
+    if (!this.art) { if (this.state.ready) this.setup(); else return; }
+    const dt = this.last ? Math.min(100, ts - this.last) : 0; this.last = ts;
+    const { mode, speed, playing } = this.state, D = this.dur(mode);
+    let t;
+    if (playing) {
+      this.cyc += dt * speed;
+      if (this.cyc > this.PRE + D + this.HOLD / speed) this.cyc = 0;
+      t = Math.max(0, Math.min(D, this.cyc - this.PRE));
+    } else t = Math.min(D, this.scrubT || 0);
+    const cM = this.refM.current, cD = this.refD.current;
+    this.draw(this.art.M, cM && cM.getContext('2d'), t, mode);
+    this.draw(this.art.D, cD && cD.getContext('2d'), t, mode);
+    const crowned = t >= this.landAt(mode);
+    if (crowned && !this.wasCrowned) this.crownedAt = Date.now();
+    this.wasCrowned = crowned;
+    if (crowned !== this.state.crowned || !this.lastSet || ts - this.lastSet > 60) { this.lastSet = ts; this.setState({ t, crowned, now: Date.now() }); }
+  };
+
+  renderVals() {
+    const s = this.state, t = { ...this.dict[s.lang], ...(k => { const U = ((window.CrownSeasons && window.CrownSeasons.current().ui) || {})[k] || {}; return { seasonLong: U.seasonLong, seasonShort: U.seasonShort }; })(s.lang) }, D = this.dur(), en = s.lang === 'en';
+    const p2 = n => String(n).padStart(2, '0');
+    const seg = on => (on ? { bg: '#2A2438', fg: '#F3EDE2', sh: 'inset 4px 4px 0 #3D3550, inset -4px -4px 0 #1E1A29' } : { bg: 'transparent', fg: '#A89FB8', sh: 'none' });
+    const secsOld = 5 * 3600 + 41 * 60 + 9 + Math.floor((s.now - (this.mountAt || s.now)) / 1000);
+    const secsNew = s.playing && s.crowned && this.crownedAt ? Math.floor((s.now - this.crownedAt) / 1000) : 0;
+    const sec = s.crowned ? secsNew : secsOld;
+    const flags = this.art ? this.art.flags : {};
+    const k = s.crowned
+      ? { name: 'nadia.builds', flag: flags.ES, rank: en ? 'Peasant' : 'Plebeyo', sw: '#8A5A34', price: '$38', take: t.take('$38'), msg: en ? 'Shipping a shift planner for night nurses. Beta is open.' : 'Estoy lanzando un planificador de turnos para enfermeras de noche. La beta está abierta.', link: 'turno.app' }
+      : { name: 'valeruiz', flag: flags.AR, rank: en ? 'Duke' : 'Duque', sw: '#F2C14E', price: '$34', take: t.take('$34'), msg: en ? 'Built a budget app for freelancers in Latam. Free for the first 1,000 users.' : 'Hice una app de presupuestos para freelancers en Latam. Gratis para los primeros 1.000.', link: 'pesito.app' };
+    const PH = s.mode === 'full' ? [['Relevo', 0, 350], ['Despegue', 350, 500], ['Arco', 500, 1150], ['Aterrizaje', 1150, 1300], ['Destello y confeti', 1300, 1800]] : [['Fundido', 0, 400]];
+    const fmt = ms => (ms / 1000).toFixed(2).replace('.', ',');
+    const phases = PH.map(([label, a, b]) => { const on = s.t >= a && (s.t < b || (b === D && s.t >= D)); return { label, ms: b - a, range: `${a}–${b} ms`, bar: on ? '#F3EDE2' : '#3D3550', fg: on ? '#F3EDE2' : '#A89FB8' }; });
+    const cv = (ref, w, h, sc) => React.createElement('canvas', { ref, width: w, height: h, style: { display: 'block', width: w * sc, height: h * sc, imageRendering: 'pixelated', background: '#14111C' } });
+    if (!this._cvM) { this._cvM = cv(this.refM, 98, 72, 4); this._cvD = cv(this.refD, 240, 84, 6); }
+    return {
+      t, k, canvasM: this._cvM, canvasD: this._cvD,
+      clock: [{ v: String(Math.floor(sec / 3600)), u: 'h' }, { v: p2(Math.floor(sec / 60) % 60), u: 'm' }, { v: p2(sec % 60), u: 's' }],
+      dur: D, tInt: Math.round(s.t), readout: `${fmt(s.t)} s / ${fmt(D)} s`, phases,
+      replayLabel: s.playing ? 'Repetir coronación' : 'Reproducir',
+      replay: () => { this.cyc = 0; this.crownedAt = null; this.setState({ playing: true }); },
+      onScrub: e => { this.scrubT = +e.target.value; this.setState({ playing: false }); },
+      modes: [['full', 'Completo'], ['reduced', 'Reducido']].map(([m, label]) => ({ label, ...seg(s.mode === m), on: () => { this.cyc = 0; this.scrubT = 0; this.savePrefs({ mode: m }); this.setState({ mode: m, playing: true }); } })),
+      speeds: [[1, '1×'], [0.5, '0,5×'], [0.25, '0,25×']].map(([v, label]) => ({ label, ...seg(s.speed === v), on: () => { this.savePrefs({ speed: v }); this.setState({ speed: v }); } })),
+      langs: [['en', 'EN'], ['es', 'ES']].map(([l, label]) => ({ label, ...seg(s.lang === l), on: () => this.setState({ lang: l }) }))
+    };
+  }
+}
+</script>
+</body>
+</html>

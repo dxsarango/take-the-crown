@@ -1,0 +1,30 @@
+{
+  "$doc": "Plantilla de temporada. Borra lo que no reemplaces: se hereda de la T0. Ver TEMPLATE.md.",
+  "id": 3,
+  "key": "clave-corta",
+  "status": "draft | provisional | final",
+  "color": "#RRGGBB  (color de temporada: aro de su medalla, token --crown-season)",
+  "name": { "en": "Season 3: Name", "es": "Temporada 3: Nombre" },
+  "window": { "start": "YYYY-MM-DD", "end": "YYYY-MM-DD" },
+  "palette": [
+    { "hex": "#RRGGBB", "name": "Material · tono", "role": "Dónde se usa" }
+  ],
+  "stone": { "o": "#", "s1": "#", "b": "#", "h": "#", "hh": "#" },
+  "banner": { "o": "#", "s1": "#", "b": "#", "h": "#" },
+  "ring": { "o": "#", "s1": "#", "b": "#", "h": "#" },
+  "replaces": {
+    "scene": { "svg": "assets/scenes/t3/{W}x{H}-{seat|empty|empty-spot|bare}.svg", "generator": "nombre de la función" },
+    "throne": "assets/thrones/t3.svg · t3-seat.svg",
+    "crownAvatar": "assets/crowns/avatar-t3-*.svg",
+    "crownSprite": "assets/crowns/sprite-t3-*.svg · -locked.svg",
+    "avatarBackgrounds": [{ "id": "slug", "es": "Nombre", "hex": "#RRGGBB" }],
+    "capeColors": [{ "id": "slug", "es": "Nombre", "o": "#", "s1": "#", "b": "#" }],
+    "seal": "assets/seal/seal-t3.svg",
+    "stoneBand": "assets/seal/stone-band-t3.svg"
+  },
+  "adds": {
+    "frame": "assets/frames/season-t3-*.svg · -locked.svg",
+    "medal": { "key": "clave", "rarity": "seasonal", "on": "assets/medals/clave-on.svg", "off": "assets/medals/clave-off.svg" }
+  },
+  "next": 4
+}

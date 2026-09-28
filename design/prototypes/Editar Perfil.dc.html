@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700&family=Pixelify+Sans:wght@500;700&display=swap" rel="stylesheet">
+<script src="season-lib.js"></script>
+<script src="avatar-lib.js"></script>
+<script src="throne-lib.js"></script>
+<script src="medal-lib.js"></script>
+<script src="social-lib.js"></script>
+<style>
+body{margin:0;background:#0E0C14;-webkit-font-smoothing:antialiased}
+a{color:#F3EDE2;text-decoration-color:#3D3550}a:hover{color:#F3EDE2;text-decoration-color:#F3EDE2}
+input::placeholder{color:#8A809C}
+select option{background:#1E1A29;color:#F3EDE2}
+</style>
+</helmet>
+<section id="turn12" style="background:#0E0C14;padding:72px;display:flex;flex-direction:column;gap:40px;font-family:Manrope,sans-serif;color:#F3EDE2;width:max-content">
+  <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:48px;width:1950px">
+    <div style="display:flex;flex-direction:column;gap:8px;max-width:1040px">
+      <div style="font-size:28px;font-weight:700">Paso 13 · Editar perfil</div>
+      <div style="font-size:16px;line-height:1.5;color:#A89FB8;text-wrap:pretty">Vista propia de priya_ships (Duque). Todo el formulario funciona: avatar pixel por capas o foto/logo subido (pixelado o tal cual, en la misma caja 44×44 del marco), nombre, país, link de producto, 5 redes opcionales con validación, vitrina de 3, privacidad, avisos e idioma. El guardado tiene cinco estados: sin cambios, con cambios, guardando, guardado y error. Los errores siempre llevan ícono y texto. Móvil y escritorio comparten el mismo estado.</div>
+    </div>
+    <div style="display:flex;gap:4px;padding:4px;background:#14111C;box-shadow:0 0 0 2px #3D3550">
+      <button onClick="{{ setEn }}" aria-pressed="{{ lseg.en.ck }}" style="position:relative;height:40px;min-width:88px;border:0;cursor:pointer;font-family:Manrope,sans-serif;font-size:14px;font-weight:700;background:{{ lseg.en.bg }};color:{{ lseg.en.fg }};box-shadow:{{ lseg.en.sh }}" style-focus="outline:2px solid #F3EDE2;outline-offset:4px">English</button>
+      <button onClick="{{ setEs }}" aria-pressed="{{ lseg.es.ck }}" style="position:relative;height:40px;min-width:88px;border:0;cursor:pointer;font-family:Manrope,sans-serif;font-size:14px;font-weight:700;background:{{ lseg.es.bg }};color:{{ lseg.es.fg }};box-shadow:{{ lseg.es.sh }}" style-focus="outline:2px solid #F3EDE2;outline-offset:4px">Español</button>
+    </div>
+  </div>
+
+  
+
+  <div style="display:flex;gap:120px;align-items:flex-start">
+    <sc-for list="{{ views }}" as="v" hint-placeholder-count="2">
+      <div data-screen-label="{{ v.label }}" style="display:flex;flex-direction:column;gap:12px">
+        <div style="font-size:14px;font-weight:700;color:#A89FB8">{{ v.label }}</div>
+        <div style="width:{{ v.w }}px;height:{{ v.h }}px;flex:none;display:flex;flex-direction:column;background:#14111C;box-shadow:0 0 0 1px #3D3550;overflow:hidden">
+
+          <sc-if value="{{ v.mob }}">
+            <div style="height:56px;flex:none;padding:0 4px;display:grid;grid-template-columns:44px minmax(0,1fr) 44px;align-items:center;background:#1E1A29;box-shadow:inset 0 -4px 0 #14111C">
+              <a href="Perfil.dc.html" aria-label="{{ t.back }}" style="width:44px;height:44px;display:flex;align-items:center;justify-content:center" style-hover="background:#2A2438" style-focus="outline:2px solid #F3EDE2;outline-offset:-2px"><img src="{{ icons.l }}" width="10" height="14" alt="" style="display:block;image-rendering:pixelated"></a>
+              <h1 style="margin:0;text-align:center;font-size:16px;font-weight:700">{{ t.title }}</h1>
+              <div></div>
+            </div>
+          </sc-if>
+          <sc-if value="{{ v.desk }}">
+            <div style="height:72px;flex:none;padding:0 48px;display:flex;align-items:center;justify-content:space-between;background:#1E1A29;box-shadow:inset 0 -4px 0 #14111C">
+              <div style="display:flex;align-items:center;gap:24px"><div style="font-family:'Pixelify Sans',sans-serif;font-size:28px;font-weight:700">Crown</div><div style="height:28px;padding:0 10px;display:flex;align-items:center;background:#14111C;font-size:14px;color:#A89FB8">{{ t.seasonLong }}</div></div>
+              <div style="display:flex;gap:4px;padding:4px;background:#14111C">
+                <button onClick="{{ setEn }}" aria-pressed="{{ lseg.en.ck }}" style="position:relative;height:32px;min-width:44px;border:0;cursor:pointer;font-family:Manrope,sans-serif;font-size:14px;font-weight:700;background:{{ lseg.en.bg }};color:{{ lseg.en.fg }};box-shadow:{{ lseg.en.sh }}" style-focus="outline:2px solid #F3EDE2;outline-offset:2px" style-before="content:'';position:absolute;left:50%;top:50%;width:max(100%, 44px);height:max(100%, 44px);transform:translate(-50%, -50%)">EN</button>
+                <button onClick="{{ setEs }}" aria-pressed="{{ lseg.es.ck }}" style="position:relative;height:32px;min-width:44px;border:0;cursor:pointer;font-family:Manrope,sans-serif;font-size:14px;font-weight:700;background:{{ lseg.es.bg }};color:{{ lseg.es.fg }};box-shadow:{{ lseg.es.sh }}" style-focus="outline:2px solid #F3EDE2;outline-offset:2px" style-before="content:'';position:absolute;left:50%;top:50%;width:max(100%, 44px);height:max(100%, 44px);transform:translate(-50%, -50%)">ES</button>
+              </div>
+            </div>
+          </sc-if>
+
+          <div style="flex:1;min-height:0;display:flex">
+            <sc-if value="{{ v.desk }}">
+              <nav aria-label="{{ t.title }}" style="width:240px;flex:none;padding:40px 24px;box-sizing:border-box;display:flex;flex-direction:column;gap:4px;box-shadow:inset -4px 0 0 #1E1A29">
+                <a href="Perfil.dc.html" style="position:relative;align-self:flex-start;display:flex;align-items:center;gap:10px;min-height:44px;margin-bottom:16px;font-size:14px;font-weight:700;text-decoration:none" style-hover="text-decoration:underline" style-focus="outline:2px solid #F3EDE2;outline-offset:2px"><img src="{{ icons.l }}" width="5" height="7" alt="" style="display:block;image-rendering:pixelated">{{ t.back }}</a>
+                <sc-for list="{{ nav }}" as="n" hint-placeholder-count="7">
+                  <button onClick="{{ n.go }}" style="height:44px;padding:0 12px;display:flex;align-items:center;justify-content:space-between;gap:8px;border:0;background:transparent;color:#F3EDE2;font-family:Manrope,sans-serif;font-size:14px;font-weight:500;text-align:left;cursor:pointer" style-hover="background:#1E1A29" style-focus="outline:2px solid #F3EDE2;outline-offset:-2px">
+                    <div>{{ n.label }}</div>
+                    <sc-if value="{{ n.hasErr }}"><div style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700"><div style="width:16px;height:16px;display:flex;align-items:center;justify-content:center;background:#E5484D"><img src="{{ icons.bang }}" width="8" height="8" alt="" style="display:block;image-rendering:pixelated"></div>{{ n.errText }}</div></sc-if>
+                  </button>
+                </sc-for>
+              </nav>
+            </sc-if>
+
+            <div id="{{ v.ids.scroll }}" style="flex:1;min-width:0;overflow-y:auto;overflow-x:hidden;scrollbar-width:thin;scrollbar-color:#3D3550 #14111C">
+              <div style="max-width:{{ v.formMax }};margin:0 auto;padding:{{ v.pad }};display:flex;flex-direction:column">
+                <sc-if value="{{ v.desk }}"><div style="display:flex;flex-direction:column;gap:6px;padding-bottom:12px"><h1 style="margin:0;font-size:40px;font-weight:700;line-height:1.1">{{ t.title }}</h1><div style="font-size:14px;color:#A89FB8">{{ t.titleSub }}</div></div></sc-if>
+
+                <div role="status" aria-live="polite" style="display:flex;flex-direction:column">
+                  <sc-if value="{{ bn.invalid }}">
+                    <div style="margin-top:16px;display:flex;gap:12px;padding:16px;background:#1E1A29;box-shadow:inset 4px 0 0 #E5484D">
+                      <div style="width:24px;height:24px;flex:none;display:flex;align-items:center;justify-content:center;background:#E5484D"><img src="{{ icons.bang }}" width="8" height="8" alt="" style="display:block;image-rendering:pixelated"></div>
+                      <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:6px;font-size:14px;line-height:1.45">
+                        <div style="font-weight:700">{{ bn.invTitle }}</div>
+                        <div style="color:#A89FB8">{{ t.bInvSub }}</div>
+                        <div style="display:flex;flex-direction:column">
+                          <sc-for list="{{ v.errList }}" as="x" hint-placeholder-count="2">
+                            <button onClick="{{ x.go }}" style="min-height:44px;padding:4px 0;display:flex;align-items:center;gap:8px;border:0;background:transparent;color:#F3EDE2;font-family:Manrope,sans-serif;font-size:14px;text-align:left;cursor:pointer" style-focus="outline:2px solid #F3EDE2;outline-offset:2px"><div style="font-weight:700;text-decoration:underline;text-decoration-color:#574C70;text-underline-offset:4px;flex:none">{{ x.label }}</div><div style="color:#A89FB8;min-width:0">{{ x.msg }}</div></button>
+                          </sc-for>
+                        </div>
+                      </div>
+                    </div>
+                  </sc-if>
+                  <sc-if value="{{ bn.rejected }}">
+                    <div style="margin-top:16px;display:flex;gap:12px;padding:16px;background:#1E1A29;box-shadow:inset 4px 0 0 #E5484D">
+                      <div style="width:24px;height:24px;flex:none;display:flex;align-items:center;justify-content:center;background:#E5484D"><img src="{{ icons.bang }}" width="8" height="8" alt="" style="display:block;image-rendering:pixelated"></div>
+                      <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:4px;font-size:14px;line-height:1.45">
+                        <div style="font-weight:700">{{ t.bRejTitle }}</div><div>{{ t.bRejWhy }}</div><div style="color:#A89FB8">{{ t.bRejFix }}</div>
+                        <button onClick="{{ v.goLink }}" style="position:relative;align-self:flex-start;min-height:44px;padding:0;border:0;background:transparent;color:#F3EDE2;font-family:Manrope,sans-serif;font-size:14px;font-weight:700;text-decoration:underline;text-underline-offset:4px;cursor:pointer" style-focus="outline:2px solid #F3EDE2;outline-offset:2px">{{ t.editLink }}</button>
+                      </div>
+                    </div>
+                  </sc-if>
+                  <sc-if value="{{ bn.failed }}">
+                    <div style="margin-top:16px;display:flex;gap:12px;padding:16px;background:#1E1A29;box-shadow:inset 4px 0 0 #E5484D">
+                      <div style="width:24px;height:24px;flex:none;display:flex;align-items:center;justify-content:center;background:#E5484D"><img src="{{ icons.bang }}" width="8" height="8" alt="" style="display:block;image-rendering:pixelated"></div>
+                      <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:4px;font-size:14px;line-height:1.45">
+                        <div style="font-weight:700">{{ t.bFailTitle }}</div><div style="color:#A89FB8">{{ t.bFailWhy }}</div>
+                        <button onClick="{{ save }}" style="position:relative;align-self:flex-start;height:40px;padding:0 14px;margin:12px 4px 4px;border:0;background:#2A2438;color:#F3EDE2;font-family:Manrope,sans-serif;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 -4px 0 #3D3550,-4px 0 0 #3D3550,0 4px 0 #14111C,4px 0 0 #14111C" style-hover="background:#3D3550" style-active="background:#14111C" style-focus="outline:2px solid #F3EDE2;outline-offset:6px" style-before="content:'';position:absolute;left:50%;top:50%;width:max(100%, 44px);height:max(100%, 44px);transform:translate(-50%, -50%)">{{ t.retry }}</button>
+                      </div>
+                    </div>
+                  </sc-if>
+                  <sc-if value="{{ bn.saved }}">
+                    <div style="margin-top:16px;display:flex;gap:12px;padding:16px;background:#1E1A29;box-shadow:inset 4px 0 0 #F3EDE2">
+                      <div style="width:24px;height:24px;flex:none;display:flex;align-items:center;justify-content:center;background:#F3EDE2"><img src="{{ icons.check }}" width="8" height="6" alt="" style="display:block;image-rendering:pixelated"></div>
+                      <div style="flex:1;min-width:0;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:4px 16px;font-size:14px;line-height:1.45">
+                        <div style="display:flex;flex-direction:column;gap:2px"><div style="font-weight:700">{{ t.bSavedTitle }}</div><div style="color:#A89FB8">{{ t.bSavedWhy }}</div></div>
+                        <a href="Perfil.dc.html" style="position:relative;display:flex;align-items:center;min-height:44px;font-weight:700;text-underline-offset:4px" style-focus="outline:2px solid #F3EDE2;outline-offset:2px">{{ t.viewProfile }}</a>
+                      </div>
+                    </div>
+                  </sc-if>
+                </div>
+
+                <!-- AVATAR -->
+                <div id="{{ v.ids.sAv }}" style="padding:28px 0;display:flex;flex-direction:column;gap:16px">
+                  <div style="display:flex;flex-direction:column;gap:6px"><h2 style="margin:0;font-size:20px;font-weight:700">{{ t.secAvatar }}</h2><div style="font-size:14px;line-height:1.5;color:#A89FB8;text-wrap:pretty">{{ t.avHelp }}</div></div>
+                  <div role="radiogroup" aria-label="{{ t.secAvatar }}" style="align-self:flex-start;display:flex;gap:4px;padding:4px;background:#14111C;box-shadow:inset 0 0 0 2px #2A2438">
+                    <button role="radio" aria-checked="{{ av.seg.gen.ck }}" onClick="{{ av.setGen }}" style="position:relative;height:40px;padding:0 16px;border:0;cursor:pointer;font-family:Manrope,sans-serif;font-size:14px;font-weight:700;background:{{ av.seg.gen.bg }};color:{{ av.seg.gen.fg }};box-shadow:{{ av.seg.gen.sh }}" style-focus="outline:2px solid #F3EDE2;outline-offset:2px" style-before="content:'';position:absolute;left:50%;top:50%;width:max(100%, 44px);height:max(100%, 44px);transform:translate(-50%, -50%)">{{ t.modeGen }}</button>
+                    <button role="radio" aria-checked="{{ av.seg.up.ck }}" onClick="{{ av.setUp }}" style="position:relative;height:40px;padding:0 16px;border:0;cursor:pointer;font-family:Manrope,sans-serif;font-size:14px;font-weight:700;background:{{ av.seg.up.bg }};color:{{ av.seg.up.fg }};box-shadow:{{ av.seg.up.sh }}" style-focus="outline:2px solid #F3EDE2;outline-offset:2px" style-before="content:'';position:absolute;left:50%;top:50%;width:max(100%, 44px);height:max(100%, 44px);transform:translate(-50%, -50%)">{{ t.modeUp }}</button>
+                  </div>
+                  <div style="display:grid;grid-template-columns:{{ v.avCols }};gap:20px;align-items:start">
+                    <div style="display:flex;flex-direction:{{ v.avDir }};gap:16px;align-items:flex-start">
+                      <div style="position:relative;width:{{ v.avPx }}px;height:{{ v.avPx }}px;flex:none">
+                        <sc-if value="{{ av.hasPhoto }}"><img src="{{ av.photo }}" alt="" style="position:absolute;left:{{ v.avIn }}px;top:{{ v.avIn }}px;width:{{ v.avInner }}px;height:{{ v.avInner }}px;object-fit:cover;display:block"></sc-if>
+                        <img src="{{ av.frame }}" width="{{ v.avPx }}" height="{{ v.avPx }}" alt="{{ t.avAlt }}" style="position:absolute;inset:0;display:block;image-rendering:pixelated">
+                      </div>
+                      <div style="display:flex;flex-direction:column;gap:8px;align-items:flex-start">
+                        <sc-if value="{{ av.isGen }}" hint-placeholder-val="{{ true }}">
+                          <button onClick="{{ av.shuffle }}" style="position:relative;height:40px;padding:0 14px;margin:4px;border:0;background:#2A2438;color:#F3EDE2;font-family:Manrope,sans-serif;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 -4px 0 #3D3550,-4px 0 0 #3D3550,0 4px 0 #14111C,4px 0 0 #14111C" style-hover="background:#3D3550" style-active="background:#14111C" style-focus="outline:2px solid #F3EDE2;outline-offset:6px" style-before="content:'';position:absolute;left:50%;top:50%;width:max(100%, 44px);height:max(100%, 44px);transform:translate(-50%, -50%)">{{ t.shuffle }}</button>
+                          <button onClick="{{ av.reset }}" style="position:relative;min-height:44px;padding:0 4px;border:0;background:transparent;color:#F3EDE2;font-family:Manrope,sans-serif;font-size:14px;font-weight:700;text-decoration:underline;text-decoration-color:#574C70;text-underline-offset:4px;cursor:pointer" style-focus="outline:2px solid #F3EDE2;outline-offset:2px">{{ t.reset }}</button>
+                        </sc-if>
+                        <sc-if value="{{ av.hasUp }}">
+                          <button onClick="{{ v.pick }}" style="position:relative;height:40px;padding:0 14px;margin:4px;border:0;background:#2A2438;color:#F3EDE2;font-family:Manrope,sans-serif;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 -4px 0 #3D3550,-4px 0 0 #3D3550,0 4px 0 #14111C,4px 0 0 #14111C" style-hover="background:#3D3550" style-active="background:#14111C" style-focus="outline:2px solid #F3EDE2;outline-offset:6px" style-before="content:'';position:absolute;left:50%;top:50%;width:max(100%, 44px);height:max(100%, 44px);transform:translate(-50%, -50%)">{{ t.replace }}</button>
+                          <button onClick="{{ av.remove }}" style="position:relative;min-height:44px;padding:0 4px;border:0;background:transparent;color:#F3EDE2;font-family:Manrope,sans-serif;font-size:14px;font-weight:700;text-decoration:underline;text-decoration-color:#574C70;text-underline-offset:4px;cursor:pointer" style-focus="outline:2px solid #F3EDE2;outline-offset:2px">{{ t.remove }}</button>
+                        </sc-if>
+                      </div>
+                    </div>
+                    <div style="min-width:0;display:flex;flex-direction:column;gap:12px">
+                      <sc-if value="{{ av.isGen }}" hint-placeholder-val="{{ true }}">
+                        <div style="display:grid;grid-template-columns:{{ v.pickCols }};gap:4px">
+                          <sc-for list="{{ av.parts }}" as="p" hint-placeholder-count="10">
+                            <div style="height:48px;padding:0 2px 0 14px;display:flex;align-items:center;justify-content:space-between;gap:8px;background:#1E1A29">
+                              <div style="font-size:14px;font-weight:700;min-width:0">{{ p.label }}</div>
+                              <div style="display:flex;align-items:center">
+                                <button onClick="{{ p.prev }}" aria-label="{{ p.prevL }}" style="width:44px;height:44px;border:0;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center" style-hover="background:#2A2438" style-focus="outline:2px solid #F3EDE2;outline-offset:-2px"><img src="{{ icons.l }}" width="5" height="7" alt="" style="display:block;image-rendering:pixelated;transform:scale(2)"></button>
+                                <div style="width:44px;text-align:center;font-family:'Pixelify Sans',sans-serif;font-size:14px;font-weight:500" aria-live="polite">{{ p.val }}</div>
+                                <button onClick="{{ p.next }}" aria-label="{{ p.nextL }}" style="width:44px;height:44px;border:0;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center" style-hover="background:#2A2438" style-focus="outline:2px solid #F3EDE2;outline-offset:-2px"><img src="{{ icons.r }}" width="5" height="7" alt="" style="display:block;image-rendering:pixelated;transform:scale(2)"></button>
+                              </div>
+                            </div>
+                          </sc-for>
+                        </div>
+                      </sc-if>
+                      <sc-if value="{{ av.noUp }}">
+                        <button onClick="{{ v.pick }}" onDragOver="{{ av.dragOver }}" onDrop="{{ av.drop }}" aria-describedby="{{ v.ids.upMsg }}" style="width:100%;min-height:148px;padding:20px;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;border:2px dashed #3D3550;background:transparent;color:#F3EDE2;font-family:Manrope,sans-serif;cursor:pointer;text-align:center" style-hover="background:#1E1A29;border-color:#574C70" style-focus="outline:2px solid #F3EDE2;outline-offset:2px">
+                          <div style="font-size:16px;font-weight:700;text-decoration:underline;text-underline-offset:4px">{{ t.upChoose }}</div>
+                          <div style="font-size:14px;color:#A89FB8">{{ t.upDrop }}</div>
+                          <div style="font-size:12px;color:#A89FB8">{{ t.upRules }}</div>
+                        </button>
+                      </sc-if>
+                      <sc-if value="{{ av.hasUp }}">
+                        <div style="display:flex;flex-direction:column;gap:8px">
+                          <div style="font-size:14px;font-weight:700">{{ t.upShowAs }}</div>
+                          <div role="radiogroup" aria-label="{{ t.upShowAs }}" style="align-self:flex-start;display:flex;gap:4px;padding:4px;background:#14111C;box-shadow:inset 0 0 0 2px #2A2438">
+                            <button role="radio" aria-checked="{{ av.pseg.pix.ck }}" onClick="{{ av.setPix }}" style="position:relative;height:40px;padding:0 16px;border:0;cursor:pointer;font-family:Manrope,sans-serif;font-size:14px;font-weight:700;background:{{ av.pseg.pix.bg }};color:{{ av.pseg.pix.fg }};box-shadow:{{ av.pseg.pix.sh }}" style-focus="outline:2px solid #F3EDE2;outline-offset:2px" style-before="content:'';position:absolute;left:50%;top:50%;width:max(100%, 44px);height:max(100%, 44px);transform:translate(-50%, -50%)">{{ t.upPix }}</button>
+                            <button role="radio" aria-checked="{{ av.pseg.asis.ck }}" onClick="{{ av.setAsIs }}" style="position:relative;height:40px;padding:0 16px;border:0;cursor:pointer;font-family:Manrope,sans-serif;font-size:14px;font-weight:700;background:{{ av.pseg.asis.bg }};color:{{ av.pseg.asis.fg }};box-shadow:{{ av.pseg.asis.sh }}" style-focus="outline:2px solid #F3EDE2;outline-offset:2px" style-before="content:'';position:absolute;left:50%;top:50%;width:max(100%, 44px);height:max(100%, 44px);transform:translate(-50%, -50%)">{{ t.upAsIs }}</button>
+                          </div>
+                          <div style="font-size:12px;line-height:1.45;color:#A89FB8;overflow-wrap:anywhere">{{ av.upNote }}</div>
+                        </div>
+                      </sc-if>
+                      <sc-if value="{{ av.hasErr }}">
+                        <div id="{{ v.ids.upMsg }}" style="display:flex;align-items:flex-start;gap:8px;font-size:12px;line-height:1.45;font-weight:700"><div style="width:16px;height:16px;flex:none;display:flex;align-items:center;justify-content:center;background:#E5484D"><img src="{{ icons.bang }}" width="8" height="8" alt="" style="display:block;image-rendering:pixelated"></div>{{ av.err }}</div>
+                      </sc-if>
+                    </div>
+                  </div>
+                  <input id="{{ v.ids.file }}" type="file" accept="image/png,image/jpeg,image/webp" onChange="{{ av.onFile }}" tabindex="-1" aria-hidden="true" style="display:none"></input>
+                </div>
+
+                <!-- IDENTIDAD -->
+                <div id="{{ v.ids.sId }}" style="padding:28px 0;box-shadow:inset 0 4px 0 #1E1A29;display:flex;flex-direction:column;gap:20px">
+                  <h2 style="margin:0;font-size:20px;font-weight:700">{{ t.secId }}</h2>
+                  <div style="display:flex;flex-direction:column;gap:8px">
+                    <div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px"><label for="{{ v.ids.name }}" style="font-size:14px;font-weight:700">{{ t.nameL }}</label><div style="font-family:'Pixelify Sans',sans-serif;font-size:12px;font-weight:500;color:#A89FB8">{{ id.count }}</div></div>
+                    <input id="{{ v.ids.name }}" value="{{ id.name }}" onChange="{{ id.onName }}" onBlur="{{ id.blurName }}" maxlength="24" autocomplete="off" spellcheck="false" aria-invalid="{{ e.name.inv }}" aria-describedby="{{ v.ids.nameMsg }}" style="height:52px;padding:0 16px;background:#1E1A29;border:0;box-shadow:{{ e.name.sh }};color:#F3EDE2;font-family:Manrope,sans-serif;font-size:16px;outline:none;box-sizing:border-box;width:100%" style-focus="outline:2px solid #F3EDE2;outline-offset:2px"></input>
+                    <sc-if value="{{ e.name.has }}"><div id="{{ v.ids.nameMsg }}" style="display:flex;align-items:flex-start;gap:8px;font-size:12px;line-height:1.45;font-weight:700"><div style="width:16px;height:16px;flex:none;display:flex;align-items:center;justify-content:center;background:#E5484D"><img src="{{ icons.bang }}" width="8" height="8" alt="" style="display:block;image-rendering:pixelated"></div>{{ e.name.msg }}</div></sc-if>
+                    <sc-if value="{{ e.name.ok }}" hint-placeholder-val="{{ true }}"><div id="{{ v.ids.nameMsg }}" style="font-size:12px;line-height:1.45;color:#A89FB8">{{ t.nameHelp }}</div></sc-if>
+                  </div>
+                  <div style="display:flex;flex-direction:column;gap:8px">
+                    <label for="{{ v.ids.cc }}" style="font-size:14px;font-weight:700">{{ t.countryL }}</label>
+                    <div style="position:relative">
+                      <select id="{{ v.ids.cc }}" value="{{ id.cc }}" onChange="{{ id.onCc }}" aria-describedby="{{ v.ids.ccMsg }}" style="appearance:none;-webkit-appearance:none;height:52px;width:100%;padding:0 48px 0 56px;background:#1E1A29;border:0;border-radius:0;box-shadow:inset 4px 4px 0 #14111C;color:#F3EDE2;font-family:Manrope,sans-serif;font-size:16px;cursor:pointer;outline:none" style-focus="outline:2px solid #F3EDE2;outline-offset:2px">
+                        <sc-for list="{{ id.countries }}" as="c" hint-placeholder-count="20"><option value="{{ c.code }}">{{ c.name }}</option></sc-for>
+                      </select>
+                      <sc-if value="{{ id.hasFlag }}" hint-placeholder-val="{{ true }}"><img src="{{ id.flag }}" width="24" height="16" alt="" style="position:absolute;left:18px;top:18px;display:block;image-rendering:pixelated;pointer-events:none"></sc-if>
+                      <sc-if value="{{ id.noFlag }}"><div style="position:absolute;left:18px;top:18px;width:24px;height:16px;display:flex;align-items:center;justify-content:center;background:#3D3550;font-family:'Pixelify Sans',sans-serif;font-size:12px;font-weight:700;pointer-events:none">{{ id.cc }}</div></sc-if>
+                      <img src="{{ icons.chev }}" width="16" height="10" alt="" style="position:absolute;right:18px;top:21px;display:block;image-rendering:pixelated;pointer-events:none">
+                    </div>
+                    <div id="{{ v.ids.ccMsg }}" style="font-size:12px;line-height:1.45;color:#A89FB8">{{ t.countryHelp }}</div>
+                  </div>
+                  <div style="display:flex;flex-direction:column;gap:8px">
+                    <div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px"><label for="{{ v.ids.link }}" style="font-size:14px;font-weight:700">{{ t.linkL }}</label><div style="font-size:12px;color:#A89FB8">{{ t.optional }}</div></div>
+                    <input id="{{ v.ids.link }}" value="{{ id.link }}" onChange="{{ id.onLink }}" onBlur="{{ id.blurLink }}" maxlength="80" inputmode="url" autocomplete="url" spellcheck="false" placeholder="{{ t.linkPh }}" aria-invalid="{{ e.link.inv }}" aria-describedby="{{ v.ids.linkMsg }}" style="height:52px;padding:0 16px;background:#1E1A29;border:0;box-shadow:{{ e.link.sh }};color:#F3EDE2;font-family:Manrope,sans-serif;font-size:16px;outline:none;box-sizing:border-box;width:100%" style-focus="outline:2px solid #F3EDE2;outline-offset:2px"></input>
+                    <sc-if value="{{ e.link.has }}"><div id="{{ v.ids.linkMsg }}" style="display:flex;align-items:flex-start;gap:8px;font-size:12px;line-height:1.45;font-weight:700"><div style="width:16px;height:16px;flex:none;display:flex;align-items:center;justify-content:center;background:#E5484D"><img src="{{ icons.bang }}" width="8" height="8" alt="" style="display:block;image-rendering:pixelated"></div>{{ e.link.msg }}</div></sc-if>
+                    <sc-if value="{{ e.link.ok }}" hint-placeholder-val="{{ true }}"><div id="{{ v.ids.linkMsg }}" style="font-size:12px;line-height:1.45;color:#A89FB8">{{ t.linkHelp }}</div></sc-if>
+                  </div>
+                </div>
+
+                <!-- REDES -->
+                <div id="{{ v.ids.sSoc }}" style="padding:28px 0;box-shadow:inset 0 4px 0 #1E1A29;display:flex;flex-direction:column;gap:20px">
+                  <div style="display:flex;flex-direction:column;gap:6px"><h2 style="margin:0;font-size:20px;font-weight:700">{{ t.secSoc }}</h2><div style="font-size:14px;line-height:1.5;color:#A89FB8;text-wrap:pretty">{{ t.socHelp }}</div></div>
+                  <div style="display:grid;grid-template-columns:{{ v.socCols }};gap:20px 16px">
+                    <sc-for list="{{ v.soc }}" as="s" hint-placeholder-count="5">
+                      <div style="display:flex;flex-direction:column;gap:8px;min-width:0">
+                        <label for="{{ s.id }}" style="display:flex;align-items:center;gap:8px;font-size:14px;font-weight:700"><img src="{{ s.logo }}" width="16" height="16" alt="" style="display:block">{{ s.name }}</label>
+                        <div style="height:52px;display:flex;align-items:stretch;background:#1E1A29;box-shadow:{{ s.sh }}">
+                          <div aria-hidden="true" style="flex:none;display:flex;align-items:center;padding:0 0 0 16px;font-size:14px;color:#A89FB8;white-space:nowrap">{{ s.host }}</div>
+                          <input id="{{ s.id }}" value="{{ s.val }}" onChange="{{ s.on }}" onBlur="{{ s.blur }}" maxlength="120" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="{{ t.socPh }}" aria-invalid="{{ s.inv }}" aria-describedby="{{ s.msgId }}" style="flex:1;min-width:0;height:52px;padding:0 16px 0 2px;background:transparent;border:0;color:#F3EDE2;font-family:Manrope,sans-serif;font-size:16px;outline:none;box-sizing:border-box" style-focus="outline:2px solid #F3EDE2;outline-offset:-2px"></input>
+                        </div>
+                        <sc-if value="{{ s.has }}"><div id="{{ s.msgId }}" style="display:flex;align-items:flex-start;gap:8px;font-size:12px;line-height:1.45;font-weight:700"><div style="width:16px;height:16px;flex:none;display:flex;align-items:center;justify-content:center;background:#E5484D"><img src="{{ icons.bang }}" width="8" height="8" alt="" style="display:block;image-rendering:pixelated"></div>{{ s.msg }}</div></sc-if>
+                      </div>
+                    </sc-for>
+                  </div>
+                </div>
+
+                <!-- VITRINA -->
+                <div id="{{ v.ids.sShow }}" style="padding:28px 0;box-shadow:inset 0 4px 0 #1E1A29;display:flex;flex-direction:column;gap:16px">
+                  <div style="display:flex;flex-direction:column;gap:6px">
+                    <div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px"><h2 style="margin:0;font-size:20px;font-weight:700">{{ t.secShow }}</h2><div style="font-family:'Pixelify Sans',sans-serif;font-size:14px;font-weight:500">{{ sh.count }}</div></div>
+                    <div style="font-size:14px;line-height:1.5;color:#A89FB8;text-wrap:pretty">{{ t.showHelp }}</div>
+                  </div>
+                  <div style="display:grid;grid-template-columns:{{ v.medCols }};gap:4px">
+                    <sc-for list="{{ sh.medals }}" as="m" hint-placeholder-count="10">
+                      <button onClick="{{ m.on }}" aria-pressed="{{ m.pressed }}" aria-disabled="{{ m.dis }}" aria-label="{{ m.aria }}" style="position:relative;min-height:112px;padding:14px 8px 12px;display:flex;flex-direction:column;align-items:center;gap:8px;border:0;background:{{ m.bg }};box-shadow:{{ m.sh }};color:{{ m.fg }};font-family:Manrope,sans-serif;cursor:pointer;min-width:0" style-hover="background:#2A2438" style-focus="outline:2px solid #F3EDE2;outline-offset:2px">
+                        <img src="{{ m.src }}" width="48" height="48" alt="" style="display:block;image-rendering:pixelated;opacity:{{ m.op }}">
+                        <div style="font-size:12px;font-weight:700;line-height:1.3;text-align:center">{{ m.name }}</div>
+                        <sc-if value="{{ m.sel }}"><div style="position:absolute;top:6px;right:6px;width:20px;height:20px;display:flex;align-items:center;justify-content:center;background:#F3EDE2;color:#14111C;font-family:'Pixelify Sans',sans-serif;font-size:12px;font-weight:700">{{ m.num }}</div></sc-if>
+                      </button>
+                    </sc-for>
+                  </div>
+                  <sc-if value="{{ sh.full }}"><div style="font-size:12px;line-height:1.45;color:#A89FB8">{{ t.showFull }}</div></sc-if>
+                </div>
+
+                <!-- PRIVACIDAD -->
+                <div id="{{ v.ids.sPriv }}" style="padding:28px 0;box-shadow:inset 0 4px 0 #1E1A29;display:flex;flex-direction:column;gap:12px">
+                  <h2 style="margin:0 0 4px;font-size:20px;font-weight:700">{{ t.secPriv }}</h2>
+                  <sc-for list="{{ v.priv }}" as="o" hint-placeholder-count="3">
+                    <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 12px 14px 16px;background:#1E1A29">
+                      <div style="display:flex;flex-direction:column;gap:4px;min-width:0"><div id="{{ o.id }}" style="font-size:14px;font-weight:700">{{ o.title }}</div><div id="{{ o.dId }}" style="font-size:12px;line-height:1.45;color:#A89FB8;text-wrap:pretty">{{ o.desc }}</div></div>
+                      <div style="display:flex;align-items:center;gap:10px;flex:none">
+                        <div aria-hidden="true" style="font-size:12px;font-weight:700;color:#A89FB8;min-width:24px;text-align:right">{{ o.state }}</div>
+                        <button role="switch" aria-checked="{{ o.checked }}" aria-labelledby="{{ o.id }}" aria-describedby="{{ o.dId }}" onClick="{{ o.on }}" style="position:relative;width:56px;height:32px;margin:6px 0;padding:0;border:0;cursor:pointer;background:{{ o.tb }};box-shadow:{{ o.ts }}" style-focus="outline:2px solid #F3EDE2;outline-offset:4px" style-before="content:'';position:absolute;left:50%;top:50%;width:max(100%, 44px);height:max(100%, 44px);transform:translate(-50%, -50%)"><div style="position:absolute;top:4px;left:{{ o.kx }}px;width:24px;height:24px;background:{{ o.kb }}"></div></button>
+                      </div>
+                    </div>
+                  </sc-for>
+                </div>
+
+                <!-- AVISOS -->
+                <div id="{{ v.ids.sAl }}" style="padding:28px 0;box-shadow:inset 0 4px 0 #1E1A29;display:flex;flex-direction:column;gap:12px">
+                  <div style="display:flex;flex-direction:column;gap:6px;padding-bottom:4px"><h2 style="margin:0;font-size:20px;font-weight:700">{{ t.secAl }}</h2><div style="font-size:14px;line-height:1.5;color:#A89FB8">{{ t.alHelp }}</div></div>
+                  <sc-for list="{{ v.al }}" as="o" hint-placeholder-count="4">
+                    <div style="display:flex;flex-direction:column;gap:12px;padding:14px 12px 14px 16px;background:#1E1A29">
+                      <div style="display:flex;align-items:center;justify-content:space-between;gap:16px">
+                        <div style="display:flex;flex-direction:column;gap:4px;min-width:0"><div id="{{ o.id }}" style="font-size:14px;font-weight:700">{{ o.title }}</div><div id="{{ o.dId }}" style="font-size:12px;line-height:1.45;color:#A89FB8;text-wrap:pretty">{{ o.desc }}</div></div>
+                        <div style="display:flex;align-items:center;gap:10px;flex:none">
+                          <div aria-hidden="true" style="font-size:12px;font-weight:700;color:#A89FB8;min-width:24px;text-align:right">{{ o.state }}</div>
+                          <button role="switch" aria-checked="{{ o.checked }}" aria-labelledby="{{ o.id }}" aria-describedby="{{ o.dId }}" onClick="{{ o.on }}" style="position:relative;width:56px;height:32px;margin:6px 0;padding:0;border:0;cursor:pointer;background:{{ o.tb }};box-shadow:{{ o.ts }}" style-focus="outline:2px solid #F3EDE2;outline-offset:4px" style-before="content:'';position:absolute;left:50%;top:50%;width:max(100%, 44px);height:max(100%, 44px);transform:translate(-50%, -50%)"><div style="position:absolute;top:4px;left:{{ o.kx }}px;width:24px;height:24px;background:{{ o.kb }}"></div></button>
+                        </div>
+                      </div>
+                      <sc-if value="{{ o.showPrice }}">
+                        <div style="display:flex;flex-direction:column;gap:8px">
+                          <label for="{{ v.ids.price }}" style="font-size:12px;font-weight:700">{{ t.priceL }}</label>
+                          <div style="display:flex;align-items:stretch;width:160px;height:52px;background:#14111C;box-shadow:{{ e.price.sh2 }}">
+                            <div aria-hidden="true" style="display:flex;align-items:center;padding-left:16px;font-family:'Pixelify Sans',sans-serif;font-size:20px;font-weight:700;color:#A89FB8">$</div>
+                            <input id="{{ v.ids.price }}" value="{{ al.price }}" onChange="{{ al.onPrice }}" onBlur="{{ al.blurPrice }}" inputmode="numeric" maxlength="3" autocomplete="off" aria-invalid="{{ e.price.inv }}" aria-describedby="{{ v.ids.priceMsg }}" style="flex:1;min-width:0;height:52px;padding:0 12px 0 4px;background:transparent;border:0;color:#F3EDE2;font-family:'Pixelify Sans',sans-serif;font-size:20px;font-weight:700;outline:none;box-sizing:border-box" style-focus="outline:2px solid #F3EDE2;outline-offset:-2px"></input>
+                          </div>
+                          <sc-if value="{{ e.price.has }}"><div id="{{ v.ids.priceMsg }}" style="display:flex;align-items:flex-start;gap:8px;font-size:12px;line-height:1.45;font-weight:700"><div style="width:16px;height:16px;flex:none;display:flex;align-items:center;justify-content:center;background:#E5484D"><img src="{{ icons.bang }}" width="8" height="8" alt="" style="display:block;image-rendering:pixelated"></div>{{ e.price.msg }}</div></sc-if>
+                          <sc-if value="{{ e.price.ok }}"><div id="{{ v.ids.priceMsg }}" style="font-size:12px;line-height:1.45;color:#A89FB8">{{ al.priceNote }}</div></sc-if>
+                        </div>
+                      </sc-if>
+                    </div>
+                  </sc-for>
+                </div>
+
+                <!-- IDIOMA -->
+                <div id="{{ v.ids.sLang }}" style="padding:28px 0 40px;box-shadow:inset 0 4px 0 #1E1A29;display:flex;flex-direction:column;gap:14px">
+                  <div style="display:flex;flex-direction:column;gap:6px"><h2 style="margin:0;font-size:20px;font-weight:700">{{ t.secLang }}</h2><div style="font-size:14px;line-height:1.5;color:#A89FB8">{{ t.langHelp }}</div></div>
+                  <div role="radiogroup" aria-label="{{ t.secLang }}" style="align-self:flex-start;display:flex;gap:4px;padding:4px;background:#14111C;box-shadow:inset 0 0 0 2px #2A2438">
+                    <button role="radio" aria-checked="{{ fl.en.ck }}" onClick="{{ fl.setEn }}" lang="en" style="position:relative;height:40px;min-width:104px;padding:0 16px;border:0;cursor:pointer;font-family:Manrope,sans-serif;font-size:14px;font-weight:700;background:{{ fl.en.bg }};color:{{ fl.en.fg }};box-shadow:{{ fl.en.sh }}" style-focus="outline:2px solid #F3EDE2;outline-offset:2px" style-before="content:'';position:absolute;left:50%;top:50%;width:max(100%, 44px);height:max(100%, 44px);transform:translate(-50%, -50%)">English</button>
+                    <button role="radio" aria-checked="{{ fl.es.ck }}" onClick="{{ fl.setEs }}" lang="es" style="position:relative;height:40px;min-width:104px;padding:0 16px;border:0;cursor:pointer;font-family:Manrope,sans-serif;font-size:14px;font-weight:700;background:{{ fl.es.bg }};color:{{ fl.es.fg }};box-shadow:{{ fl.es.sh }}" style-focus="outline:2px solid #F3EDE2;outline-offset:2px" style-before="content:'';position:absolute;left:50%;top:50%;width:max(100%, 44px);height:max(100%, 44px);transform:translate(-50%, -50%)">Español</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <sc-if value="{{ v.desk }}">
+              <aside aria-label="{{ t.preview }}" style="width:400px;flex:none;padding:40px 32px 32px;box-sizing:border-box;display:flex;flex-direction:column;gap:16px;box-shadow:inset 4px 0 0 #1E1A29">
+                <div style="display:flex;flex-direction:column;gap:4px"><div style="font-size:14px;font-weight:700">{{ t.preview }}</div><div style="font-size:12px;color:#A89FB8">{{ t.previewNote }}</div></div>
+                <div style="padding:24px;background:#1E1A29;display:flex;flex-direction:column;gap:16px">
+                  <div style="display:flex;gap:16px;align-items:center">
+                    <div style="position:relative;width:132px;height:132px;flex:none">
+                      <sc-if value="{{ av.hasPhoto }}"><img src="{{ av.photo }}" alt="" style="position:absolute;left:18px;top:18px;width:96px;height:96px;object-fit:cover;display:block"></sc-if>
+                      <img src="{{ av.frame }}" width="132" height="132" alt="" style="position:absolute;inset:0;display:block;image-rendering:pixelated">
+                    </div>
+                    <div style="display:flex;flex-direction:column;gap:10px;min-width:0">
+                      <div style="font-size:24px;font-weight:700;line-height:1.1;overflow-wrap:anywhere">{{ pv.name }}</div>
+                      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+                        <sc-if value="{{ pv.hasFlag }}"><img src="{{ pv.flag }}" width="24" height="16" alt="" style="display:block;image-rendering:pixelated"></sc-if>
+                        <sc-if value="{{ pv.noFlag }}"><div style="width:24px;height:16px;display:flex;align-items:center;justify-content:center;background:#3D3550;font-family:'Pixelify Sans',sans-serif;font-size:12px;font-weight:700">{{ pv.cc }}</div></sc-if>
+                        <div style="height:28px;padding:0 10px;display:flex;align-items:center;gap:8px;border:1px solid #3D3550;border-radius:4px"><div style="width:10px;height:10px;background:#F2C14E"></div><div style="font-family:'Pixelify Sans',sans-serif;font-size:14px;font-weight:500">{{ t.duke }}</div></div>
+                      </div>
+                    </div>
+                  </div>
+                  <sc-if value="{{ pv.hasLink }}"><div style="font-size:16px;font-weight:700;text-decoration:underline;text-decoration-color:#3D3550;text-decoration-thickness:2px;text-underline-offset:5px;overflow-wrap:anywhere">{{ pv.link }}</div></sc-if>
+                  <sc-if value="{{ pv.hasSoc }}"><div style="display:flex;gap:8px;flex-wrap:wrap"><sc-for list="{{ pv.soc }}" as="q" hint-placeholder-count="2"><div title="{{ q.aria }}" style="width:44px;height:44px;display:flex;align-items:center;justify-content:center;background:#2A2438"><img src="{{ q.logo }}" width="20" height="20" alt="{{ q.aria }}" style="display:block"></div></sc-for></div></sc-if>
+                  <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px">
+                    <sc-for list="{{ pv.show }}" as="q" hint-placeholder-count="3">
+                      <div style="height:72px;display:flex;align-items:center;justify-content:center;background:#14111C;box-shadow:{{ q.sh }};border:{{ q.bd }};box-sizing:border-box"><sc-if value="{{ q.full }}" hint-placeholder-val="{{ true }}"><img src="{{ q.src }}" width="48" height="48" alt="{{ q.name }}" style="display:block;image-rendering:pixelated"></sc-if></div>
+                    </sc-for>
+                  </div>
+                </div>
+                <div style="flex:1"></div>
+                <div style="display:flex;align-items:center;gap:8px;min-height:24px;font-size:14px;font-weight:700" aria-live="polite">
+                  <sc-if value="{{ st.bad }}"><div style="width:16px;height:16px;flex:none;display:flex;align-items:center;justify-content:center;background:#E5484D"><img src="{{ icons.bang }}" width="8" height="8" alt="" style="display:block;image-rendering:pixelated"></div></sc-if>
+                  <sc-if value="{{ st.good }}"><div style="width:16px;height:16px;flex:none;display:flex;align-items:center;justify-content:center;background:#F3EDE2"><img src="{{ icons.check }}" width="8" height="6" alt="" style="display:block;image-rendering:pixelated"></div></sc-if>
+                  <div style="color:{{ st.fg }}">{{ st.text }}</div>
+                </div>
+                <div style="display:flex;align-items:center;gap:12px">
+                  <sc-if value="{{ st.can }}" hint-placeholder-val="{{ true }}"><button onClick="{{ save }}" style="position:relative;flex:1;height:56px;margin:4px;border:0;background:#F3EDE2;color:#14111C;font-family:Manrope,sans-serif;font-size:16px;font-weight:700;cursor:pointer;box-shadow:0 -4px 0 #FFFBF2,-4px 0 0 #FFFBF2,0 4px 0 #BFB29C,4px 0 0 #BFB29C" style-hover="background:#FFFBF2" style-active="background:#BFB29C;padding-top:4px;box-shadow:0 -4px 0 #BFB29C,-4px 0 0 #BFB29C,0 4px 0 #F3EDE2,4px 0 0 #F3EDE2" style-focus="outline:2px solid #F3EDE2;outline-offset:6px">{{ st.label }}</button></sc-if>
+                  <sc-if value="{{ st.cant }}"><button aria-disabled="true" style="position:relative;flex:1;height:56px;margin:4px;border:0;background:#2A2438;color:#A89FB8;font-family:Manrope,sans-serif;font-size:16px;font-weight:700;cursor:default" style-focus="outline:2px solid #F3EDE2;outline-offset:6px">{{ st.label }}</button></sc-if>
+                  <sc-if value="{{ st.canDiscard }}"><button onClick="{{ discard }}" style="position:relative;height:56px;padding:0 12px;border:0;background:transparent;color:#F3EDE2;font-family:Manrope,sans-serif;font-size:14px;font-weight:700;text-decoration:underline;text-decoration-color:#574C70;text-underline-offset:4px;cursor:pointer" style-focus="outline:2px solid #F3EDE2;outline-offset:2px">{{ t.discard }}</button></sc-if>
+                </div>
+              </aside>
+            </sc-if>
+          </div>
+
+          <sc-if value="{{ v.mob }}">
+            <div style="flex:none;padding:12px 16px 16px;display:flex;align-items:center;gap:8px;background:#1E1A29;box-shadow:inset 0 4px 0 #14111C">
+              <div style="flex:1;min-width:0;display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;line-height:1.3" aria-live="polite">
+                <sc-if value="{{ st.bad }}"><div style="width:16px;height:16px;flex:none;display:flex;align-items:center;justify-content:center;background:#E5484D"><img src="{{ icons.bang }}" width="8" height="8" alt="" style="display:block;image-rendering:pixelated"></div></sc-if>
+                <sc-if value="{{ st.good }}"><div style="width:16px;height:16px;flex:none;display:flex;align-items:center;justify-content:center;background:#F3EDE2"><img src="{{ icons.check }}" width="8" height="6" alt="" style="display:block;image-rendering:pixelated"></div></sc-if>
+                <div style="color:{{ st.fg }}">{{ st.text }}</div>
+              </div>
+              <sc-if value="{{ st.canDiscard }}"><button onClick="{{ discard }}" style="position:relative;height:44px;padding:0 8px;border:0;background:transparent;color:#F3EDE2;font-family:Manrope,sans-serif;font-size:14px;font-weight:700;text-decoration:underline;text-decoration-color:#574C70;text-underline-offset:4px;cursor:pointer;flex:none" style-focus="outline:2px solid #F3EDE2;outline-offset:2px">{{ t.discard }}</button></sc-if>
+              <sc-if value="{{ st.can }}" hint-placeholder-val="{{ true }}"><button onClick="{{ save }}" style="position:relative;height:48px;padding:0 18px;margin:4px;border:0;background:#F3EDE2;color:#14111C;font-family:Manrope,sans-serif;font-size:16px;font-weight:700;cursor:pointer;flex:none;box-shadow:0 -4px 0 #FFFBF2,-4px 0 0 #FFFBF2,0 4px 0 #BFB29C,4px 0 0 #BFB29C" style-hover="background:#FFFBF2" style-active="background:#BFB29C;padding-top:4px;box-shadow:0 -4px 0 #BFB29C,-4px 0 0 #BFB29C,0 4px 0 #F3EDE2,4px 0 0 #F3EDE2" style-focus="outline:2px solid #F3EDE2;outline-offset:6px">{{ st.labelShort }}</button></sc-if>
+              <sc-if value="{{ st.cant }}"><button aria-disabled="true" style="position:relative;height:48px;padding:0 18px;margin:4px;border:0;background:#2A2438;color:#A89FB8;font-family:Manrope,sans-serif;font-size:16px;font-weight:700;cursor:default;flex:none" style-focus="outline:2px solid #F3EDE2;outline-offset:6px">{{ st.labelShort }}</button></sc-if>
+            </div>
+          </sc-if>
+        </div>
+      </div>
+    </sc-for>
+  </div>
+</section>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { lang: 'en', ready: false, form: null, saved: null, phase: 'idle', tried: false, touched: {}, upErr: null, failNext: false, demo: 'live' };
+
+  ACH = [['founder', 'seasonal0', 'Founder', 'Fundador'], ['g2', 'epic', 'Guardian II', 'Guardián II'], ['regicide', 'rare', 'Regicide', 'Regicida'], ['rivalry', 'epic', 'Rivalry', 'Rivalidad'], ['collector', 'epic', 'Collector', 'Coleccionista'], ['revenge', 'rare', 'Revenge', 'Venganza'], ['g1', 'rare', 'Guardian I', 'Guardián I'], ['patriot', 'rare', 'Patriot', 'Patriota'], ['owl', 'common', 'Night Owl', 'Noctámbulo'], ['bag', 'common', 'Bargain Hunter', 'Cazador de gangas'], ['remembered', 'seasonal', 'Remembered', 'Recordado']];
+  TAKEN = ['kenji', 'valeruiz', 'danielkim', 'lucas.fm', 'maru.jpg', 'ana.codes', 'theo_builds', 'mbali', 'camila.vc'];
+  PARTS = [['skin', 'SKINS'], ['hair', 'HAIRS'], ['hc', 'HAIRC'], ['fh', 'FH'], ['ex', 'EX'], ['cr', 'CROWNS'], ['cape', 'CAPES'], ['cc', 'CAPEC'], ['acc', 'ACC'], ['bg', 'BGS']];
+  pix = {}; artCache = {};
+
+  dict = {
+    en: { title: 'Edit profile', titleSub: 'Changes appear on your profile, the throne and the chronicle.', back: 'Profile', duke: 'Duke',
+      secAvatar: 'Avatar', secId: 'Name and country', secSoc: 'Social links', secShow: 'Showcase', secPriv: 'Privacy', secAl: 'Alerts', secLang: 'Language',
+      avHelp: 'This is who sits on the throne. Your rank frame goes around it.', avAlt: 'Your avatar in the Duke frame', modeGen: 'Pixel avatar', modeUp: 'Photo or logo', shuffle: 'Shuffle', reset: 'Reset',
+      parts: { skin: 'Skin', hair: 'Hair', hc: 'Hair color', fh: 'Facial hair', ex: 'Expression', cr: 'Crown', cape: 'Cape', cc: 'Cape color', acc: 'Accessory', bg: 'Background' }, prev: 'Previous', next: 'Next',
+      upChoose: 'Choose an image', upDrop: 'or drop it here', upRules: 'PNG, JPG or WebP · up to 5 MB · square works best', upShowAs: 'Show it', upPix: 'Pixelated', upAsIs: 'As uploaded', replace: 'Replace', remove: 'Remove',
+      upNotePix: n => `${n} · shrunk to 32×32 to match the throne.`, upNoteAsIs: n => `${n} · shown as is inside the frame.`,
+      upErrType: 'That file isn’t a PNG, JPG or WebP. Choose another image.', upErrSize: 'That image is over 5 MB. Choose a smaller one.', upErrNone: 'Choose an image, or switch back to the pixel avatar.',
+      nameL: 'Display name', nameHelp: 'Shown on the throne and in the chronicle. Letters, numbers, . _ and -.', nameShort: 'Use at least 3 characters.', nameChars: 'Use only letters, numbers, . _ and -.', nameTaken: n => `${n} is taken. Try another name.`,
+      countryL: 'Country', countryHelp: 'Your flag appears next to your name.', linkL: 'Product link', linkPh: 'yourproduct.com', linkHelp: 'Shown under your name. Reviewed before it goes live.', linkBad: 'Enter a web address like yourproduct.com.', optional: 'Optional',
+      socHelp: 'Optional. Only the ones you fill in appear on your profile. You can paste a full link.', socPh: 'username',
+      showHelp: 'Pick up to 3 achievements you’ve earned. They appear in the order you pick them.', showFull: 'Showcase full. Remove one to add another.', showCount: n => `${n} of 3`, inShow: (n, i) => `${n}, in showcase, position ${i}`, notShow: n => `${n}, not in showcase`,
+      country: 'Show my country', countryD: 'Your flag on the throne, your profile and the chronicle.', rival: 'Show my main rival', rivalD: 'The score with the person you trade the crown with most.', chron: 'Show my chronicle of reigns', chronD: 'Who you took the crown from and who took it from you.',
+      alHelp: 'Sent by email to p••••@gmail.com.', dethr: 'Someone takes my crown', dethrD: 'Right away, with who took it and the new price.', price: 'The price drops', priceD: 'When the crown gets down to your price.', priceL: 'Alert me at (USD)', priceErr: 'Enter a whole number from 5 to 999.', priceNote: v => `Now $34. It drops 2% an hour, so ~${v}.`, season: 'A new season starts', seasonD: 'With the new crown and collectibles.', digest: 'Weekly chronicle', digestD: 'Every Monday: reigns, falls and your rival.',
+      on: 'On', off: 'Off', langHelp: 'For the site, emails and alerts.',
+      save: 'Save changes', saveShort: 'Save', saving: 'Saving…', discard: 'Discard',
+      stClean: 'No changes', stDirty: n => (n === 1 ? '1 unsaved change' : `${n} unsaved changes`), stSaved: 'All changes saved', stFailed: 'Not saved', stInvalid: n => (n === 1 ? '1 field to fix' : `${n} fields to fix`),
+      bInv: n => (n === 1 ? '1 field needs fixing' : `${n} fields need fixing`), bInvSub: 'Nothing was saved yet.',
+      bRejTitle: 'Product link rejected', bRejWhy: 'It points to a gambling site, which isn’t allowed on Crown.', bRejFix: 'Remove it or use a link to your own product. Nothing was saved.', editLink: 'Edit the link',
+      bFailTitle: 'Couldn’t save your changes', bFailWhy: 'The connection dropped. Your edits are still here.', retry: 'Try again',
+      bSavedTitle: 'Profile saved', bSavedWhy: 'Your changes are live.', viewProfile: 'View profile', preview: 'Public preview', previewNote: 'How others see the top of your profile.',
+      soon: h => (h < 1 ? 'in under an hour' : `in ${h} h`), never: 'never, it doesn’t drop that low' },
+    es: { title: 'Editar perfil', titleSub: 'Los cambios salen en tu perfil, en el trono y en la crónica.', back: 'Perfil', duke: 'Duque',
+      secAvatar: 'Avatar', secId: 'Nombre y país', secSoc: 'Redes sociales', secShow: 'Vitrina', secPriv: 'Privacidad', secAl: 'Avisos', secLang: 'Idioma',
+      avHelp: 'Es quien se sienta en el trono. El marco de tu rango va alrededor.', avAlt: 'Tu avatar con el marco de Duque', modeGen: 'Avatar pixel', modeUp: 'Foto o logo', shuffle: 'Al azar', reset: 'Restablecer',
+      parts: { skin: 'Piel', hair: 'Pelo', hc: 'Color de pelo', fh: 'Vello facial', ex: 'Expresión', cr: 'Corona', cape: 'Capa', cc: 'Color de capa', acc: 'Accesorio', bg: 'Fondo' }, prev: 'Anterior', next: 'Siguiente',
+      upChoose: 'Elige una imagen', upDrop: 'o suéltala aquí', upRules: 'PNG, JPG o WebP · hasta 5 MB · mejor cuadrada', upShowAs: 'Mostrarla', upPix: 'Pixelada', upAsIs: 'Tal cual', replace: 'Cambiar', remove: 'Quitar',
+      upNotePix: n => `${n} · reducida a 32×32 para que case con el trono.`, upNoteAsIs: n => `${n} · se muestra tal cual dentro del marco.`,
+      upErrType: 'Ese archivo no es PNG, JPG ni WebP. Elige otra imagen.', upErrSize: 'Esa imagen pesa más de 5 MB. Elige una más ligera.', upErrNone: 'Elige una imagen o vuelve al avatar pixel.',
+      nameL: 'Nombre visible', nameHelp: 'Sale en el trono y en la crónica. Letras, números, . _ y -.', nameShort: 'Usa al menos 3 caracteres.', nameChars: 'Usa solo letras, números, . _ y -.', nameTaken: n => `${n} ya está en uso. Prueba otro nombre.`,
+      countryL: 'País', countryHelp: 'Tu bandera sale junto a tu nombre.', linkL: 'Link de producto', linkPh: 'tuproducto.com', linkHelp: 'Sale bajo tu nombre. Se revisa antes de publicarse.', linkBad: 'Escribe una dirección web como tuproducto.com.', optional: 'Opcional',
+      socHelp: 'Opcionales. Solo las que rellenes salen en tu perfil. Puedes pegar el enlace completo.', socPh: 'usuario',
+      showHelp: 'Elige hasta 3 logros que hayas ganado. Salen en el orden en que los elijas.', showFull: 'Vitrina llena. Quita uno para añadir otro.', showCount: n => `${n} de 3`, inShow: (n, i) => `${n}, en la vitrina, posición ${i}`, notShow: n => `${n}, fuera de la vitrina`,
+      country: 'Mostrar mi país', countryD: 'Tu bandera en el trono, en tu perfil y en la crónica.', rival: 'Mostrar mi rival principal', rivalD: 'El marcador con quien más te quitas la corona.', chron: 'Mostrar mi crónica de reinados', chronD: 'A quién le quitaste la corona y quién te la quitó.',
+      alHelp: 'Se envían por correo a p••••@gmail.com.', dethr: 'Alguien me quita la corona', dethrD: 'Al momento, con quién fue y el nuevo precio.', price: 'Baja el precio', priceD: 'Cuando la corona llegue a tu precio.', priceL: 'Avisarme a (USD)', priceErr: 'Escribe un número entero del 5 al 999.', priceNote: v => `Ahora $34. Baja 2% cada hora: ~${v}.`, season: 'Empieza una temporada', seasonD: 'Con la nueva corona y los coleccionables.', digest: 'Crónica semanal', digestD: 'Cada lunes: reinados, caídas y tu rival.',
+      on: 'Sí', off: 'No', langHelp: 'Para la web, los correos y los avisos.',
+      save: 'Guardar cambios', saveShort: 'Guardar', saving: 'Guardando…', discard: 'Descartar',
+      stClean: 'Sin cambios', stDirty: n => (n === 1 ? '1 cambio sin guardar' : `${n} cambios sin guardar`), stSaved: 'Todo guardado', stFailed: 'No se guardó', stInvalid: n => (n === 1 ? '1 campo por corregir' : `${n} campos por corregir`),
+      bInv: n => (n === 1 ? 'Hay 1 campo por corregir' : `Hay ${n} campos por corregir`), bInvSub: 'Aún no se guardó nada.',
+      bRejTitle: 'Link de producto rechazado', bRejWhy: 'Lleva a un sitio de apuestas, y eso no se permite en Crown.', bRejFix: 'Quítalo o usa un link a tu propio producto. No se guardó nada.', editLink: 'Editar el link',
+      bFailTitle: 'No se pudieron guardar los cambios', bFailWhy: 'Se cortó la conexión. Tus cambios siguen aquí.', retry: 'Reintentar',
+      bSavedTitle: 'Perfil guardado', bSavedWhy: 'Tus cambios ya están publicados.', viewProfile: 'Ver perfil', preview: 'Vista pública', previewNote: 'Así ven los demás la cabecera de tu perfil.',
+      soon: h => (h < 1 ? 'en menos de una hora' : `en ${h} h`), never: 'nunca, no baja tanto' }
+  };
+
+  componentDidMount() {
+    const ok = () => window.CrownAvatarLib && window.CrownThroneLib && window.CrownMedalLib && window.CrownSeasons && window.CrownSocial;
+    if (ok()) this.setup(); else this.poll = setInterval(() => { if (ok()) { clearInterval(this.poll); this.setup(); } }, 50);
+  }
+  componentWillUnmount() { clearInterval(this.poll); clearTimeout(this.to); }
+
+  clone(o) { return JSON.parse(JSON.stringify(o)); }
+
+  setup() {
+    const T = window.CrownThroneLib, lib = window.CrownAvatarLib(), ML = window.CrownMedalLib();
+    this.T = T; this.lib = lib;
+    const ic = (rows, c) => { const a = []; rows.forEach(r => [...r].forEach(ch => a.push(ch === '#' ? c : null))); return T.enc(rows[0].length, rows.length, a); };
+    const AL = ['...##', '..##.', '.##..', '##...', '.##..', '..##.', '...##'];
+    this.icons = { l: ic(AL, '#F3EDE2'), r: ic(AL.map(r => [...r].reverse().join('')), '#F3EDE2'), bang: T.ICONS.bang, check: T.ICONS.check, chev: T.ICONS.chev };
+    this.med = {}; this.ACH.forEach(([k, r]) => { this.med[k] = ML.medal(k, r, false); });
+    this.init = {
+      mode: 'gen', cfg: lib.gen('priya_ships'), up: null, upPix: true,
+      name: 'priya_ships', cc: 'IN', link: 'lumen-notes.app',
+      soc: { x: 'priya_ships', ig: '', gh: 'priyaships', li: '', yt: '' },
+      show: ['founder', 'g2', 'regicide'],
+      priv: { country: true, rival: true, chron: true },
+      al: { dethr: true, priceOn: false, price: '20', season: true, digest: false },
+      lang: this.state.lang
+    };
+    this.setState({ ready: true, form: this.clone(this.init), saved: this.clone(this.init) });
+  }
+
+  upd(patch) {
+    this.setState(s => ({ form: typeof patch === 'function' ? patch(s.form) : { ...s.form, ...patch }, phase: s.phase === 'saving' ? 'saving' : 'idle', demo: null }));
+  }
+
+  artFor(f) {
+    const key = f.mode === 'gen' ? 'g' + JSON.stringify(f.cfg) : f.up ? f.up.key + (f.upPix ? 'p' : 'a') : 'none';
+    if (this.artCache[key]) return this.artCache[key];
+    const T = this.T, E = a => T.enc(44, 44, T.frameCol('duke', a)), stone = () => new Array(1024).fill('#2A2438');
+    let r;
+    if (f.mode === 'gen') r = { frame: E(this.lib.avatar(f.cfg, 'A', null, true)), photo: null };
+    else if (!f.up) r = { frame: E(stone()), photo: null };
+    else if (f.upPix) r = { frame: E(this.pix[f.up.key] || stone()), photo: null };
+    else r = { frame: E(new Array(1024).fill(null)), photo: f.up.src };
+    return (this.artCache[key] = r);
+  }
+
+  errors(f) {
+    const S = window.CrownSocial, e = {}, n = f.name.trim(), l = f.link.trim();
+    if (n.length < 3) e.name = 'short'; else if (!/^[A-Za-z0-9._-]+$/.test(n)) e.name = 'chars'; else if (this.TAKEN.includes(n.toLowerCase())) e.name = 'taken';
+    if (l && !/^(https?:\/\/)?([a-z0-9-]+\.)+[a-z]{2,}(\/\S*)?$/i.test(l)) e.link = 'bad';
+    S.LIST.forEach(p => { const v = S.clean(p.k, f.soc[p.k]); if (v && !p.re.test(v)) e['soc_' + p.k] = 'bad'; });
+    if (f.al.priceOn) { const v = String(f.al.price).trim(); if (!/^\d+$/.test(v) || +v < 5 || +v > 999) e.price = 'range'; }
+    if (f.mode === 'up' && !f.up) e.up = 'none';
+    return e;
+  }
+
+  dirty(f, g) {
+    const S = window.CrownSocial;
+    const P = x => [{ m: x.mode, c: x.mode === 'gen' ? x.cfg : null, u: x.mode === 'up' ? (x.up && x.up.key) : null, p: x.mode === 'up' ? x.upPix : null }, x.name.trim(), x.cc, x.link.trim(), ...S.LIST.map(p => S.clean(p.k, x.soc[p.k])), x.show, x.priv.country, x.priv.rival, x.priv.chron, x.al.dethr, x.al.priceOn ? x.al.price : false, x.al.season, x.al.digest, x.lang];
+    const a = P(f), b = P(g);
+    return a.filter((v, i) => JSON.stringify(v) !== JSON.stringify(b[i])).length;
+  }
+
+  save() {
+    const s = this.state; if (s.phase === 'saving') return;
+    if (Object.keys(this.errors(s.form)).length) { this.setState({ tried: true, phase: 'idle', demo: null }); return; }
+    this.setState({ phase: 'saving', tried: false, demo: null });
+    clearTimeout(this.to);
+    this.to = setTimeout(() => {
+      const st = this.state;
+      if (st.failNext) return this.setState({ phase: 'failed', failNext: false });
+      if (/(casino|bet|slots?|poker|xxx|porn)/i.test(st.form.link)) return this.setState({ phase: 'rejected' });
+      this.setState({ phase: 'saved', saved: this.clone(st.form), touched: {} });
+    }, 1200);
+  }
+
+  preset(p) {
+    clearTimeout(this.to);
+    const lang = this.state.lang, I = this.clone({ ...this.init, lang });
+    const b = { saved: this.clone(I), phase: 'idle', tried: false, touched: {}, upErr: null, failNext: false };
+    if (p === 'errors') { I.name = 'pr'; I.link = 'lumen notes'; I.soc.x = 'priya ships!'; I.al.priceOn = true; I.al.price = '2'; b.tried = true; }
+    if (p === 'saving') { I.soc.ig = 'priya.ships'; b.phase = 'saving'; }
+    if (p === 'saved') { I.soc.ig = 'priya.ships'; I.soc.li = 'priya-ships'; b.saved = this.clone(I); b.phase = 'saved'; }
+    if (p === 'failed') { I.soc.ig = 'priya.ships'; b.phase = 'failed'; }
+    if (p === 'rejected') { I.link = 'luckyspin-casino.bet'; b.phase = 'rejected'; }
+    if (p === 'upload') I.mode = 'up';
+    this.setState({ form: I, ...b, demo: p });
+  }
+
+  go(k, id, focus) {
+    const c = document.getElementById(k + '-scroll'), el = document.getElementById(id);
+    if (!c || !el) return;
+    const cr = c.getBoundingClientRect(), z = cr.height / c.offsetHeight || 1;
+    c.scrollTop += (el.getBoundingClientRect().top - cr.top) / z - 24;
+    if (focus && el.focus) el.focus({ preventScroll: true });
+  }
+
+  readFile(file) {
+    if (!file) return;
+    if (!/^image\/(png|jpeg|webp)$/.test(file.type)) return this.setState({ upErr: 'type' });
+    if (file.size > 5 * 1024 * 1024) return this.setState({ upErr: 'size' });
+    const rd = new FileReader();
+    rd.onload = () => {
+      const img = new Image();
+      img.onload = () => {
+        const cv = document.createElement('canvas'); cv.width = cv.height = 32;
+        const x = cv.getContext('2d'), m = Math.min(img.width, img.height);
+        x.imageSmoothingEnabled = true; x.imageSmoothingQuality = 'high';
+        x.drawImage(img, (img.width - m) / 2, (img.height - m) / 2, m, m, 0, 0, 32, 32);
+        const d = x.getImageData(0, 0, 32, 32).data, a = [];
+        for (let i = 0; i < 1024; i++) { const o = i * 4; a.push(d[o + 3] < 128 ? '#2A2438' : '#' + [d[o], d[o + 1], d[o + 2]].map(v => v.toString(16).padStart(2, '0')).join('')); }
+        const key = 'u' + Date.now(); this.pix[key] = a;
+        this.setState({ upErr: null });
+        this.upd({ up: { key, src: rd.result, name: file.name }, upPix: true });
+      };
+      img.onerror = () => this.setState({ upErr: 'type' });
+      img.src = rd.result;
+    };
+    rd.readAsDataURL(file);
+  }
+
+  renderVals() {
+    const s = this.state, lang = s.lang, en = lang === 'en', SEA = window.CrownSeasons && window.CrownSeasons.current();
+    const t = { ...this.dict[lang], ...((SEA && SEA.ui && SEA.ui[lang]) || {}) };
+    const seg = on => (on ? { bg: '#2A2438', fg: '#F3EDE2', sh: 'inset 4px 4px 0 #3D3550, inset -4px -4px 0 #1E1A29', ck: 'true' } : { bg: 'transparent', fg: '#A89FB8', sh: 'none', ck: 'false' });
+    const hdrLang = l => () => this.setState(st => ({ lang: l, form: st.form && { ...st.form, lang: l }, saved: st.saved && { ...st.saved, lang: l } }));
+    const DEMOS = [['live', 'Inicial'], ['errors', 'Errores'], ['saving', 'Guardando'], ['saved', 'Guardado'], ['failed', 'Error al guardar'], ['rejected', 'Link rechazado'], ['upload', 'Subir foto']];
+    const base = { t, lseg: { en: seg(en), es: seg(!en) }, setEn: hdrLang('en'), setEs: hdrLang('es'), demos: DEMOS.map(([k, n]) => ({ n, ...seg(s.demo === k), on: () => this.preset(k) })) };
+    if (!s.ready) return { ...base, views: [], icons: {}, nav: [], av: { seg: {}, pseg: {} }, id: {}, e: {}, sh: {}, al: {}, fl: {}, pv: {}, st: {}, bn: {} };
+
+    const f = s.form, S = window.CrownSocial, T = this.T, errs = this.errors(f);
+    const vis = k => !!errs[k] && (s.tried || !!s.touched[k]);
+    const okSh = 'inset 4px 4px 0 #14111C', badSh = 'inset 4px 4px 0 #14111C, inset 0 0 0 2px #E5484D';
+    const msg = { name: { short: t.nameShort, chars: t.nameChars, taken: t.nameTaken(f.name.trim()) }[errs.name], link: t.linkBad, price: t.priceErr, up: t.upErrNone };
+    S.LIST.forEach(p => { msg['soc_' + p.k] = en ? p.en : p.es; });
+    const E = k => { const h = vis(k); return { has: h, ok: !h, sh: h ? badSh : okSh, sh2: h ? 'inset 0 0 0 2px #E5484D' : 'inset 0 0 0 2px #2A2438', inv: h ? 'true' : 'false', msg: msg[k] || '' }; };
+    const blur = k => () => this.setState(st => (st.touched[k] ? null : { touched: { ...st.touched, [k]: true } }));
+    const e = { name: E('name'), link: E('link'), price: E('price') };
+
+    // Avatar
+    const art = this.artFor(f), isGen = f.mode === 'gen', isUp = !isGen;
+    const parts = this.PARTS.map(([k, arr]) => {
+      const n = this.lib[arr].length + (k === 'acc' ? 1 : 0), cur = k === 'acc' ? f.cfg.acc + 1 : f.cfg[k];
+      const step = d => () => this.upd(ff => { const c0 = k === 'acc' ? ff.cfg.acc + 1 : ff.cfg[k], v = (c0 + d + n) % n; return { ...ff, cfg: { ...ff.cfg, [k]: k === 'acc' ? v - 1 : v } }; });
+      return { label: t.parts[k], val: `${cur + 1}/${n}`, prev: step(-1), next: step(1), prevL: `${t.prev}: ${t.parts[k]}`, nextL: `${t.next}: ${t.parts[k]}` };
+    });
+    const upErrMsg = s.upErr ? (s.upErr === 'size' ? t.upErrSize : t.upErrType) : vis('up') ? t.upErrNone : '';
+    const av = {
+      frame: art.frame, photo: art.photo, hasPhoto: !!art.photo, isGen, noUp: isUp && !f.up, hasUp: isUp && !!f.up, parts,
+      seg: { gen: seg(isGen), up: seg(isUp) }, setGen: () => this.upd({ mode: 'gen' }), setUp: () => this.upd({ mode: 'up' }),
+      pseg: { pix: seg(f.upPix), asis: seg(!f.upPix) }, setPix: () => this.upd({ upPix: true }), setAsIs: () => this.upd({ upPix: false }),
+      upNote: f.up ? (f.upPix ? t.upNotePix(f.up.name) : t.upNoteAsIs(f.up.name)) : '',
+      shuffle: () => this.upd(ff => ({ ...ff, cfg: this.lib.gen('r' + Math.random()) })),
+      reset: () => this.upd(ff => ({ ...ff, cfg: this.clone(this.state.saved.mode === 'gen' ? this.state.saved.cfg : this.init.cfg) })),
+      remove: () => { this.setState({ upErr: null }); this.upd({ up: null }); },
+      onFile: ev => { const fl = ev.target.files && ev.target.files[0]; this.readFile(fl); ev.target.value = ''; },
+      dragOver: ev => ev.preventDefault(), drop: ev => { ev.preventDefault(); this.readFile(ev.dataTransfer.files && ev.dataTransfer.files[0]); },
+      hasErr: !!upErrMsg, err: upErrMsg
+    };
+
+    // Identidad
+    const fl0 = T.flag(f.cc);
+    const id = {
+      name: f.name, count: `${f.name.length}/24`, onName: ev => this.upd({ name: ev.target.value }), blurName: blur('name'),
+      cc: f.cc, flag: fl0, hasFlag: !!fl0, noFlag: !fl0, onCc: ev => this.upd({ cc: ev.target.value }),
+      countries: T.COUNTRIES.map(c => ({ code: c[0], name: en ? c[1] : c[2] })).sort((a, b) => a.name.localeCompare(b.name, lang)),
+      link: f.link, onLink: ev => this.upd({ link: ev.target.value }), blurLink: blur('link')
+    };
+
+    // Vitrina
+    const S1ON = !!(SEA && SEA.id >= 1), full = f.show.length >= 3;
+    const earned = this.ACH.filter(a => a[0] !== 'remembered' || S1ON);
+    const nameOf = k => { const a = this.ACH.find(x => x[0] === k); return en ? a[2] : a[3]; };
+    const sh = {
+      count: t.showCount(f.show.length), full,
+      medals: earned.map(([k]) => {
+        const i = f.show.indexOf(k), sel = i >= 0, dis = !sel && full, nm = nameOf(k);
+        return { src: this.med[k], name: nm, sel, num: String(i + 1), pressed: sel ? 'true' : 'false', dis: dis ? 'true' : 'false', aria: sel ? t.inShow(nm, i + 1) : t.notShow(nm),
+          bg: sel ? '#2A2438' : '#1E1A29', sh: sel ? 'inset 0 0 0 2px #F3EDE2' : 'none', fg: dis ? '#A89FB8' : '#F3EDE2', op: dis ? '0.45' : '1',
+          on: () => this.upd(ff => { const j = ff.show.indexOf(k); if (j >= 0) return { ...ff, show: ff.show.filter(x => x !== k) }; if (ff.show.length >= 3) return ff; return { ...ff, show: [...ff.show, k] }; }) };
+      })
+    };
+
+    // Interruptores
+    const sw = (on, title, desc, fn, extra) => ({ title, desc, checked: on ? 'true' : 'false', state: on ? t.on : t.off, tb: on ? '#F3EDE2' : '#14111C', ts: on ? 'none' : 'inset 0 0 0 2px #3D3550', kb: on ? '#14111C' : '#574C70', kx: on ? 28 : 4, on: fn, showPrice: false, ...(extra || {}) });
+    const tp = k => () => this.upd(ff => ({ ...ff, priv: { ...ff.priv, [k]: !ff.priv[k] } }));
+    const ta = k => () => this.upd(ff => ({ ...ff, al: { ...ff.al, [k]: !ff.al[k] } }));
+    const privL = [sw(f.priv.country, t.country, t.countryD, tp('country')), sw(f.priv.rival, t.rival, t.rivalD, tp('rival')), sw(f.priv.chron, t.chron, t.chronD, tp('chron'))];
+    const alL = [sw(f.al.dethr, t.dethr, t.dethrD, ta('dethr')), sw(f.al.priceOn, t.price, t.priceD, ta('priceOn'), { showPrice: f.al.priceOn }), sw(f.al.season, t.season, t.seasonD, ta('season')), sw(f.al.digest, t.digest, t.digestD, ta('digest'))];
+    const pv0 = +f.al.price, hrs = pv0 >= 5 && pv0 < 34 ? Math.ceil(Math.log(pv0 / 34) / Math.log(0.98)) : pv0 >= 34 ? 0 : -1;
+    const al = { price: f.al.price, onPrice: ev => this.upd(ff => ({ ...ff, al: { ...ff.al, price: ev.target.value.replace(/[^\d]/g, '') } })), blurPrice: blur('price'), priceNote: t.priceNote(hrs < 0 ? t.never : t.soon(hrs)) };
+    const setFL = l => () => this.setState(st => ({ lang: l, form: { ...st.form, lang: l }, phase: st.phase === 'saving' ? 'saving' : 'idle', demo: null }));
+    const flx = { en: seg(f.lang === 'en'), es: seg(f.lang === 'es'), setEn: setFL('en'), setEs: setFL('es') };
+
+    // Estado de guardado
+    const errKeys = ['up', 'name', 'link', ...S.LIST.map(p => 'soc_' + p.k), 'price'].filter(k => errs[k]);
+    const nErr = errKeys.length, nd = this.dirty(f, s.saved), ph = s.phase;
+    const invalid = s.tried && nErr > 0 && ph !== 'saving';
+    let text, bad = false, good = false;
+    if (ph === 'saving') text = t.saving;
+    else if (invalid) { text = t.stInvalid(nErr); bad = true; }
+    else if (ph === 'failed' || ph === 'rejected') { text = t.stFailed; bad = true; }
+    else if (ph === 'saved' && !nd) { text = t.stSaved; good = true; }
+    else text = nd ? t.stDirty(nd) : t.stClean;
+    const can = ph !== 'saving' && (nd > 0 || ph === 'failed');
+    const st = { text, bad, good, fg: bad || good || nd ? '#F3EDE2' : '#A89FB8', can, cant: !can, canDiscard: nd > 0 && ph !== 'saving', label: ph === 'saving' ? t.saving : t.save, labelShort: ph === 'saving' ? t.saving : t.saveShort };
+    const bn = { invalid, invTitle: t.bInv(nErr), rejected: ph === 'rejected', failed: ph === 'failed', saved: ph === 'saved' && !nd };
+
+    // Vista previa
+    const pfl = T.flag(f.cc), okLink = f.link.trim() && !errs.link;
+    const pv = {
+      name: f.name.trim() || '—', cc: f.cc, flag: pfl, hasFlag: f.priv.country && !!pfl, noFlag: f.priv.country && !pfl,
+      link: okLink ? f.link.trim().replace(/^https?:\/\//i, '') : '', hasLink: !!okLink,
+      soc: S.LIST.filter(p => S.valid(p.k, f.soc[p.k])).map(p => ({ logo: S.logo(p.k), aria: `${p.name}: ${S.shown(p.k, f.soc[p.k])}` })),
+      show: [0, 1, 2].map(i => { const k = f.show[i]; return k ? { full: true, src: this.med[k], name: nameOf(k), sh: 'none', bd: '0' } : { full: false, src: '', name: '', sh: 'none', bd: '2px dashed #3D3550' }; })
+    };
+    pv.hasSoc = pv.soc.length > 0;
+
+    const labelOf = k => (k === 'up' ? t.secAvatar : k === 'name' ? t.nameL : k === 'link' ? t.linkL : k === 'price' ? t.priceL : S.by[k.slice(4)].name);
+    const SECS = [['sAv', t.secAvatar, ['up']], ['sId', t.secId, ['name', 'link']], ['sSoc', t.secSoc, S.LIST.map(p => 'soc_' + p.k)], ['sShow', t.secShow, []], ['sPriv', t.secPriv, []], ['sAl', t.secAl, ['price']], ['sLang', t.secLang, []]];
+
+    const mkView = (k, mob) => {
+      const ids = { scroll: k + '-scroll', file: k + '-file', upMsg: k + '-upmsg', name: k + '-name', nameMsg: k + '-name-msg', cc: k + '-cc', ccMsg: k + '-cc-msg', link: k + '-link', linkMsg: k + '-link-msg', price: k + '-price', priceMsg: k + '-price-msg' };
+      SECS.forEach(([sk]) => { ids[sk] = k + '-' + sk; });
+      const target = x => (x === 'up' ? ids.sAv : x === 'name' ? ids.name : x === 'link' ? ids.link : x === 'price' ? ids.price : k + '-soc-' + x.slice(4));
+      return {
+        k, mob, desk: !mob, label: mob ? 'Móvil 390' : 'Escritorio 1440', w: mob ? 390 : 1440, h: mob ? 844 : 900,
+        pad: mob ? '0 16px' : '40px 48px 0', formMax: mob ? 'none' : '800px',
+        avPx: mob ? 132 : 176, avIn: mob ? 18 : 24, avInner: mob ? 96 : 128, avCols: mob ? 'minmax(0,1fr)' : '176px minmax(0,1fr)', avDir: mob ? 'row' : 'column',
+        pickCols: mob ? 'minmax(0,1fr)' : 'repeat(2,minmax(0,1fr))', socCols: mob ? 'minmax(0,1fr)' : 'repeat(2,minmax(0,1fr))', medCols: mob ? 'repeat(3,minmax(0,1fr))' : 'repeat(5,minmax(0,1fr))',
+        ids,
+        pick: () => { const el = document.getElementById(ids.file); if (el) el.click(); },
+        goLink: () => this.go(k, ids.link, true),
+        errList: errKeys.map(x => ({ label: labelOf(x), msg: msg[x], go: () => this.go(k, target(x), x !== 'up') })),
+        soc: S.LIST.map(p => ({ ...E('soc_' + p.k), id: k + '-soc-' + p.k, msgId: k + '-soc-' + p.k + '-msg', name: p.name, logo: S.logo(p.k), host: p.host, val: f.soc[p.k],
+          on: ev => { const v = ev.target.value; this.upd(ff => ({ ...ff, soc: { ...ff.soc, [p.k]: v } })); }, blur: blur('soc_' + p.k) })),
+        priv: privL.map((o, i) => ({ ...o, id: `${k}-pv${i}`, dId: `${k}-pv${i}-d` })),
+        al: alL.map((o, i) => ({ ...o, id: `${k}-al${i}`, dId: `${k}-al${i}-d` }))
+      };
+    };
+    const nav = SECS.map(([sk, label, keys]) => { const n = keys.filter(x => errs[x] && vis(x)).length; return { label, hasErr: n > 0, errText: String(n), go: () => this.go('d', 'd-' + sk) }; });
+
+    return { ...base, icons: this.icons, views: [mkView('m', true), mkView('d', false)], nav, av, id, e, sh, al, fl: flx, pv, st, bn, save: () => this.save(), discard: () => { clearTimeout(this.to); this.setState(st2 => ({ form: this.clone(st2.saved), phase: 'idle', tried: false, touched: {}, upErr: null, demo: null })); } };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,311 @@
+{
+  "id": 0,
+  "key": "genesis",
+  "color": "#4FA39B",
+  "name": {
+    "en": "Season 0: Genesis",
+    "es": "Temporada 0: Génesis"
+  },
+  "window": {
+    "start": "2026-09-15",
+    "end": "2026-10-31"
+  },
+  "palette": [
+    {
+      "hex": "#1F1C27",
+      "name": "Piedra · contorno",
+      "role": "Muro, juntas"
+    },
+    {
+      "hex": "#2C2936",
+      "name": "Piedra · sombra",
+      "role": "Muro"
+    },
+    {
+      "hex": "#3A3645",
+      "name": "Piedra · base",
+      "role": "Muro"
+    },
+    {
+      "hex": "#4E4A5A",
+      "name": "Columna · luz",
+      "role": "Columnas, peldaño"
+    },
+    {
+      "hex": "#17141E",
+      "name": "Suelo · junta",
+      "role": "Suelo"
+    },
+    {
+      "hex": "#262330",
+      "name": "Suelo · base",
+      "role": "Suelo"
+    },
+    {
+      "hex": "#3E0C18",
+      "name": "Estandarte · contorno",
+      "role": "Estandartes, alfombra"
+    },
+    {
+      "hex": "#861B2F",
+      "name": "Estandarte · sombra",
+      "role": "Estandartes, cojín"
+    },
+    {
+      "hex": "#B3263B",
+      "name": "Estandarte · base",
+      "role": "Estandartes, alfombra"
+    },
+    {
+      "hex": "#2A160C",
+      "name": "Roble · contorno",
+      "role": "Trono"
+    },
+    {
+      "hex": "#4E2E1A",
+      "name": "Roble · sombra",
+      "role": "Trono"
+    },
+    {
+      "hex": "#6E4428",
+      "name": "Roble · base",
+      "role": "Trono"
+    },
+    {
+      "hex": "#4B5A78",
+      "name": "Fondo Pizarra",
+      "role": "Fondo de avatar"
+    },
+    {
+      "hex": "#58704F",
+      "name": "Fondo Musgo",
+      "role": "Fondo de avatar"
+    },
+    {
+      "hex": "#6B5B84",
+      "name": "Fondo Lavanda",
+      "role": "Fondo de avatar"
+    },
+    {
+      "hex": "#2E6A6C",
+      "name": "Fondo Verdín",
+      "role": "Fondo de avatar"
+    },
+    {
+      "hex": "#7C6A58",
+      "name": "Fondo Arenisca",
+      "role": "Fondo de avatar"
+    },
+    {
+      "hex": "#1E1030",
+      "name": "Púrpura · contorno",
+      "role": "Capa"
+    },
+    {
+      "hex": "#452A6C",
+      "name": "Púrpura · sombra",
+      "role": "Capa"
+    },
+    {
+      "hex": "#5E3C8E",
+      "name": "Púrpura · base",
+      "role": "Capa"
+    },
+    {
+      "hex": "#0E1A3A",
+      "name": "Cobalto · contorno",
+      "role": "Capa"
+    },
+    {
+      "hex": "#223C7A",
+      "name": "Cobalto · sombra",
+      "role": "Capa"
+    },
+    {
+      "hex": "#2F52A0",
+      "name": "Cobalto · base",
+      "role": "Capa"
+    },
+    {
+      "hex": "#0C2414",
+      "name": "Bosque · contorno",
+      "role": "Capa"
+    },
+    {
+      "hex": "#225234",
+      "name": "Bosque · sombra",
+      "role": "Capa"
+    },
+    {
+      "hex": "#2F6E48",
+      "name": "Bosque · base",
+      "role": "Capa"
+    },
+    {
+      "hex": "#14111C",
+      "name": "Azabache · contorno",
+      "role": "Capa"
+    },
+    {
+      "hex": "#2C283A",
+      "name": "Azabache · sombra",
+      "role": "Capa"
+    },
+    {
+      "hex": "#3E3850",
+      "name": "Azabache · base",
+      "role": "Capa"
+    },
+    {
+      "hex": "#133A3C",
+      "name": "Verdín · contorno",
+      "role": "Aro Fundador, marco Genesis"
+    },
+    {
+      "hex": "#4FA39B",
+      "name": "Verdín · base",
+      "role": "Color de temporada"
+    },
+    {
+      "hex": "#8FD1C4",
+      "name": "Verdín · brillo",
+      "role": "Gemas del marco Genesis"
+    }
+  ],
+  "stone": {
+    "o": "#1F1C27",
+    "s1": "#2C2936",
+    "b": "#3A3645",
+    "h": "#4E4A5A",
+    "hh": "#5E5A6C"
+  },
+  "banner": {
+    "o": "#3A0A14",
+    "s1": "#6E1626",
+    "b": "#9A1F35",
+    "h": "#B3263B"
+  },
+  "ring": {
+    "o": "#133A3C",
+    "s1": "#2E6A6C",
+    "b": "#4FA39B",
+    "h": "#8FD1C4"
+  },
+  "$doc": "Temporada 0 · Génesis. Es la temporada BASE: define los assets por defecto. Las demás solo declaran lo que reemplazan.",
+  "status": "final",
+  "events": [
+    {
+      "key": "halloween",
+      "note": "Mini evento dentro de la T0 (sin arte propio definido aún)"
+    }
+  ],
+  "replaces": {},
+  "assets": {
+    "scene": {
+      "generator": "sceneT0 (prototypes/throne-lib.js)",
+      "svg": "assets/scenes/t0/{W}x{H}-{seat|empty|empty-spot|bare}.svg"
+    },
+    "throne": "assets/thrones/t0.svg · t0-seat.svg",
+    "crownAvatar": [
+      "assets/crowns/avatar-t0-spikes.svg",
+      "assets/crowns/avatar-t0-diadem.svg",
+      "assets/crowns/avatar-t0-crenellated.svg"
+    ],
+    "crownSprite": "assets/crowns/sprite-t0.svg",
+    "frame": "assets/frames/season-t0-genesis.svg",
+    "medal": {
+      "key": "founder",
+      "on": "assets/medals/founder-on.svg",
+      "off": "assets/medals/founder-off.svg"
+    },
+    "avatarBackgrounds": [
+      {
+        "id": "slate",
+        "es": "Pizarra",
+        "hex": "#4B5A78"
+      },
+      {
+        "id": "moss",
+        "es": "Musgo",
+        "hex": "#58704F"
+      },
+      {
+        "id": "lavender",
+        "es": "Lavanda",
+        "hex": "#6B5B84"
+      },
+      {
+        "id": "verdigris",
+        "es": "Verdín",
+        "hex": "#2E6A6C"
+      },
+      {
+        "id": "sandstone",
+        "es": "Arenisca",
+        "hex": "#7C6A58"
+      }
+    ],
+    "capeColors": [
+      {
+        "id": "crimson",
+        "es": "Carmesí",
+        "o": "#3A0A14",
+        "s2": "#54101D",
+        "s1": "#6E1626",
+        "b": "#9A1F35",
+        "h": "#C27478"
+      },
+      {
+        "id": "purple",
+        "es": "Púrpura",
+        "o": "#1E1030",
+        "s2": "#321D4E",
+        "s1": "#452A6C",
+        "b": "#5E3C8E",
+        "h": "#9E86AD"
+      },
+      {
+        "id": "cobalt",
+        "es": "Cobalto",
+        "o": "#0E1A3A",
+        "s2": "#182B5A",
+        "s1": "#223C7A",
+        "b": "#2F52A0",
+        "h": "#8293B8"
+      },
+      {
+        "id": "forest",
+        "es": "Bosque",
+        "o": "#0C2414",
+        "s2": "#173B24",
+        "s1": "#225234",
+        "b": "#2F6E48",
+        "h": "#82A483"
+      },
+      {
+        "id": "jet",
+        "es": "Azabache",
+        "o": "#14111C",
+        "s2": "#201D2B",
+        "s1": "#2C283A",
+        "b": "#3E3850",
+        "h": "#8B8388"
+      }
+    ],
+    "seal": "assets/seal/seal-t0.svg",
+    "stoneBand": "assets/seal/stone-band-t0.svg"
+  },
+  "exclusives": {
+    "medal": "founder",
+    "frame": "genesis",
+    "note": "Todos los reyes de la T0 conservan Fundador y el marco Genesis para siempre."
+  },
+  "proposals": [
+    {
+      "key": "genesisCrown",
+      "status": "pendiente de aprobar",
+      "note": "Corona Génesis: 24 h en la T0"
+    }
+  ],
+  "next": 1
+}

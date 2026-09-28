@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700&family=Pixelify+Sans:wght@500;700&display=swap" rel="stylesheet">
+<script src="season-lib.js"></script>
+<script src="avatar-lib.js"></script>
+<style>
+body{margin:0;background:#0E0C14;-webkit-font-smoothing:antialiased}
+a{color:#F3EDE2;text-decoration-color:#3D3550}a:hover{color:#F3EDE2;text-decoration-color:#F3EDE2}
+</style>
+</helmet>
+<section id="turn7" style="background:#0E0C14;padding:72px;display:flex;flex-direction:column;gap:88px;font-family:Manrope,sans-serif;color:#F3EDE2;width:max-content">
+  <div style="display:flex;flex-direction:column;gap:8px;max-width:900px">
+    <div style="font-size:28px;font-weight:700">Paso 5b · Portada: estados</div>
+    <div style="font-size:16px;line-height:1.5;color:#A89FB8;text-wrap:pretty">Cinco variantes sobre la <a href="Portada.dc.html" style-focus="outline:2px solid #F3EDE2;outline-offset:2px" style="position:relative" style-before="content:'';position:absolute;left:50%;top:50%;width:max(100%, 44px);height:max(100%, 44px);transform:translate(-50%, -50%)">portada aprobada</a>, en móvil y en escritorio. Solo cambia el héroe; la línea de sucesión, el salón de la fama y el feed siguen igual. En móvil, la línea marca el primer pantallazo (390×664): en todos los estados, la acción cabe por encima de ella.</div>
+  </div>
+
+  <sc-for list="{{ states }}" as="s" hint-placeholder-count="5">
+    <div id="{{ s.id }}" data-screen-label="{{ s.label }}" style="display:flex;flex-direction:column;gap:20px">
+      <div style="display:flex;align-items:flex-start;gap:16px;max-width:1100px">
+        <div style="font-size:14px;font-weight:700;background:#F3EDE2;color:#14111C;padding:4px 10px;border-radius:4px;flex:none">{{ s.id }}</div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <div style="font-size:20px;font-weight:700">{{ s.title }}</div>
+          <div style="font-size:14px;line-height:1.5;color:#A89FB8;text-wrap:pretty">{{ s.desc }}</div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:240px;align-items:flex-start">
+
+        <div style="position:relative;width:390px;min-height:700px;flex:none">
+          <div style="width:390px;background:#14111C;overflow:hidden;box-shadow:0 0 0 1px #3D3550">
+            <div style="height:56px;padding:0 12px 0 16px;display:flex;align-items:center;justify-content:space-between;gap:8px;background:#1E1A29;box-shadow:inset 0 -4px 0 #14111C">
+              <div style="display:flex;flex-direction:column;gap:3px;min-width:0">
+                <div style="font-family:'Pixelify Sans',sans-serif;font-size:20px;font-weight:700;line-height:1">Crown</div>
+                <div style="font-size:12px;color:#A89FB8;white-space:nowrap">{{ t.seasonShort }}</div>
+              </div>
+              <div style="display:flex;align-items:center;gap:8px">
+                <div style="display:flex;gap:2px;padding:2px;background:#14111C">
+                  <button onClick="{{ setEn }}" style="position:relative;height:28px;min-width:44px;border:0;cursor:pointer;font-family:Manrope,sans-serif;font-size:12px;font-weight:700;background:{{ seg.en.bg }};color:{{ seg.en.fg }};box-shadow:{{ seg.en.sh }}" style-focus="outline:2px solid #F3EDE2;outline-offset:2px" style-before="content:'';position:absolute;left:50%;top:50%;width:max(100%, 44px);height:max(100%, 44px);transform:translate(-50%, -50%)">EN</button>
+                  <button onClick="{{ setEs }}" style="position:relative;height:28px;min-width:44px;border:0;cursor:pointer;font-family:Manrope,sans-serif;font-size:12px;font-weight:700;background:{{ seg.es.bg }};color:{{ seg.es.fg }};box-shadow:{{ seg.es.sh }}" style-focus="outline:2px solid #F3EDE2;outline-offset:2px" style-before="content:'';position:absolute;left:50%;top:50%;width:max(100%, 44px);height:max(100%, 44px);transform:translate(-50%, -50%)">ES</button>
+                </div>
+                <button style="position:relative;height:36px;padding:0 12px;margin:4px;border:0;background:#2A2438;color:#F3EDE2;font-family:Manrope,sans-serif;font-size:14px;font-weight:700;cursor:pointer;white-space:nowrap;box-shadow:0 -4px 0 #3D3550,-4px 0 0 #3D3550,0 4px 0 #14111C,4px 0 0 #14111C" style-hover="background:#3D3550" style-focus="outline:2px solid #F3EDE2;outline-offset:6px" style-before="content:'';position:absolute;left:50%;top:50%;width:max(100%, 44px);height:max(100%, 44px);transform:translate(-50%, -50%)">{{ t.signin }}</button>
+              </div>
+            </div>
+            <div style="width:390px;height:288px;overflow:hidden;background:#0B0910"><img src="{{ s.sceneM }}" width="392" height="288" style="display:block;margin-left:-1px;image-rendering:pixelated"></div>
+
+            <div style="padding:16px 16px 24px;display:flex;flex-direction:column;gap:16px">
+              <sc-if value="{{ s.hasKing }}" hint-placeholder-val="{{ true }}">
+                <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+                  <div style="font-size:20px;font-weight:700">{{ s.king.name }}</div>
+                  <img src="{{ s.king.flag }}" width="24" height="16" style="display:block;image-rendering:pixelated;box-shadow:0 0 0 2px #1E1A29">
+                  <div style="height:28px;padding:0 10px;display:flex;align-items:center;gap:8px;border:1px solid #3D3550;border-radius:4px"><div style="width:10px;height:10px;background:{{ s.king.sw }}"></div><div style="font-family:'Pixelify Sans',sans-serif;font-size:14px;font-weight:500">{{ s.king.rank }}</div></div>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:4px">
+                  <div style="font-size:14px;color:#A89FB8">{{ t.reigning }}</div>
+                  <div style="display:flex;align-items:baseline;gap:14px">
+                    <sc-for list="{{ s.clock }}" as="c" hint-placeholder-count="3"><div style="display:flex;align-items:baseline;gap:2px"><div style="font-family:'Pixelify Sans',sans-serif;font-size:64px;font-weight:700;line-height:1;font-variant-numeric:tabular-nums">{{ c.v }}</div><div style="font-family:'Pixelify Sans',sans-serif;font-size:28px;font-weight:500;color:#A89FB8">{{ c.u }}</div></div></sc-for>
+                  </div>
+                </div>
+              </sc-if>
+              <sc-if value="{{ s.isEmpty }}">
+                <div style="display:flex;flex-direction:column;gap:6px;padding:4px 0 8px">
+                  <div style="font-size:28px;font-weight:700;line-height:1.15">{{ t.empty1 }}</div>
+                  <div style="font-size:16px;line-height:1.5;color:#A89FB8">{{ t.empty2 }}</div>
+                </div>
+              </sc-if>
+              <sc-if value="{{ s.showPrice }}" hint-placeholder-val="{{ true }}">
+                <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
+                  <div style="display:flex;align-items:center;gap:10px">
+                    <div style="font-family:'Pixelify Sans',sans-serif;font-size:40px;font-weight:700;line-height:1;color:#F2C14E">{{ s.price }}</div>
+                    <sc-if value="{{ s.isFloor }}"><div style="height:28px;padding:0 8px;display:flex;align-items:center;border:1px solid #F2C14E;border-radius:4px;font-family:'Pixelify Sans',sans-serif;font-size:14px;font-weight:500;color:#F2C14E;white-space:nowrap">{{ t.lowest }}</div></sc-if>
+                  </div>
+                  <div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px;text-align:right">
+                    <div style="display:flex;align-items:center;gap:8px;font-size:14px;font-weight:500"><img src="{{ s.icon }}" width="14" height="14" style="display:block;image-rendering:pixelated">{{ s.note1 }}</div>
+                    <div style="font-size:12px;color:#A89FB8">{{ s.note2 }}</div>
+                  </div>
+                </div>
+              </sc-if>
+              <sc-if value="{{ s.isErr }}">
+                <div style="display:flex;align-items:flex-start;gap:12px;padding:12px 14px;background:#1E1A29;box-shadow:inset 4px 0 0 #E5484D">
+                  <div style="width:24px;height:24px;flex:none;display:flex;align-items:center;justify-content:center;background:#E5484D"><img src="{{ s.bIcon }}" width="16" height="16" style="display:block;image-rendering:pixelated"></div>
+                  <div style="display:flex;flex-direction:column;gap:2px;font-size:14px;line-height:1.4"><div style="font-weight:700">{{ s.b1 }}</div><div style="color:#A89FB8">{{ s.b2 }}</div></div>
+                </div>
+              </sc-if>
+              <sc-if value="{{ s.isReserved }}">
+                <div style="display:flex;flex-direction:column;gap:8px">
+                  <div style="height:56px;margin:4px;padding:0 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;background:#1E1A29;box-shadow:0 0 0 4px #2A2438">
+                    <div style="font-size:16px;font-weight:700">{{ t.someone }}</div>
+                    <div style="font-family:'Pixelify Sans',sans-serif;font-size:28px;font-weight:700;font-variant-numeric:tabular-nums">{{ countdown }}</div>
+                  </div>
+                  <div style="display:flex;gap:2px;margin:0 4px"><sc-for list="{{ segs }}" as="g" hint-placeholder-count="20"><div style="flex:1;height:4px;background:{{ g }}"></div></sc-for></div>
+                  <div style="font-size:12px;line-height:1.4;color:#A89FB8;margin:0 4px">{{ t.reservedNote }}</div>
+                </div>
+              </sc-if>
+              <sc-if value="{{ s.showBtn }}">
+                <button style="position:relative;height:56px;margin:4px;border:0;background:#F2C14E;color:#14111C;font-family:Manrope,sans-serif;font-size:18px;font-weight:700;cursor:pointer;box-shadow:0 -4px 0 #F7D57F,-4px 0 0 #F7D57F,0 4px 0 #C9962C,4px 0 0 #C9962C" style-hover="background:#F7D57F;box-shadow:0 -4px 0 #F3EDE2,-4px 0 0 #F3EDE2,0 4px 0 #C9962C,4px 0 0 #C9962C" style-active="background:#C9962C;padding-top:4px;box-shadow:0 -4px 0 #C9962C,-4px 0 0 #C9962C,0 4px 0 #F2C14E,4px 0 0 #F2C14E" style-focus="outline:2px solid #F3EDE2;outline-offset:6px" style-before="content:'';position:absolute;left:50%;top:50%;width:max(100%, 44px);height:max(100%, 44px);transform:translate(-50%, -50%)">{{ s.btn }}</button>
+              </sc-if>
+            </div>
+          </div>
+          <div style="position:absolute;top:664px;left:-12px;width:414px;height:0;border-top:2px dashed #A89FB8;pointer-events:none"></div>
+          <div style="position:absolute;top:656px;left:100%;margin-left:16px;font-size:12px;line-height:1.4;color:#A89FB8;white-space:nowrap">Primer pantallazo · 664</div>
+        </div>
+
+        <div style="width:1440px;flex:none;background:#14111C;overflow:hidden;box-shadow:0 0 0 1px #3D3550">
+          <div style="height:72px;padding:0 48px;display:flex;align-items:center;justify-content:space-between;gap:24px;background:#1E1A29;box-shadow:inset 0 -4px 0 #14111C">
+            <div style="display:flex;align-items:center;gap:24px">
+              <div style="font-family:'Pixelify Sans',sans-serif;font-size:28px;font-weight:700">Crown</div>
+              <div style="height:28px;padding:0 10px;display:flex;align-items:center;background:#14111C;font-size:14px;color:#A89FB8">{{ t.seasonLong }}</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:16px">
+              <div style="display:flex;gap:4px;padding:4px;background:#14111C">
+                <button onClick="{{ setEn }}" style="position:relative;height:32px;min-width:44px;border:0;cursor:pointer;font-family:Manrope,sans-serif;font-size:14px;font-weight:700;background:{{ seg.en.bg }};color:{{ seg.en.fg }};box-shadow:{{ seg.en.sh }}" style-focus="outline:2px solid #F3EDE2;outline-offset:2px" style-before="content:'';position:absolute;left:50%;top:50%;width:max(100%, 44px);height:max(100%, 44px);transform:translate(-50%, -50%)">EN</button>
+                <button onClick="{{ setEs }}" style="position:relative;height:32px;min-width:44px;border:0;cursor:pointer;font-family:Manrope,sans-serif;font-size:14px;font-weight:700;background:{{ seg.es.bg }};color:{{ seg.es.fg }};box-shadow:{{ seg.es.sh }}" style-focus="outline:2px solid #F3EDE2;outline-offset:2px" style-before="content:'';position:absolute;left:50%;top:50%;width:max(100%, 44px);height:max(100%, 44px);transform:translate(-50%, -50%)">ES</button>
+              </div>
+              <button style="position:relative;height:40px;padding:0 16px;margin:4px;border:0;background:#2A2438;color:#F3EDE2;font-family:Manrope,sans-serif;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 -4px 0 #3D3550,-4px 0 0 #3D3550,0 4px 0 #14111C,4px 0 0 #14111C" style-hover="background:#3D3550" style-focus="outline:2px solid #F3EDE2;outline-offset:6px" style-before="content:'';position:absolute;left:50%;top:50%;width:max(100%, 44px);height:max(100%, 44px);transform:translate(-50%, -50%)">{{ t.signin }}</button>
+            </div>
+          </div>
+          <img src="{{ s.sceneD }}" width="1440" height="504" style="display:block;image-rendering:pixelated;background:#0B0910">
+
+          <div style="padding:32px 72px 48px;display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:48px;align-items:end">
+            <div style="display:flex;flex-direction:column;gap:12px;min-width:0">
+              <sc-if value="{{ s.hasKing }}" hint-placeholder-val="{{ true }}">
+                <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+                  <div style="font-size:28px;font-weight:700;line-height:1.1">{{ s.king.name }}</div>
+                  <img src="{{ s.king.flag }}" width="24" height="16" style="display:block;image-rendering:pixelated;box-shadow:0 0 0 2px #1E1A29">
+                  <div style="height:28px;padding:0 10px;display:flex;align-items:center;gap:8px;border:1px solid #3D3550;border-radius:4px"><div style="width:10px;height:10px;background:{{ s.king.sw }}"></div><div style="font-family:'Pixelify Sans',sans-serif;font-size:14px;font-weight:500">{{ s.king.rank }}</div></div>
+                </div>
+                <div style="font-size:20px;font-weight:500;line-height:1.4;max-width:440px;text-wrap:pretty">“{{ s.king.msg }}”</div>
+                <div style="display:flex;align-items:center;gap:16px">
+                  <a href="#turn7" style="font-size:16px;font-weight:700;text-decoration-thickness:2px;text-underline-offset:5px" style-focus="outline:2px solid #F3EDE2;outline-offset:2px">{{ s.king.link }}</a>
+                  <button style="position:relative;height:32px;padding:0 8px;border:0;background:transparent;color:#A89FB8;font-family:Manrope,sans-serif;font-size:12px;font-weight:500;cursor:pointer" style-hover="color:#F3EDE2;background:#1E1A29" style-focus="outline:2px solid #F3EDE2" style-before="content:'';position:absolute;left:50%;top:50%;width:max(100%, 44px);height:max(100%, 44px);transform:translate(-50%, -50%)">{{ t.report }}</button>
+                </div>
+              </sc-if>
+              <sc-if value="{{ s.isEmpty }}">
+                <div style="font-size:40px;font-weight:700;line-height:1.1;max-width:460px">{{ t.empty1 }}</div>
+                <div style="font-size:20px;font-weight:500;line-height:1.4;color:#A89FB8">{{ t.empty2 }}</div>
+              </sc-if>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+              <div style="font-size:16px;color:#A89FB8">{{ s.clockLabel }}</div>
+              <div style="display:flex;align-items:baseline;gap:16px">
+                <sc-for list="{{ s.clock }}" as="c" hint-placeholder-count="3"><div style="display:flex;align-items:baseline;gap:2px"><div style="font-family:'Pixelify Sans',sans-serif;font-size:64px;font-weight:700;line-height:1;font-variant-numeric:tabular-nums;color:{{ s.clockColor }}">{{ c.v }}</div><div style="font-family:'Pixelify Sans',sans-serif;font-size:28px;font-weight:500;color:#A89FB8">{{ c.u }}</div></div></sc-for>
+              </div>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:16px">
+              <sc-if value="{{ s.isErr }}">
+                <div style="width:400px;box-sizing:border-box;display:flex;align-items:flex-start;gap:12px;padding:12px 16px;background:#1E1A29;box-shadow:inset 4px 0 0 #E5484D">
+                  <div style="width:24px;height:24px;flex:none;display:flex;align-items:center;justify-content:center;background:#E5484D"><img src="{{ s.bIcon }}" width="16" height="16" style="display:block;image-rendering:pixelated"></div>
+                  <div style="display:flex;flex-direction:column;gap:2px;font-size:14px;line-height:1.4"><div style="font-weight:700">{{ s.b1 }}</div><div style="color:#A89FB8">{{ s.b2 }}</div></div>
+                </div>
+              </sc-if>
+              <sc-if value="{{ s.showPrice }}" hint-placeholder-val="{{ true }}">
+                <div style="display:flex;align-items:center;gap:20px">
+                  <div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px">
+                    <div style="display:flex;align-items:center;gap:8px;font-size:14px;font-weight:500"><img src="{{ s.icon }}" width="14" height="14" style="display:block;image-rendering:pixelated">{{ s.note1 }}</div>
+                    <div style="font-size:12px;color:#A89FB8">{{ s.note2 }}</div>
+                  </div>
+                  <sc-if value="{{ s.isFloor }}"><div style="height:28px;padding:0 8px;display:flex;align-items:center;border:1px solid #F2C14E;border-radius:4px;font-family:'Pixelify Sans',sans-serif;font-size:14px;font-weight:500;color:#F2C14E;white-space:nowrap">{{ t.lowest }}</div></sc-if>
+                  <div style="font-family:'Pixelify Sans',sans-serif;font-size:40px;font-weight:700;line-height:1;color:#F2C14E">{{ s.price }}</div>
+                </div>
+              </sc-if>
+              <sc-if value="{{ s.isReserved }}">
+                <div style="width:400px;display:flex;flex-direction:column;gap:8px">
+                  <div style="height:56px;margin:4px;padding:0 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;background:#1E1A29;box-shadow:0 0 0 4px #2A2438">
+                    <div style="font-size:16px;font-weight:700">{{ t.someone }}</div>
+                    <div style="font-family:'Pixelify Sans',sans-serif;font-size:28px;font-weight:700;font-variant-numeric:tabular-nums">{{ countdown }}</div>
+                  </div>
+                  <div style="display:flex;gap:2px;margin:0 4px"><sc-for list="{{ segs }}" as="g" hint-placeholder-count="20"><div style="flex:1;height:4px;background:{{ g }}"></div></sc-for></div>
+                  <div style="font-size:12px;line-height:1.4;color:#A89FB8;margin:0 4px;text-align:right">{{ t.reservedNote }}</div>
+                </div>
+              </sc-if>
+              <sc-if value="{{ s.showBtn }}">
+                <button style="position:relative;height:56px;min-width:400px;padding:0 28px;margin:4px;border:0;background:#F2C14E;color:#14111C;font-family:Manrope,sans-serif;font-size:18px;font-weight:700;cursor:pointer;box-shadow:0 -4px 0 #F7D57F,-4px 0 0 #F7D57F,0 4px 0 #C9962C,4px 0 0 #C9962C" style-hover="background:#F7D57F;box-shadow:0 -4px 0 #F3EDE2,-4px 0 0 #F3EDE2,0 4px 0 #C9962C,4px 0 0 #C9962C" style-active="background:#C9962C;padding-top:4px;box-shadow:0 -4px 0 #C9962C,-4px 0 0 #C9962C,0 4px 0 #F2C14E,4px 0 0 #F2C14E" style-focus="outline:2px solid #F3EDE2;outline-offset:6px" style-before="content:'';position:absolute;left:50%;top:50%;width:max(100%, 44px);height:max(100%, 44px);transform:translate(-50%, -50%)">{{ s.btn }}</button>
+              </sc-if>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </sc-for>
+</section>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { lang: 'en', tick: 0, rs: 272, tr: 1, ready: !!(window.CrownAvatarLib && window.CrownSeasons) };
+
+  dict = {
+    en: { seasonLong: 'Season 0: Genesis · 34 days left', seasonShort: 'Season 0 · 34 days left', signin: 'Sign in', reigning: 'Reigning for', report: 'Report', floor: 'Floor price $5', someone: 'Someone is taking the crown…', reservedNote: "If they don't pay in time, the crown opens up again.", onHold: 'Price on hold', dropping: 'Dropping 2% every hour', empty1: 'The throne is empty', empty2: 'Be the first king of Season 0.', noKing: 'No one has reigned yet', opening: 'Opening price', rises: 'Goes up with every new king', lowest: 'Lowest price', floorHit: 'Floor price reached', noLower: "It won't go any lower", payErr1: "Your payment didn't go through.", payErr2: 'The crown is still available.', exp1: 'Your price lock expired.', exp2: 'The current price is $38.', take: p => `Take the crown for ${p}`, takeFirst: 'Take the empty throne for $5' },
+    es: { seasonLong: 'Temporada 0: Génesis · quedan 34 días', seasonShort: 'T0 · quedan 34 días', signin: 'Iniciar sesión', reigning: 'Reina desde hace', report: 'Reportar', floor: 'Precio mínimo $5', someone: 'Alguien está tomando la corona…', reservedNote: 'Si no paga a tiempo, la corona vuelve a estar disponible.', onHold: 'Precio en espera', dropping: 'Baja 2% cada hora', empty1: 'El trono está vacío', empty2: 'Sé el primer rey de la Temporada 0.', noKing: 'Nadie ha reinado todavía', opening: 'Precio de apertura', rises: 'Sube con cada nuevo rey', lowest: 'Precio más bajo', floorHit: 'Precio mínimo alcanzado', noLower: 'No bajará más', payErr1: 'Tu pago no se completó.', payErr2: 'La corona sigue disponible.', exp1: 'Tu reserva de precio expiró.', exp2: 'El precio actual es $38.', take: p => `Toma la corona por ${p}`, takeFirst: 'Ocupa el trono por $5' }
+  };
+
+  componentDidMount() {
+    if (!this.state.ready) this.poll = setInterval(() => { if (window.CrownAvatarLib && window.CrownSeasons) { clearInterval(this.poll); this.setState({ ready: true }); } }, 50);
+    this.iv = setInterval(() => this.setState(s => ({ tick: s.tick + 1, rs: s.rs <= 0 ? 299 : s.rs - 1 })), 1000);
+    const reduce = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+    if (!reduce) {
+      const seq = [2, 1, 0, 1, 2, 1, 0, 1];
+      let i = 0;
+      const step = () => {
+        if (i < seq.length) { this.setState({ tr: seq[i++] }); this.tt = setTimeout(step, 70); }
+        else { i = 0; this.setState({ tr: 1 }); this.tt = setTimeout(step, 1400); }
+      };
+      this.tt = setTimeout(step, 1400);
+    }
+  }
+  componentWillUnmount() { clearInterval(this.iv); clearInterval(this.poll); clearTimeout(this.tt); }
+
+  build() {
+    const lib = window.CrownAvatarLib();
+    const enc = (W, H, col) => {
+      const cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+      const cx = cv.getContext('2d'), img = cx.createImageData(W, H);
+      col.forEach((c, i) => { if (!c) return; const n = parseInt(c.slice(1), 16); img.data.set([n >> 16, (n >> 8) & 255, n & 255, 255], i * 4); });
+      cx.putImageData(img, 0, 0); return cv.toDataURL('image/png');
+    };
+    const rgb = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16));
+    const mix = (a, b, t) => { const p = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16)); const A = p(a), B = p(b); return '#' + A.map((v, i) => Math.round(v + (B[i] - v) * t).toString(16).padStart(2, '0')).join('').toUpperCase(); };
+    const R = {
+      gold: { o: '#5A3A12', s1: '#C9962C', b: '#F2C14E', h: '#F7D57F' },
+      silver: { o: '#3E4452', s1: '#8E96A4', b: '#C3C8D0', h: '#E4E8EE' },
+      crimson: { o: '#3A0A14', s1: '#6E1626', b: '#9A1F35', h: '#D24660' },
+      blue: { o: '#16284A', s1: '#3566B0', b: '#4A90E2', h: '#8CC0F2' }
+    };
+    const S = 44;
+    const frameCol = (id, av) => {
+      const P = R[id === 'duke' ? 'gold' : 'silver'], col = new Array(S * S).fill(null);
+      for (let y = 0; y < 32; y++) for (let x = 0; x < 32; x++) col[(y + 6) * S + x + 6] = av[y * 32 + x];
+      const rr = (x, y) => Math.min(x, y, S - 1 - x, S - 1 - y);
+      for (let y = 0; y < S; y++) for (let x = 0; x < S; x++) {
+        const r = rr(x, y); if (r > 5) continue;
+        const i = y * S + x;
+        if (r === 0 || r === 5) { col[i] = P.o; continue; }
+        const top = y === r, left = x === r, bot = S - 1 - y === r, right = S - 1 - x === r;
+        col[i] = (r === 1 && (bot || right)) || (r === 4 && (top || left)) ? P.s1 : P.b;
+      }
+      const put = (x, y, c) => { col[y * S + x] = c; };
+      const side = (t, r, c) => { put(t, r, c); put(t, S - 1 - r, c); put(r, t, c); put(S - 1 - r, t, c); };
+      const both = (t, r, c) => { side(t, r, c); side(S - 1 - t, r, c); };
+      const stamp = (pat, ox, oy, ramp) => pat.forEach((row, y) => row.forEach((tk, x) => { if (tk) put(ox + x, oy + y, (ramp || P)[tk]); }));
+      const at4 = (pat, ramp) => [[1, 1], [39, 1], [1, 39], [39, 39]].forEach(([x, y]) => stamp(pat, x, y, ramp));
+      const mid4 = (pat, ramp) => [[20, 1], [20, 39], [1, 20], [39, 20]].forEach(([x, y]) => stamp(pat, x, y, ramp));
+      const seam = (t, c) => { for (let r = 1; r <= 4; r++) both(t, r, c); };
+      const carve = (pat, t0) => pat.forEach((row, ri) => [...row].forEach((ch, ti) => { if (ch === '#') both(t0 + ti, ri + 1, P.o); }));
+      const gem = [['o', 'b', 'b', 'o'], ['b', 'h', 'b', 's1'], ['b', 'b', 's1', 's1'], ['o', 's1', 's1', 'o']];
+      const ring4 = ['.##.', '#..#', '#..#', '.##.'].map(r => [...r].map(c => (c === '#' ? 'o' : null)));
+      if (id === 'count') { for (let t = 1; t <= 42; t++) side(t, 2, P.s1); seam(5, P.o); at4([['b', 'b', 'b', 'b'], ['b', 'h', 'h', 'b'], ['b', 'h', 's1', 'b'], ['b', 'b', 'b', 'b']]); at4(gem, R.blue); seam(19, P.o); mid4(gem, R.blue); }
+      if (id === 'duke') { at4(ring4); carve(['......', '###..#', '...##.', '......'], 6); mid4(ring4); }
+      return col;
+    };
+
+    const W_ = '#F3EDE2', RED = '#D63A2F';
+    const FL = {
+      AR: (x, y) => (y === 3 || y === 4 ? ((x === 5 || x === 6) ? '#F2C94C' : W_) : '#74ACDF'),
+      JP: (x, y) => ((x - 5.5) ** 2 + (y - 3.5) ** 2 <= 5.2 ? RED : W_)
+    };
+    const flag = k => { const c = []; for (let y = 0; y < 8; y++) for (let x = 0; x < 12; x++) c.push(FL[k](x, y)); return enc(12, 8, c); };
+
+    const scene = (W, H, opt) => {
+      const N = W * H, col = new Array(N).fill(null), cx = W / 2;
+      const ST = { o: '#1F1C27', s1: '#2C2936', b: '#3A3645' };
+      const PL = { o: '#1F1C27', s1: '#3A3645', b: '#4E4A5A' };
+      const FLR = { o: '#17141E', b: '#262330' };
+      const CR = { o: '#3E0C18', s1: '#861B2F', b: '#B3263B' };
+      const GD = { o: '#5A3A12', s1: '#C9962C', b: '#F2C14E' };
+      const WD = { o: '#2A160C', s1: '#4E2E1A', b: '#6E4428' };
+      const wallB = H - 10;
+      const hash = (a, b) => { let h = (a * 374761393 + b * 668265263) >>> 0; h = Math.imul(h ^ (h >>> 13), 1274126177) >>> 0; return h ^ (h >>> 16); };
+      for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+        let c;
+        if (y < wallB - 2) {
+          const row = y >> 2, rx = x - cx + 1024 + (row % 2 ? 4 : 0), bx = rx % 8, bi = Math.floor(rx / 8);
+          if (y % 4 === 3 || bx === 7) c = ST.o; else c = hash(bi, row) % 6 === 0 ? ST.s1 : (y % 4 === 2 ? ST.s1 : ST.b);
+        } else if (y === wallB - 2) c = PL.b;
+        else if (y === wallB - 1) c = PL.s1;
+        else if (y === wallB) c = FLR.o;
+        else { const fy = y - wallB - 1, rx = x - cx + 1024 + (fy >= 4 ? 6 : 0); c = fy === 4 || rx % 12 === 11 ? FLR.o : FLR.b; }
+        col[y * W + x] = c;
+      }
+      const M = () => new Uint8Array(N);
+      const rect = (m, x0, y0, x1, y1) => { for (let y = Math.max(0, y0); y <= Math.min(H - 1, y1); y++) for (let x = Math.max(0, x0); x <= Math.min(W - 1, x1); x++) m[y * W + x] = 1; return m; };
+      const pat = (m, rows, ox, oy) => { rows.forEach((r, y) => [...r].forEach((ch, x) => { const X = ox + x, Y = oy + y; if (ch === '#' && X >= 0 && Y >= 0 && X < W && Y < H) m[Y * W + X] = 1; })); return m; };
+      const N4 = [[1, 0], [-1, 0], [0, 1], [0, -1]];
+      const draw = (m, P, d) => {
+        const inM = (x, y) => x >= 0 && y >= 0 && x < W && y < H && m[y * W + x] === 1;
+        if (!d) { const ol = []; for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) if (!m[y * W + x] && N4.some(([a, b]) => inM(x + a, y + b))) ol.push(y * W + x); ol.forEach(i => (col[i] = P.o)); }
+        for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+          if (!m[y * W + x]) continue;
+          if (d) { col[y * W + x] = P[d]; continue; }
+          const tl = !inM(x - 1, y) || !inM(x, y - 1), br = !inM(x + 1, y) || !inM(x, y + 1);
+          col[y * W + x] = br && !tl ? P.s1 : P.b;
+        }
+      };
+      [cx - 66, cx + 66, cx - 114, cx + 114].filter(p => p > -6 && p < W + 6).forEach(pc => {
+        const m = M(); rect(m, pc - 4, 3, pc + 3, wallB - 4); rect(m, pc - 6, 0, pc + 5, 2); rect(m, pc - 6, wallB - 3, pc + 5, wallB - 1); draw(m, PL);
+        const f = M(); rect(f, pc - 1, 5, pc - 1, wallB - 6); rect(f, pc + 2, 5, pc + 2, wallB - 6); draw(f, PL, 's1');
+      });
+      [cx - 42, cx + 42].concat(W >= 200 ? [cx - 90, cx + 90] : []).forEach(bc => {
+        const by = 4, m = M(); rect(m, bc - 5, by + 2, bc + 4, by + 33);
+        for (let k = 0; k < 4; k++) for (let x = bc - 5; x <= bc + 4; x++) if (Math.abs(x - (bc - 0.5)) < k + 1) m[(by + 30 + k) * W + x] = 0;
+        draw(m, CR);
+        draw(rect(M(), bc + 2, by + 13, bc + 2, by + 25), CR, 's1');
+        draw(rect(rect(M(), bc - 4, by + 5, bc + 3, by + 5), bc - 4, by + 27, bc + 3, by + 27), GD, 's1');
+        draw(pat(M(), ['#.##.#', '######', '######'], bc - 3, by + 10), GD);
+        draw(rect(M(), bc - 7, by, bc + 6, by + 1), GD);
+      });
+      draw(rect(M(), cx - 38, H - 4, cx + 37, H - 1), PL);
+      draw(rect(M(), cx - 10, H - 4, cx + 9, H - 1), CR);
+      const before = col.slice();
+      const x0 = cx - 32, y0 = H - 68;
+      const T = (a, b, c, d, m) => rect(m || M(), x0 + a, y0 + b, x0 + c, y0 + d);
+      draw(T(6, 4, 57, 51), WD);
+      draw(T(59, 44, 62, 59, T(1, 44, 4, 59)), WD);
+      draw(T(54, 38, 63, 43, T(0, 38, 9, 43)), WD);
+      draw(T(60, 36, 63, 39, T(0, 36, 3, 39)), GD);
+      draw(T(4, 52, 59, 56), CR);
+      draw(T(4, 57, 59, 59), WD); draw(T(6, 58, 57, 58), GD, 's1');
+      draw(T(54, 60, 59, 63, T(4, 60, 9, 63)), WD);
+      const fin = ['..##..', '.####.', '######', '######', '.####.', '..##..'];
+      draw(pat(pat(M(), fin, x0 + 4, y0), fin, x0 + 54, y0), GD);
+      const crest = T(14, 2, 49, 5); T(31, 0, 32, 1, crest); T(22, 0, 23, 1, crest); T(40, 0, 41, 1, crest); draw(crest, GD);
+      draw(T(31, 3, 32, 4), CR, 'b');
+      if (opt.frame) {
+        for (let fy = 0; fy < 44; fy++) for (let fx = 0; fx < 44; fx++) { const c = opt.frame[fy * 44 + fx]; if (c) col[(y0 + 6 + fy) * W + x0 + 10 + fx] = c; }
+      } else {
+        draw(T(11, 7, 52, 49), CR);
+        const tuft = M(); for (let ty = 13; ty <= 43; ty += 10) for (let tx = 17; tx <= 47; tx += 10) T(tx, ty, tx + 1, ty + 1, tuft);
+        draw(tuft, CR, 'o');
+        draw(T(14, 10, 14, 46), CR, 's1');
+        const crown = pat(M(), ['#......##......#', '##....####....##', '##...######...##', '###.########.###', '################', '################', '################'], x0 + 24, y0 + 45);
+        draw(crown, GD);
+        draw(T(31, 49, 32, 50), CR, 'b');
+      }
+      if (opt.spot) {
+        const dark = {}, PAL = [...new Set(col.filter(Boolean))], near = t => { const T = rgb(t); let best = PAL[0], bd = 1e9; PAL.forEach(p => { const Q = rgb(p), d = 0.3 * (Q[0] - T[0]) ** 2 + 0.59 * (Q[1] - T[1]) ** 2 + 0.11 * (Q[2] - T[2]) ** 2; if (d < bd) { bd = d; best = p; } }); return best; }, dk = c => dark[c] || (dark[c] = near(mix(c, '#0B0910', 0.62)));
+        for (let y = 0; y < H; y++) {
+          const hw = 8 + (y * 28) / H;
+          for (let x = 0; x < W; x++) {
+            const d = Math.abs(x + 0.5 - cx) - hw, i = y * W + x;
+            if (col[i] !== before[i]) continue;
+            if (d > 2 || (d > 0 && (x + y) % 2 === 0)) col[i] = dk(col[i]);
+          }
+        }
+      }
+      return enc(W, H, col);
+    };
+
+    const SEA = window.CrownSeasons.current();
+    const scene2 = SEA.scene ? (W, H, opt) => enc(W, H, SEA.scene(W, H, opt || {})) : scene;
+    const av = (name, crown) => { const c = lib.gen(name); if (!crown) c.cr = -1; return lib.avatar(c, 'A', null, true); };
+    const vC = av('valeruiz', true), vN = av('valeruiz', false);
+    const shift = dx => { const out = vN.slice(); for (let i = 0; i < 1024; i++) if (vC[i] !== vN[i]) { const x = i % 32, y = (i / 32) | 0, X = x + dx; if (X >= 0 && X < 32) out[y * 32 + X] = vC[i]; } return out; };
+    const vF = [-1, 0, 1].map(dx => frameCol('duke', shift(dx)));
+    const kF = frameCol('count', av('kenji', true));
+
+    const icon = (rows, color) => { const c = []; rows.forEach(r => [...r].forEach(ch => c.push(ch === '#' ? color : null))); return enc(rows[0].length, rows.length, c); };
+    return {
+      vM: vF.map(f => scene2(98, 72, { frame: f })), vD: vF.map(f => scene2(240, 84, { frame: f })),
+      kM: scene2(98, 72, { frame: kF }), kD: scene2(240, 84, { frame: kF }),
+      eM: scene2(98, 72, { spot: true }), eD: scene2(240, 84, { spot: true }),
+      flags: { AR: flag('AR'), JP: flag('JP') },
+      ic: {
+        pause: icon(['.......', '.##.##.', '.##.##.', '.##.##.', '.##.##.', '.##.##.', '.......'], '#F3EDE2'),
+        floor: icon(['..###..', '..###..', '#######', '.#####.', '..###..', '.......', '#######'], '#F2C14E'),
+        up: icon(['...#...', '..###..', '.#####.', '#######', '..###..', '..###..', '.......'], '#F3EDE2'),
+        bang: icon(['...##...', '...##...', '...##...', '...##...', '...##...', '........', '...##...', '...##...'], '#14111C'),
+        glass: icon(['########', '.#....#.', '..#..#..', '...##...', '...##...', '..#..#..', '.#....#.', '########'], '#14111C')
+      }
+    };
+  }
+
+  renderVals() {
+    const { lang, tick, rs, tr, ready } = this.state;
+    const SEU = ((window.CrownSeasons && window.CrownSeasons.current().ui) || {})[lang] || {};
+    const t = { ...this.dict[lang], ...(k => { const U = ((window.CrownSeasons && window.CrownSeasons.current().ui) || {})[k] || {}; return { seasonLong: U.seasonLong, seasonShort: U.seasonShort }; })(lang), ...(SEU.firstKing ? { empty2: SEU.firstKing } : {}) };
+    const b = on => (on ? { bg: '#2A2438', fg: '#F3EDE2', sh: 'inset 2px 2px 0 #3D3550, inset -2px -2px 0 #1E1A29' } : { bg: 'transparent', fg: '#A89FB8', sh: 'none' });
+    const base = { t, seg: { en: b(lang === 'en'), es: b(lang === 'es') }, setEn: () => this.setState({ lang: 'en' }), setEs: () => this.setState({ lang: 'es' }) };
+    if (ready && !this.art) this.art = this.build();
+    const A = this.art;
+    const p2 = n => String(n).padStart(2, '0');
+    const clk = s0 => { const s = s0 + tick; return [{ v: String(Math.floor(s / 3600)), u: 'h' }, { v: p2(Math.floor(s / 60) % 60), u: 'm' }, { v: p2(s % 60), u: 's' }]; };
+    const filled = Math.ceil(rs / 15);
+    const segs = Array.from({ length: 20 }, (_, i) => (i < filled ? '#A89FB8' : '#2A2438'));
+    const countdown = `${Math.floor(rs / 60)}:${p2(rs % 60)}`;
+    if (!A) return { ...base, states: [], segs, countdown };
+    const en = lang === 'en';
+    const V = { name: 'valeruiz', flag: A.flags.AR, rank: en ? 'Duke' : 'Duque', sw: '#F2C14E', msg: en ? 'Built a budget app for freelancers in Latam. Free for the first 1,000 users.' : 'Hice una app de presupuestos para freelancers en Latam. Gratis para los primeros 1.000.', link: 'pesito.app' };
+    const Kj = { name: 'kenji', flag: A.flags.JP, rank: en ? 'Count' : 'Conde', sw: '#C3C8D0', msg: en ? "Told you I'd be back. Tsumiki 2.0 ships Friday." : 'Dije que volvería. Tsumiki 2.0 sale el viernes.', link: 'tsumiki.dev' };
+    const common = { hasKing: true, isEmpty: false, showPrice: true, isFloor: false, isErr: false, isReserved: false, showBtn: true, clockLabel: t.reigning, clockColor: '#F3EDE2' };
+    const states = [
+      { ...common, id: '1', label: '01 Reserva ajena', title: 'Alguien está tomando la corona', desc: 'La reserva congela el precio durante 5:00. El botón se sustituye por el aviso con una cuenta regresiva y una barra de 20 tramos, cada uno de 15 s. La corona tiembla 1 píxel de escena a cada lado en ráfagas de medio segundo. Si el pago falla o la reserva vence, todo vuelve al estado normal.', king: V, clock: clk(5 * 3600 + 41 * 60 + 9), price: '$34', icon: A.ic.pause, note1: t.onHold, note2: t.floor, isReserved: true, showBtn: false, sceneM: A.vM[tr], sceneD: A.vD[tr] },
+      { ...common, id: '2', label: '02 Trono vacío', title: 'Trono vacío al inicio de temporada', desc: 'El salón queda a oscuras salvo por un foco sobre el trono, y la corona espera en el cojín. El titular ocupa el lugar del nombre; en escritorio el reloj se queda a cero. El foco es la misma escena oscurecida con un tramado de 1 píxel en el borde, sin degradados.', hasKing: false, isEmpty: true, king: V, clock: [{ v: '0', u: 'h' }, { v: '00', u: 'm' }, { v: '00', u: 's' }], clockLabel: t.noKing, clockColor: '#A89FB8', price: '$5', icon: A.ic.up, note1: t.opening, note2: t.rises, btn: t.takeFirst, sceneM: A.eM, sceneD: A.eD },
+      { ...common, id: '3', label: '03 Precio mínimo', title: 'Precio en el mínimo', desc: 'Tras unas 95 h sin conquistas, el precio toca el suelo. Junto al precio aparece una etiqueta dorada, porque es dato de la corona, y el indicador deja de bajar: la flecha choca con la línea. El botón muestra el precio más bajo posible.', king: V, clock: clk(95 * 3600 + 12 * 60 + 7), price: '$5', isFloor: true, icon: A.ic.floor, note1: t.floorHit, note2: t.noLower, btn: t.take('$5'), sceneM: A.vM[1], sceneD: A.vD[1] },
+      { ...common, id: '4', label: '04 Error de pago', title: 'Error de pago', desc: 'Al volver de un pago fallido, el aviso en rubí, con ícono y texto, ocupa el lugar del indicador de precio. El precio sigue visible en el botón, así que la acción no se mueve de su sitio. No se ha cobrado nada.', king: V, clock: clk(5 * 3600 + 44 * 60 + 51), showPrice: false, isErr: true, bIcon: A.ic.bang, b1: t.payErr1, b2: t.payErr2, btn: t.take('$34'), sceneM: A.vM[1], sceneD: A.vD[1] },
+      { ...common, id: '5', label: '05 Reserva expirada', title: 'Reserva expirada', desc: 'Tu reserva venció y, mientras tanto, kenji tomó la corona: cambia el rey, el reloj vuelve casi a cero y el precio sube a $38. El aviso lo explica en una línea y el botón ya muestra el precio nuevo.', king: Kj, clock: clk(2 * 60 + 14), showPrice: false, isErr: true, bIcon: A.ic.glass, b1: t.exp1, b2: t.exp2, btn: t.take('$38'), sceneM: A.kM, sceneD: A.kD }
+    ];
+    return { ...base, states, segs, countdown };
+  }
+}
+</script>
+</body>
+</html>

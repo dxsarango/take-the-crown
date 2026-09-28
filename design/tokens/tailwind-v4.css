@@ -1,0 +1,56 @@
+/* Crown · Tailwind v4. En app/globals.css:  @import "tailwindcss"; @import "../design/tokens/tokens.css"; @import "../design/tokens/tailwind-v4.css"; */
+@theme inline {
+  --color-crown-page: var(--crown-page);
+  --color-crown-ink: var(--crown-ink);
+  --color-crown-velvet: var(--crown-velvet);
+  --color-crown-hall: var(--crown-hall);
+  --color-crown-stone: var(--crown-stone);
+  --color-crown-stone-hi: var(--crown-stone-hi);
+  --color-crown-abyss: var(--crown-abyss);
+  --color-crown-text: var(--crown-text);
+  --color-crown-muted: var(--crown-text-muted);
+  --color-crown-parchment-shade: var(--crown-parchment-shade);
+  --color-crown-parchment-hi: var(--crown-parchment-hi);
+  --color-crown-gold: var(--crown-gold);
+  --color-crown-gold-old: var(--crown-gold-old);
+  --color-crown-gold-glow: var(--crown-gold-glow);
+  --color-crown-success: var(--crown-success);
+  --color-crown-danger: var(--crown-danger);
+  --color-crown-season: var(--crown-season);
+  --color-rarity-common: var(--crown-rarity-common);
+  --color-rarity-rare: var(--crown-rarity-rare);
+  --color-rarity-epic: var(--crown-rarity-epic);
+  --color-rarity-legendary: var(--crown-rarity-legendary);
+  --color-rarity-seasonal: var(--crown-season);
+
+  --font-ui: var(--crown-font-ui);
+  --font-pixel: var(--crown-font-pixel);
+  --text-12: 12px; --text-14: 14px; --text-16: 16px; --text-18: 18px; --text-20: 20px;
+  --text-24: 24px; --text-28: 28px; --text-40: 40px; --text-64: 64px;
+  --leading-tight: 1.1; --leading-snug: 1.4; --leading-body: 1.5;
+  --tracking-display: -0.02em;
+
+  --spacing: 4px; /* p-1 = 4px, p-1.5 = 6px, p-3.5 = 14px… */
+  --radius-tag: 4px;
+
+  --shadow-relief: var(--crown-relief);
+  --shadow-relief-card: var(--crown-relief-card);
+  --shadow-relief-pressed: var(--crown-relief-pressed);
+  --shadow-relief-selected: var(--crown-relief-selected);
+  --shadow-relief-gold: var(--crown-relief-gold);
+  --shadow-relief-gold-hover: var(--crown-relief-gold-hover);
+  --shadow-relief-gold-pressed: var(--crown-relief-gold-pressed);
+  --shadow-relief-parchment: var(--crown-relief-parchment);
+  --shadow-relief-parchment-pressed: var(--crown-relief-parchment-pressed);
+  --shadow-inset-field: var(--crown-inset-field);
+  --shadow-inset-field-error: var(--crown-inset-field-error);
+  --shadow-inset-segment-on: var(--crown-inset-segment-on);
+  --shadow-bar-bottom: var(--crown-bar-bottom);
+  --shadow-clock-cell: var(--crown-clock-cell);
+  --shadow-ring-1: var(--crown-ring-1);
+  --shadow-ring-2: var(--crown-ring-2);
+  --shadow-modal: var(--crown-modal);
+  --shadow-toast: var(--crown-toast);
+  --shadow-flag-danger: var(--crown-flag-danger);
+  --shadow-flag-success: var(--crown-flag-success);
+}

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700&family=Pixelify+Sans:wght@500;700&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0E0C14;-webkit-font-smoothing:antialiased}
+a{color:#F3EDE2;text-decoration-color:#3D3550}a:hover{color:#F3EDE2;text-decoration-color:#F3EDE2}
+</style>
+</helmet>
+<div style="padding:48px;display:flex;flex-direction:column;gap:40px;font-family:Manrope,sans-serif;color:#F3EDE2;max-width:1400px">
+  <div style="display:flex;flex-direction:column;gap:8px">
+    <div style="font-family:'Pixelify Sans',sans-serif;font-size:28px;font-weight:700">Crown · assets</div>
+    <div style="font-size:16px;line-height:1.5;color:#A89FB8;max-width:760px;text-wrap:pretty">Contacto de todos los SVG de design/assets, a escala entera. Los íconos son monocromos (currentColor) y aquí se ven en negro sobre Pergamino.</div>
+  </div>
+  <sc-for list="{{ groups }}" as="g" hint-placeholder-count="6">
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <div style="display:flex;align-items:baseline;gap:12px"><div style="font-size:20px;font-weight:700">{{ g.name }}</div><div style="font-size:14px;color:#A89FB8">{{ g.note }}</div></div>
+      <div style="display:flex;flex-wrap:wrap;gap:20px;align-items:flex-end">
+        <sc-for list="{{ g.items }}" as="it" hint-placeholder-count="6">
+          <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-start">
+            <div style="padding:8px;background:{{ it.bg }};display:flex"><img src="{{ it.src }}" alt="{{ it.file }}" style="display:block;height:{{ it.h }}px;image-rendering:pixelated"></div>
+            <div style="font-size:12px;color:#A89FB8">{{ it.file }}</div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </sc-for>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  G = {"avatar/background":["t0-slate.svg","t0-moss.svg","t0-lavender.svg","t0-verdigris.svg","t0-sandstone.svg","t1-night.svg","t1-jade.svg","t1-plum.svg","t1-indigo.svg","t1-terracotta.svg"],"avatar/hair-back":["afro.svg","long-straight.svg","long-wavy.svg"],"avatar/cape":["mantle.svg","high-collar.svg","v-stole.svg","brooch.svg","sash.svg"],"avatar/skin":["porcelain.svg","sand.svg","honey.svg","cinnamon.svg","cocoa.svg","ebony.svg"],"avatar/expression":["serious.svg","smiling.svg","smug.svg","surprised.svg","cheeky.svg","furious.svg"],"avatar/facial-hair":["mustache.svg","goatee.svg","short-beard.svg","long-beard.svg"],"avatar/hair-front":["short.svg","bald.svg","long-straight.svg","afro.svg","braids.svg","pageboy.svg","messy.svg","side-part.svg","short-curls.svg","long-wavy.svg"],"avatar/accessory":["monocle.svg","scar.svg","earring.svg","eyepatch.svg","glasses.svg","feather.svg"],"avatar/samples":["t0-valeruiz.svg","t0-nadia.builds.svg","t0-priya_ships.svg","t0-maru.jpg.svg","t0-lucas.fm.svg","t0-kenji.svg","t0-ana.codes.svg","t0-mbali.svg","t1-valeruiz.svg","t1-nadia.builds.svg","t1-priya_ships.svg","t1-maru.jpg.svg","t1-lucas.fm.svg","t1-kenji.svg","t1-ana.codes.svg","t1-mbali.svg","t0-valeruiz-nocrown.svg","t1-valeruiz-nocrown.svg"],"crowns":["avatar-t0-spikes.svg","avatar-t0-diadem.svg","avatar-t0-crenellated.svg","avatar-t1-sugar-skull.svg","sprite-t0.svg","sprite-t0-locked.svg","sprite-t1-sugar-skull.svg","sprite-t1-sugar-skull-locked.svg","icon-16.svg"],"frames":["rank-peasant.svg","rank-knight.svg","rank-baron.svg","rank-count.svg","rank-duke.svg","rank-emperor.svg","season-t0-genesis.svg","season-t0-genesis-locked.svg","season-t1-marigold.svg","season-t1-marigold-locked.svg"],"medals":["oneMin-on.svg","owl-on.svg","bag-on.svg","regicide-on.svg","revenge-on.svg","g1-on.svg","patriot-on.svg","firstBlood-on.svg","g2-on.svg","collector-on.svg","rivalry-on.svg","g3-on.svg","founder-on.svg","remembered-on.svg","oneMin-off.svg","owl-off.svg","bag-off.svg","regicide-off.svg","revenge-off.svg","g1-off.svg","patriot-off.svg","firstBlood-off.svg","g2-off.svg","collector-off.svg","rivalry-off.svg","g3-off.svg","founder-off.svg","remembered-off.svg"],"thrones":["t0.svg","t0-seat.svg","t1.svg","t1-seat.svg"],"scenes/t0":["98x72-seat.svg","98x72-empty.svg","98x72-empty-spot.svg","98x72-bare.svg","240x84-seat.svg","240x84-empty.svg","240x84-empty-spot.svg","240x84-bare.svg","100x90-seat.svg","100x90-empty.svg","100x90-empty-spot.svg","120x84-seat.svg","120x84-empty.svg","120x84-empty-spot.svg"],"scenes/t1":["98x72-seat.svg","98x72-empty.svg","98x72-empty-spot.svg","98x72-bare.svg","240x84-seat.svg","240x84-empty.svg","240x84-empty-spot.svg","240x84-bare.svg","100x90-seat.svg","100x90-empty.svg","100x90-empty-spot.svg","120x84-seat.svg","120x84-empty.svg","120x84-empty-spot.svg"],"scenes/t2-provisional":["98x72-empty.svg","240x84-empty.svg"],"flags":["US.svg","MX.svg","ES.svg","AR.svg","CO.svg","EC.svg","CL.svg","PE.svg","BR.svg","CA.svg","GB.svg","DE.svg","FR.svg","IT.svg","IN.svg","JP.svg","KR.svg","CN.svg","AU.svg","NL.svg"],"flags/pill":["PT.svg","DK.svg","ZA.svg","NG.svg","SE.svg","KE.svg"],"seal":["seal-t0.svg","seal-t1.svg","stone-band-t0.svg","stone-band-t1.svg"],"icons":["bang.svg","check.svg","chev.svg","close.svg","floor.svg","glass.svg","pause.svg","up.svg"],"icons/social":["x.svg","instagram.svg","github.svg","linkedin.svg","youtube.svg"]};
+  H = { 'avatar': [32, 3], crowns: [null, 3], frames: [44, 3], medals: [24, 3], thrones: [74, 3], 'scenes': [null, 2], flags: [8, 4], seal: [null, 4], icons: [null, 4] };
+  NOTE = { 'avatar/samples': 'test de regresión de avatar-lib', 'scenes/t2-provisional': 'provisional', 'icons/social': 'verificar con kits de marca' };
+  renderVals() {
+    const groups = Object.entries(this.G).map(([name, files]) => {
+      const root = name.split('/')[0], [bh, sc] = this.H[root] || [24, 3];
+      return {
+        name, note: this.NOTE[name] || '',
+        items: files.map(file => {
+          const m = file.match(/(\d+)x(\d+)/);
+          let h = bh || 24;
+          if (m) h = +m[2];
+          if (!bh && root === 'crowns') h = /sprite-t0/.test(file) ? 11 : /sprite-t1/.test(file) ? 10 : /icon-16/.test(file) ? 16 : 32;
+          if (!bh && root === 'seal') h = /band/.test(file) ? 12 : 20;
+          if (!bh && root === 'icons') h = name === 'icons/social' ? 24 : 8;
+          const isIcon = root === 'icons';
+          return { file, src: '../assets/' + name + '/' + file, h: h * (name === 'icons/social' ? 2 : sc), bg: isIcon ? '#F3EDE2' : '#1E1A29' };
+        })
+      };
+    });
+    return { groups };
+  }
+}
+</script>
+</body>
+</html>

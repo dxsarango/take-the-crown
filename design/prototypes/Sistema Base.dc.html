@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700&family=Pixelify+Sans:wght@500;700&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0E0C14;-webkit-font-smoothing:antialiased}
+a{color:#F3EDE2;text-decoration-color:#3D3550}a:hover{color:#F3EDE2;text-decoration-color:#F3EDE2}
+input::placeholder{color:#A89FB8}
+</style>
+</helmet>
+<section id="turn2" style="padding:72px;display:flex;flex-direction:column;gap:40px;font-family:Manrope,sans-serif;color:#F3EDE2">
+  <div style="display:flex;flex-direction:column;gap:8px;max-width:1200px">
+    <div style="font-size:28px;font-weight:700">Paso 1 · Sistema base</div>
+    <div style="font-size:16px;line-height:1.5;color:#A89FB8;text-wrap:pretty">Opción elegida: 2b. Rejilla de 4 px, esquinas escalonadas, relieve con luz arriba a la izquierda.</div>
+  </div>
+
+  <div style="display:flex;flex-wrap:wrap;gap:80px;align-items:flex-start">
+
+    <!-- ============ 2a ============ -->
+    
+
+    <!-- ============ 2b ============ -->
+    <div id="2b" style="display:flex;flex-direction:column;gap:16px">
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="font-size:14px;font-weight:700;background:#F3EDE2;color:#14111C;padding:4px 10px;border-radius:4px">2b</div>
+        <div style="font-size:16px;color:#A89FB8">Más arriesgada: rejilla de 4 px, esquinas escalonadas, relieve con luz arriba a la izquierda</div>
+      </div>
+      <div data-screen-label="2b Sistema base" style="width:1200px;background:#14111C;box-shadow:0 0 0 4px #1E1A29;box-sizing:border-box">
+
+        <div style="height:72px;padding:0 48px;display:flex;align-items:center;justify-content:space-between;gap:24px;background:#1E1A29;box-shadow:inset 0 -4px 0 #14111C">
+          <div style="display:flex;align-items:center;gap:24px">
+            <div style="font-family:'Pixelify Sans',sans-serif;font-weight:700;font-size:28px">Crown</div>
+            <div style="height:28px;padding:0 10px;display:flex;align-items:center;background:#14111C;font-size:14px;color:#A89FB8">{{ t.season }}</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:16px">
+            <div style="display:flex;gap:4px;padding:4px;background:#14111C">
+              <button onClick="{{ setEn }}" style-before="content:'';position:absolute;left:50%;top:50%;width:max(100%, 44px);height:max(100%, 44px);transform:translate(-50%, -50%)" style="position:relative;height:32px;min-width:44px;border:0;cursor:pointer;font-family:Manrope,sans-serif;font-size:14px;font-weight:700;background:{{ segB.en.bg }};color:{{ segB.en.fg }};box-shadow:{{ segB.en.sh }}" style-focus="outline:2px solid #F3EDE2;outline-offset:2px">EN</button>
+              <button onClick="{{ setEs }}" style-before="content:'';position:absolute;left:50%;top:50%;width:max(100%, 44px);height:max(100%, 44px);transform:translate(-50%, -50%)" style="position:relative;height:32px;min-width:44px;border:0;cursor:pointer;font-family:Manrope,sans-serif;font-size:14px;font-weight:700;background:{{ segB.es.bg }};color:{{ segB.es.fg }};box-shadow:{{ segB.es.sh }}" style-focus="outline:2px solid #F3EDE2;outline-offset:2px">ES</button>
+            </div>
+            <button style="height:40px;padding:0 16px;margin:4px;border:0;background:#2A2438;color:#F3EDE2;font-family:Manrope,sans-serif;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 -4px 0 #3D3550,-4px 0 0 #3D3550,0 4px 0 #14111C,4px 0 0 #14111C" style-hover="background:#3D3550" style-active="background:#14111C;box-shadow:0 -4px 0 #14111C,-4px 0 0 #14111C,0 4px 0 #3D3550,4px 0 0 #3D3550" style-focus="outline:2px solid #F3EDE2;outline-offset:6px">{{ t.signin }}</button>
+          </div>
+        </div>
+
+        <div style="padding:64px 48px;display:grid;grid-template-columns:minmax(0,1fr) 400px;gap:48px;align-items:end;box-shadow:inset 0 -4px 0 #1E1A29">
+          <div style="display:flex;flex-direction:column;gap:16px">
+            <div style="font-size:16px;color:#A89FB8">{{ t.reigning }}</div>
+            <div style="display:flex;gap:4px">
+              <sc-for list="{{ clockCells }}" as="c" hint-placeholder-count="8">
+                <div style="width:{{ c.w }};height:112px;display:flex;align-items:center;justify-content:center;background:{{ c.bg }};box-shadow:{{ c.sh }};font-family:'Pixelify Sans',sans-serif;font-size:80px;font-weight:700;line-height:1;color:{{ c.color }}">{{ c.ch }}</div>
+              </sc-for>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:20px">
+            <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:16px">
+              <div style="font-family:'Pixelify Sans',sans-serif;font-size:64px;font-weight:700;line-height:1;color:#F2C14E">$34</div>
+              <div style="display:flex;flex-direction:column;align-items:flex-end;gap:2px"><div style="font-size:14px;font-weight:500">↓ {{ t.dropping }}</div><div style="font-size:12px;color:#A89FB8">{{ t.min }}</div></div>
+            </div>
+            <button style="height:64px;margin:4px;border:0;background:#F2C14E;color:#14111C;font-family:Manrope,sans-serif;font-size:18px;font-weight:700;cursor:pointer;box-shadow:0 -4px 0 #F7D57F,-4px 0 0 #F7D57F,0 4px 0 #C9962C,4px 0 0 #C9962C" style-hover="background:#F7D57F;box-shadow:0 -4px 0 #F3EDE2,-4px 0 0 #F3EDE2,0 4px 0 #C9962C,4px 0 0 #C9962C" style-active="background:#C9962C;box-shadow:0 -4px 0 #C9962C,-4px 0 0 #C9962C,0 4px 0 #F2C14E,4px 0 0 #F2C14E" style-focus="outline:2px solid #F3EDE2;outline-offset:6px">{{ t.take }}</button>
+          </div>
+        </div>
+
+        <div style="padding:64px 48px;display:flex;flex-direction:column;gap:80px">
+
+          <!-- Paleta -->
+          <div style="display:flex;flex-direction:column;gap:24px">
+            <div style="display:flex;align-items:baseline;gap:20px"><div style="font-family:'Pixelify Sans',sans-serif;font-size:14px;font-weight:500;color:#A89FB8">01</div><div style="font-size:40px;font-weight:700;line-height:1.1">Paleta núcleo</div></div>
+            <div style="display:flex;height:180px">
+              <div style="flex:40;background:#14111C;box-shadow:inset 0 0 0 4px #1E1A29;padding:16px;display:flex;flex-direction:column;justify-content:flex-end;gap:2px"><div style="font-size:14px;font-weight:700">Tinta real</div><div style="font-size:12px;color:#A89FB8">#14111C · fondo</div></div>
+              <div style="flex:20;background:#1E1A29;padding:16px;display:flex;flex-direction:column;justify-content:flex-end;gap:2px"><div style="font-size:14px;font-weight:700">Terciopelo</div><div style="font-size:12px;color:#A89FB8">#1E1A29</div></div>
+              <div style="flex:12;background:#2A2438;padding:16px;display:flex;flex-direction:column;justify-content:flex-end;gap:2px"><div style="font-size:14px;font-weight:700">Salón</div><div style="font-size:12px;color:#A89FB8">#2A2438</div></div>
+              <div style="flex:8;background:#3D3550;padding:12px;display:flex;flex-direction:column;justify-content:flex-end;gap:2px"><div style="font-size:14px;font-weight:700">Piedra</div><div style="font-size:12px;color:#F3EDE2">#3D3550</div></div>
+              <div style="flex:8;background:#F3EDE2;color:#14111C;padding:12px;display:flex;flex-direction:column;justify-content:flex-end;gap:2px"><div style="font-size:14px;font-weight:700">Pergamino</div><div style="font-size:12px">#F3EDE2</div></div>
+              <div style="flex:6;background:#A89FB8;color:#14111C;padding:12px;display:flex;flex-direction:column;justify-content:flex-end;gap:2px"><div style="font-size:14px;font-weight:700">Niebla</div><div style="font-size:12px">#A89FB8</div></div>
+              <div style="flex:4;background:#F2C14E"></div>
+              <div style="flex:1;background:#C9962C"></div>
+              <div style="flex:0.5;background:#3DD68C"></div>
+              <div style="flex:0.5;background:#E5484D"></div>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px">
+              <div style="display:flex;flex-direction:column;gap:6px"><div style="display:flex;align-items:center;gap:8px;font-size:14px;font-weight:700"><div style="width:12px;height:12px;background:#F2C14E"></div>Oro corona #F2C14E</div><div style="font-size:12px;line-height:1.5;color:#A89FB8">Menos del 4% de la pantalla. Solo corona, precio, rey actual, legendario.</div></div>
+              <div style="display:flex;flex-direction:column;gap:6px"><div style="display:flex;align-items:center;gap:8px;font-size:14px;font-weight:700"><div style="width:12px;height:12px;background:#C9962C"></div>Oro viejo #C9962C</div><div style="font-size:12px;line-height:1.5;color:#A89FB8">Sombra del relieve y pulsado. Brillo derivado: #F7D57F.</div></div>
+              <div style="display:flex;flex-direction:column;gap:6px"><div style="display:flex;align-items:center;gap:8px;font-size:14px;font-weight:700"><div style="width:12px;height:12px;background:#3DD68C"></div>Esmeralda #3DD68C</div><div style="font-size:12px;line-height:1.5;color:#A89FB8">Éxito: pago confirmado, logro guardado.</div></div>
+              <div style="display:flex;flex-direction:column;gap:6px"><div style="display:flex;align-items:center;gap:8px;font-size:14px;font-weight:700"><div style="width:12px;height:12px;background:#E5484D"></div>Rubí #E5484D</div><div style="font-size:12px;line-height:1.5;color:#A89FB8">Solo estados, siempre con ícono y texto. El carmesí vive en la escena T0.</div></div>
+            </div>
+            <div style="display:flex;gap:4px">
+              <div style="flex:1;height:48px;display:flex;align-items:center;gap:12px;padding:0 16px;background:#1E1A29"><div style="width:16px;height:16px;background:#9AA3AE;box-shadow:inset -4px -4px 0 rgba(20,17,28,.35)"></div><div style="font-family:'Pixelify Sans',sans-serif;font-size:14px;font-weight:500">{{ t.r1 }}</div><div style="font-size:12px;color:#A89FB8;margin-left:auto">#9AA3AE</div></div>
+              <div style="flex:1;height:48px;display:flex;align-items:center;gap:12px;padding:0 16px;background:#1E1A29"><div style="width:16px;height:16px;background:#4A90E2;box-shadow:inset -4px -4px 0 rgba(20,17,28,.35)"></div><div style="font-family:'Pixelify Sans',sans-serif;font-size:14px;font-weight:500">{{ t.r2 }}</div><div style="font-size:12px;color:#A89FB8;margin-left:auto">#4A90E2</div></div>
+              <div style="flex:1;height:48px;display:flex;align-items:center;gap:12px;padding:0 16px;background:#1E1A29"><div style="width:16px;height:16px;background:#9B5DE5;box-shadow:inset -4px -4px 0 rgba(20,17,28,.35)"></div><div style="font-family:'Pixelify Sans',sans-serif;font-size:14px;font-weight:500">{{ t.r3 }}</div><div style="font-size:12px;color:#A89FB8;margin-left:auto">#9B5DE5</div></div>
+              <div style="flex:1;height:48px;display:flex;align-items:center;gap:12px;padding:0 16px;background:#1E1A29"><div style="width:16px;height:16px;background:#F2C14E;box-shadow:inset -4px -4px 0 rgba(20,17,28,.35)"></div><div style="font-family:'Pixelify Sans',sans-serif;font-size:14px;font-weight:500">{{ t.r4 }}</div><div style="font-size:12px;color:#A89FB8;margin-left:auto">#F2C14E</div></div>
+              <div style="flex:1;height:48px;display:flex;align-items:center;gap:12px;padding:0 16px;background:#1E1A29"><div style="width:16px;height:16px;box-sizing:border-box;border:4px solid #A89FB8"></div><div style="font-family:'Pixelify Sans',sans-serif;font-size:14px;font-weight:500">{{ t.r5 }}</div><div style="font-size:12px;color:#A89FB8;margin-left:auto">Token</div></div>
+            </div>
+          </div>
+
+          <!-- Tipografía -->
+          <div style="display:flex;flex-direction:column;gap:32px">
+            <div style="display:flex;align-items:baseline;gap:20px"><div style="font-family:'Pixelify Sans',sans-serif;font-size:14px;font-weight:500;color:#A89FB8">02</div><div style="font-size:40px;font-weight:700;line-height:1.1">Tipografía</div></div>
+            <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:48px">
+              <div style="display:flex;flex-direction:column;gap:16px">
+                <div style="font-size:12px;color:#A89FB8">Manrope 400 · 500 · 700 · toda la interfaz</div>
+                <div style="font-size:64px;font-weight:700;line-height:1;letter-spacing:-0.02em;text-wrap:balance">{{ t.empty }}</div>
+                <div style="font-size:20px;font-weight:500;line-height:1.4;color:#A89FB8;max-width:460px;text-wrap:pretty">{{ t.final }}</div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:16px">
+                <div style="font-size:12px;color:#A89FB8">Pixelify Sans 500 · 700 · marca, reloj, precio, etiquetas</div>
+                <div style="font-family:'Pixelify Sans',sans-serif;font-size:64px;font-weight:700;line-height:1">Crown</div>
+                <div style="display:flex;gap:8px;flex-wrap:wrap">
+                  <div style="height:28px;padding:0 10px;display:flex;align-items:center;background:#2A2438;font-family:'Pixelify Sans',sans-serif;font-size:14px;font-weight:500">{{ t.k4 }}</div>
+                  <div style="height:28px;padding:0 10px;display:flex;align-items:center;background:#F2C14E;color:#14111C;font-family:'Pixelify Sans',sans-serif;font-size:14px;font-weight:500">{{ t.r4 }}</div>
+                  <div style="height:28px;padding:0 10px;display:flex;align-items:center;background:#1E1A29;color:#A89FB8;font-family:'Pixelify Sans',sans-serif;font-size:12px;font-weight:500">{{ t.pct }}</div>
+                </div>
+              </div>
+            </div>
+            <div style="display:flex;align-items:flex-end;padding:24px 0 16px;box-shadow:inset 0 -4px 0 #1E1A29">
+              <div style="flex:64;display:flex;flex-direction:column;gap:12px"><div style="font-family:'Pixelify Sans',sans-serif;font-size:64px;font-weight:700;line-height:1">Aa</div><div style="font-size:12px;color:#A89FB8">64 reloj</div></div>
+              <div style="flex:40;display:flex;flex-direction:column;gap:12px"><div style="font-family:'Pixelify Sans',sans-serif;font-size:40px;font-weight:700;line-height:1;color:#F2C14E">Aa</div><div style="font-size:12px;color:#A89FB8">40 precio</div></div>
+              <div style="flex:40;display:flex;flex-direction:column;gap:12px"><div style="font-size:40px;font-weight:700;line-height:1">Aa</div><div style="font-size:12px;color:#A89FB8">40 página</div></div>
+              <div style="flex:28;display:flex;flex-direction:column;gap:12px"><div style="font-size:28px;font-weight:700;line-height:1">Aa</div><div style="font-size:12px;color:#A89FB8">28 sección</div></div>
+              <div style="flex:20;display:flex;flex-direction:column;gap:12px"><div style="font-size:20px;font-weight:500;line-height:1">Aa</div><div style="font-size:12px;color:#A89FB8">20</div></div>
+              <div style="flex:16;display:flex;flex-direction:column;gap:12px"><div style="font-size:16px;line-height:1">Aa</div><div style="font-size:12px;color:#A89FB8">16</div></div>
+              <div style="flex:14;display:flex;flex-direction:column;gap:12px"><div style="font-size:14px;line-height:1">Aa</div><div style="font-size:12px;color:#A89FB8">14</div></div>
+              <div style="flex:12;display:flex;flex-direction:column;gap:12px"><div style="font-size:12px;line-height:1">Aa</div><div style="font-size:12px;color:#A89FB8">12</div></div>
+            </div>
+          </div>
+
+          <!-- Botones -->
+          <div style="display:flex;flex-direction:column;gap:32px">
+            <div style="display:flex;align-items:baseline;gap:20px"><div style="font-family:'Pixelify Sans',sans-serif;font-size:14px;font-weight:500;color:#A89FB8">03</div><div style="font-size:40px;font-weight:700;line-height:1.1">Botones</div></div>
+            <div style="display:grid;grid-template-columns:96px repeat(3,minmax(0,1fr));gap:24px 20px;align-items:center">
+              <div></div><div style="font-size:12px;color:#A89FB8">Principal</div><div style="font-size:12px;color:#A89FB8">Secundario</div><div style="font-size:12px;color:#A89FB8">Fantasma</div>
+
+              <div style="font-size:12px;color:#A89FB8">Normal</div>
+              <div style="height:56px;margin:4px;display:flex;align-items:center;justify-content:center;background:#F2C14E;color:#14111C;font-size:16px;font-weight:700;box-shadow:0 -4px 0 #F7D57F,-4px 0 0 #F7D57F,0 4px 0 #C9962C,4px 0 0 #C9962C">{{ t.takeShort }}</div>
+              <div style="height:56px;margin:4px;display:flex;align-items:center;justify-content:center;background:#2A2438;font-size:16px;font-weight:700;box-shadow:0 -4px 0 #3D3550,-4px 0 0 #3D3550,0 4px 0 #1E1A29,4px 0 0 #1E1A29">{{ t.share }}</div>
+              <div style="height:56px;margin:4px;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:6px;text-decoration-color:#3D3550">{{ t.history }}</div>
+
+              <div style="font-size:12px;color:#A89FB8">Hover</div>
+              <div style="height:56px;margin:4px;display:flex;align-items:center;justify-content:center;background:#F7D57F;color:#14111C;font-size:16px;font-weight:700;box-shadow:0 -4px 0 #F3EDE2,-4px 0 0 #F3EDE2,0 4px 0 #C9962C,4px 0 0 #C9962C">{{ t.takeShort }}</div>
+              <div style="height:56px;margin:4px;display:flex;align-items:center;justify-content:center;background:#3D3550;font-size:16px;font-weight:700;box-shadow:0 -4px 0 #3D3550,-4px 0 0 #3D3550,0 4px 0 #1E1A29,4px 0 0 #1E1A29">{{ t.share }}</div>
+              <div style="height:56px;margin:4px;display:flex;align-items:center;justify-content:center;background:#1E1A29;font-size:16px;font-weight:700;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:6px;text-decoration-color:#F3EDE2;box-shadow:0 -4px 0 #1E1A29,-4px 0 0 #1E1A29,0 4px 0 #1E1A29,4px 0 0 #1E1A29">{{ t.history }}</div>
+
+              <div style="font-size:12px;color:#A89FB8">Pulsado</div>
+              <div style="height:56px;margin:4px;display:flex;align-items:center;justify-content:center;background:#C9962C;color:#14111C;font-size:16px;font-weight:700;padding-top:4px;box-sizing:border-box;box-shadow:0 -4px 0 #C9962C,-4px 0 0 #C9962C,0 4px 0 #F2C14E,4px 0 0 #F2C14E">{{ t.takeShort }}</div>
+              <div style="height:56px;margin:4px;display:flex;align-items:center;justify-content:center;background:#1E1A29;font-size:16px;font-weight:700;padding-top:4px;box-sizing:border-box;box-shadow:0 -4px 0 #14111C,-4px 0 0 #14111C,0 4px 0 #3D3550,4px 0 0 #3D3550">{{ t.share }}</div>
+              <div style="height:56px;margin:4px;display:flex;align-items:center;justify-content:center;background:#2A2438;font-size:16px;font-weight:700;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:6px;text-decoration-color:#F3EDE2;box-shadow:0 -4px 0 #2A2438,-4px 0 0 #2A2438,0 4px 0 #2A2438,4px 0 0 #2A2438">{{ t.history }}</div>
+
+              <div style="font-size:12px;color:#A89FB8">Foco</div>
+              <div style="height:56px;margin:4px;display:flex;align-items:center;justify-content:center;background:#F2C14E;color:#14111C;font-size:16px;font-weight:700;box-shadow:0 -4px 0 #F7D57F,-4px 0 0 #F7D57F,0 4px 0 #C9962C,4px 0 0 #C9962C;outline:2px solid #F3EDE2;outline-offset:6px">{{ t.takeShort }}</div>
+              <div style="height:56px;margin:4px;display:flex;align-items:center;justify-content:center;background:#2A2438;font-size:16px;font-weight:700;box-shadow:0 -4px 0 #3D3550,-4px 0 0 #3D3550,0 4px 0 #1E1A29,4px 0 0 #1E1A29;outline:2px solid #F3EDE2;outline-offset:6px">{{ t.share }}</div>
+              <div style="height:56px;margin:4px;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:6px;text-decoration-color:#3D3550;outline:2px solid #F3EDE2;outline-offset:6px">{{ t.history }}</div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:12px">
+              <div style="font-size:12px;color:#A89FB8">Pruébalo: el pulsado invierte la luz y hunde el botón</div>
+              <div style="display:flex;flex-wrap:wrap;align-items:center;gap:20px">
+                <button style="height:56px;padding:0 28px;margin:4px;border:0;background:#F2C14E;color:#14111C;font-family:Manrope,sans-serif;font-size:18px;font-weight:700;cursor:pointer;box-shadow:0 -4px 0 #F7D57F,-4px 0 0 #F7D57F,0 4px 0 #C9962C,4px 0 0 #C9962C" style-hover="background:#F7D57F;box-shadow:0 -4px 0 #F3EDE2,-4px 0 0 #F3EDE2,0 4px 0 #C9962C,4px 0 0 #C9962C" style-active="background:#C9962C;padding-top:4px;box-shadow:0 -4px 0 #C9962C,-4px 0 0 #C9962C,0 4px 0 #F2C14E,4px 0 0 #F2C14E" style-focus="outline:2px solid #F3EDE2;outline-offset:6px">{{ t.take }}</button>
+                <button style="height:56px;padding:0 24px;margin:4px;border:0;background:#2A2438;color:#F3EDE2;font-family:Manrope,sans-serif;font-size:16px;font-weight:700;cursor:pointer;box-shadow:0 -4px 0 #3D3550,-4px 0 0 #3D3550,0 4px 0 #1E1A29,4px 0 0 #1E1A29" style-hover="background:#3D3550" style-active="background:#1E1A29;padding-top:4px;box-shadow:0 -4px 0 #14111C,-4px 0 0 #14111C,0 4px 0 #3D3550,4px 0 0 #3D3550" style-focus="outline:2px solid #F3EDE2;outline-offset:6px">{{ t.share }}</button>
+                <button style="height:56px;padding:0 16px;margin:4px;border:0;background:transparent;color:#F3EDE2;font-family:Manrope,sans-serif;font-size:16px;font-weight:700;cursor:pointer;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:6px;text-decoration-color:#3D3550" style-hover="background:#1E1A29;text-decoration-color:#F3EDE2" style-active="background:#2A2438" style-focus="outline:2px solid #F3EDE2;outline-offset:6px">{{ t.history }}</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Campos -->
+          <div style="display:flex;flex-direction:column;gap:32px">
+            <div style="display:flex;align-items:baseline;gap:20px"><div style="font-family:'Pixelify Sans',sans-serif;font-size:14px;font-weight:500;color:#A89FB8">04</div><div style="font-size:40px;font-weight:700;line-height:1.1">Campos</div></div>
+            <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:28px 32px">
+              <div style="display:flex;flex-direction:column;gap:8px">
+                <div style="font-size:14px;font-weight:700">{{ t.nameL }}</div>
+                <div style="height:52px;padding:0 16px;display:flex;align-items:center;background:#1E1A29;box-shadow:inset 4px 4px 0 #14111C;font-size:16px">kenji</div>
+                <div style="font-size:12px;color:#A89FB8">Normal · hundido, sombra arriba a la izquierda</div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:8px">
+                <div style="font-size:14px;font-weight:700">{{ t.linkL }}</div>
+                <div style="height:52px;padding:0 16px;display:flex;align-items:center;background:#1E1A29;box-shadow:inset 4px 4px 0 #14111C;outline:2px solid #F3EDE2;outline-offset:2px;font-size:16px">kenji.dev<div style="width:4px;height:24px;background:#F3EDE2;margin-left:2px"></div></div>
+                <div style="font-size:12px;color:#A89FB8">Foco · marco Pergamino, cursor de bloque</div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:8px">
+                <div style="display:flex;justify-content:space-between;gap:12px"><div style="font-size:14px;font-weight:700">{{ t.msgL }}</div><div style="font-family:'Pixelify Sans',sans-serif;font-size:14px;color:#A89FB8">{{ msgCount }}</div></div>
+                <input value="{{ msg }}" onChange="{{ onMsg }}" maxlength="80" style="height:52px;padding:0 16px;background:#1E1A29;border:0;box-shadow:inset 4px 4px 0 #14111C;color:#F3EDE2;font-family:Manrope,sans-serif;font-size:16px;outline:none;box-sizing:border-box;width:100%" style-focus="outline:2px solid #F3EDE2;outline-offset:2px"></input>
+                <div style="display:flex;gap:2px;height:4px"><div style="flex:{{ msgFill }};background:#A89FB8"></div><div style="flex:{{ msgRest }};background:#2A2438"></div></div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:8px">
+                <div style="font-size:14px;font-weight:700">{{ t.countryL }}</div>
+                <div style="height:52px;padding:0 16px;display:flex;align-items:center;gap:12px;background:#1E1A29;box-shadow:inset 4px 4px 0 #14111C;font-size:16px">
+                  <div style="width:24px;height:16px;display:flex;flex:none"><div style="flex:1;background:#1F8A4C"></div><div style="flex:1;background:#F3EDE2;display:flex;align-items:center;justify-content:center"><div style="width:4px;height:4px;background:#8A5A34"></div></div><div style="flex:1;background:#D63A2F"></div></div>
+                  <div style="flex:1">{{ t.mx }}</div>
+                  <div style="font-size:12px;color:#A89FB8">{{ t.detected }}</div>
+                </div>
+                <div style="font-size:12px;color:#A89FB8">Selector · país detectado</div>
+              </div>
+              <div style="grid-column:span 2;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:32px;align-items:start">
+                <div style="display:flex;flex-direction:column;gap:8px">
+                  <div style="font-size:14px;font-weight:700">{{ t.linkL }}</div>
+                  <div style="height:52px;padding:0 16px;display:flex;align-items:center;background:#1E1A29;box-shadow:inset 4px 4px 0 #14111C,inset 0 0 0 2px #E5484D;font-size:16px">bit.ly/fr33-crown</div>
+                </div>
+                <div style="display:flex;gap:14px;padding:16px;background:#1E1A29;box-shadow:inset 4px 0 0 #E5484D;margin-top:30px">
+                  <div style="width:24px;height:24px;flex:none;display:flex;align-items:center;justify-content:center;background:#E5484D;color:#14111C;font-family:'Pixelify Sans',sans-serif;font-size:16px;font-weight:700">!</div>
+                  <div style="display:flex;flex-direction:column;gap:4px;font-size:14px;line-height:1.45"><div style="font-weight:700">{{ t.errTitle }}</div><div style="color:#A89FB8">{{ t.errFix }}</div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Etiquetas -->
+          <div style="display:flex;flex-direction:column;gap:32px">
+            <div style="display:flex;align-items:baseline;gap:20px"><div style="font-family:'Pixelify Sans',sans-serif;font-size:14px;font-weight:500;color:#A89FB8">05</div><div style="font-size:40px;font-weight:700;line-height:1.1">Etiquetas</div></div>
+            <div style="display:flex;flex-wrap:wrap;gap:12px">
+              <div style="height:32px;display:flex;align-items:stretch;background:#1E1A29"><div style="width:8px;background:#8A5A34"></div><div style="padding:0 12px;display:flex;align-items:center;font-family:'Pixelify Sans',sans-serif;font-size:14px;font-weight:500">{{ t.k0 }}</div></div>
+              <div style="height:32px;display:flex;align-items:stretch;background:#1E1A29"><div style="width:8px;background:#6E7480"></div><div style="padding:0 12px;display:flex;align-items:center;font-family:'Pixelify Sans',sans-serif;font-size:14px;font-weight:500">{{ t.k1 }}</div></div>
+              <div style="height:32px;display:flex;align-items:stretch;background:#1E1A29"><div style="width:8px;background:#C3C8D0"></div><div style="padding:0 12px;display:flex;align-items:center;font-family:'Pixelify Sans',sans-serif;font-size:14px;font-weight:500">{{ t.k2 }}</div></div>
+              <div style="height:32px;display:flex;align-items:stretch;background:#1E1A29"><div style="width:8px;background:#C3C8D0;display:flex;align-items:center"><div style="width:4px;height:8px;background:#4A90E2;margin-left:2px"></div></div><div style="padding:0 12px;display:flex;align-items:center;font-family:'Pixelify Sans',sans-serif;font-size:14px;font-weight:500">{{ t.k3 }}</div></div>
+              <div style="height:32px;display:flex;align-items:stretch;background:#1E1A29"><div style="width:8px;background:#F2C14E"></div><div style="padding:0 12px;display:flex;align-items:center;font-family:'Pixelify Sans',sans-serif;font-size:14px;font-weight:500">{{ t.k4 }}</div></div>
+              <div style="height:32px;display:flex;align-items:stretch;background:#1E1A29"><div style="width:8px;background:#F2C14E;display:flex;align-items:center"><div style="width:4px;height:8px;background:#9B5DE5;margin-left:2px"></div></div><div style="padding:0 12px;display:flex;align-items:center;font-family:'Pixelify Sans',sans-serif;font-size:14px;font-weight:500">{{ t.k5 }}</div></div>
+              <div style="height:32px;display:flex;align-items:stretch;background:#1E1A29;box-shadow:inset 0 0 0 2px #3D3550"><div style="width:8px;background:#A89FB8"></div><div style="padding:0 12px;display:flex;align-items:center;font-family:'Pixelify Sans',sans-serif;font-size:14px;font-weight:500">Genesis</div></div>
+            </div>
+            <div style="display:flex;flex-wrap:wrap;gap:12px">
+              <div style="height:40px;padding:0 14px 0 8px;display:flex;align-items:center;gap:10px;background:#1E1A29"><div style="width:24px;height:16px;display:flex;box-shadow:0 0 0 2px #14111C"><div style="flex:1;background:#1F8A4C"></div><div style="flex:1;background:#F3EDE2;display:flex;align-items:center;justify-content:center"><div style="width:4px;height:4px;background:#8A5A34"></div></div><div style="flex:1;background:#D63A2F"></div></div><div style="font-size:14px;font-weight:500">{{ t.mx }}</div></div>
+              <div style="height:40px;padding:0 14px 0 8px;display:flex;align-items:center;gap:10px;background:#1E1A29"><div style="width:24px;height:16px;background:#F3EDE2;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 2px #14111C"><div style="width:6px;height:6px;background:#D63A2F"></div></div><div style="font-size:14px;font-weight:500">{{ t.jp }}</div></div>
+              <div style="height:40px;padding:0 14px 0 8px;display:flex;align-items:center;gap:10px;background:#1E1A29"><div style="width:24px;height:16px;display:flex;flex-direction:column;box-shadow:0 0 0 2px #14111C"><div style="flex:2;background:#F2C14E"></div><div style="flex:1;background:#2E4FB0"></div><div style="flex:1;background:#D63A2F"></div></div><div style="font-size:14px;font-weight:500">{{ t.co }}</div></div>
+              <div style="height:40px;padding:0 14px 0 8px;display:flex;align-items:center;gap:10px;background:#1E1A29"><div style="width:24px;height:16px;display:flex;flex-direction:column;box-shadow:0 0 0 2px #14111C"><div style="flex:1;background:#1F1B24"></div><div style="flex:1;background:#D63A2F"></div><div style="flex:1;background:#F2C14E"></div></div><div style="font-size:14px;font-weight:500">{{ t.de }}</div></div>
+              <div style="height:40px;padding:0 14px 0 8px;display:flex;align-items:center;gap:10px;background:#1E1A29"><div style="width:24px;height:16px;display:flex;box-shadow:0 0 0 2px #14111C"><div style="flex:1;background:#2E4FB0"></div><div style="flex:1;background:#F3EDE2"></div><div style="flex:1;background:#D63A2F"></div></div><div style="font-size:14px;font-weight:500">{{ t.fr }}</div></div>
+              <div style="height:40px;padding:0 14px 0 8px;display:flex;align-items:center;gap:10px;background:#1E1A29"><div style="width:24px;height:16px;display:flex;align-items:center;justify-content:center;background:#3D3550;box-shadow:0 0 0 2px #14111C;font-family:'Pixelify Sans',sans-serif;font-size:12px;font-weight:700">PT</div><div style="font-size:14px;font-weight:500">Portugal</div></div>
+              <div style="height:40px;padding:0 14px 0 8px;display:flex;align-items:center;gap:10px;background:#1E1A29"><div style="width:24px;height:16px;display:flex;align-items:center;justify-content:center;background:#3D3550;box-shadow:0 0 0 2px #14111C;font-family:'Pixelify Sans',sans-serif;font-size:12px;font-weight:700">KE</div><div style="font-size:14px;font-weight:500">Kenya</div></div>
+            </div>
+            <div style="font-size:12px;color:#A89FB8">Bandera 12×8 px ×2 con contorno de 1 px. Las 20 definitivas llegan en el paso 2.</div>
+          </div>
+
+          <!-- Tarjeta -->
+          <div style="display:flex;flex-direction:column;gap:32px">
+            <div style="display:flex;align-items:baseline;gap:20px"><div style="font-family:'Pixelify Sans',sans-serif;font-size:14px;font-weight:500;color:#A89FB8">06</div><div style="font-size:40px;font-weight:700;line-height:1.1">Tarjeta base</div></div>
+            <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);gap:24px;align-items:start">
+              <div style="background:#1E1A29;box-shadow:inset 0 4px 0 #2A2438;padding:24px;display:flex;gap:20px">
+                <div style="width:64px;height:64px;flex:none;display:flex;align-items:center;justify-content:center;background:repeating-linear-gradient(45deg,#2A2438 0 4px,#1E1A29 4px 8px);box-shadow:0 0 0 4px #C3C8D0;font-family:ui-monospace,monospace;font-size:12px;color:#A89FB8">32×32</div>
+                <div style="display:flex;flex-direction:column;gap:8px;min-width:0">
+                  <div style="display:flex;align-items:center;gap:8px"><div style="font-size:16px;font-weight:700">ana</div><div style="width:24px;height:16px;display:flex"><div style="flex:1;background:#1F8A4C"></div><div style="flex:1;background:#F3EDE2;display:flex;align-items:center;justify-content:center"><div style="width:4px;height:4px;background:#8A5A34"></div></div><div style="flex:1;background:#D63A2F"></div></div></div>
+                  <div style="font-family:'Pixelify Sans',sans-serif;font-size:12px;font-weight:500;color:#A89FB8">{{ t.k3 }}</div>
+                  <div style="font-family:'Pixelify Sans',sans-serif;font-size:28px;font-weight:700;line-height:1">3h 12m</div>
+                </div>
+              </div>
+              <div style="background:#1E1A29;box-shadow:inset 0 4px 0 #F2C14E;padding:24px;display:flex;flex-direction:column;gap:16px">
+                <div style="display:flex;gap:20px">
+                  <div style="width:64px;height:64px;flex:none;display:flex;align-items:center;justify-content:center;background:repeating-linear-gradient(45deg,#2A2438 0 4px,#1E1A29 4px 8px);box-shadow:0 0 0 4px #F2C14E;font-family:ui-monospace,monospace;font-size:12px;color:#A89FB8">32×32</div>
+                  <div style="display:flex;flex-direction:column;gap:8px;min-width:0">
+                    <div style="font-family:'Pixelify Sans',sans-serif;font-size:12px;font-weight:500;color:#F2C14E">{{ t.current }}</div>
+                    <div style="display:flex;align-items:center;gap:8px"><div style="font-size:16px;font-weight:700">kenji</div><div style="width:24px;height:16px;background:#F3EDE2;display:flex;align-items:center;justify-content:center"><div style="width:6px;height:6px;background:#D63A2F"></div></div></div>
+                    <div style="font-family:'Pixelify Sans',sans-serif;font-size:28px;font-weight:700;line-height:1;font-variant-numeric:tabular-nums">{{ clockShort }}</div>
+                  </div>
+                </div>
+                <div style="font-size:16px;line-height:1.45;text-wrap:pretty">“{{ msg }}”</div>
+                <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
+                  <a href="#2b" style="font-size:14px;font-weight:500;text-decoration-thickness:2px;text-underline-offset:6px" style-focus="outline:2px solid #F3EDE2;outline-offset:2px">kenji.dev</a>
+                  <button style="height:32px;padding:0 8px;border:0;background:transparent;color:#A89FB8;font-family:Manrope,sans-serif;font-size:12px;font-weight:500;cursor:pointer" style-hover="color:#F3EDE2;background:#2A2438" style-focus="outline:2px solid #F3EDE2">{{ t.report }}</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Idioma -->
+          <div style="display:flex;flex-direction:column;gap:32px">
+            <div style="display:flex;align-items:baseline;gap:20px"><div style="font-family:'Pixelify Sans',sans-serif;font-size:14px;font-weight:500;color:#A89FB8">07</div><div style="font-size:40px;font-weight:700;line-height:1.1">Idioma</div></div>
+            <div style="display:flex;align-items:center;gap:32px;flex-wrap:wrap">
+              <div style="display:flex;gap:4px;padding:4px;background:#14111C;box-shadow:0 0 0 2px #3D3550">
+                <button onClick="{{ setEn }}" style-before="content:'';position:absolute;left:50%;top:50%;width:max(100%, 44px);height:max(100%, 44px);transform:translate(-50%, -50%)" style="position:relative;height:44px;min-width:96px;padding:0 16px;border:0;cursor:pointer;font-family:Manrope,sans-serif;font-size:16px;font-weight:700;background:{{ segB.en.bg }};color:{{ segB.en.fg }};box-shadow:{{ segB.en.sh }}" style-focus="outline:2px solid #F3EDE2;outline-offset:4px">English</button>
+                <button onClick="{{ setEs }}" style-before="content:'';position:absolute;left:50%;top:50%;width:max(100%, 44px);height:max(100%, 44px);transform:translate(-50%, -50%)" style="position:relative;height:44px;min-width:96px;padding:0 16px;border:0;cursor:pointer;font-family:Manrope,sans-serif;font-size:16px;font-weight:700;background:{{ segB.es.bg }};color:{{ segB.es.fg }};box-shadow:{{ segB.es.sh }}" style-focus="outline:2px solid #F3EDE2;outline-offset:4px">Español</button>
+              </div>
+              <div style="font-size:14px;line-height:1.5;color:#A89FB8;max-width:420px">Teclas: la activa sobresale con relieve, la inactiva queda al ras. Anchos medidos con el español.</div>
+            </div>
+          </div>
+
+          <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px;padding-top:32px;box-shadow:inset 0 4px 0 #1E1A29;font-size:14px;line-height:1.5;color:#A89FB8">
+            <div style="display:flex;flex-direction:column;gap:4px"><div style="color:#F3EDE2;font-weight:700">Rejilla de 4 px</div><div>Medidas, relieves y bordes en múltiplos de 4, igual que el píxel ×4 del juego.</div></div>
+            <div style="display:flex;flex-direction:column;gap:4px"><div style="color:#F3EDE2;font-weight:700">Sin radios</div><div>Esquinas rectas; los botones tienen esquinas escalonadas de 4 px.</div></div>
+            <div style="display:flex;flex-direction:column;gap:4px"><div style="color:#F3EDE2;font-weight:700">Luz única</div><div>Brillo arriba a la izquierda, sombra abajo a la derecha. Lo pulsado se invierte.</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { lang: 'en', secs: 2 * 3600 + 14 * 60 + 37, msg: 'Shipping every day until someone stops me' };
+  dict = {
+    en: { season: 'Season 0: Genesis · 34 days left', signin: 'Sign in', take: 'Take the crown for $34', takeShort: 'Take the crown', share: 'Share', history: 'View history', reigning: 'Reigning for', reigned: 'Reigned', dropping: 'Dropping 2% every hour', min: 'Floor price $5', empty: 'The throne is empty', hof: 'Hall of fame', dethroned: 'You were dethroned', final: "Payments are final. You're paying for visibility, not a prize.", feed: 'kenji took the crown from ana after 3h 12m', legal: 'Rules · FAQ · Terms', pct: '2% of players', r1: 'Common', r2: 'Rare', r3: 'Epic', r4: 'Legendary', r5: 'Seasonal', k0: 'Peasant', k1: 'Knight', k2: 'Baron', k3: 'Count', k4: 'Duke', k5: 'Emperor', nameL: 'Display name', linkL: 'Link', msgL: 'Message', countryL: 'Country', detected: 'Detected', errTitle: "We can't use this link.", errFix: "Shortened links aren't allowed. Paste the full address of your product or X profile. You haven't been charged.", mx: 'Mexico', jp: 'Japan', co: 'Colombia', de: 'Germany', fr: 'France', current: 'Current king', report: 'Report message' },
+    es: { season: 'Temporada 0: Génesis · quedan 34 días', signin: 'Iniciar sesión', take: 'Toma la corona por $34', takeShort: 'Toma la corona', share: 'Compartir', history: 'Ver historia', reigning: 'Reina desde hace', reigned: 'Reinó', dropping: 'Baja 2% cada hora', min: 'Precio mínimo $5', empty: 'El trono está vacío', hof: 'Salón de la fama', dethroned: 'Te destronaron', final: 'Los pagos son definitivos. Pagas por visibilidad, no por un premio.', feed: 'kenji le quitó la corona a ana después de 3h 12m', legal: 'Reglas · Preguntas frecuentes · Términos', pct: '2% de los jugadores', r1: 'Común', r2: 'Raro', r3: 'Épico', r4: 'Legendario', r5: 'De temporada', k0: 'Plebeyo', k1: 'Caballero', k2: 'Barón', k3: 'Conde', k4: 'Duque', k5: 'Emperador', nameL: 'Nombre visible', linkL: 'Enlace', msgL: 'Mensaje', countryL: 'País', detected: 'Detectado', errTitle: 'No podemos usar este enlace.', errFix: 'No se permiten enlaces acortados. Pega la dirección completa de tu producto o de tu perfil de X. No se te ha cobrado.', mx: 'México', jp: 'Japón', co: 'Colombia', de: 'Alemania', fr: 'Francia', current: 'Rey actual', report: 'Reportar mensaje' }
+  };
+  componentDidMount() { this.iv = setInterval(() => this.setState(s => ({ secs: s.secs + 1 })), 1000); }
+  componentWillUnmount() { clearInterval(this.iv); }
+  renderVals() {
+    const { lang, secs, msg } = this.state;
+    const h = Math.floor(secs / 3600), m = Math.floor(secs / 60) % 60, s = secs % 60;
+    const p = n => String(n).padStart(2, '0');
+    const clockCells = [...`${p(h)}:${p(m)}:${p(s)}`].map(ch => ch === ':'
+      ? { ch, w: '28px', bg: 'transparent', sh: 'none', color: '#A89FB8' }
+      : { ch, w: '72px', bg: '#1E1A29', sh: 'inset 0 4px 0 #2A2438, inset 0 -4px 0 #14111C', color: '#F3EDE2' });
+    const a = on => on ? { bg: '#2A2438', fg: '#F3EDE2' } : { bg: 'transparent', fg: '#A89FB8' };
+    const b = on => on
+      ? { bg: '#2A2438', fg: '#F3EDE2', sh: 'inset 4px 4px 0 #3D3550, inset -4px -4px 0 #1E1A29' }
+      : { bg: 'transparent', fg: '#A89FB8', sh: 'none' };
+    return {
+      t: this.dict[lang], msg,
+      clockShort: `${h}h ${p(m)}m ${p(s)}s`, clockCells,
+      msgCount: `${msg.length}/80`, msgFill: msg.length, msgRest: 80 - msg.length,
+      onMsg: e => this.setState({ msg: e.target.value.slice(0, 80) }),
+      setEn: () => this.setState({ lang: 'en' }), setEs: () => this.setState({ lang: 'es' }),
+      segA: { en: a(lang === 'en'), es: a(lang === 'es') },
+      segB: { en: b(lang === 'en'), es: b(lang === 'es') }
+    };
+  }
+}
+</script>
+</body>
+</html>

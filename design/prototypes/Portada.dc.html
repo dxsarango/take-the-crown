@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700&family=Pixelify+Sans:wght@500;700&display=swap" rel="stylesheet">
+<script src="season-lib.js"></script>
+<script src="avatar-lib.js"></script>
+<style>
+body{margin:0;background:#0E0C14;-webkit-font-smoothing:antialiased}
+a{color:#F3EDE2;text-decoration-color:#3D3550}a:hover{color:#F3EDE2;text-decoration-color:#F3EDE2}
+@keyframes crownDrop{0%{transform:translateY(0)}33%{transform:translateY(2px)}66%{transform:translateY(4px)}100%{transform:translateY(0)}}
+</style>
+</helmet>
+<section id="turn6" style="background:#0E0C14;padding:72px;display:flex;flex-direction:column;gap:40px;font-family:Manrope,sans-serif;color:#F3EDE2;width:max-content">
+  <div style="display:flex;flex-direction:column;gap:8px;max-width:900px">
+    <div style="font-size:28px;font-weight:700">Paso 5 · Portada: el salón del trono</div>
+    <div style="font-size:16px;line-height:1.5;color:#A89FB8;text-wrap:pretty">Móvil a 390 px (prioritario) y escritorio a 1440 px. Escenario, trono y busto comparten un único píxel: ×4 en móvil y ×6 en escritorio. El reloj avanza en tiempo real y el conmutador de idioma funciona en las dos versiones.</div>
+  </div>
+
+  <div style="display:flex;gap:240px;align-items:flex-start">
+
+    <!-- ================= MÓVIL ================= -->
+    <div style="display:flex;flex-direction:column;gap:16px;flex:none">
+      <div style="display:flex;align-items:center;gap:12px"><div style="font-size:14px;font-weight:700;background:#F3EDE2;color:#14111C;padding:4px 10px;border-radius:4px">Móvil</div><div style="font-size:16px;color:#A89FB8">390 px · escena ×4</div></div>
+      <div style="position:relative">
+        <div data-screen-label="Portada móvil" style="width:390px;background:#14111C;overflow:hidden;box-shadow:0 0 0 1px #3D3550">
+
+          <div style="height:56px;padding:0 12px 0 16px;display:flex;align-items:center;justify-content:space-between;gap:8px;background:#1E1A29;box-shadow:inset 0 -4px 0 #14111C">
+            <div style="display:flex;flex-direction:column;gap:3px;min-width:0">
+              <div style="font-family:'Pixelify Sans',sans-serif;font-size:20px;font-weight:700;line-height:1">Crown</div>
+              <div style="font-size:12px;color:#A89FB8;white-space:nowrap">{{ t.seasonShort }}</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px">
+              <div style="display:flex;gap:2px;padding:2px;background:#14111C">
+                <button onClick="{{ setEn }}" style="position:relative;height:28px;min-width:44px;border:0;cursor:pointer;font-family:Manrope,sans-serif;font-size:12px;font-weight:700;background:{{ seg.en.bg }};color:{{ seg.en.fg }};box-shadow:{{ seg.en.sh }}" style-focus="outline:2px solid #F3EDE2;outline-offset:2px" style-before="content:'';position:absolute;left:50%;top:50%;width:max(100%, 44px);height:max(100%, 44px);transform:translate(-50%, -50%)">EN</button>
+                <button onClick="{{ setEs }}" style="position:relative;height:28px;min-width:44px;border:0;cursor:pointer;font-family:Manrope,sans-serif;font-size:12px;font-weight:700;background:{{ seg.es.bg }};color:{{ seg.es.fg }};box-shadow:{{ seg.es.sh }}" style-focus="outline:2px solid #F3EDE2;outline-offset:2px" style-before="content:'';position:absolute;left:50%;top:50%;width:max(100%, 44px);height:max(100%, 44px);transform:translate(-50%, -50%)">ES</button>
+              </div>
+              <button style="position:relative;height:36px;padding:0 12px;margin:4px;border:0;background:#2A2438;color:#F3EDE2;font-family:Manrope,sans-serif;font-size:14px;font-weight:700;cursor:pointer;white-space:nowrap;box-shadow:0 -4px 0 #3D3550,-4px 0 0 #3D3550,0 4px 0 #14111C,4px 0 0 #14111C" style-hover="background:#3D3550" style-active="background:#14111C" style-focus="outline:2px solid #F3EDE2;outline-offset:6px" style-before="content:'';position:absolute;left:50%;top:50%;width:max(100%, 44px);height:max(100%, 44px);transform:translate(-50%, -50%)">{{ t.signin }}</button>
+            </div>
+          </div>
+
+          <div style="width:390px;height:288px;overflow:hidden;background:#14111C"><img src="{{ sceneM }}" width="392" height="288" style="display:block;margin-left:-1px;image-rendering:pixelated"></div>
+
+          <div style="padding:16px 16px 24px;display:flex;flex-direction:column;gap:16px">
+            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+              <div style="font-size:20px;font-weight:700">{{ king.name }}</div>
+              <img src="{{ king.flag }}" width="24" height="16" style="display:block;image-rendering:pixelated;box-shadow:0 0 0 2px #1E1A29">
+              <div style="height:28px;padding:0 10px;display:flex;align-items:center;gap:8px;border:1px solid #3D3550;border-radius:4px"><div style="width:10px;height:10px;background:{{ king.sw }}"></div><div style="font-family:'Pixelify Sans',sans-serif;font-size:14px;font-weight:500">{{ king.rank }}</div></div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:4px">
+              <div style="font-size:14px;color:#A89FB8">{{ t.reigning }}</div>
+              <div style="display:flex;align-items:baseline;gap:14px">
+                <sc-for list="{{ clock }}" as="c" hint-placeholder-count="3"><div style="display:flex;align-items:baseline;gap:2px"><div style="font-family:'Pixelify Sans',sans-serif;font-size:64px;font-weight:700;line-height:1;font-variant-numeric:tabular-nums">{{ c.v }}</div><div style="font-family:'Pixelify Sans',sans-serif;font-size:28px;font-weight:500;color:#A89FB8">{{ c.u }}</div></div></sc-for>
+              </div>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
+              <div style="font-family:'Pixelify Sans',sans-serif;font-size:40px;font-weight:700;line-height:1;color:#F2C14E">$34</div>
+              <div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px">
+                <div style="display:flex;align-items:center;gap:8px;font-size:14px;font-weight:500">{{ arrowEl }}{{ t.dropping }}</div>
+                <div style="font-size:12px;color:#A89FB8">{{ t.floor }}</div>
+              </div>
+            </div>
+            <button style="position:relative;height:56px;margin:4px;border:0;background:#F2C14E;color:#14111C;font-family:Manrope,sans-serif;font-size:18px;font-weight:700;cursor:pointer;box-shadow:0 -4px 0 #F7D57F,-4px 0 0 #F7D57F,0 4px 0 #C9962C,4px 0 0 #C9962C" style-hover="background:#F7D57F;box-shadow:0 -4px 0 #F3EDE2,-4px 0 0 #F3EDE2,0 4px 0 #C9962C,4px 0 0 #C9962C" style-active="background:#C9962C;padding-top:4px;box-shadow:0 -4px 0 #C9962C,-4px 0 0 #C9962C,0 4px 0 #F2C14E,4px 0 0 #F2C14E" style-focus="outline:2px solid #F3EDE2;outline-offset:6px" style-before="content:'';position:absolute;left:50%;top:50%;width:max(100%, 44px);height:max(100%, 44px);transform:translate(-50%, -50%)">{{ t.take }}</button>
+          </div>
+
+          <div style="margin:0 16px;padding:16px 0 24px;box-shadow:inset 0 4px 0 #1E1A29;display:flex;flex-direction:column;gap:10px">
+            <div style="font-size:16px;line-height:1.5;text-wrap:pretty">“{{ king.msg }}”</div>
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
+              <a href="#turn6" style="position:relative;font-size:14px;font-weight:700;text-decoration-thickness:2px;text-underline-offset:5px" style-focus="outline:2px solid #F3EDE2;outline-offset:2px" style-before="content:'';position:absolute;left:50%;top:50%;width:max(100%, 44px);height:max(100%, 44px);transform:translate(-50%, -50%)">{{ king.link }}</a>
+              <button style="position:relative;height:32px;padding:0 8px;border:0;background:transparent;color:#A89FB8;font-family:Manrope,sans-serif;font-size:12px;font-weight:500;cursor:pointer" style-hover="color:#F3EDE2;background:#1E1A29" style-focus="outline:2px solid #F3EDE2" style-before="content:'';position:absolute;left:50%;top:50%;width:max(100%, 44px);height:max(100%, 44px);transform:translate(-50%, -50%)">{{ t.report }}</button>
+            </div>
+          </div>
+
+          <div style="margin:0 16px;padding:24px 0;box-shadow:inset 0 4px 0 #1E1A29;display:flex;flex-direction:column;gap:14px">
+            <div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px"><div style="font-size:20px;font-weight:700">{{ t.succession }}</div><a href="#turn6" style="position:relative;font-size:14px;color:#A89FB8;text-underline-offset:4px" style-focus="outline:2px solid #F3EDE2;outline-offset:2px" style-before="content:'';position:absolute;left:50%;top:50%;width:max(100%, 44px);height:max(100%, 44px);transform:translate(-50%, -50%)">{{ t.history }}</a></div>
+            <div style="display:flex;gap:12px;overflow-x:auto;margin:0 -16px;padding:0 16px 4px">
+              <sc-for list="{{ succ }}" as="k" hint-placeholder-count="4">
+                <div style="width:88px;flex:none;display:flex;flex-direction:column;gap:6px">
+                  <img src="{{ k.src }}" width="88" height="88" style="display:block;image-rendering:pixelated">
+                  <div style="font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ k.name }}</div>
+                  <div style="display:flex;align-items:center;gap:6px">
+                    <sc-if value="{{ k.hasFlag }}"><img src="{{ k.flag }}" width="24" height="16" style="display:block;image-rendering:pixelated"></sc-if>
+                    <sc-if value="{{ k.noFlag }}"><div style="width:24px;height:16px;display:flex;align-items:center;justify-content:center;background:#3D3550;font-family:'Pixelify Sans',sans-serif;font-size:12px;font-weight:700">{{ k.code }}</div></sc-if>
+                    <div style="font-family:'Pixelify Sans',sans-serif;font-size:14px;font-weight:500;color:#A89FB8;white-space:nowrap">{{ k.dur }}</div>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+
+          <div style="margin:0 16px;padding:24px 0;box-shadow:inset 0 4px 0 #1E1A29;display:flex;flex-direction:column;gap:14px">
+            <div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px"><div style="display:flex;align-items:baseline;gap:10px"><div style="font-size:20px;font-weight:700">{{ t.hof }}</div><div style="font-size:12px;color:#A89FB8">{{ t.hofSub }}</div></div><a href="#turn6" style="position:relative;font-size:14px;color:#A89FB8;text-underline-offset:4px" style-focus="outline:2px solid #F3EDE2;outline-offset:2px" style-before="content:'';position:absolute;left:50%;top:50%;width:max(100%, 44px);height:max(100%, 44px);transform:translate(-50%, -50%)">{{ t.hofAll }}</a></div>
+            <div style="display:flex;flex-direction:column;gap:4px">
+              <sc-for list="{{ hof }}" as="h" hint-placeholder-count="3">
+                <div style="display:flex;align-items:center;gap:12px;padding:10px 12px;background:#1E1A29">
+                  <img src="{{ h.src }}" width="44" height="44" style="display:block;image-rendering:pixelated;flex:none">
+                  <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px">
+                    <div style="font-size:12px;color:#A89FB8">{{ h.label }}</div>
+                    <div style="display:flex;align-items:center;gap:6px"><div style="font-size:14px;font-weight:700">{{ h.name }}</div><img src="{{ h.flag }}" width="24" height="16" style="display:block;image-rendering:pixelated"></div>
+                  </div>
+                  <div style="display:flex;align-items:baseline;gap:4px;flex:none"><div style="font-family:'Pixelify Sans',sans-serif;font-size:20px;font-weight:700">{{ h.v }}</div><div style="font-family:'Pixelify Sans',sans-serif;font-size:12px;font-weight:500;color:#A89FB8">{{ h.u }}</div></div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+
+          <div style="margin:0 16px;padding:24px 0 16px;box-shadow:inset 0 4px 0 #1E1A29;display:flex;flex-direction:column;gap:6px">
+            <div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px"><div style="display:flex;align-items:center;gap:8px"><div style="width:8px;height:8px;background:#F3EDE2"></div><div style="font-size:20px;font-weight:700">{{ t.live }}</div></div><div style="font-size:12px;color:#A89FB8">{{ t.last24 }}</div></div>
+            <div style="display:flex;flex-direction:column">
+              <sc-for list="{{ feed }}" as="f" hint-placeholder-count="6">
+                <div style="display:grid;grid-template-columns:132px minmax(0,1fr) 60px;align-items:center;gap:10px;min-height:44px;box-shadow:inset 0 -2px 0 #1E1A29">
+                  <div style="display:flex;align-items:center;gap:6px;min-width:0"><sc-if value="{{ f.who.hasFlag }}"><img src="{{ f.who.flag }}" width="24" height="16" alt="" style="display:block;flex:none;image-rendering:pixelated"></sc-if><sc-if value="{{ f.who.noFlag }}"><div style="width:24px;height:16px;flex:none;display:flex;align-items:center;justify-content:center;background:#3D3550;font-family:'Pixelify Sans',sans-serif;font-size:12px;font-weight:700">{{ f.who.code }}</div></sc-if><div style="font-size:14px;font-weight:700;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ f.who.name }}</div></div>
+                  <div style="font-size:14px;color:#A89FB8;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ f.pre }} <span style="color:#F3EDE2;font-weight:700">{{ f.obj }}</span></div>
+                  <div style="font-family:'Pixelify Sans',sans-serif;font-size:14px;font-weight:700;text-align:right;white-space:nowrap">{{ f.dur }}</div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+
+          <div style="display:flex;flex-direction:column">
+            <div style="height:2px;background:{{ foot.cap }}"></div>
+            <div style="padding:20px 16px 28px;background-color:{{ foot.base }};background-image:url({{ foot.band }});background-size:96px 36px;image-rendering:pixelated;display:flex;flex-direction:column;gap:14px">
+              <div style="display:flex;align-items:center;gap:12px"><img src="{{ foot.seal }}" width="40" height="40" alt="" style="display:block;flex:none;image-rendering:pixelated"><div style="font-family:'Pixelify Sans',sans-serif;font-size:14px;font-weight:500">© 2026 Crown</div></div>
+              <div style="display:flex;flex-wrap:wrap;gap:12px 20px;font-size:14px;font-weight:500"><a href="#turn6" style="position:relative;text-underline-offset:4px;text-decoration-color:#A89FB8" style-focus="outline:2px solid #F3EDE2;outline-offset:2px" style-before="content:'';position:absolute;left:50%;top:50%;width:max(100%, 44px);height:max(100%, 44px);transform:translate(-50%, -50%)">{{ t.rules }}</a><a href="#turn6" style="position:relative;text-underline-offset:4px;text-decoration-color:#A89FB8" style-focus="outline:2px solid #F3EDE2;outline-offset:2px" style-before="content:'';position:absolute;left:50%;top:50%;width:max(100%, 44px);height:max(100%, 44px);transform:translate(-50%, -50%)">{{ t.faq }}</a><a href="#turn6" style="position:relative;text-underline-offset:4px;text-decoration-color:#A89FB8" style-focus="outline:2px solid #F3EDE2;outline-offset:2px" style-before="content:'';position:absolute;left:50%;top:50%;width:max(100%, 44px);height:max(100%, 44px);transform:translate(-50%, -50%)">{{ t.terms }}</a></div>
+              <div style="font-size:12px;line-height:1.5;color:#A89FB8">{{ t.final }}</div>
+            </div>
+          </div>
+        </div>
+        <div style="position:absolute;top:664px;left:100%;margin-left:12px;display:flex;align-items:center;gap:8px;width:200px"><div style="width:24px;height:2px;background:#A89FB8"></div><div style="font-size:12px;line-height:1.4;color:#A89FB8">Primer pantallazo<br>Safari iPhone · 390×664</div></div>
+      </div>
+    </div>
+
+    <!-- ================= ESCRITORIO ================= -->
+    <div style="display:flex;flex-direction:column;gap:16px;flex:none">
+      <div style="display:flex;align-items:center;gap:12px"><div style="font-size:14px;font-weight:700;background:#F3EDE2;color:#14111C;padding:4px 10px;border-radius:4px">Escritorio</div><div style="font-size:16px;color:#A89FB8">1440 px · escena ×6</div></div>
+      <div style="position:relative">
+      <div data-screen-label="Portada escritorio" style="width:1440px;background:#14111C;overflow:hidden;box-shadow:0 0 0 1px #3D3550">
+
+        <div style="height:72px;padding:0 48px;display:flex;align-items:center;justify-content:space-between;gap:24px;background:#1E1A29;box-shadow:inset 0 -4px 0 #14111C">
+          <div style="display:flex;align-items:center;gap:24px">
+            <div style="font-family:'Pixelify Sans',sans-serif;font-size:28px;font-weight:700">Crown</div>
+            <div style="height:28px;padding:0 10px;display:flex;align-items:center;background:#14111C;font-size:14px;color:#A89FB8">{{ t.seasonLong }}</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:16px">
+            <div style="display:flex;gap:4px;padding:4px;background:#14111C">
+              <button onClick="{{ setEn }}" style="position:relative;height:32px;min-width:44px;border:0;cursor:pointer;font-family:Manrope,sans-serif;font-size:14px;font-weight:700;background:{{ seg.en.bg }};color:{{ seg.en.fg }};box-shadow:{{ seg.en.sh }}" style-focus="outline:2px solid #F3EDE2;outline-offset:2px" style-before="content:'';position:absolute;left:50%;top:50%;width:max(100%, 44px);height:max(100%, 44px);transform:translate(-50%, -50%)">EN</button>
+              <button onClick="{{ setEs }}" style="position:relative;height:32px;min-width:44px;border:0;cursor:pointer;font-family:Manrope,sans-serif;font-size:14px;font-weight:700;background:{{ seg.es.bg }};color:{{ seg.es.fg }};box-shadow:{{ seg.es.sh }}" style-focus="outline:2px solid #F3EDE2;outline-offset:2px" style-before="content:'';position:absolute;left:50%;top:50%;width:max(100%, 44px);height:max(100%, 44px);transform:translate(-50%, -50%)">ES</button>
+            </div>
+            <button style="position:relative;height:40px;padding:0 16px;margin:4px;border:0;background:#2A2438;color:#F3EDE2;font-family:Manrope,sans-serif;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 -4px 0 #3D3550,-4px 0 0 #3D3550,0 4px 0 #14111C,4px 0 0 #14111C" style-hover="background:#3D3550" style-active="background:#14111C" style-focus="outline:2px solid #F3EDE2;outline-offset:6px" style-before="content:'';position:absolute;left:50%;top:50%;width:max(100%, 44px);height:max(100%, 44px);transform:translate(-50%, -50%)">{{ t.signin }}</button>
+          </div>
+        </div>
+
+        <img src="{{ sceneD }}" width="1440" height="504" style="display:block;image-rendering:pixelated;background:#14111C">
+
+        <div style="padding:32px 72px 56px;display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:48px;align-items:end">
+          <div style="display:flex;flex-direction:column;gap:12px;min-width:0">
+            <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+              <div style="font-size:28px;font-weight:700;line-height:1.1">{{ king.name }}</div>
+              <img src="{{ king.flag }}" width="24" height="16" style="display:block;image-rendering:pixelated;box-shadow:0 0 0 2px #1E1A29">
+              <div style="height:28px;padding:0 10px;display:flex;align-items:center;gap:8px;border:1px solid #3D3550;border-radius:4px"><div style="width:10px;height:10px;background:{{ king.sw }}"></div><div style="font-family:'Pixelify Sans',sans-serif;font-size:14px;font-weight:500">{{ king.rank }}</div></div>
+            </div>
+            <div style="font-size:20px;font-weight:500;line-height:1.4;max-width:440px;text-wrap:pretty">“{{ king.msg }}”</div>
+            <div style="display:flex;align-items:center;gap:16px">
+              <a href="#turn6" style="position:relative;font-size:16px;font-weight:700;text-decoration-thickness:2px;text-underline-offset:5px" style-focus="outline:2px solid #F3EDE2;outline-offset:2px" style-before="content:'';position:absolute;left:50%;top:50%;width:max(100%, 44px);height:max(100%, 44px);transform:translate(-50%, -50%)">{{ king.link }}</a>
+              <button style="position:relative;height:32px;padding:0 8px;border:0;background:transparent;color:#A89FB8;font-family:Manrope,sans-serif;font-size:12px;font-weight:500;cursor:pointer" style-hover="color:#F3EDE2;background:#1E1A29" style-focus="outline:2px solid #F3EDE2" style-before="content:'';position:absolute;left:50%;top:50%;width:max(100%, 44px);height:max(100%, 44px);transform:translate(-50%, -50%)">{{ t.report }}</button>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+            <div style="font-size:16px;color:#A89FB8">{{ t.reigning }}</div>
+            <div style="display:flex;align-items:baseline;gap:16px">
+              <sc-for list="{{ clock }}" as="c" hint-placeholder-count="3"><div style="display:flex;align-items:baseline;gap:2px"><div style="font-family:'Pixelify Sans',sans-serif;font-size:64px;font-weight:700;line-height:1;font-variant-numeric:tabular-nums">{{ c.v }}</div><div style="font-family:'Pixelify Sans',sans-serif;font-size:28px;font-weight:500;color:#A89FB8">{{ c.u }}</div></div></sc-for>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:16px">
+            <div style="display:flex;align-items:center;gap:20px">
+              <div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px">
+                <div style="display:flex;align-items:center;gap:8px;font-size:14px;font-weight:500">{{ arrowEl }}{{ t.dropping }}</div>
+                <div style="font-size:12px;color:#A89FB8">{{ t.floor }}</div>
+              </div>
+              <div style="font-family:'Pixelify Sans',sans-serif;font-size:40px;font-weight:700;line-height:1;color:#F2C14E">$34</div>
+            </div>
+            <button style="position:relative;height:56px;min-width:340px;padding:0 28px;margin:4px;border:0;background:#F2C14E;color:#14111C;font-family:Manrope,sans-serif;font-size:18px;font-weight:700;cursor:pointer;box-shadow:0 -4px 0 #F7D57F,-4px 0 0 #F7D57F,0 4px 0 #C9962C,4px 0 0 #C9962C" style-hover="background:#F7D57F;box-shadow:0 -4px 0 #F3EDE2,-4px 0 0 #F3EDE2,0 4px 0 #C9962C,4px 0 0 #C9962C" style-active="background:#C9962C;padding-top:4px;box-shadow:0 -4px 0 #C9962C,-4px 0 0 #C9962C,0 4px 0 #F2C14E,4px 0 0 #F2C14E" style-focus="outline:2px solid #F3EDE2;outline-offset:6px" style-before="content:'';position:absolute;left:50%;top:50%;width:max(100%, 44px);height:max(100%, 44px);transform:translate(-50%, -50%)">{{ t.take }}</button>
+          </div>
+        </div>
+
+        <div style="padding:0 72px">
+          <div style="padding:32px 0 40px;box-shadow:inset 0 4px 0 #1E1A29;display:flex;flex-direction:column;gap:20px">
+            <div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px"><div style="font-size:20px;font-weight:700">{{ t.succession }}</div><a href="#turn6" style="position:relative;font-size:14px;color:#A89FB8;text-underline-offset:4px" style-focus="outline:2px solid #F3EDE2;outline-offset:2px" style-before="content:'';position:absolute;left:50%;top:50%;width:max(100%, 44px);height:max(100%, 44px);transform:translate(-50%, -50%)">{{ t.history }}</a></div>
+            <div style="display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:12px">
+              <sc-for list="{{ succ }}" as="k" hint-placeholder-count="10">
+                <div style="display:flex;flex-direction:column;gap:8px;min-width:0">
+                  <img src="{{ k.src }}" width="88" height="88" style="display:block;image-rendering:pixelated">
+                  <div style="font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ k.name }}</div>
+                  <div style="display:flex;align-items:center;gap:6px">
+                    <sc-if value="{{ k.hasFlag }}"><img src="{{ k.flag }}" width="24" height="16" style="display:block;image-rendering:pixelated"></sc-if>
+                    <sc-if value="{{ k.noFlag }}"><div style="width:24px;height:16px;display:flex;align-items:center;justify-content:center;background:#3D3550;font-family:'Pixelify Sans',sans-serif;font-size:12px;font-weight:700">{{ k.code }}</div></sc-if>
+                    <div style="font-family:'Pixelify Sans',sans-serif;font-size:14px;font-weight:500;color:#A89FB8;white-space:nowrap">{{ k.dur }}</div>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+
+          <div style="padding:32px 0 48px;box-shadow:inset 0 4px 0 #1E1A29;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:64px;align-items:start">
+            <div style="display:flex;flex-direction:column;gap:20px">
+              <div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px"><div style="display:flex;align-items:baseline;gap:10px"><div style="font-size:20px;font-weight:700">{{ t.hof }}</div><div style="font-size:12px;color:#A89FB8">{{ t.hofSub }}</div></div><a href="#turn6" style="position:relative;font-size:14px;color:#A89FB8;text-underline-offset:4px" style-focus="outline:2px solid #F3EDE2;outline-offset:2px" style-before="content:'';position:absolute;left:50%;top:50%;width:max(100%, 44px);height:max(100%, 44px);transform:translate(-50%, -50%)">{{ t.hofAll }}</a></div>
+              <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px">
+                <sc-for list="{{ hof }}" as="h" hint-placeholder-count="3">
+                  <div style="background:#1E1A29;padding:20px;display:flex;flex-direction:column;gap:14px">
+                    <div style="font-size:12px;color:#A89FB8">{{ h.label }}</div>
+                    <div style="display:flex;align-items:baseline;gap:6px"><div style="font-family:'Pixelify Sans',sans-serif;font-size:28px;font-weight:700;line-height:1">{{ h.v }}</div><div style="font-family:'Pixelify Sans',sans-serif;font-size:14px;font-weight:500;color:#A89FB8">{{ h.u }}</div></div>
+                    <div style="display:flex;align-items:center;gap:10px">
+                      <img src="{{ h.src }}" width="44" height="44" style="display:block;image-rendering:pixelated;flex:none">
+                      <div style="display:flex;flex-direction:column;gap:4px;min-width:0"><div style="font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ h.name }}</div><img src="{{ h.flag }}" width="24" height="16" style="display:block;image-rendering:pixelated"></div>
+                    </div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <div style="display:flex;align-items:center;gap:8px"><div style="width:8px;height:8px;background:#F3EDE2"></div><div style="font-size:20px;font-weight:700">{{ t.live }}</div></div>
+              <div style="display:flex;flex-direction:column">
+                <sc-for list="{{ feed }}" as="f" hint-placeholder-count="6">
+                  <div style="display:grid;grid-template-columns:140px minmax(0,1fr) 72px 64px;align-items:center;gap:12px;min-height:44px;box-shadow:inset 0 -2px 0 #1E1A29">
+                    <div style="display:flex;align-items:center;gap:6px;min-width:0"><sc-if value="{{ f.who.hasFlag }}"><img src="{{ f.who.flag }}" width="24" height="16" alt="" style="display:block;flex:none;image-rendering:pixelated"></sc-if><sc-if value="{{ f.who.noFlag }}"><div style="width:24px;height:16px;flex:none;display:flex;align-items:center;justify-content:center;background:#3D3550;font-family:'Pixelify Sans',sans-serif;font-size:12px;font-weight:700">{{ f.who.code }}</div></sc-if><div style="font-size:14px;font-weight:700;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ f.who.name }}</div></div>
+                    <div style="font-size:14px;color:#A89FB8;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ f.pre }} <span style="color:#F3EDE2;font-weight:700">{{ f.obj }}</span></div>
+                    <div style="font-family:'Pixelify Sans',sans-serif;font-size:14px;font-weight:700;text-align:right;white-space:nowrap">{{ f.dur }}</div>
+                    <div style="font-size:12px;color:#A89FB8;text-align:right;white-space:nowrap">{{ f.ago }}</div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex;flex-direction:column">
+          <div style="height:2px;background:{{ foot.cap }}"></div>
+          <div style="padding:24px 72px;background-color:{{ foot.base }};background-image:url({{ foot.band }});background-size:96px 36px;image-rendering:pixelated;display:flex;align-items:center;justify-content:space-between;gap:32px">
+            <div style="display:flex;align-items:center;gap:24px">
+              <div style="display:flex;align-items:center;gap:12px"><img src="{{ foot.seal }}" width="40" height="40" alt="" style="display:block;flex:none;image-rendering:pixelated"><div style="font-family:'Pixelify Sans',sans-serif;font-size:14px;font-weight:500">© 2026 Crown</div></div>
+              <div style="display:flex;gap:24px;font-size:14px;font-weight:500"><a href="#turn6" style="position:relative;text-underline-offset:4px;text-decoration-color:#A89FB8" style-focus="outline:2px solid #F3EDE2;outline-offset:2px" style-before="content:'';position:absolute;left:50%;top:50%;width:max(100%, 44px);height:max(100%, 44px);transform:translate(-50%, -50%)">{{ t.rules }}</a><a href="#turn6" style="position:relative;text-underline-offset:4px;text-decoration-color:#A89FB8" style-focus="outline:2px solid #F3EDE2;outline-offset:2px" style-before="content:'';position:absolute;left:50%;top:50%;width:max(100%, 44px);height:max(100%, 44px);transform:translate(-50%, -50%)">{{ t.faq }}</a><a href="#turn6" style="position:relative;text-underline-offset:4px;text-decoration-color:#A89FB8" style-focus="outline:2px solid #F3EDE2;outline-offset:2px" style-before="content:'';position:absolute;left:50%;top:50%;width:max(100%, 44px);height:max(100%, 44px);transform:translate(-50%, -50%)">{{ t.terms }}</a></div>
+            </div>
+            <div style="font-size:12px;color:#A89FB8">{{ t.final }}</div>
+          </div>
+        </div>
+      </div>
+      <div style="position:absolute;top:900px;left:100%;margin-left:12px;display:flex;align-items:center;gap:8px;width:200px"><div style="width:24px;height:2px;background:#A89FB8"></div><div style="font-size:12px;line-height:1.4;color:#A89FB8">Primer pantallazo<br>1440×900</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { lang: 'en', secs: 5 * 3600 + 41 * 60 + 9, ready: !!(window.CrownAvatarLib && window.CrownSeasons) };
+
+  dict = {
+    en: { seasonLong: 'Season 0: Genesis · 34 days left', seasonShort: 'Season 0 · 34 days left', signin: 'Sign in', reigning: 'Reigning for', take: 'Take the crown for $34', dropping: 'Dropping 2% every hour', floor: 'Floor price $5', report: 'Report', succession: 'Line of succession', history: 'View history', hof: 'Hall of fame', hofSub: 'This season', hofAll: 'View all', longest: 'Longest reign', most: 'Most crowns taken', shortest: 'Shortest reign', crowns: 'crowns', live: 'Proclamations', last24: 'Last 24 hours', rules: 'Rules', faq: 'FAQ', terms: 'Terms', final: "Payments are final. You're paying for visibility, not a prize." },
+    es: { seasonLong: 'Temporada 0: Génesis · quedan 34 días', seasonShort: 'T0 · quedan 34 días', signin: 'Iniciar sesión', reigning: 'Reina desde hace', take: 'Toma la corona por $34', dropping: 'Baja 2% cada hora', floor: 'Precio mínimo $5', report: 'Reportar', succession: 'Línea de sucesión', history: 'Ver historia', hof: 'Salón de la fama', hofSub: 'Esta temporada', hofAll: 'Ver todo', longest: 'Reinado más largo', most: 'Más coronas tomadas', shortest: 'Reinado más corto', crowns: 'coronas', live: 'Pregones del heraldo', last24: 'Últimas 24 horas', rules: 'Reglas', faq: 'Preguntas frecuentes', terms: 'Términos', final: 'Los pagos son definitivos. Pagas por visibilidad, no por un premio.' }
+  };
+
+  componentDidMount() {
+    if (!this.state.ready) this.poll = setInterval(() => { if (window.CrownAvatarLib && window.CrownSeasons) { clearInterval(this.poll); this.setState({ ready: true }); } }, 50);
+    this.iv = setInterval(() => this.setState(s => ({ secs: s.secs + 1 })), 1000);
+    this.reduce = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  }
+  componentWillUnmount() { clearInterval(this.iv); clearInterval(this.poll); }
+
+  build() {
+    const lib = window.CrownAvatarLib();
+    const enc = (W, H, col) => {
+      const cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+      const cx = cv.getContext('2d'), img = cx.createImageData(W, H);
+      col.forEach((c, i) => { if (!c) return; const n = parseInt(c.slice(1), 16); img.data.set([n >> 16, (n >> 8) & 255, n & 255, 255], i * 4); });
+      cx.putImageData(img, 0, 0); return cv.toDataURL('image/png');
+    };
+    const R = {
+      gold: { o: '#5A3A12', s1: '#C9962C', b: '#F2C14E', h: '#F7D57F' },
+      silver: { o: '#3E4452', s1: '#8E96A4', b: '#C3C8D0', h: '#E4E8EE' },
+      iron: { o: '#1E2230', s1: '#4A5060', b: '#6E7480', h: '#A4AAB6' },
+      wood: { o: '#3A2214', s1: '#6E4428', b: '#8A5A34', h: '#A8744A' },
+      crimson: { o: '#3A0A14', s1: '#6E1626', b: '#9A1F35', h: '#D24660' },
+      blue: { o: '#16284A', s1: '#3566B0', b: '#4A90E2', h: '#8CC0F2' }
+    };
+    const RK = {
+      peasant: { mat: 'wood', en: 'Peasant', es: 'Plebeyo' }, knight: { mat: 'iron', en: 'Knight', es: 'Caballero' },
+      baron: { mat: 'silver', en: 'Baron', es: 'Barón' }, count: { mat: 'silver', en: 'Count', es: 'Conde' },
+      duke: { mat: 'gold', en: 'Duke', es: 'Duque' }, emperor: { mat: 'gold', en: 'Emperor', es: 'Emperador' }
+    };
+
+    const S = 44;
+    const frameCol = (id, av) => {
+      const P = R[RK[id].mat], col = new Array(S * S).fill(null), kind = new Array(S * S).fill('');
+      for (let y = 0; y < 32; y++) for (let x = 0; x < 32; x++) col[(y + 6) * S + x + 6] = av[y * 32 + x];
+      const rr = (x, y) => Math.min(x, y, S - 1 - x, S - 1 - y);
+      for (let y = 0; y < S; y++) for (let x = 0; x < S; x++) {
+        const r = rr(x, y); if (r > 5) continue;
+        const i = y * S + x;
+        if (r === 0 || r === 5) { col[i] = P.o; continue; }
+        const top = y === r, left = x === r, bot = S - 1 - y === r, right = S - 1 - x === r;
+        col[i] = (r === 1 && (bot || right)) || (r === 4 && (top || left)) ? P.s1 : P.b; kind[i] = 'm';
+      }
+      const put = (x, y, c) => { col[y * S + x] = c; };
+      const side = (t, r, c) => { put(t, r, c); put(t, S - 1 - r, c); put(r, t, c); put(S - 1 - r, t, c); };
+      const both = (t, r, c) => { side(t, r, c); side(S - 1 - t, r, c); };
+      const stamp = (pat, ox, oy, ramp) => pat.forEach((row, y) => row.forEach((tk, x) => { if (tk) put(ox + x, oy + y, (ramp || P)[tk]); }));
+      const at4 = (pat, ramp) => [[1, 1], [39, 1], [1, 39], [39, 39]].forEach(([x, y]) => stamp(pat, x, y, ramp));
+      const mid4 = (pat, ramp) => [[20, 1], [20, 39], [1, 20], [39, 20]].forEach(([x, y]) => stamp(pat, x, y, ramp));
+      const at2 = (pat, list) => list.forEach(t => { stamp(pat, t, 2); stamp(pat, t, 40); stamp(pat, 2, t); stamp(pat, 40, t); });
+      const seam = (t, c) => { for (let r = 1; r <= 4; r++) both(t, r, c); };
+      const carve = (pat, t0) => pat.forEach((row, ri) => [...row].forEach((ch, ti) => { if (ch === '#') both(t0 + ti, ri + 1, P.o); }));
+      const gem = [['o', 'b', 'b', 'o'], ['b', 'h', 'b', 's1'], ['b', 'b', 's1', 's1'], ['o', 's1', 's1', 'o']];
+      const stud = [['h', 'b'], ['b', 's1']];
+      const ring4 = ['.##.', '#..#', '#..#', '.##.'].map(r => [...r].map(c => (c === '#' ? 'o' : null)));
+      const arm = ['......', '###..#', '...##.', '......'];
+      if (id === 'peasant') {
+        for (let r = 1; r <= 4; r++) { put(r, r, P.s1); put(S - 1 - r, r, P.s1); put(r, S - 1 - r, P.s1); put(S - 1 - r, S - 1 - r, P.s1); }
+        seam(14, P.o);
+        [[2, 8, 10], [3, 17, 19], [2, 25, 27], [3, 33, 35]].forEach(([r, a, b]) => { for (let t = a; t <= b; t++) side(t, r, P.s1); });
+      }
+      if (id === 'knight') { seam(5, P.o); at4([[null, null, null, null], [null, 'h', 'b', null], [null, 'b', 's1', null], [null, null, null, null]]); at2(stud, [13, 21, 29]); }
+      if (id === 'baron' || id === 'count') { for (let t = 1; t <= 42; t++) side(t, 2, P.s1); seam(5, P.o); at4([['b', 'b', 'b', 'b'], ['b', 'h', 'h', 'b'], ['b', 'h', 's1', 'b'], ['b', 'b', 'b', 'b']]); }
+      if (id === 'count') { at4(gem, R.blue); seam(19, P.o); mid4(gem, R.blue); }
+      if (id === 'duke') { at4(ring4); carve(arm, 6); mid4(ring4); }
+      if (id === 'emperor') { carve(arm, 6); at4(gem, R.crimson); seam(19, P.o); mid4(gem, R.blue); at2(stud, [14, 28]); }
+      return col;
+    };
+
+    const W_ = '#F3EDE2', RED = '#D63A2F', GRN = '#1F8A4C', NAVY = '#1F2A6B', BLU = '#2E4FB0', YEL = '#F2C94C';
+    const FLAGS = {
+      AR: (x, y) => (y === 3 || y === 4 ? ((x === 5 || x === 6) ? YEL : W_) : '#74ACDF'),
+      JP: (x, y) => ((x - 5.5) ** 2 + (y - 3.5) ** 2 <= 5.2 ? RED : W_),
+      MX: (x, y) => (x < 4 ? GRN : x < 8 ? ((x === 5 || x === 6) && (y === 3 || y === 4) ? '#8A5A34' : W_) : RED),
+      IN: (x, y) => (y < 3 ? '#F08A24' : y < 5 ? ((x === 5 || x === 6) ? NAVY : W_) : GRN),
+      BR: (x, y) => ((x - 5.5) ** 2 + (y - 3.5) ** 2 <= 2.6 ? NAVY : Math.abs(x - 5.5) / 6 + Math.abs(y - 3.5) / 4 <= 0.95 ? YEL : GRN),
+      FR: x => (x < 4 ? BLU : x < 8 ? W_ : RED),
+      KR: (x, y) => { const d = (x - 5.5) ** 2 + (y - 3.5) ** 2; if (d <= 5.2) return y < 3.5 ? RED : BLU; if ([[1, 1], [2, 1], [9, 1], [10, 1], [1, 6], [2, 6], [9, 6], [10, 6]].some(([a, b]) => a === x && b === y)) return '#2A2438'; return W_; },
+      CO: (x, y) => (y < 4 ? YEL : y < 6 ? BLU : RED),
+      GB: (x, y) => { if (y === 3 || y === 4 || x === 5 || x === 6) return RED; if ((y >= 2 && y <= 5) || (x >= 4 && x <= 7)) return W_; if (Math.abs(x - y * 1.5 - 0.25) < 1 || Math.abs(11 - x - y * 1.5 - 0.25) < 1) return W_; return NAVY; }
+    };
+    const flagSrc = {};
+    Object.keys(FLAGS).forEach(k => { const c = []; for (let y = 0; y < 8; y++) for (let x = 0; x < 12; x++) c.push(FLAGS[k](x, y)); flagSrc[k] = enc(12, 8, c); });
+
+    const avOf = (name, crown) => { const c = lib.gen(name); if (!crown) c.cr = -1; return lib.avatar(c, 'A', null, true); };
+    const kingFrame = frameCol('duke', avOf('valeruiz', true));
+
+    const scene = (W, H) => {
+      const N = W * H, col = new Array(N).fill(null), cx = W / 2;
+      const ST = { o: '#1F1C27', s1: '#2C2936', b: '#3A3645' };
+      const PL = { o: '#1F1C27', s1: '#3A3645', b: '#4E4A5A' };
+      const FL = { o: '#17141E', b: '#262330' };
+      const CR = { o: '#3E0C18', s1: '#861B2F', b: '#B3263B' };
+      const GD = { o: '#5A3A12', s1: '#C9962C', b: '#F2C14E' };
+      const WD = { o: '#2A160C', s1: '#4E2E1A', b: '#6E4428' };
+      const wallB = H - 10;
+      const hash = (a, b) => { let h = (a * 374761393 + b * 668265263) >>> 0; h = Math.imul(h ^ (h >>> 13), 1274126177) >>> 0; return h ^ (h >>> 16); };
+      for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+        let c;
+        if (y < wallB - 2) {
+          const row = y >> 2, rx = x - cx + 1024 + (row % 2 ? 4 : 0), bx = rx % 8, bi = Math.floor(rx / 8);
+          if (y % 4 === 3 || bx === 7) c = ST.o;
+          else c = hash(bi, row) % 6 === 0 ? ST.s1 : (y % 4 === 2 ? ST.s1 : ST.b);
+        } else if (y === wallB - 2) c = PL.b;
+        else if (y === wallB - 1) c = PL.s1;
+        else if (y === wallB) c = FL.o;
+        else { const fy = y - wallB - 1, rx = x - cx + 1024 + (fy >= 4 ? 6 : 0); c = fy === 4 || rx % 12 === 11 ? FL.o : FL.b; }
+        col[y * W + x] = c;
+      }
+      const M = () => new Uint8Array(N);
+      const rect = (m, x0, y0, x1, y1) => { for (let y = Math.max(0, y0); y <= Math.min(H - 1, y1); y++) for (let x = Math.max(0, x0); x <= Math.min(W - 1, x1); x++) m[y * W + x] = 1; return m; };
+      const pat = (m, rows, ox, oy) => { rows.forEach((r, y) => [...r].forEach((ch, x) => { const X = ox + x, Y = oy + y; if (ch === '#' && X >= 0 && Y >= 0 && X < W && Y < H) m[Y * W + X] = 1; })); return m; };
+      const N4 = [[1, 0], [-1, 0], [0, 1], [0, -1]];
+      const draw = (m, P, d) => {
+        const inM = (x, y) => x >= 0 && y >= 0 && x < W && y < H && m[y * W + x] === 1;
+        if (!d) { const ol = []; for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) if (!m[y * W + x] && N4.some(([a, b]) => inM(x + a, y + b))) ol.push(y * W + x); ol.forEach(i => (col[i] = P.o)); }
+        for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+          if (!m[y * W + x]) continue;
+          if (d) { col[y * W + x] = P[d]; continue; }
+          const tl = !inM(x - 1, y) || !inM(x, y - 1), br = !inM(x + 1, y) || !inM(x, y + 1);
+          col[y * W + x] = br && !tl ? P.s1 : P.b;
+        }
+      };
+      [cx - 66, cx + 66, cx - 114, cx + 114].filter(p => p > -6 && p < W + 6).forEach(pc => {
+        const m = M(); rect(m, pc - 4, 3, pc + 3, wallB - 4); rect(m, pc - 6, 0, pc + 5, 2); rect(m, pc - 6, wallB - 3, pc + 5, wallB - 1); draw(m, PL);
+        const f = M(); rect(f, pc - 1, 5, pc - 1, wallB - 6); rect(f, pc + 2, 5, pc + 2, wallB - 6); draw(f, PL, 's1');
+      });
+      const banners = [cx - 42, cx + 42].concat(W >= 200 ? [cx - 90, cx + 90] : []);
+      banners.forEach(bc => {
+        const by = 4, m = M(); rect(m, bc - 5, by + 2, bc + 4, by + 33);
+        for (let k = 0; k < 4; k++) for (let x = bc - 5; x <= bc + 4; x++) if (Math.abs(x - (bc - 0.5)) < k + 1) m[(by + 30 + k) * W + x] = 0;
+        draw(m, CR);
+        draw(rect(M(), bc + 2, by + 13, bc + 2, by + 25), CR, 's1');
+        draw(rect(rect(M(), bc - 4, by + 5, bc + 3, by + 5), bc - 4, by + 27, bc + 3, by + 27), GD, 's1');
+        draw(pat(M(), ['#.##.#', '######', '######'], bc - 3, by + 10), GD);
+        draw(rect(M(), bc - 7, by, bc + 6, by + 1), GD);
+      });
+      draw(rect(M(), cx - 38, H - 4, cx + 37, H - 1), PL);
+      draw(rect(M(), cx - 10, H - 4, cx + 9, H - 1), CR);
+      const x0 = cx - 32, y0 = H - 68;
+      const T = (a, b, c, d, m) => rect(m || M(), x0 + a, y0 + b, x0 + c, y0 + d);
+      draw(T(6, 4, 57, 51), WD);
+      draw(T(59, 44, 62, 59, T(1, 44, 4, 59)), WD);
+      draw(T(54, 38, 63, 43, T(0, 38, 9, 43)), WD);
+      draw(T(60, 36, 63, 39, T(0, 36, 3, 39)), GD);
+      draw(T(4, 52, 59, 56), CR);
+      draw(T(4, 57, 59, 59), WD); draw(T(6, 58, 57, 58), GD, 's1');
+      draw(T(54, 60, 59, 63, T(4, 60, 9, 63)), WD);
+      const fin = ['..##..', '.####.', '######', '######', '.####.', '..##..'];
+      draw(pat(pat(M(), fin, x0 + 4, y0), fin, x0 + 54, y0), GD);
+      const crest = T(14, 2, 49, 5); T(31, 0, 32, 1, crest); T(22, 0, 23, 1, crest); T(40, 0, 41, 1, crest); draw(crest, GD);
+      draw(T(31, 3, 32, 4), CR, 'b');
+      for (let fy = 0; fy < 44; fy++) for (let fx = 0; fx < 44; fx++) { const c = kingFrame[fy * 44 + fx]; if (c) col[(y0 + 6 + fy) * W + x0 + 10 + fx] = c; }
+      return enc(W, H, col);
+    };
+
+    const arrowRows = ['..###..', '..###..', '#######', '.#####.', '..###..', '...#...'];
+    const ac = []; arrowRows.forEach(r => [...r].forEach(ch => ac.push(ch === '#' ? '#F3EDE2' : null)));
+    const arrow = enc(7, 6, ac);
+
+    const U = {};
+    const person = (name, cc, rank, dur) => { const f = flagSrc[cc]; U[name] = { name, code: cc, flag: f || null, hasFlag: !!f, noFlag: !f }; return { ...U[name], rank, dur }; };
+    person('valeruiz', 'AR', 'duke');
+    const SUCC = [['kenji', 'JP', 'count', '3h 12m'], ['ana.codes', 'MX', 'knight', '47m'], ['priya_ships', 'IN', 'duke', '11h 05m'], ['lucas.fm', 'BR', 'peasant', '38s'], ['sorenh', 'DK', 'baron', '1h 54m'], ['mbali', 'ZA', 'count', '6h 20m'], ['jules', 'FR', 'knight', '22m'], ['danielkim', 'KR', 'baron', '2h 48m'], ['camila.vc', 'CO', 'peasant', '9m'], ['theo_builds', 'GB', 'emperor', '14h 33m']]
+      .map(([n, cc, rk, d]) => { const p = person(n, cc, rk, d); p.src = enc(44, 44, frameCol(rk, avOf(n, false))); return p; });
+    const bySucc = Object.fromEntries(SUCC.map(p => [p.name, p]));
+    const SEA = window.CrownSeasons.current();
+    const sceneX = (W, H) => (SEA.scene ? enc(W, H, SEA.scene(W, H, { frame: kingFrame })) : scene(W, H));
+    return { sceneM: sceneX(98, 72), sceneD: sceneX(240, 84), arrow, U, SUCC, bySucc };
+  }
+
+  renderVals() {
+    const { lang, secs, ready } = this.state;
+    const SEA = window.CrownSeasons && window.CrownSeasons.current();
+    const t = { ...this.dict[lang], ...((SEA && SEA.ui && SEA.ui[lang]) || {}) };
+    if (ready && !this.art) this.art = this.build();
+    const A = this.art;
+    const h = Math.floor(secs / 3600), m = Math.floor(secs / 60) % 60, s = secs % 60, p = n => String(n).padStart(2, '0');
+    const b = on => (on ? { bg: '#2A2438', fg: '#F3EDE2', sh: 'inset 2px 2px 0 #3D3550, inset -2px -2px 0 #1E1A29' } : { bg: 'transparent', fg: '#A89FB8', sh: 'none' });
+    const base = {
+      t, clock: [{ v: String(h), u: 'h' }, { v: p(m), u: 'm' }, { v: p(s), u: 's' }],
+      seg: { en: b(lang === 'en'), es: b(lang === 'es') },
+      setEn: () => this.setState({ lang: 'en' }), setEs: () => this.setState({ lang: 'es' }),
+      king: { name: 'valeruiz', rank: lang === 'en' ? 'Duke' : 'Duque', sw: '#F2C14E', msg: 'Built a budget app for freelancers in Latam. Free for the first 1,000 users.', link: 'pesito.app', flag: A ? A.U.valeruiz.flag : null }
+    };
+    const CS = window.CrownSeasons, SE = CS && CS.current();
+    if (CS && !this._foot) this._foot = { seal: CS.seal(), band: CS.stoneBand(), cap: SE.ped.b, base: SE.ped.s1 };
+    base.foot = this._foot || { seal: null, band: '', cap: '#3A3645', base: '#2C2936' };
+    if (!A) return { ...base, succ: [], hof: [], feed: [], arrowEl: null };
+    const hofSrc = n => A.bySucc[n].src;
+    const hof = [
+      { label: t.longest, name: 'theo_builds', flag: A.U.theo_builds.flag, src: hofSrc('theo_builds'), v: '31h 07m', u: '' },
+      { label: t.most, name: 'kenji', flag: A.U.kenji.flag, src: hofSrc('kenji'), v: '14', u: t.crowns },
+      { label: t.shortest, name: 'lucas.fm', flag: A.U['lucas.fm'].flag, src: hofSrc('lucas.fm'), v: '38s', u: '' }
+    ];
+    const en = lang === 'en';
+    const ago = (n, k) => (en ? `${n}${k} ago` : `hace ${n} ${k}`);
+    const P = (who, pre, obj, dur, n, k) => ({ who: A.U[who], pre: en ? pre[0] : pre[1], obj: obj ? (en ? obj[0] : obj[1]) : '', dur, ago: ago(n, k) });
+    const feed = [
+      P('kenji', ['fell to', 'cayó ante'], ['valeruiz', 'valeruiz'], '3h 12m', 5, 'h'),
+      P('kenji', ['earned', 'ganó'], ['Revenge', 'Venganza'], '', 8, 'h'),
+      P('ana.codes', ['fell to', 'cayó ante'], ['kenji', 'kenji'], '47m', 8, 'h'),
+      P('priya_ships', ['rose to', 'ascendió a'], ['Duke', 'Duque'], '', 9, 'h'),
+      P('lucas.fm', ['fell to', 'cayó ante'], ['ana.codes', 'ana.codes'], '38s', 20, 'h'),
+      P('mbali', ['first of their nation', 'primer rey de su país'], null, '', 1, 'd')
+    ];
+    const arrowEl = React.createElement('img', { src: A.arrow, width: 14, height: 12, alt: '', style: { display: 'block', imageRendering: 'pixelated', animation: this.reduce ? 'none' : 'crownDrop 2.4s steps(1,end) infinite' } });
+    return { ...base, sceneM: A.sceneM, sceneD: A.sceneD, succ: A.SUCC, hof, feed, arrowEl };
+  }
+}
+</script>
+</body>
+</html>

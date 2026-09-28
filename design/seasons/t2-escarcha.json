@@ -1,0 +1,125 @@
+{
+  "$doc": "Temporada 2 · Escarcha. PROVISIONAL: solo existe el arte de anuncio (escena de la T0 con la paleta cambiada + copos). Falta diseñar escena, trono, corona, marco y medalla.",
+  "id": 2,
+  "key": "escarcha",
+  "status": "provisional",
+  "color": null,
+  "name": {
+    "en": "Season 2: Frost",
+    "es": "Temporada 2: Escarcha"
+  },
+  "window": {
+    "start": "2026-12-01",
+    "end": null
+  },
+  "replaces": {
+    "scene": {
+      "svg": "assets/scenes/t2-provisional/{98x72|240x84}-empty.svg",
+      "method": "sceneT0 + paletteSwap; en las filas de muro (y < H−12), 1 de cada ~70 píxeles de piedra se vuelve copo (#E6F1F7 o #9CC4D6), LCG con semilla 7"
+    }
+  },
+  "paletteSwap": {
+    "#1F1C27": "#13202B",
+    "#2C2936": "#1D3140",
+    "#3A3645": "#294254",
+    "#4E4A5A": "#3D5C70",
+    "#17141E": "#0F1820",
+    "#262330": "#1A2A36",
+    "#3E0C18": "#0C2A38",
+    "#861B2F": "#2C7890",
+    "#B3263B": "#58B2C8",
+    "#2A160C": "#2A3846",
+    "#4E2E1A": "#6A8092",
+    "#6E4428": "#A6BACA"
+  },
+  "snow": [
+    "#E6F1F7",
+    "#9CC4D6"
+  ],
+  "palette": [
+    {
+      "hex": "#13202B",
+      "name": "provisional",
+      "role": "Escena de anuncio"
+    },
+    {
+      "hex": "#1D3140",
+      "name": "provisional",
+      "role": "Escena de anuncio"
+    },
+    {
+      "hex": "#294254",
+      "name": "provisional",
+      "role": "Escena de anuncio"
+    },
+    {
+      "hex": "#3D5C70",
+      "name": "provisional",
+      "role": "Escena de anuncio"
+    },
+    {
+      "hex": "#0F1820",
+      "name": "provisional",
+      "role": "Escena de anuncio"
+    },
+    {
+      "hex": "#1A2A36",
+      "name": "provisional",
+      "role": "Escena de anuncio"
+    },
+    {
+      "hex": "#0C2A38",
+      "name": "provisional",
+      "role": "Escena de anuncio"
+    },
+    {
+      "hex": "#2C7890",
+      "name": "provisional",
+      "role": "Escena de anuncio"
+    },
+    {
+      "hex": "#58B2C8",
+      "name": "provisional",
+      "role": "Escena de anuncio"
+    },
+    {
+      "hex": "#2A3846",
+      "name": "provisional",
+      "role": "Escena de anuncio"
+    },
+    {
+      "hex": "#6A8092",
+      "name": "provisional",
+      "role": "Escena de anuncio"
+    },
+    {
+      "hex": "#A6BACA",
+      "name": "provisional",
+      "role": "Escena de anuncio"
+    },
+    {
+      "hex": "#E6F1F7",
+      "name": "provisional",
+      "role": "Escena de anuncio"
+    },
+    {
+      "hex": "#9CC4D6",
+      "name": "provisional",
+      "role": "Escena de anuncio"
+    }
+  ],
+  "todo": [
+    "scene",
+    "throne",
+    "crownAvatar",
+    "crownSprite",
+    "frame",
+    "medal",
+    "avatarBackgrounds",
+    "capeColors",
+    "stone",
+    "banner",
+    "ring/color"
+  ],
+  "fallback": "Todo lo que no declara se hereda de la T0 (avatar-lib: SEASON_AVATAR[2] = T0)."
+}

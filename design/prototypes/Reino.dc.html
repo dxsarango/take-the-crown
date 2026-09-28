@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700&family=Pixelify+Sans:wght@500;700&display=swap" rel="stylesheet">
+<script src="season-lib.js"></script>
+<script src="avatar-lib.js"></script>
+<script src="throne-lib.js"></script>
+<style>
+body{margin:0;background:#0E0C14;-webkit-font-smoothing:antialiased}
+a{color:#F3EDE2;text-decoration-color:#3D3550}a:hover{color:#F3EDE2;text-decoration-color:#F3EDE2}
+</style>
+</helmet>
+<section id="turn12" style="background:#0E0C14;padding:72px;display:flex;flex-direction:column;gap:112px;font-family:Manrope,sans-serif;color:#F3EDE2;width:max-content">
+  <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:48px;width:2070px">
+    <div style="display:flex;flex-direction:column;gap:8px;max-width:980px">
+      <div style="font-size:28px;font-weight:700">Paso 9 · Historia, salón de la fama y fin de temporada</div>
+      <div style="font-size:16px;line-height:1.5;color:#A89FB8;text-wrap:pretty">Tres pantallas en móvil (390) y escritorio (1440). <a href="#h" style-focus="outline:2px solid #F3EDE2;outline-offset:2px">Historia</a> y <a href="#f" style-focus="outline:2px solid #F3EDE2;outline-offset:2px">Salón de la fama</a> muestran el 27 de septiembre, a mitad de temporada. <a href="#e" style-focus="outline:2px solid #F3EDE2;outline-offset:2px">Fin de temporada</a> es el 31 de octubre, al cerrar la T0. Las pestañas y los filtros funcionan.</div>
+    </div>
+    <div style="display:flex;gap:4px;padding:4px;background:#14111C;box-shadow:0 0 0 2px #3D3550">
+      <button onClick="{{ setEn }}" style="position:relative;height:40px;min-width:88px;border:0;cursor:pointer;font-family:Manrope,sans-serif;font-size:14px;font-weight:700;background:{{ seg.en.bg }};color:{{ seg.en.fg }};box-shadow:{{ seg.en.sh }}" style-focus="outline:2px solid #F3EDE2;outline-offset:4px" style-before="content:'';position:absolute;left:50%;top:50%;width:max(100%, 44px);height:max(100%, 44px);transform:translate(-50%, -50%)">English</button>
+      <button onClick="{{ setEs }}" style="position:relative;height:40px;min-width:88px;border:0;cursor:pointer;font-family:Manrope,sans-serif;font-size:14px;font-weight:700;background:{{ seg.es.bg }};color:{{ seg.es.fg }};box-shadow:{{ seg.es.sh }}" style-focus="outline:2px solid #F3EDE2;outline-offset:4px" style-before="content:'';position:absolute;left:50%;top:50%;width:max(100%, 44px);height:max(100%, 44px);transform:translate(-50%, -50%)">Español</button>
+    </div>
+  </div>
+
+  <!-- =================== 1 · HISTORIA =================== -->
+  <div id="h" data-screen-label="01 Historia del reino" style="display:flex;flex-direction:column;gap:20px">
+    <div style="display:flex;align-items:flex-start;gap:16px;max-width:1100px">
+      <div style="font-size:14px;font-weight:700;background:#F3EDE2;color:#14111C;padding:4px 10px;border-radius:4px;flex:none">1</div>
+      <div style="display:flex;flex-direction:column;gap:6px"><div style="font-size:20px;font-weight:700">Historia del reino</div><div style="font-size:14px;line-height:1.5;color:#A89FB8;text-wrap:pretty">Línea de tiempo del más reciente al más antiguo, con separadores por día. El tamaño crece con la duración: menos de 3 h va a ×1 y en una línea; de 3 h en adelante, a ×2; de 10 h en adelante, a ×3 (×4 en escritorio) sobre una superficie. Solo el rey actual lleva corona y un nodo dorado. Los mensajes se muestran en el idioma en que los escribió cada rey.</div></div>
+    </div>
+    <div style="display:flex;gap:240px;align-items:flex-start">
+      <div style="width:390px;flex:none;background:#14111C;box-shadow:0 0 0 1px #3D3550;overflow:hidden">
+        <div style="height:56px;padding:0 16px;display:flex;align-items:center;justify-content:space-between;background:#1E1A29;box-shadow:inset 0 -4px 0 #14111C"><div style="font-family:'Pixelify Sans',sans-serif;font-size:20px;font-weight:700">Crown</div><div style="font-size:12px;color:#A89FB8">{{ t.seasonShort }}</div></div>
+        <div style="padding:24px 16px 16px;display:flex;flex-direction:column;gap:16px">
+          <div style="font-size:28px;font-weight:700;line-height:1.15">{{ t.histTitle }}</div>
+          <div style="display:flex;gap:4px;padding:4px;background:#0E0C14;box-shadow:0 0 0 2px #3D3550">
+            <sc-for list="{{ seasons }}" as="o" hint-placeholder-count="2"><button onClick="{{ o.on }}" disabled="{{ o.dis }}" style="position:relative;flex:1;height:44px;border:0;cursor:{{ o.cur }};font-family:Manrope,sans-serif;font-size:14px;font-weight:700;background:{{ o.bg }};color:{{ o.fg }};box-shadow:{{ o.sh }};display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px" style-focus="outline:2px solid #F3EDE2;outline-offset:2px" style-before="content:'';position:absolute;left:50%;top:50%;width:max(100%, 44px);height:max(100%, 44px);transform:translate(-50%, -50%)"><div>{{ o.label }}</div><div style="font-size:12px;font-weight:500;color:#A89FB8">{{ o.sub }}</div></button></sc-for>
+          </div>
+          <div style="display:flex;flex-wrap:wrap;gap:8px 16px;font-size:14px;color:#A89FB8"><sc-for list="{{ histSum }}" as="s" hint-placeholder-count="3"><div><span style="font-family:'Pixelify Sans',sans-serif;font-weight:700;color:#F3EDE2">{{ s.v }}</span> {{ s.l }}</div></sc-for></div>
+        </div>
+        <div style="position:relative;margin:0 16px;padding:0 0 24px 28px">
+          <div style="position:absolute;left:6px;top:0;bottom:24px;width:4px;background:#2A2438"></div>
+          <sc-for list="{{ hist }}" as="e" hint-placeholder-count="8">
+            <sc-if value="{{ e.isDay }}"><div style="position:relative;padding:20px 0 10px;font-size:12px;font-weight:700;color:#A89FB8"><div style="position:absolute;left:-26px;top:22px;width:12px;height:4px;background:#3D3550"></div>{{ e.day }}</div></sc-if>
+            <sc-if value="{{ e.isEntry }}">
+              <div style="position:relative;margin-bottom:8px">
+                <div style="position:absolute;left:{{ e.nodeL }}px;top:{{ e.nodeT }}px;width:{{ e.node }}px;height:{{ e.node }}px;background:{{ e.nodeC }}"></div>
+                <div style="display:flex;gap:12px;align-items:flex-start;padding:{{ e.pad }};background:{{ e.bg }};box-shadow:{{ e.sh }}">
+                  <img src="{{ e.src }}" width="{{ e.wM }}" height="{{ e.wM }}" style="display:block;image-rendering:pixelated;flex:none">
+                  <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:6px">
+                    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><div style="font-size:{{ e.nfs }}px;font-weight:700">{{ e.name }}</div><img src="{{ e.flag }}" width="24" height="16" style="display:block;image-rendering:pixelated"><sc-if value="{{ e.showRank }}"><div style="height:24px;padding:0 8px;display:flex;align-items:center;gap:6px;border:1px solid #3D3550;border-radius:4px"><div style="width:8px;height:8px;background:{{ e.sw }}"></div><div style="font-family:'Pixelify Sans',sans-serif;font-size:12px;font-weight:500">{{ e.rank }}</div></div></sc-if></div>
+                    <div style="font-family:'Pixelify Sans',sans-serif;font-size:{{ e.dfsM }}px;font-weight:700;line-height:1;font-variant-numeric:tabular-nums">{{ e.dur }}</div>
+                    <div style="font-size:{{ e.mfsM }}px;line-height:1.45;text-wrap:pretty;overflow:hidden;display:-webkit-box;-webkit-line-clamp:{{ e.clamp }};-webkit-box-orient:vertical">“{{ e.msg }}”</div>
+                    <div style="font-size:12px;color:#A89FB8">{{ e.time }} · <span style="color:{{ e.ecol }};font-weight:700">{{ e.end }}</span></div>
+                  </div>
+                </div>
+              </div>
+            </sc-if>
+          </sc-for>
+          <div style="position:relative;display:flex;flex-direction:column;gap:12px;padding-top:12px">
+            <button style="position:relative;height:48px;margin:4px;border:0;background:#2A2438;color:#F3EDE2;font-family:Manrope,sans-serif;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 -4px 0 #3D3550,-4px 0 0 #3D3550,0 4px 0 #14111C,4px 0 0 #14111C" style-hover="background:#3D3550" style-active="background:#14111C" style-focus="outline:2px solid #F3EDE2;outline-offset:6px" style-before="content:'';position:absolute;left:50%;top:50%;width:max(100%, 44px);height:max(100%, 44px);transform:translate(-50%, -50%)">{{ t.earlier }}</button>
+            <div style="font-size:12px;color:#A89FB8">{{ t.began }}</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="width:1440px;flex:none;background:#14111C;box-shadow:0 0 0 1px #3D3550;overflow:hidden">
+        <div style="height:72px;padding:0 48px;display:flex;align-items:center;justify-content:space-between;background:#1E1A29;box-shadow:inset 0 -4px 0 #14111C">
+          <div style="display:flex;align-items:center;gap:40px"><div style="font-family:'Pixelify Sans',sans-serif;font-size:28px;font-weight:700">Crown</div>
+            <div style="display:flex;gap:28px;height:72px"><sc-for list="{{ nav.h }}" as="n" hint-placeholder-count="3"><div style="display:flex;align-items:center;font-size:14px;font-weight:700;color:{{ n.fg }};box-shadow:{{ n.sh }}">{{ n.l }}</div></sc-for></div></div>
+          <div style="font-size:14px;color:#A89FB8">{{ t.seasonLong }}</div>
+        </div>
+        <div style="padding:48px 72px 64px;display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:64px;align-items:start">
+          <div style="display:flex;flex-direction:column;gap:24px;min-width:0">
+            <div style="font-size:40px;font-weight:700;line-height:1.1">{{ t.histTitle }}</div>
+            <div style="position:relative;padding-left:140px">
+              <div style="position:absolute;left:158px;top:0;bottom:0;width:4px;background:#2A2438"></div>
+              <sc-for list="{{ hist }}" as="e" hint-placeholder-count="8">
+                <sc-if value="{{ e.isDay }}"><div style="position:relative;padding:24px 0 12px 44px;font-size:14px;font-weight:700;color:#A89FB8"><div style="position:absolute;left:12px;top:30px;width:16px;height:4px;background:#3D3550"></div>{{ e.day }}</div></sc-if>
+                <sc-if value="{{ e.isEntry }}">
+                  <div style="position:relative;margin-bottom:10px;padding-left:44px">
+                    <div style="position:absolute;left:-140px;width:116px;top:{{ e.timeT }}px;text-align:right;font-family:'Pixelify Sans',sans-serif;font-size:14px;font-weight:500;color:#A89FB8">{{ e.time }}</div>
+                    <div style="position:absolute;left:{{ e.nodeLD }}px;top:{{ e.nodeT }}px;width:{{ e.node }}px;height:{{ e.node }}px;background:{{ e.nodeC }}"></div>
+                    <div style="display:flex;gap:20px;align-items:{{ e.alignD }};padding:{{ e.padD }};background:{{ e.bg }};box-shadow:{{ e.sh }}">
+                      <img src="{{ e.src }}" width="{{ e.wD }}" height="{{ e.wD }}" style="display:block;image-rendering:pixelated;flex:none">
+                      <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:8px">
+                        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><div style="font-size:{{ e.nfsD }}px;font-weight:700">{{ e.name }}</div><img src="{{ e.flag }}" width="24" height="16" style="display:block;image-rendering:pixelated"><div style="height:24px;padding:0 8px;display:flex;align-items:center;gap:6px;border:1px solid #3D3550;border-radius:4px"><div style="width:8px;height:8px;background:{{ e.sw }}"></div><div style="font-family:'Pixelify Sans',sans-serif;font-size:12px;font-weight:500">{{ e.rank }}</div></div></div>
+                        <div style="font-size:{{ e.mfsD }}px;font-weight:{{ e.mfw }};line-height:1.45;max-width:560px;text-wrap:pretty">“{{ e.msg }}”</div>
+                        <div style="font-size:14px;font-weight:700;color:{{ e.ecol }}">{{ e.end }}</div>
+                      </div>
+                      <div style="font-family:'Pixelify Sans',sans-serif;font-size:{{ e.dfsD }}px;font-weight:700;line-height:1;font-variant-numeric:tabular-nums;white-space:nowrap;align-self:{{ e.durAlign }}">{{ e.dur }}</div>
+                    </div>
+                  </div>
+                </sc-if>
+              </sc-for>
+              <div style="padding:16px 0 0 44px;display:flex;align-items:center;gap:24px">
+                <button style="position:relative;height:48px;padding:0 20px;margin:4px;border:0;background:#2A2438;color:#F3EDE2;font-family:Manrope,sans-serif;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 -4px 0 #3D3550,-4px 0 0 #3D3550,0 4px 0 #14111C,4px 0 0 #14111C" style-hover="background:#3D3550" style-active="background:#14111C" style-focus="outline:2px solid #F3EDE2;outline-offset:6px" style-before="content:'';position:absolute;left:50%;top:50%;width:max(100%, 44px);height:max(100%, 44px);transform:translate(-50%, -50%)">{{ t.earlier }}</button>
+                <div style="font-size:14px;color:#A89FB8">{{ t.began }}</div>
+              </div>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:32px;padding-top:8px">
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <div style="font-size:14px;font-weight:700">{{ t.season }}</div>
+              <div style="display:flex;flex-direction:column;gap:4px">
+                <sc-for list="{{ seasons }}" as="o" hint-placeholder-count="2"><button onClick="{{ o.on }}" disabled="{{ o.dis }}" style="position:relative;height:52px;padding:0 16px;border:0;cursor:{{ o.cur }};display:flex;align-items:center;justify-content:space-between;font-family:Manrope,sans-serif;font-size:14px;font-weight:700;background:{{ o.bgD }};color:{{ o.fg }};box-shadow:{{ o.shD }}" style-focus="outline:2px solid #F3EDE2;outline-offset:2px" style-before="content:'';position:absolute;left:50%;top:50%;width:max(100%, 44px);height:max(100%, 44px);transform:translate(-50%, -50%)"><div>{{ o.labelLong }}</div><div style="font-size:12px;font-weight:500;color:#A89FB8">{{ o.sub }}</div></button></sc-for>
+              </div>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px">
+              <sc-for list="{{ histSumD }}" as="s" hint-placeholder-count="4"><div style="padding:16px;background:#1E1A29;display:flex;flex-direction:column;gap:8px"><div style="font-size:12px;color:#A89FB8">{{ s.l }}</div><div style="font-family:'Pixelify Sans',sans-serif;font-size:28px;font-weight:700;line-height:1">{{ s.v }}</div></div></sc-for>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:12px">
+              <div style="font-size:14px;font-weight:700">{{ t.legend }}</div>
+              <sc-for list="{{ legend }}" as="l" hint-placeholder-count="3"><div style="display:flex;align-items:center;gap:12px;font-size:14px;color:#A89FB8"><div style="width:{{ l.w }}px;height:{{ l.w }}px;background:#2A2438;flex:none"></div>{{ l.l }}</div></sc-for>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =================== 2 · SALÓN DE LA FAMA =================== -->
+  <div id="f" data-screen-label="02 Salón de la fama" style="display:flex;flex-direction:column;gap:20px">
+    <div style="display:flex;align-items:flex-start;gap:16px;max-width:1100px">
+      <div style="font-size:14px;font-weight:700;background:#F3EDE2;color:#14111C;padding:4px 10px;border-radius:4px;flex:none">2</div>
+      <div style="display:flex;flex-direction:column;gap:6px"><div style="font-size:20px;font-weight:700">Salón de la fama</div><div style="font-size:14px;line-height:1.5;color:#A89FB8;text-wrap:pretty">Cuatro pestañas y el filtro Temporada / Todos los tiempos. El podio es pixel: pedestales de piedra del salón con ribete de oro, plata y bronce y el número incrustado, todo a ×2 en móvil y ×3 en escritorio. En Países, la bandera sustituye al avatar. Hasta que empiece la T1, «Todos los tiempos» coincide con la T0 y la pantalla lo indica.</div></div>
+    </div>
+    <div style="display:flex;gap:240px;align-items:flex-start">
+      <div style="width:390px;flex:none;background:#14111C;box-shadow:0 0 0 1px #3D3550;overflow:hidden">
+        <div style="height:56px;padding:0 16px;display:flex;align-items:center;justify-content:space-between;background:#1E1A29;box-shadow:inset 0 -4px 0 #14111C"><div style="font-family:'Pixelify Sans',sans-serif;font-size:20px;font-weight:700">Crown</div><div style="font-size:12px;color:#A89FB8">{{ t.seasonShort }}</div></div>
+        <div style="padding:24px 16px 0;display:flex;flex-direction:column;gap:16px">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
+            <div style="font-size:28px;font-weight:700;line-height:1.15">{{ t.hofTitle }}</div>
+          </div>
+          <div style="display:flex;gap:4px;padding:4px;background:#0E0C14;box-shadow:0 0 0 2px #3D3550">
+            <sc-for list="{{ scopes }}" as="o" hint-placeholder-count="2"><button onClick="{{ o.on }}" style="position:relative;flex:1;height:40px;border:0;cursor:pointer;font-family:Manrope,sans-serif;font-size:14px;font-weight:700;background:{{ o.bg }};color:{{ o.fg }};box-shadow:{{ o.sh }}" style-focus="outline:2px solid #F3EDE2;outline-offset:4px" style-before="content:'';position:absolute;left:50%;top:50%;width:max(100%, 44px);height:max(100%, 44px);transform:translate(-50%, -50%)">{{ o.label }}</button></sc-for>
+          </div>
+          <div style="display:flex;gap:4px;overflow-x:auto;margin:0 -16px;padding:4px 16px 0;scrollbar-width:none">
+            <sc-for list="{{ tabs }}" as="o" hint-placeholder-count="4"><button onClick="{{ o.on }}" style="position:relative;height:44px;flex:none;padding:0 14px;border:0;cursor:pointer;font-family:Manrope,sans-serif;font-size:14px;font-weight:700;white-space:nowrap;background:{{ o.bg }};color:{{ o.fg }};box-shadow:{{ o.sh }}" style-focus="outline:2px solid #F3EDE2;outline-offset:-2px" style-before="content:'';position:absolute;left:50%;top:50%;width:max(100%, 44px);height:max(100%, 44px);transform:translate(-50%, -50%)">{{ o.label }}</button></sc-for>
+          </div>
+          <sc-if value="{{ allNote }}"><div style="font-size:12px;line-height:1.45;color:#A89FB8;padding:10px 12px;background:#1E1A29">{{ t.allNote }}</div></sc-if>
+          <div style="font-size:12px;color:#A89FB8">{{ tabSub }}</div>
+        </div>
+        <div style="padding:20px 16px 0;display:flex;justify-content:center;align-items:flex-end;gap:8px;box-shadow:inset 0 -4px 0 #1E1A29">
+          <sc-for list="{{ podium }}" as="p" hint-placeholder-count="3">
+            <div style="width:100px;display:flex;flex-direction:column;align-items:center;gap:8px">
+              <div style="display:flex;flex-direction:column;align-items:center;gap:2px;width:100px;text-align:center">
+                <div style="font-family:'Pixelify Sans',sans-serif;font-size:{{ p.vfsM }}px;font-weight:700;line-height:1.1">{{ p.v }}</div>
+                <div style="font-size:12px;font-weight:700;max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ p.name }}</div>
+              </div>
+              <sc-if value="{{ p.isPerson }}" hint-placeholder-val="{{ true }}"><img src="{{ p.src }}" width="88" height="88" style="display:block;image-rendering:pixelated"></sc-if>
+              <sc-if value="{{ p.isCountry }}"><img src="{{ p.flag }}" width="72" height="48" style="display:block;image-rendering:pixelated;margin:20px 0;box-shadow:0 0 0 4px #1F1C27"></sc-if>
+              <img src="{{ p.ped }}" width="100" height="{{ p.hM }}" style="display:block;image-rendering:pixelated">
+            </div>
+          </sc-for>
+        </div>
+        <div style="padding:8px 16px 32px;display:flex;flex-direction:column">
+          <sc-for list="{{ rows }}" as="r" hint-placeholder-count="7">
+            <div style="display:flex;align-items:center;gap:12px;padding:10px 0;box-shadow:inset 0 -2px 0 #1E1A29">
+              <div style="width:24px;flex:none;font-family:'Pixelify Sans',sans-serif;font-size:16px;font-weight:700;color:#A89FB8;text-align:right">{{ r.n }}</div>
+              <sc-if value="{{ r.isPerson }}" hint-placeholder-val="{{ true }}"><img src="{{ r.src }}" width="44" height="44" style="display:block;image-rendering:pixelated;flex:none"></sc-if>
+              <sc-if value="{{ r.isCountry }}"><div style="width:44px;height:44px;flex:none;display:flex;align-items:center;justify-content:center;background:#1E1A29"><img src="{{ r.flag }}" width="24" height="16" style="display:block;image-rendering:pixelated"></div></sc-if>
+              <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:3px">
+                <div style="display:flex;align-items:center;gap:6px;min-width:0"><div style="font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ r.name }}</div><sc-if value="{{ r.isPerson }}" hint-placeholder-val="{{ true }}"><img src="{{ r.flag }}" width="24" height="16" style="display:block;image-rendering:pixelated;flex:none"></sc-if></div>
+                <div style="font-size:12px;color:#A89FB8">{{ r.sub }}</div>
+              </div>
+              <div style="font-family:'Pixelify Sans',sans-serif;font-size:20px;font-weight:700;white-space:nowrap">{{ r.v }}</div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+
+      <div style="width:1440px;flex:none;background:#14111C;box-shadow:0 0 0 1px #3D3550;overflow:hidden">
+        <div style="height:72px;padding:0 48px;display:flex;align-items:center;justify-content:space-between;background:#1E1A29;box-shadow:inset 0 -4px 0 #14111C">
+          <div style="display:flex;align-items:center;gap:40px"><div style="font-family:'Pixelify Sans',sans-serif;font-size:28px;font-weight:700">Crown</div>
+            <div style="display:flex;gap:28px;height:72px"><sc-for list="{{ nav.f }}" as="n" hint-placeholder-count="3"><div style="display:flex;align-items:center;font-size:14px;font-weight:700;color:{{ n.fg }};box-shadow:{{ n.sh }}">{{ n.l }}</div></sc-for></div></div>
+          <div style="font-size:14px;color:#A89FB8">{{ t.seasonLong }}</div>
+        </div>
+        <div style="padding:48px 72px 64px;display:flex;flex-direction:column;gap:28px">
+          <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:24px">
+            <div style="font-size:40px;font-weight:700;line-height:1.1">{{ t.hofTitle }}</div>
+            <div style="display:flex;gap:4px;padding:4px;background:#0E0C14;box-shadow:0 0 0 2px #3D3550">
+              <sc-for list="{{ scopes }}" as="o" hint-placeholder-count="2"><button onClick="{{ o.on }}" style="position:relative;height:40px;min-width:120px;padding:0 16px;border:0;cursor:pointer;font-family:Manrope,sans-serif;font-size:14px;font-weight:700;background:{{ o.bg }};color:{{ o.fg }};box-shadow:{{ o.sh }}" style-focus="outline:2px solid #F3EDE2;outline-offset:4px" style-before="content:'';position:absolute;left:50%;top:50%;width:max(100%, 44px);height:max(100%, 44px);transform:translate(-50%, -50%)">{{ o.label }}</button></sc-for>
+            </div>
+          </div>
+          <div style="display:flex;gap:4px;box-shadow:inset 0 -4px 0 #1E1A29">
+            <sc-for list="{{ tabs }}" as="o" hint-placeholder-count="4"><button onClick="{{ o.on }}" style="position:relative;height:52px;padding:0 24px;border:0;cursor:pointer;font-family:Manrope,sans-serif;font-size:16px;font-weight:700;background:{{ o.bg }};color:{{ o.fg }};box-shadow:{{ o.sh }}" style-focus="outline:2px solid #F3EDE2;outline-offset:-2px" style-before="content:'';position:absolute;left:50%;top:50%;width:max(100%, 44px);height:max(100%, 44px);transform:translate(-50%, -50%)">{{ o.label }}</button></sc-for>
+          </div>
+          <div style="display:grid;grid-template-columns:520px minmax(0,1fr);gap:64px;align-items:start">
+            <div style="display:flex;flex-direction:column;gap:16px">
+              <div style="font-size:14px;color:#A89FB8">{{ tabSub }}</div>
+              <sc-if value="{{ allNote }}"><div style="font-size:14px;line-height:1.45;color:#A89FB8;padding:12px 16px;background:#1E1A29">{{ t.allNote }}</div></sc-if>
+              <div style="display:flex;justify-content:center;align-items:flex-end;gap:12px;padding-top:12px;box-shadow:inset 0 -4px 0 #1E1A29">
+                <sc-for list="{{ podium }}" as="p" hint-placeholder-count="3">
+                  <div style="width:150px;display:flex;flex-direction:column;align-items:center;gap:12px">
+                    <div style="display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center">
+                      <div style="font-family:'Pixelify Sans',sans-serif;font-size:{{ p.vfsD }}px;font-weight:700;line-height:1.1">{{ p.v }}</div>
+                      <div style="display:flex;align-items:center;gap:6px"><div style="font-size:14px;font-weight:700;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ p.name }}</div><sc-if value="{{ p.isPerson }}" hint-placeholder-val="{{ true }}"><img src="{{ p.flag }}" width="24" height="16" style="display:block;image-rendering:pixelated"></sc-if></div>
+                    </div>
+                    <sc-if value="{{ p.isPerson }}" hint-placeholder-val="{{ true }}"><img src="{{ p.src }}" width="132" height="132" style="display:block;image-rendering:pixelated"></sc-if>
+                    <sc-if value="{{ p.isCountry }}"><img src="{{ p.flag }}" width="108" height="72" style="display:block;image-rendering:pixelated;margin:30px 0;box-shadow:0 0 0 6px #1F1C27"></sc-if>
+                    <img src="{{ p.ped }}" width="150" height="{{ p.hD }}" style="display:block;image-rendering:pixelated">
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+            <div style="display:flex;flex-direction:column;padding-top:30px">
+              <sc-for list="{{ rows }}" as="r" hint-placeholder-count="7">
+                <div style="display:flex;align-items:center;gap:16px;padding:12px 0;box-shadow:inset 0 -2px 0 #1E1A29">
+                  <div style="width:32px;flex:none;font-family:'Pixelify Sans',sans-serif;font-size:20px;font-weight:700;color:#A89FB8;text-align:right">{{ r.n }}</div>
+                  <sc-if value="{{ r.isPerson }}" hint-placeholder-val="{{ true }}"><img src="{{ r.src }}" width="44" height="44" style="display:block;image-rendering:pixelated;flex:none"></sc-if>
+                  <sc-if value="{{ r.isCountry }}"><div style="width:44px;height:44px;flex:none;display:flex;align-items:center;justify-content:center;background:#1E1A29"><img src="{{ r.flag }}" width="24" height="16" style="display:block;image-rendering:pixelated"></div></sc-if>
+                  <div style="flex:1;min-width:0;display:flex;align-items:center;gap:10px">
+                    <div style="font-size:16px;font-weight:700">{{ r.name }}</div>
+                    <sc-if value="{{ r.isPerson }}" hint-placeholder-val="{{ true }}"><img src="{{ r.flag }}" width="24" height="16" style="display:block;image-rendering:pixelated"></sc-if>
+                    <div style="font-size:14px;color:#A89FB8">{{ r.sub }}</div>
+                  </div>
+                  <div style="font-family:'Pixelify Sans',sans-serif;font-size:28px;font-weight:700;white-space:nowrap">{{ r.v }}</div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =================== 3 · FIN DE TEMPORADA =================== -->
+  <div id="e" data-screen-label="03 Fin de temporada" style="display:flex;flex-direction:column;gap:20px">
+    <div style="display:flex;align-items:flex-start;gap:16px;max-width:1100px">
+      <div style="font-size:14px;font-weight:700;background:#F3EDE2;color:#14111C;padding:4px 10px;border-radius:4px;flex:none">3</div>
+      <div style="display:flex;flex-direction:column;gap:6px"><div style="font-size:20px;font-weight:700">Fin de temporada · 31 de octubre</div><div style="font-size:14px;line-height:1.5;color:#A89FB8;text-wrap:pretty">El retrato es un estandarte pixel con el marco de su rango y la corona (×4 en móvil, ×6 en escritorio). La etiqueta «King of the Season» usa oro porque es un título de corona. El anuncio usa el arte real de la T1, Día de Muertos, directamente de season-lib.js. Con ?season=1 esta pantalla cierra la T1 y anuncia la T2, Escarcha (diciembre), cuyo arte aún es provisional: la escena de la T0 con la paleta cambiada.</div></div>
+    </div>
+    <div style="display:flex;gap:240px;align-items:flex-start">
+      <div style="width:390px;flex:none;background:#14111C;box-shadow:0 0 0 1px #3D3550;overflow:hidden">
+        <div style="height:56px;padding:0 16px;display:flex;align-items:center;justify-content:space-between;background:#1E1A29;box-shadow:inset 0 -4px 0 #14111C"><div style="font-family:'Pixelify Sans',sans-serif;font-size:20px;font-weight:700">Crown</div><div style="font-size:12px;color:#A89FB8">{{ t.endedShort }}</div></div>
+        <div style="padding:28px 16px 24px;display:flex;flex-direction:column;align-items:center;gap:20px;background:#1E1A29;text-align:center">
+          <div style="display:flex;flex-direction:column;gap:6px;align-items:center"><div style="font-size:14px;color:#A89FB8">{{ t.dates }}</div><div style="font-size:28px;font-weight:700;line-height:1.15">{{ t.ended }}</div></div>
+          <img src="{{ end.portrait }}" width="240" height="280" style="display:block;image-rendering:pixelated">
+          <div style="display:flex;flex-direction:column;align-items:center;gap:10px">
+            <div style="height:28px;padding:0 10px;display:flex;align-items:center;border:1px solid #F2C14E;border-radius:4px;font-family:'Pixelify Sans',sans-serif;font-size:14px;font-weight:500;color:#F2C14E">{{ t.kos }}</div>
+            <div style="display:flex;align-items:center;gap:10px"><div style="font-size:28px;font-weight:700">priya_ships</div><img src="{{ end.flagIN }}" width="24" height="16" style="display:block;image-rendering:pixelated"></div>
+            <div style="font-family:'Pixelify Sans',sans-serif;font-size:40px;font-weight:700;line-height:1">171h 20m</div>
+            <div style="font-size:14px;color:#A89FB8">{{ t.kosSub }}</div>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;width:100%">
+            <sc-for list="{{ end.kosStats }}" as="s" hint-placeholder-count="3"><div style="min-width:0;padding:12px 8px;background:#14111C;display:flex;flex-direction:column;gap:6px"><div style="font-family:'Pixelify Sans',sans-serif;font-size:18px;font-weight:700;line-height:1;overflow-wrap:anywhere">{{ s.v }}</div><div style="font-size:12px;color:#A89FB8">{{ s.l }}</div></div></sc-for>
+          </div>
+        </div>
+        <div style="padding:28px 16px 0;display:flex;flex-direction:column;gap:6px"><div style="font-size:20px;font-weight:700">{{ t.podiumT }}</div><div style="font-size:12px;color:#A89FB8">{{ t.podiumSub }}</div></div>
+        <div style="padding:16px 16px 0;display:flex;justify-content:center;align-items:flex-end;gap:8px;box-shadow:inset 0 -4px 0 #1E1A29">
+          <sc-for list="{{ end.podium }}" as="p" hint-placeholder-count="3">
+            <div style="width:100px;display:flex;flex-direction:column;align-items:center;gap:8px">
+              <div style="display:flex;flex-direction:column;align-items:center;gap:2px;text-align:center"><div style="font-family:'Pixelify Sans',sans-serif;font-size:{{ p.vfsM }}px;font-weight:700;line-height:1.1">{{ p.v }}</div><div style="font-size:12px;font-weight:700">{{ p.name }}</div></div>
+              <img src="{{ p.src }}" width="88" height="88" style="display:block;image-rendering:pixelated">
+              <img src="{{ p.ped }}" width="100" height="{{ p.hM }}" style="display:block;image-rendering:pixelated">
+            </div>
+          </sc-for>
+        </div>
+        <div style="padding:28px 16px;display:flex;flex-direction:column;gap:14px">
+          <div style="font-size:20px;font-weight:700">{{ t.seasonStats }}</div>
+          <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px">
+            <sc-for list="{{ end.stats }}" as="s" hint-placeholder-count="6"><div style="padding:14px;background:#1E1A29;display:flex;flex-direction:column;gap:8px"><div style="font-size:12px;color:#A89FB8">{{ s.l }}</div><div style="font-family:'Pixelify Sans',sans-serif;font-size:28px;font-weight:700;line-height:1;color:{{ s.c }}">{{ s.v }}</div><sc-if value="{{ s.hasWho }}"><div style="font-size:12px;color:#A89FB8">{{ s.who }}</div></sc-if></div></sc-for>
+          </div>
+        </div>
+        <div style="box-shadow:inset 0 4px 0 #1E1A29">
+          <div style="width:390px;height:288px;overflow:hidden"><img src="{{ end.nextM }}" width="392" height="288" style="display:block;margin-left:-1px;image-rendering:pixelated"></div>
+          <div style="padding:20px 16px 32px;display:flex;flex-direction:column;gap:14px">
+            <div style="font-size:12px;color:#A89FB8">{{ t.next }}</div>
+            <div style="font-size:28px;font-weight:700;line-height:1.15">{{ t.s1 }}</div>
+            <div style="display:flex;flex-direction:column;gap:4px"><div style="font-size:14px;color:#A89FB8">{{ t.startsIn }}</div><div style="font-family:'Pixelify Sans',sans-serif;font-size:40px;font-weight:700;line-height:1;font-variant-numeric:tabular-nums">{{ countdown }}</div></div>
+            <div style="font-size:16px;line-height:1.5;text-wrap:pretty">{{ t.s1Desc }}</div>
+            <div style="font-size:14px;line-height:1.5;color:#A89FB8;text-wrap:pretty">{{ t.keep }}</div>
+            <button style="position:relative;height:52px;margin:4px;border:0;background:#2A2438;color:#F3EDE2;font-family:Manrope,sans-serif;font-size:16px;font-weight:700;cursor:pointer;box-shadow:0 -4px 0 #3D3550,-4px 0 0 #3D3550,0 4px 0 #14111C,4px 0 0 #14111C" style-hover="background:#3D3550" style-active="background:#14111C" style-focus="outline:2px solid #F3EDE2;outline-offset:6px" style-before="content:'';position:absolute;left:50%;top:50%;width:max(100%, 44px);height:max(100%, 44px);transform:translate(-50%, -50%)">{{ t.remind }}</button>
+            <button style="position:relative;height:44px;border:0;background:transparent;color:#F3EDE2;font-family:Manrope,sans-serif;font-size:14px;font-weight:700;cursor:pointer;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:6px;text-decoration-color:#3D3550" style-hover="background:#1E1A29" style-focus="outline:2px solid #F3EDE2" style-before="content:'';position:absolute;left:50%;top:50%;width:max(100%, 44px);height:max(100%, 44px);transform:translate(-50%, -50%)">{{ t.shareSeason }}</button>
+          </div>
+        </div>
+      </div>
+
+      <div style="width:1440px;flex:none;background:#14111C;box-shadow:0 0 0 1px #3D3550;overflow:hidden">
+        <div style="height:72px;padding:0 48px;display:flex;align-items:center;justify-content:space-between;background:#1E1A29;box-shadow:inset 0 -4px 0 #14111C">
+          <div style="display:flex;align-items:center;gap:40px"><div style="font-family:'Pixelify Sans',sans-serif;font-size:28px;font-weight:700">Crown</div>
+            <div style="display:flex;gap:28px;height:72px"><sc-for list="{{ nav.e }}" as="n" hint-placeholder-count="3"><div style="display:flex;align-items:center;font-size:14px;font-weight:700;color:{{ n.fg }};box-shadow:{{ n.sh }}">{{ n.l }}</div></sc-for></div></div>
+          <div style="font-size:14px;color:#A89FB8">{{ t.endedLong }}</div>
+        </div>
+        <div style="padding:56px 72px;background:#1E1A29;display:grid;grid-template-columns:360px minmax(0,1fr);gap:72px;align-items:center">
+          <img src="{{ end.portrait }}" width="360" height="420" style="display:block;image-rendering:pixelated">
+          <div style="display:flex;flex-direction:column;gap:20px">
+            <div style="display:flex;flex-direction:column;gap:6px"><div style="font-size:16px;color:#A89FB8">{{ t.dates }}</div><div style="font-size:40px;font-weight:700;line-height:1.1">{{ t.ended }}</div></div>
+            <div style="display:flex"><div style="height:32px;padding:0 12px;display:flex;align-items:center;border:1px solid #F2C14E;border-radius:4px;font-family:'Pixelify Sans',sans-serif;font-size:16px;font-weight:500;color:#F2C14E">{{ t.kos }}</div></div>
+            <div style="display:flex;align-items:center;gap:14px"><div style="font-size:64px;font-weight:700;line-height:1;letter-spacing:-0.02em">priya_ships</div><img src="{{ end.flagIN }}" width="36" height="24" style="display:block;image-rendering:pixelated"></div>
+            <div style="display:flex;align-items:baseline;gap:16px"><div style="font-family:'Pixelify Sans',sans-serif;font-size:64px;font-weight:700;line-height:1">171h 20m</div><div style="font-size:16px;color:#A89FB8">{{ t.kosSub }}</div></div>
+            <div style="font-size:20px;font-weight:500;line-height:1.4;color:#A89FB8;max-width:640px;text-wrap:pretty">{{ t.kosLine }}</div>
+            <div style="display:flex;gap:4px;margin-top:4px">
+              <sc-for list="{{ end.kosStats }}" as="s" hint-placeholder-count="3"><div style="width:180px;padding:16px;background:#14111C;display:flex;flex-direction:column;gap:8px"><div style="font-size:12px;color:#A89FB8">{{ s.l }}</div><div style="font-family:'Pixelify Sans',sans-serif;font-size:28px;font-weight:700;line-height:1">{{ s.v }}</div></div></sc-for>
+            </div>
+          </div>
+        </div>
+        <div style="padding:56px 72px;display:grid;grid-template-columns:520px minmax(0,1fr);gap:72px;align-items:end">
+          <div style="display:flex;flex-direction:column;gap:20px">
+            <div style="display:flex;flex-direction:column;gap:6px"><div style="font-size:28px;font-weight:700">{{ t.podiumT }}</div><div style="font-size:14px;color:#A89FB8">{{ t.podiumSub }}</div></div>
+            <div style="display:flex;justify-content:center;align-items:flex-end;gap:12px;box-shadow:inset 0 -4px 0 #1E1A29">
+              <sc-for list="{{ end.podium }}" as="p" hint-placeholder-count="3">
+                <div style="width:150px;display:flex;flex-direction:column;align-items:center;gap:12px">
+                  <div style="display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center"><div style="font-family:'Pixelify Sans',sans-serif;font-size:{{ p.vfsD }}px;font-weight:700;line-height:1.1">{{ p.v }}</div><div style="display:flex;align-items:center;gap:6px"><div style="font-size:14px;font-weight:700">{{ p.name }}</div><img src="{{ p.flag }}" width="24" height="16" style="display:block;image-rendering:pixelated"></div></div>
+                  <img src="{{ p.src }}" width="132" height="132" style="display:block;image-rendering:pixelated">
+                  <img src="{{ p.ped }}" width="150" height="{{ p.hD }}" style="display:block;image-rendering:pixelated">
+                </div>
+              </sc-for>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:20px">
+            <div style="font-size:28px;font-weight:700">{{ t.seasonStats }}</div>
+            <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px">
+              <sc-for list="{{ end.stats }}" as="s" hint-placeholder-count="6"><div style="padding:20px;background:#1E1A29;display:flex;flex-direction:column;gap:10px"><div style="font-size:12px;color:#A89FB8">{{ s.l }}</div><div style="font-family:'Pixelify Sans',sans-serif;font-size:40px;font-weight:700;line-height:1;color:{{ s.c }}">{{ s.v }}</div><sc-if value="{{ s.hasWho }}"><div style="font-size:14px;color:#A89FB8">{{ s.who }}</div></sc-if></div></sc-for>
+            </div>
+          </div>
+        </div>
+        <div style="box-shadow:inset 0 4px 0 #1E1A29">
+          <img src="{{ end.nextD }}" width="1440" height="504" style="display:block;image-rendering:pixelated">
+          <div style="padding:40px 72px 56px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:64px;align-items:end">
+            <div style="display:flex;flex-direction:column;gap:12px;max-width:720px">
+              <div style="font-size:14px;color:#A89FB8">{{ t.next }}</div>
+              <div style="font-size:40px;font-weight:700;line-height:1.1">{{ t.s1 }}</div>
+              <div style="font-size:20px;font-weight:500;line-height:1.45;text-wrap:pretty">{{ t.s1Desc }}</div>
+              <div style="font-size:14px;line-height:1.5;color:#A89FB8;text-wrap:pretty">{{ t.keep }}</div>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:16px">
+              <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px"><div style="font-size:16px;color:#A89FB8">{{ t.startsIn }}</div><div style="font-family:'Pixelify Sans',sans-serif;font-size:64px;font-weight:700;line-height:1;font-variant-numeric:tabular-nums">{{ countdown }}</div></div>
+              <div style="display:flex;align-items:center;gap:16px">
+                <button style="position:relative;height:44px;padding:0 12px;border:0;background:transparent;color:#F3EDE2;font-family:Manrope,sans-serif;font-size:14px;font-weight:700;cursor:pointer;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:6px;text-decoration-color:#3D3550" style-hover="background:#1E1A29" style-focus="outline:2px solid #F3EDE2" style-before="content:'';position:absolute;left:50%;top:50%;width:max(100%, 44px);height:max(100%, 44px);transform:translate(-50%, -50%)">{{ t.shareSeason }}</button>
+                <button style="position:relative;height:52px;padding:0 24px;margin:4px;border:0;background:#2A2438;color:#F3EDE2;font-family:Manrope,sans-serif;font-size:16px;font-weight:700;cursor:pointer;box-shadow:0 -4px 0 #3D3550,-4px 0 0 #3D3550,0 4px 0 #14111C,4px 0 0 #14111C" style-hover="background:#3D3550" style-active="background:#14111C" style-focus="outline:2px solid #F3EDE2;outline-offset:6px" style-before="content:'';position:absolute;left:50%;top:50%;width:max(100%, 44px);height:max(100%, 44px);transform:translate(-50%, -50%)">{{ t.remind }}</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { lang: 'en', ready: false, tick: 0, tab: 0, scope: 'season', season: 0 };
+
+  dict = {
+    en: { seasonShort: 'Season 0 · 34 days left', seasonLong: 'Season 0: Genesis · 34 days left', nav: ['Throne', 'History', 'Hall of fame'], histTitle: 'History of the realm', season: 'Season', earlier: 'Show earlier reigns', began: 'Season 0 began on Sep 15, 2026.', legend: 'Size = length of reign', lg: ['10h or more', '3h or more', 'Under 3h'],
+      reigns: 'reigns', kings: 'kings', countries: 'countries', reignsL: 'Reigns', kingsL: 'Kings', countriesL: 'Countries', longestL: 'Longest so far',
+      now: 'Reigning now', by: n => `Dethroned by ${n}`, today: 'Today · Sep 27', d26: 'Sep 26', d25: 'Sep 25',
+      hofTitle: 'Hall of fame', scopes: ['Season 0', 'All time'], tabs: ['Longest reign', 'Most crowns', 'Shortest reign', 'Countries'], tabSubs: ['Longest single reign this season', 'Crowns taken this season', 'Shortest single reign this season', 'Total time reigning by country'],
+      allNote: 'Season 0 is the first season, so all-time records match it until Season 1 starts on Nov 1.', kingsN: n => `${n} kings`, crownsU: '',
+      endedShort: 'Season 0 has ended', endedLong: 'Season 0: Genesis has ended', ended: 'Season 0: Genesis has ended', dates: 'Sep 15 – Oct 31, 2026', kos: 'King of the Season', kosSub: 'on the throne this season', kosLine: 'Reached Emperor on Oct 12 and held off kenji in the last week. Her portrait stays in the hall forever.',
+      kosStats: ['Crowns taken', 'Longest reign', 'Rank'], emperor: 'Emperor',
+      podiumT: 'Season podium', podiumSub: 'Most time reigning in Season 0', seasonStats: 'Season 0 in numbers',
+      st: ['Reigns', 'Kings', 'Countries', 'Longest reign', 'Shortest reign', 'Peak price'],
+      next: 'Next season', startsIn: 'Starts in', keep: 'All 214 kings of Season 0 keep the Founder medal and the Genesis frame forever.', remind: 'Remind me when it starts', shareSeason: 'Share the season' },
+    es: { seasonShort: 'T0 · quedan 34 días', seasonLong: 'Temporada 0: Génesis · quedan 34 días', nav: ['Trono', 'Historia', 'Salón de la fama'], histTitle: 'Historia del reino', season: 'Temporada', earlier: 'Ver reinados anteriores', began: 'La Temporada 0 empezó el 15 sep 2026.', legend: 'Tamaño = duración del reinado', lg: ['10 h o más', '3 h o más', 'Menos de 3 h'],
+      reigns: 'reinados', kings: 'reyes', countries: 'países', reignsL: 'Reinados', kingsL: 'Reyes', countriesL: 'Países', longestL: 'Más largo por ahora',
+      now: 'Reinando ahora', by: n => `Destronado por ${n}`, today: 'Hoy · 27 sep', d26: '26 sep', d25: '25 sep',
+      hofTitle: 'Salón de la fama', scopes: ['Temporada 0', 'Todos los tiempos'], tabs: ['Reinado más largo', 'Más coronas', 'Reinado más corto', 'Países'], tabSubs: ['Reinado individual más largo de la temporada', 'Coronas tomadas en la temporada', 'Reinado individual más corto de la temporada', 'Tiempo total reinando por país'],
+      allNote: 'La Temporada 0 es la primera, así que los récords de todos los tiempos coinciden con ella hasta que empiece la Temporada 1 el 1 nov.', kingsN: n => `${n} reyes`, crownsU: '',
+      endedShort: 'La Temporada 0 terminó', endedLong: 'La Temporada 0: Génesis terminó', ended: 'Terminó la Temporada 0: Génesis', dates: '15 sep – 31 oct 2026', kos: 'Rey de la temporada', kosSub: 'en el trono esta temporada', kosLine: 'Llegó a Emperador el 12 de octubre y resistió a kenji en la última semana. Su retrato se queda en el salón para siempre.',
+      kosStats: ['Coronas tomadas', 'Reinado más largo', 'Rango'], emperor: 'Emperador',
+      podiumT: 'Podio de la temporada', podiumSub: 'Más tiempo reinando en la Temporada 0', seasonStats: 'La Temporada 0 en cifras',
+      st: ['Reinados', 'Reyes', 'Países', 'Reinado más largo', 'Reinado más corto', 'Precio máximo'],
+      next: 'Próxima temporada', startsIn: 'Empieza en', keep: 'Los 214 reyes de la Temporada 0 conservan para siempre la medalla Fundador y el marco Genesis.', remind: 'Avísame cuando empiece', shareSeason: 'Compartir la temporada' }
+  };
+
+  SEASON_TXT = {
+    1: {
+      en: { began: 'Season 1 began on Nov 1, 2026.', today: 'Today · Nov 7', d26: 'Nov 6', d25: 'Nov 5', scopes: ['Season 1', 'All time'], allNote: 'All time adds up Season 0 and Season 1.', endedShort: 'Season 1 has ended', endedLong: 'Season 1: Day of the Dead has ended', ended: 'Season 1: Day of the Dead has ended', dates: 'Nov 1 – Nov 30, 2026', kosLine: 'Reached Emperor on Nov 26 and held off kenji in the last week. Her portrait stays in the hall forever.', podiumSub: 'Most time reigning in Season 1', seasonStats: 'Season 1 in numbers', keep: 'Every king of Season 1 keeps the Remembered medal and the Marigold frame forever.' },
+      es: { began: 'La Temporada 1 empezó el 1 nov 2026.', today: 'Hoy · 7 nov', d26: '6 nov', d25: '5 nov', scopes: ['Temporada 1', 'Todos los tiempos'], allNote: 'Todos los tiempos suma la Temporada 0 y la Temporada 1.', endedShort: 'La Temporada 1 terminó', endedLong: 'La Temporada 1: Día de Muertos terminó', ended: 'Terminó la Temporada 1: Día de Muertos', dates: '1 nov – 30 nov 2026', kosLine: 'Llegó a Emperador el 26 de noviembre y resistió a kenji en la última semana. Su retrato se queda en el salón para siempre.', podiumSub: 'Más tiempo reinando en la Temporada 1', seasonStats: 'La Temporada 1 en cifras', keep: 'Todos los reyes de la Temporada 1 conservan para siempre la medalla Recordado y el marco Cempasúchil.' }
+    }
+  };
+
+  K = { valeruiz: ['AR', 'duke'], kenji: ['JP', 'count'], 'ana.codes': ['MX', 'knight'], priya_ships: ['IN', 'duke'], 'lucas.fm': ['BR', 'peasant'], sorenh: ['DK', 'baron'], mbali: ['ZA', 'count'], jules: ['FR', 'knight'], danielkim: ['KR', 'baron'], 'camila.vc': ['CO', 'peasant'], theo_builds: ['GB', 'emperor'], 'maru.jpg': ['CL', 'peasant'], 'okafor.io': ['NG', 'knight'], 'hana.studio': ['KR', 'baron'], 'marta.b': ['ES', 'knight'], 'yuki.makes': ['JP', 'knight'] };
+
+  componentDidMount() {
+    const ok = () => window.CrownAvatarLib && window.CrownThroneLib && window.CrownSeasons;
+    const init = () => { this.setup(); this.setState({ ready: true, season: window.CrownSeasons.current().id }); };
+    if (ok()) init(); else this.poll = setInterval(() => { if (ok()) { clearInterval(this.poll); init(); } }, 50);
+    this.iv = setInterval(() => this.setState(s => ({ tick: s.tick + 1 })), 1000);
+  }
+  componentWillUnmount() { clearInterval(this.iv); clearInterval(this.poll); }
+
+  setup() {
+    const lib = window.CrownAvatarLib(), T = window.CrownThroneLib, R = T.R, SEA = window.CrownSeasons.current(), PD = SEA.ped;
+    const frames = {};
+    const fr = (n, crown, rk) => { const k = n + (crown ? '+' : '') + (rk || ''); if (frames[k]) return frames[k]; const c = lib.gen(n); if (!crown) c.cr = -1; return (frames[k] = T.enc(44, 44, T.frameCol(rk || this.K[n][1], lib.avatar(c, 'A', null, true)))); };
+    Object.keys(this.K).forEach(n => fr(n, false));
+    fr('valeruiz', true);
+    const N4 = [[1, 0], [-1, 0], [0, 1], [0, -1]];
+    const drawM = (col, W, H, m, P, flat) => {
+      const inM = (x, y) => x >= 0 && y >= 0 && x < W && y < H && m[y * W + x] === 1;
+      const ol = []; for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) if (!m[y * W + x] && N4.some(([a, b]) => inM(x + a, y + b))) ol.push(y * W + x); ol.forEach(i => (col[i] = P.o));
+      for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) { if (!m[y * W + x]) continue; if (flat) { col[y * W + x] = P[flat]; continue; } const tl = !inM(x - 1, y) || !inM(x, y - 1), br = !inM(x + 1, y) || !inM(x, y + 1); col[y * W + x] = br && !tl ? P.s1 : tl && !br && P.h ? P.h : P.b; }
+    };
+    const G = { 1: ['..##..', '.###..', '..##..', '..##..', '..##..', '..##..', '..##..', '.####.'], 2: ['.####.', '##..##', '....##', '...##.', '..##..', '.##...', '##....', '######'], 3: ['.####.', '##..##', '....##', '..###.', '....##', '....##', '##..##', '.####.'] };
+    const BRONZE = window.CrownSeasons.CORE.bronze;
+    const TRIM = { 1: R.gold, 2: R.silver, 3: BRONZE };
+    const HGT = { 1: 36, 2: 27, 3: 20 };
+    const ped = place => {
+      const W = 50, H = HGT[place], col = new Array(W * H).fill(null), Tm = TRIM[place];
+      for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+        let c;
+        if (x === 0 || x === W - 1 || y === 0 || y === H - 1) c = PD.o;
+        else if (y <= 2) c = x === 1 ? PD.hh : PD.h;
+        else if (y === 3) c = PD.o;
+        else if (y === 4) c = Tm.b;
+        else if (y === 5) c = Tm.s1;
+        else if (x === 1) c = PD.h;
+        else if (x === W - 2 || y === H - 2) c = PD.s1;
+        else c = PD.b;
+        col[y * W + x] = c;
+      }
+      for (let y = 14; y < H - 2; y += 6) for (let x = 2; x < W - 2; x++) col[y * W + x] = PD.s1;
+      for (let y = 8; y < H - 2; y++) { const row = Math.floor((y - 8) / 6); [12 + (row % 2) * 12, 36 + (row % 2) * 6].forEach(x => { if (y % 6 !== 2 && x < W - 2) col[y * W + x] = PD.s1; }); }
+      const gy = 8; G[place].forEach((r, y) => [...r].forEach((ch, x) => { if (ch !== '#') return; const X = 22 + x, Y = gy + y; if (Y < H - 2) col[Y * W + X] = Tm.b; }));
+      G[place].forEach((r, y) => [...r].forEach((ch, x) => { if (ch !== '#') return; const X = 23 + x, Y = gy + y + 1; const inG = (G[place][y + 1] || '')[x + 1] === '#'; if (!inG && Y < H - 2 && col[Y * W + X] !== Tm.b) col[Y * W + X] = PD.o; }));
+      return { src: T.enc(W, H, col), h: H };
+    };
+    const peds = { 1: ped(1), 2: ped(2), 3: ped(3) };
+
+    const portrait = () => {
+      const W = 60, H = 70, col = new Array(W * H).fill(null);
+      const CR = SEA.banner;
+      const ban = new Uint8Array(W * H);
+      for (let y = 4; y < H; y++) for (let x = 5; x <= 54; x++) { if (y >= 58 && Math.abs(x - 29.5) < (y - 57) * 2.3) continue; ban[y * W + x] = 1; }
+      drawM(col, W, H, ban, CR);
+      for (let y = 5; y < 57; y++) { col[y * W + 17] = CR.s1; col[y * W + 42] = CR.s1; }
+      const rod = new Uint8Array(W * H); for (let y = 1; y <= 2; y++) for (let x = 1; x <= 58; x++) rod[y * W + x] = 1;
+      drawM(col, W, H, rod, R.gold);
+      [[0, 0], [57, 0]].forEach(([ox]) => { for (let y = 0; y <= 3; y++) for (let x = 0; x <= 2; x++) col[y * W + ox + x] = (y === 0 || y === 3 || x === 0 || x === 2) ? R.gold.o : R.gold.b; });
+      for (let x = 6; x <= 53; x++) { col[53 * W + x] = R.gold.b; col[54 * W + x] = R.gold.s1; }
+      const lib2 = lib.gen('priya_ships');
+      const f = T.frameCol('emperor', lib.avatar(lib2, 'A', null, true));
+      for (let y = 0; y < 44; y++) for (let x = 0; x < 44; x++) { const c = f[y * 44 + x]; if (c) col[(y + 7) * W + x + 8] = c; }
+      return T.enc(W, H, col);
+    };
+
+    const SWAP = { '#1F1C27': '#13202B', '#2C2936': '#1D3140', '#3A3645': '#294254', '#4E4A5A': '#3D5C70', '#17141E': '#0F1820', '#262330': '#1A2A36', '#3E0C18': '#0C2A38', '#861B2F': '#2C7890', '#B3263B': '#58B2C8', '#2A160C': '#2A3846', '#4E2E1A': '#6A8092', '#6E4428': '#A6BACA' };
+    const stone = new Set(['#1F1C27', '#2C2936', '#3A3645']);
+    const next = (W, H) => {
+      if (SEA.next.id === 1) return T.enc(W, H, window.CrownSeasons.get(1).scene(W, H, {}));
+      const col = T.sceneT0(W, H, {});
+      let s = 7;
+      const out = col.map((c, i) => {
+        const y = (i / W) | 0;
+        s = (s * 1103515245 + 12345) >>> 0;
+        if (y < H - 12 && stone.has(c) && (s >>> 16) % 70 === 0) return (s >>> 8) % 3 === 0 ? '#E6F1F7' : '#9CC4D6';
+        return SWAP[c] || c;
+      });
+      return T.enc(W, H, out);
+    };
+    this.art = { fr, peds, portrait: portrait(), nextM: next(98, 72), nextD: next(240, 84) };
+  }
+
+  renderVals() {
+    const s = this.state, lang = s.lang, en = lang === 'en';
+    const SEA = window.CrownSeasons ? window.CrownSeasons.current() : null, SEU = (SEA && SEA.ui && SEA.ui[lang]) || {};
+    const t = { ...this.dict[lang], seasonLong: SEU.seasonLong || this.dict[lang].seasonLong, seasonShort: SEU.seasonShort || this.dict[lang].seasonShort, ...((SEA && this.SEASON_TXT[SEA.id]) ? this.SEASON_TXT[SEA.id][lang] : {}), ...(SEA ? { s1: SEA.next[lang], s1Desc: SEA.next.desc[lang] } : {}) };
+    const seg = on => (on ? { bg: '#2A2438', fg: '#F3EDE2', sh: 'inset 4px 4px 0 #3D3550, inset -4px -4px 0 #1E1A29' } : { bg: 'transparent', fg: '#A89FB8', sh: 'none' });
+    const tab = on => (on ? { bg: '#1E1A29', fg: '#F3EDE2', sh: 'inset 0 -4px 0 #F3EDE2' } : { bg: 'transparent', fg: '#A89FB8', sh: 'none' });
+    const p2 = n => String(n).padStart(2, '0');
+    const kc = 5 * 3600 + 41 * 60 + 9 + s.tick;
+    const cd = Math.max(0, 42 * 60 + 10 - s.tick);
+    const navOf = i => t.nav.map((l, j) => ({ l, fg: j === i ? '#F3EDE2' : '#A89FB8', sh: j === i ? 'inset 0 -4px 0 #F3EDE2' : 'none' }));
+    const base = {
+      t, seg: { en: seg(en), es: seg(!en) }, setEn: () => this.setState({ lang: 'en' }), setEs: () => this.setState({ lang: 'es' }),
+      countdown: `${Math.floor(cd / 3600)}h ${p2(Math.floor(cd / 60) % 60)}m ${p2(cd % 60)}s`,
+      nav: { h: navOf(1), f: navOf(2), e: navOf(-1) },
+      seasons: (() => {
+        const CS = window.CrownSeasons, cur = CS ? CS.current().id : 0;
+        if (!CS) return [];
+        const item = (S, st) => { const on = s.season === S.id, dis = st === 'next';
+          return { label: (en ? 'Season ' : 'Temporada ') + S.id, labelLong: S.name ? S.name[lang] : S[lang], sub: st === 'now' ? (en ? 'Now' : 'Ahora') : st === 'past' ? (en ? 'Ended' : 'Terminó') : S.starts[lang], dis, cur: dis ? 'not-allowed' : 'pointer',
+            ...(dis ? { bg: 'transparent', fg: '#A89FB8', sh: 'none' } : seg(on)), bgD: on && !dis ? '#1E1A29' : 'transparent', shD: on && !dis ? 'inset 4px 0 0 #F3EDE2' : 'inset 0 0 0 2px #1E1A29', on: dis ? null : () => this.setState({ season: S.id }) }; };
+        const S = CS.get(cur);
+        return cur === 0 ? [item(S, 'now'), item(S.next, 'next')] : [item(CS.get(cur - 1), 'past'), item(S, 'now')];
+      })(),
+      histSum: [{ v: '96', l: t.reigns }, { v: '58', l: t.kings }, { v: '29', l: t.countries }],
+      histSumD: [{ v: '96', l: t.reignsL }, { v: '58', l: t.kingsL }, { v: '29', l: t.countriesL }, { v: '31h 07m', l: t.longestL }],
+      legend: [{ w: 36, l: t.lg[0] }, { w: 24, l: t.lg[1] }, { w: 12, l: t.lg[2] }],
+      scopes: [['season', t.scopes[0]], ['all', t.scopes[1]]].map(([k, label]) => ({ label, ...seg(s.scope === k), on: () => this.setState({ scope: k }) })),
+      tabs: t.tabs.map((label, i) => ({ label, ...tab(s.tab === i), on: () => this.setState({ tab: i }) })),
+      tabSub: t.tabSubs[s.tab], allNote: s.scope === 'all'
+    };
+    if (!s.ready) return { ...base, hist: [], podium: [], rows: [], end: { podium: [], stats: [], kosStats: [] } };
+    const A = this.art, T = window.CrownThroneLib;
+    const FONT = { A: ['.#.', '#.#', '###', '#.#', '#.#'], D: ['##.', '#.#', '#.#', '#.#', '##.'], G: ['.##', '#..', '#.#', '#.#', '.##'], K: ['#.#', '#.#', '##.', '#.#', '#.#'], N: ['#.#', '###', '###', '#.#', '#.#'], Z: ['###', '..#', '.#.', '#..', '###'] };
+    this._pill = this._pill || {};
+    const pill = cc => {
+      if (this._pill[cc]) return this._pill[cc];
+      const W = 12, H = 8, col = new Array(W * H).fill('#3D3550');
+      [...cc].forEach((ch, k) => (FONT[ch] || FONT.A).forEach((r, y) => [...r].forEach((c, x) => { if (c === '#') col[(y + 1) * W + 2 + k * 5 - (k ? 1 : 0) + x] = '#F3EDE2'; })));
+      return (this._pill[cc] = T.enc(W, H, col));
+    };
+    const who = n => { const [cc, rk] = this.K[n]; return { name: n, flag: T.flag(cc) || pill(cc), rank: T.RANKS[rk][lang], sw: T.RANKS[rk].sw, src: A.fr(n, false) }; };
+
+    const HX = [
+      ['day', t.today], ['valeruiz', '16:00', null, "Built a budget app for freelancers in Latam. Free for the first 1,000 users.", null],
+      ['kenji', '12:48', 3 * 3600 + 12 * 60, "Told you I'd be back. Tsumiki 2.0 ships Friday.", 'valeruiz'],
+      ['ana.codes', '12:01', 47 * 60, 'Clases de programación en español, gratis para siempre.', 'kenji'],
+      ['priya_ships', '00:56', 11 * 3600 + 5 * 60, "Lumen turns your meeting notes into tasks. Try it, it's free.", 'ana.codes'],
+      ['lucas.fm', '00:55', 38, 'Só passando pra dizer oi.', 'priya_ships'],
+      ['day', t.d26], ['sorenh', '23:01', 3600 + 54 * 60, 'Hiring two Rust engineers in Copenhagen.', 'lucas.fm'],
+      ['mbali', '16:41', 6 * 3600 + 20 * 60, 'First king from South Africa. Sawubona, internet.', 'sorenh'],
+      ['jules', '16:19', 22 * 60, "Je voulais juste voir la vue d'ici.", 'mbali'],
+      ['danielkim', '13:31', 2 * 3600 + 48 * 60, 'Lantern Keeper demo is out. Wishlist it if you like cozy puzzles.', 'jules'],
+      ['camila.vc', '13:22', 9 * 60, 'Invierto en founders de Latam. Escríbeme.', 'danielkim'],
+      ['day', t.d25], ['theo_builds', '22:49', 14 * 3600 + 33 * 60, '14 hours. Going to bed. Someone take it from me.', 'camila.vc']
+    ];
+    const fmt = x => (x < 60 ? `${x}s` : x < 3600 ? `${Math.floor(x / 60)}m` : `${Math.floor(x / 3600)}h ${p2(Math.floor(x / 60) % 60)}m`);
+    const hist = HX.map(r => {
+      if (r[0] === 'day') return { isDay: true, isEntry: false, day: r[1] };
+      const [n, time, secs, msg, by] = r, isNow = secs === null, sec = isNow ? kc : secs;
+      const tier = sec >= 36000 ? 'L' : sec >= 10800 ? 'M' : 'S', w = who(n);
+      const T3 = {
+        L: { wM: 132, wD: 176, nfs: 20, nfsD: 28, dfsM: 40, dfsD: 64, mfsM: 16, mfsD: 20, mfw: 500, clamp: 4, pad: '16px', padD: '24px', bg: '#1E1A29', node: 16, alignD: 'center', durAlign: 'center' },
+        M: { wM: 88, wD: 88, nfs: 16, nfsD: 20, dfsM: 28, dfsD: 40, mfsM: 14, mfsD: 16, mfw: 400, clamp: 2, pad: '8px 0', padD: '12px 0', bg: 'transparent', node: 12, alignD: 'center', durAlign: 'center' },
+        S: { wM: 44, wD: 44, nfs: 14, nfsD: 16, dfsM: 16, dfsD: 20, mfsM: 12, mfsD: 14, mfw: 400, clamp: 1, pad: '6px 0', padD: '6px 0', bg: 'transparent', node: 8, alignD: 'center', durAlign: 'center' }
+      }[tier];
+      const node = isNow ? 16 : T3.node;
+      return {
+        isDay: false, isEntry: true, ...w, ...T3, src: isNow ? A.fr(n, true) : w.src, showRank: tier !== 'S',
+        dur: isNow ? `${Math.floor(sec / 3600)}h ${p2(Math.floor(sec / 60) % 60)}m ${p2(sec % 60)}s` : fmt(sec), msg, time,
+        end: isNow ? t.now : t.by(by), ecol: isNow ? '#F2C14E' : '#A89FB8',
+        node, nodeC: isNow ? '#F2C14E' : tier === 'L' ? '#F3EDE2' : '#3D3550',
+        nodeL: 8 - 28 - node / 2, nodeLD: 20 - node / 2, nodeT: tier === 'L' ? 24 : tier === 'M' ? 18 + 44 - node / 2 - 18 : 12 + 22 - node / 2 - 6,
+        timeT: tier === 'L' ? 20 : tier === 'M' ? 44 : 18,
+        sh: tier === 'L' ? 'inset 0 4px 0 #2A2438' : 'none'
+      };
+    });
+
+    const CN = cc => { const c = T.COUNTRIES.find(x => x[0] === cc); return c ? (en ? c[1] : c[2]) : cc; };
+    const LISTS = [
+      [['theo_builds', '31h 07m'], ['priya_ships', '26h 40m'], ['kenji', '19h 12m'], ['mbali', '16h 05m'], ['sorenh', '12h 48m'], ['danielkim', '11h 20m'], ['valeruiz', '9h 54m'], ['camila.vc', '8h 31m'], ['ana.codes', '7h 02m'], ['yuki.makes', '6h 47m']],
+      [['kenji', '14'], ['priya_ships', '12'], ['ana.codes', '9'], ['theo_builds', '8'], ['danielkim', '7'], ['valeruiz', '6'], ['mbali', '5'], ['jules', '5'], ['sorenh', '4'], ['marta.b', '4']],
+      [['maru.jpg', '11s'], ['lucas.fm', '38s'], ['jules', '52s'], ['okafor.io', '1m 04s'], ['hana.studio', '1m 31s'], ['camila.vc', '2m 10s'], ['marta.b', '3m 02s'], ['yuki.makes', '3m 47s'], ['ana.codes', '4m 15s'], ['danielkim', '5m 30s']],
+      [['IN', '139h', 11], ['JP', '128h', 9], ['GB', '97h', 6], ['AR', '61h', 7], ['ZA', '44h', 3], ['MX', '40h', 8], ['KR', '33h', 5], ['DK', '25h', 2], ['CO', '18h', 4], ['BR', '9h', 6]]
+    ];
+    const isC = s.tab === 3;
+    const items = LISTS[s.tab].map(([k, v, kn], i) => {
+      if (isC) { const f = T.flag(k); return { n: String(i + 1), isPerson: false, isCountry: true, name: CN(k), flag: f, v, sub: t.kingsN(kn) }; }
+      const w = who(k); return { n: String(i + 1), isPerson: true, isCountry: false, ...w, v, sub: w.rank };
+    });
+    const pod = list => [1, 0, 2].map(i => { const it = list[i], pl = i + 1, P = A.peds[pl]; return { ...it, ped: P.src, hM: P.h * 2, hD: P.h * 3, vfsM: pl === 1 ? 20 : 16, vfsD: pl === 1 ? 28 : 20 }; });
+
+    const endPod = pod([['priya_ships', '171h'], ['kenji', '142h'], ['theo_builds', '97h']].map(([n, v]) => ({ ...who(n), v })));
+    const end = {
+      portrait: A.portrait, flagIN: T.flag('IN'), nextM: A.nextM, nextD: A.nextD, podium: endPod,
+      kosStats: [{ l: t.kosStats[0], v: '17' }, { l: t.kosStats[1], v: '26h 40m' }, { l: t.kosStats[2], v: t.emperor }],
+      stats: [
+        { l: t.st[0], v: '486', c: '#F3EDE2', hasWho: false }, { l: t.st[1], v: '214', c: '#F3EDE2', hasWho: false }, { l: t.st[2], v: '37', c: '#F3EDE2', hasWho: false },
+        { l: t.st[3], v: '31h 07m', c: '#F3EDE2', hasWho: true, who: 'theo_builds' }, { l: t.st[4], v: '11s', c: '#F3EDE2', hasWho: true, who: 'maru.jpg' }, { l: t.st[5], v: '$212', c: '#F2C14E', hasWho: true, who: (SEA && SEA.id === 1) ? (en ? 'Paid by kenji on Nov 22' : 'Pagado por kenji el 22 nov') : (en ? 'Paid by kenji on Oct 14' : 'Pagado por kenji el 14 oct') }
+      ]
+    };
+    return { ...base, hist, podium: pod(items), rows: items.slice(3), end };
+  }
+}
+</script>
+</body>
+</html>

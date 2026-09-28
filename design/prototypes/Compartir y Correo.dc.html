@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700&family=Pixelify+Sans:wght@500;700&display=swap" rel="stylesheet">
+<script src="season-lib.js"></script>
+<script src="avatar-lib.js"></script>
+<script src="throne-lib.js"></script>
+<script src="medal-lib.js"></script>
+<style>
+body{margin:0;background:#0E0C14;-webkit-font-smoothing:antialiased}
+a{color:#F3EDE2;text-decoration-color:#3D3550}a:hover{color:#F3EDE2;text-decoration-color:#F3EDE2}
+</style>
+</helmet>
+<section id="turn14" style="background:#0E0C14;padding:72px;display:flex;flex-direction:column;gap:96px;font-family:Manrope,sans-serif;color:#F3EDE2;width:max-content">
+  <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:48px;width:2480px">
+    <div style="display:flex;flex-direction:column;gap:8px;max-width:1000px">
+      <div style="font-size:28px;font-weight:700">Paso 11 · Tarjetas para compartir y correo</div>
+      <div style="font-size:16px;line-height:1.5;color:#A89FB8;text-wrap:pretty">Cuatro plantillas en 1200×630 y 1080×1920, y el correo «You were dethroned». Las zonas variables llevan contorno cian y el nombre del campo que rellena el servidor; puedes ocultarlas para ver la tarjeta limpia. La primera fila muestra cómo se ven a tamaño de miniatura en el feed de X (506 px).</div>
+    </div>
+    <div style="display:flex;gap:16px;align-items:center">
+      <button onClick="{{ toggleZones }}" style="height:48px;padding:0 20px;margin:4px;border:0;background:#2A2438;color:#F3EDE2;font-family:Manrope,sans-serif;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 -4px 0 #3D3550,-4px 0 0 #3D3550,0 4px 0 #14111C,4px 0 0 #14111C" style-hover="background:#3D3550" style-active="background:#14111C" style-focus="outline:2px solid #F3EDE2;outline-offset:6px">{{ zonesLabel }}</button>
+      <div style="display:flex;gap:4px;padding:4px;background:#14111C;box-shadow:0 0 0 2px #3D3550">
+        <button onClick="{{ setEn }}" style="height:40px;min-width:88px;border:0;cursor:pointer;font-family:Manrope,sans-serif;font-size:14px;font-weight:700;background:{{ seg.en.bg }};color:{{ seg.en.fg }};box-shadow:{{ seg.en.sh }}" style-focus="outline:2px solid #F3EDE2;outline-offset:4px">English</button>
+        <button onClick="{{ setEs }}" style="height:40px;min-width:88px;border:0;cursor:pointer;font-family:Manrope,sans-serif;font-size:14px;font-weight:700;background:{{ seg.es.bg }};color:{{ seg.es.fg }};box-shadow:{{ seg.es.sh }}" style-focus="outline:2px solid #F3EDE2;outline-offset:4px">Español</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ 1200×630 (miniatura + tamaño real) ============ -->
+  <sc-for list="{{ views }}" as="v" hint-placeholder-count="2">
+    <div data-screen-label="{{ v.label }}" style="display:flex;flex-direction:column;gap:20px">
+      <div style="display:flex;flex-direction:column;gap:6px"><div style="font-size:20px;font-weight:700">{{ v.title }}</div><div style="font-size:14px;color:#A89FB8">{{ v.sub }}</div></div>
+      <div style="display:flex;flex-wrap:wrap;gap:{{ v.gap }}px;width:{{ v.rowW }}px">
+
+        <!-- VICTORIA -->
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div data-card="vic" style="width:{{ v.w }}px;height:{{ v.h }}px;overflow:hidden;flex:none;box-shadow:0 0 0 1px #3D3550">
+            <div style="width:1200px;height:630px;transform:scale({{ v.s }});transform-origin:0 0;position:relative;background:#14111C;display:flex">
+              <div style="position:relative;width:700px;height:630px;flex:none">
+                <img src="{{ c.vic.sceneL }}" width="700" height="630" style="display:block;image-rendering:pixelated">
+                <sc-if value="{{ v.zones }}"><div style="position:absolute;left:196px;top:196px;width:308px;height:308px;outline:3px dashed #5CE1E6;outline-offset:6px"><div style="position:absolute;left:-9px;top:-44px;height:28px;padding:0 10px;display:flex;align-items:center;background:#5CE1E6;color:#0E0C14;font-family:ui-monospace,Menlo,monospace;font-size:16px;font-weight:700;white-space:nowrap">{avatar} + {rank_frame} + {crown}</div></div></sc-if>
+              </div>
+              <div style="flex:1;padding:56px 56px 52px 44px;display:flex;flex-direction:column;justify-content:space-between;min-width:0">
+                <div style="display:flex;align-items:baseline;gap:14px"><div style="font-family:'Pixelify Sans',sans-serif;font-size:32px;font-weight:700">Crown</div><div style="font-size:18px;color:#A89FB8">{{ t.season }}</div></div>
+                <div style="display:flex;flex-direction:column;gap:18px">
+                  <div style="font-size:44px;font-weight:700;line-height:1.1;text-wrap:balance">{{ t.vicHead }}</div>
+                  <div style="display:flex;flex-direction:column;gap:4px">
+                    <div style="font-size:24px;color:#A89FB8">{{ t.vicLabel }}</div>
+                    <div style="position:relative;align-self:flex-start;outline:{{ v.ol }};outline-offset:6px"><div style="font-family:'Pixelify Sans',sans-serif;font-size:112px;font-weight:700;line-height:1">2h 15m</div><sc-if value="{{ v.zones }}"><div style="position:absolute;right:-6px;top:-36px;height:28px;padding:0 10px;display:flex;align-items:center;background:#5CE1E6;color:#0E0C14;font-family:ui-monospace,Menlo,monospace;font-size:16px;font-weight:700">{time}</div></sc-if></div>
+                  </div>
+                </div>
+                <div style="position:relative;display:flex;align-items:center;gap:14px;flex-wrap:wrap;outline:{{ v.ol }};outline-offset:6px">
+                  <div style="font-size:32px;font-weight:700">valeruiz</div>
+                  <img src="{{ c.flags.AR }}" width="36" height="24" style="display:block;image-rendering:pixelated">
+                  <div style="height:36px;padding:0 12px;display:flex;align-items:center;gap:8px;border:2px solid #3D3550;border-radius:4px"><div style="width:12px;height:12px;background:#F2C14E"></div><div style="font-family:'Pixelify Sans',sans-serif;font-size:18px;font-weight:500">{{ t.duke }}</div></div>
+                  <sc-if value="{{ v.zones }}"><div style="position:absolute;left:-6px;top:-40px;height:28px;padding:0 10px;display:flex;align-items:center;background:#5CE1E6;color:#0E0C14;font-family:ui-monospace,Menlo,monospace;font-size:16px;font-weight:700;white-space:nowrap">{name} {flag} {rank}</div></sc-if>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div style="font-size:14px;font-weight:700">{{ t.cVic }}</div>
+        </div>
+
+        <!-- DESAFÍO -->
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div style="width:{{ v.w }}px;height:{{ v.h }}px;overflow:hidden;flex:none;box-shadow:0 0 0 1px #3D3550">
+            <div style="width:1200px;height:630px;transform:scale({{ v.s }});transform-origin:0 0;position:relative;background:#14111C;display:flex">
+              <div style="position:relative;width:700px;height:630px;flex:none">
+                <img src="{{ c.cha.sceneL }}" width="700" height="630" style="display:block;image-rendering:pixelated">
+                <sc-if value="{{ v.zones }}"><div style="position:absolute;left:196px;top:196px;width:308px;height:308px;outline:3px dashed #5CE1E6;outline-offset:6px"><div style="position:absolute;left:-9px;top:-78px;height:28px;padding:0 10px;display:flex;align-items:center;background:#5CE1E6;color:#0E0C14;font-family:ui-monospace,Menlo,monospace;font-size:16px;font-weight:700;white-space:nowrap">{avatar} + {rank_frame} + {crown}</div></div></sc-if>
+              </div>
+              <div style="flex:1;padding:56px 56px 52px 44px;display:flex;flex-direction:column;justify-content:space-between;min-width:0">
+                <div style="display:flex;align-items:baseline;gap:14px"><div style="font-family:'Pixelify Sans',sans-serif;font-size:32px;font-weight:700">Crown</div><div style="font-size:18px;color:#A89FB8">{{ t.season }}</div></div>
+                <div style="display:flex;flex-direction:column;gap:10px">
+                  <div style="position:relative;align-self:flex-start;display:flex;align-items:center;gap:14px;outline:{{ v.ol }};outline-offset:6px"><div style="font-size:44px;font-weight:700;line-height:1.1">@ana.codes</div><img src="{{ c.flags.MX }}" width="48" height="32" style="display:block;image-rendering:pixelated"><sc-if value="{{ v.zones }}"><div style="position:absolute;left:-6px;top:-40px;height:28px;padding:0 10px;display:flex;align-items:center;background:#5CE1E6;color:#0E0C14;font-family:ui-monospace,Menlo,monospace;font-size:16px;font-weight:700;white-space:nowrap">{name} {flag}</div></sc-if></div>
+                  <div style="font-size:44px;font-weight:700;line-height:1.1">{{ t.chaHead }}</div>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:6px">
+                  <div style="font-size:28px;font-weight:500">{{ t.chaLabel }}</div>
+                  <div style="position:relative;align-self:flex-start;outline:{{ v.ol }};outline-offset:6px"><div style="font-family:'Pixelify Sans',sans-serif;font-size:112px;font-weight:700;line-height:1;color:#F2C14E">$34</div><sc-if value="{{ v.zones }}"><div style="position:absolute;right:-6px;top:-36px;height:28px;padding:0 10px;display:flex;align-items:center;background:#5CE1E6;color:#0E0C14;font-family:ui-monospace,Menlo,monospace;font-size:16px;font-weight:700">{price}</div></sc-if></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div style="font-size:14px;font-weight:700">{{ t.cCha }}</div>
+        </div>
+
+        <!-- LOGRO -->
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div style="width:{{ v.w }}px;height:{{ v.h }}px;overflow:hidden;flex:none;box-shadow:0 0 0 1px #3D3550">
+            <div style="width:1200px;height:630px;transform:scale({{ v.s }});transform-origin:0 0;position:relative;background:#14111C;display:flex">
+              <div style="position:relative;width:560px;height:630px;flex:none;background:#1E1A29;box-shadow:inset 0 12px 0 #4A90E2;display:flex;align-items:center;justify-content:center">
+                <div style="position:relative;outline:{{ v.ol }};outline-offset:8px"><img src="{{ c.medal }}" width="384" height="384" style="display:block;image-rendering:pixelated"><sc-if value="{{ v.zones }}"><div style="position:absolute;left:-8px;top:-46px;height:28px;padding:0 10px;display:flex;align-items:center;background:#5CE1E6;color:#0E0C14;font-family:ui-monospace,Menlo,monospace;font-size:16px;font-weight:700;white-space:nowrap">{medal} ×16</div></sc-if></div>
+              </div>
+              <div style="flex:1;padding:56px 56px 52px 56px;display:flex;flex-direction:column;justify-content:space-between;min-width:0">
+                <div style="display:flex;align-items:baseline;gap:14px"><div style="font-family:'Pixelify Sans',sans-serif;font-size:32px;font-weight:700">Crown</div><div style="font-size:18px;color:#A89FB8">{{ t.season }}</div></div>
+                <div style="display:flex;flex-direction:column;gap:18px">
+                  <div style="font-size:24px;color:#A89FB8">{{ t.achLabel }}</div>
+                  <div style="position:relative;align-self:flex-start;outline:{{ v.ol }};outline-offset:6px"><div style="font-size:80px;font-weight:700;line-height:1;letter-spacing:-0.02em">{{ t.regicide }}</div><sc-if value="{{ v.zones }}"><div style="position:absolute;right:-6px;top:-40px;height:28px;padding:0 10px;display:flex;align-items:center;background:#5CE1E6;color:#0E0C14;font-family:ui-monospace,Menlo,monospace;font-size:16px;font-weight:700">{achievement}</div></sc-if></div>
+                  <div style="position:relative;align-self:flex-start;display:flex;align-items:center;gap:16px;flex-wrap:wrap;outline:{{ v.ol }};outline-offset:6px">
+                    <div style="height:40px;padding:0 14px;display:flex;align-items:center;gap:10px;border:2px solid #4A90E2;border-radius:4px"><div style="width:14px;height:14px;background:#4A90E2"></div><div style="font-family:'Pixelify Sans',sans-serif;font-size:20px;font-weight:500">{{ t.rare }}</div></div>
+                    <div style="font-size:28px;font-weight:500">{{ t.pct }}</div>
+                    <sc-if value="{{ v.zones }}"><div style="position:absolute;left:-6px;bottom:-44px;height:28px;padding:0 10px;display:flex;align-items:center;background:#5CE1E6;color:#0E0C14;font-family:ui-monospace,Menlo,monospace;font-size:16px;font-weight:700;white-space:nowrap">{rarity} {rarity_color} {pct}</div></sc-if>
+                  </div>
+                </div>
+                <div style="position:relative;display:flex;align-items:center;gap:16px;outline:{{ v.ol }};outline-offset:6px">
+                  <img src="{{ c.ach.av }}" width="88" height="88" style="display:block;image-rendering:pixelated">
+                  <div style="font-size:28px;font-weight:700">kenji</div>
+                  <img src="{{ c.flags.JP }}" width="36" height="24" style="display:block;image-rendering:pixelated">
+                  <sc-if value="{{ v.zones }}"><div style="position:absolute;right:-6px;top:-6px;height:28px;padding:0 10px;display:flex;align-items:center;background:#5CE1E6;color:#0E0C14;font-family:ui-monospace,Menlo,monospace;font-size:16px;font-weight:700;white-space:nowrap">{avatar} {name} {flag}</div></sc-if>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div style="font-size:14px;font-weight:700">{{ t.cAch }}</div>
+        </div>
+
+        <!-- DESTRONADO -->
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div style="width:{{ v.w }}px;height:{{ v.h }}px;overflow:hidden;flex:none;box-shadow:0 0 0 1px #3D3550">
+            <div style="width:1200px;height:630px;transform:scale({{ v.s }});transform-origin:0 0;position:relative;background:#14111C;display:flex">
+              <div style="position:relative;width:700px;height:630px;flex:none">
+                <img src="{{ c.dth.sceneL }}" width="700" height="630" style="display:block;image-rendering:pixelated">
+                <sc-if value="{{ v.zones }}"><div style="position:absolute;left:196px;top:196px;width:308px;height:308px;outline:3px dashed #5CE1E6;outline-offset:6px"><div style="position:absolute;left:-9px;top:-44px;height:28px;padding:0 10px;display:flex;align-items:center;background:#5CE1E6;color:#0E0C14;font-family:ui-monospace,Menlo,monospace;font-size:16px;font-weight:700;white-space:nowrap">{avatar} sin corona + {rank_frame}</div></div></sc-if>
+              </div>
+              <div style="flex:1;padding:56px 56px 52px 44px;display:flex;flex-direction:column;justify-content:space-between;min-width:0">
+                <div style="display:flex;align-items:baseline;gap:14px"><div style="font-family:'Pixelify Sans',sans-serif;font-size:32px;font-weight:700">Crown</div><div style="font-size:18px;color:#A89FB8">{{ t.season }}</div></div>
+                <div style="display:flex;flex-direction:column;gap:10px">
+                  <div style="font-size:44px;font-weight:700;line-height:1.1">{{ t.dthHead }}</div>
+                  <div style="position:relative;align-self:flex-start;outline:{{ v.ol }};outline-offset:6px"><div style="display:flex;align-items:baseline;gap:14px;white-space:nowrap"><div style="font-family:'Pixelify Sans',sans-serif;font-size:112px;font-weight:700;line-height:1">{{ t.dthNum }}</div><div style="font-size:40px;font-weight:700">{{ t.dthUnit }}</div></div><sc-if value="{{ v.zones }}"><div style="position:absolute;right:-6px;top:-36px;height:28px;padding:0 10px;display:flex;align-items:center;background:#5CE1E6;color:#0E0C14;font-family:ui-monospace,Menlo,monospace;font-size:16px;font-weight:700">{time}</div></sc-if></div>
+                </div>
+                <div style="position:relative;display:flex;flex-direction:column;gap:10px;outline:{{ v.ol }};outline-offset:6px">
+                  <div style="display:flex;align-items:center;gap:14px"><div style="font-size:32px;font-weight:700">maru.jpg</div><img src="{{ c.flags.CL }}" width="36" height="24" style="display:block;image-rendering:pixelated"></div>
+                  <div style="display:flex;align-items:center;gap:10px;font-size:22px;color:#A89FB8">{{ t.dthBy }} <span style="font-weight:700;color:#F3EDE2">danielkim</span><img src="{{ c.flags.KR }}" width="30" height="20" style="display:block;image-rendering:pixelated"></div>
+                  <sc-if value="{{ v.zones }}"><div style="position:absolute;right:-6px;top:-40px;height:28px;padding:0 10px;display:flex;align-items:center;background:#5CE1E6;color:#0E0C14;font-family:ui-monospace,Menlo,monospace;font-size:16px;font-weight:700;white-space:nowrap">{name} {flag} {new_king} {new_flag}</div></sc-if>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div style="font-size:14px;font-weight:700">{{ t.cDth }}</div>
+        </div>
+      </div>
+    </div>
+  </sc-for>
+
+  <!-- ============ 1080×1920 ============ -->
+  <div data-screen-label="Historias 1080×1920" style="display:flex;flex-direction:column;gap:20px">
+    <div style="display:flex;flex-direction:column;gap:6px"><div style="font-size:20px;font-weight:700">1080×1920 · historias de Instagram y TikTok</div><div style="font-size:14px;color:#A89FB8">Las franjas rayadas son las zonas que tapa la interfaz de la app (250 px arriba, 340 px abajo). Todo lo importante queda entre ellas; la escena es la misma a ×9.</div></div>
+    <div style="display:flex;gap:80px;align-items:flex-start">
+      <sc-for list="{{ stories }}" as="s" hint-placeholder-count="4">
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <div style="position:relative;width:1080px;height:1920px;background:#14111C;overflow:hidden;box-shadow:0 0 0 1px #3D3550">
+            <div style="position:absolute;left:80px;right:80px;top:260px;display:flex;flex-direction:column;gap:28px">
+              <div style="display:flex;align-items:baseline;justify-content:space-between;gap:16px"><div style="font-family:'Pixelify Sans',sans-serif;font-size:40px;font-weight:700">Crown</div><div style="font-size:24px;color:#A89FB8">{{ t.season }}</div></div>
+              <sc-if value="{{ s.isScene }}" hint-placeholder-val="{{ true }}">
+                <div style="display:flex;flex-direction:column;gap:16px">
+                  <div style="position:relative;align-self:flex-start;display:flex;align-items:center;gap:16px;flex-wrap:wrap;outline:{{ Z.ol }};outline-offset:8px">
+                    <div style="font-size:48px;font-weight:700">{{ s.name }}</div>
+                    <img src="{{ s.flag }}" width="54" height="36" style="display:block;image-rendering:pixelated">
+                    <sc-if value="{{ s.hasRank }}"><div style="height:44px;padding:0 14px;display:flex;align-items:center;gap:10px;border:2px solid #3D3550;border-radius:4px"><div style="width:14px;height:14px;background:{{ s.sw }}"></div><div style="font-family:'Pixelify Sans',sans-serif;font-size:22px;font-weight:500">{{ s.rank }}</div></div></sc-if>
+                    <sc-if value="{{ Z.zones }}"><div style="position:absolute;left:-8px;top:-44px;height:30px;padding:0 10px;display:flex;align-items:center;background:#5CE1E6;color:#0E0C14;font-family:ui-monospace,Menlo,monospace;font-size:18px;font-weight:700;white-space:nowrap">{{ s.zName }}</div></sc-if>
+                  </div>
+                  <div style="font-size:72px;font-weight:700;line-height:1.08;text-wrap:balance">{{ s.head }}</div>
+                  <div style="display:flex;flex-direction:column;gap:6px">
+                    <sc-if value="{{ s.hasLabel }}"><div style="font-size:36px;font-weight:500;color:{{ s.labelC }}">{{ s.label }}</div></sc-if>
+                    <div style="position:relative;align-self:flex-start;outline:{{ Z.ol }};outline-offset:8px"><div style="display:flex;align-items:baseline;gap:20px;white-space:nowrap"><div style="font-family:'Pixelify Sans',sans-serif;font-size:160px;font-weight:700;line-height:1;color:{{ s.bigC }}">{{ s.big }}</div><sc-if value="{{ s.hasUnit }}"><div style="font-size:56px;font-weight:700">{{ s.unit }}</div></sc-if></div><sc-if value="{{ Z.zones }}"><div style="position:absolute;right:-8px;top:-42px;height:30px;padding:0 10px;display:flex;align-items:center;background:#5CE1E6;color:#0E0C14;font-family:ui-monospace,Menlo,monospace;font-size:18px;font-weight:700">{{ s.zBig }}</div></sc-if></div>
+                  </div>
+                </div>
+              </sc-if>
+            </div>
+            <sc-if value="{{ s.isScene }}" hint-placeholder-val="{{ true }}">
+              <div style="position:absolute;left:0;top:{{ s.sceneTop }}px;width:1080px">
+                <img src="{{ s.scene }}" width="1080" height="{{ s.sceneH }}" style="display:block;image-rendering:pixelated">
+                <sc-if value="{{ Z.zones }}"><div style="position:absolute;left:342px;top:198px;width:396px;height:396px;outline:3px dashed #5CE1E6;outline-offset:8px"><div style="position:absolute;left:-11px;top:-48px;height:30px;padding:0 10px;display:flex;align-items:center;background:#5CE1E6;color:#0E0C14;font-family:ui-monospace,Menlo,monospace;font-size:18px;font-weight:700;white-space:nowrap">{{ s.zAv }}</div></div></sc-if>
+              </div>
+              <div style="position:absolute;left:0;right:0;top:{{ s.fillTop }}px;bottom:0;background:#17141E"></div>
+            </sc-if>
+            <sc-if value="{{ s.isAch }}">
+              <div style="position:absolute;left:0;right:0;top:360px;height:1200px;display:flex;flex-direction:column;align-items:center;gap:36px;text-align:center">
+                <div style="width:1080px;padding:64px 0;background:#1E1A29;box-shadow:inset 0 12px 0 #4A90E2;display:flex;justify-content:center">
+                  <div style="position:relative;outline:{{ Z.ol }};outline-offset:10px"><img src="{{ c.medal }}" width="576" height="576" style="display:block;image-rendering:pixelated"><sc-if value="{{ Z.zones }}"><div style="position:absolute;left:-10px;top:-50px;height:30px;padding:0 10px;display:flex;align-items:center;background:#5CE1E6;color:#0E0C14;font-family:ui-monospace,Menlo,monospace;font-size:18px;font-weight:700">{medal} ×24</div></sc-if></div>
+                </div>
+                <div style="font-size:36px;color:#A89FB8">{{ t.achLabel }}</div>
+                <div style="position:relative;outline:{{ Z.ol }};outline-offset:8px"><div style="font-size:112px;font-weight:700;line-height:1;letter-spacing:-0.02em">{{ t.regicide }}</div><sc-if value="{{ Z.zones }}"><div style="position:absolute;right:-8px;top:-44px;height:30px;padding:0 10px;display:flex;align-items:center;background:#5CE1E6;color:#0E0C14;font-family:ui-monospace,Menlo,monospace;font-size:18px;font-weight:700">{achievement}</div></sc-if></div>
+                <div style="position:relative;display:flex;align-items:center;gap:20px;outline:{{ Z.ol }};outline-offset:8px">
+                  <div style="height:52px;padding:0 18px;display:flex;align-items:center;gap:12px;border:3px solid #4A90E2;border-radius:4px"><div style="width:18px;height:18px;background:#4A90E2"></div><div style="font-family:'Pixelify Sans',sans-serif;font-size:28px;font-weight:500">{{ t.rare }}</div></div>
+                  <div style="font-size:36px;font-weight:500">{{ t.pct }}</div>
+                  <sc-if value="{{ Z.zones }}"><div style="position:absolute;left:-8px;bottom:-48px;height:30px;padding:0 10px;display:flex;align-items:center;background:#5CE1E6;color:#0E0C14;font-family:ui-monospace,Menlo,monospace;font-size:18px;font-weight:700;white-space:nowrap">{rarity} {rarity_color} {pct}</div></sc-if>
+                </div>
+                <div style="position:relative;display:flex;align-items:center;gap:20px;margin-top:12px;outline:{{ Z.ol }};outline-offset:8px">
+                  <img src="{{ c.ach.av }}" width="132" height="132" style="display:block;image-rendering:pixelated">
+                  <div style="font-size:44px;font-weight:700">kenji</div>
+                  <img src="{{ c.flags.JP }}" width="54" height="36" style="display:block;image-rendering:pixelated">
+                  <sc-if value="{{ Z.zones }}"><div style="position:absolute;right:-8px;top:-44px;height:30px;padding:0 10px;display:flex;align-items:center;background:#5CE1E6;color:#0E0C14;font-family:ui-monospace,Menlo,monospace;font-size:18px;font-weight:700;white-space:nowrap">{avatar} {name} {flag}</div></sc-if>
+                </div>
+              </div>
+            </sc-if>
+            <sc-if value="{{ Z.zones }}">
+              <div style="position:absolute;left:0;right:0;top:0;height:250px;background:repeating-linear-gradient(135deg,rgba(92,225,230,0.14) 0 16px,transparent 16px 32px);box-shadow:inset 0 -3px 0 #5CE1E6;display:flex;align-items:flex-end;padding:0 0 12px 24px;box-sizing:border-box;font-family:ui-monospace,Menlo,monospace;font-size:18px;font-weight:700;color:#5CE1E6">interfaz de la app · 250</div>
+              <div style="position:absolute;left:0;right:0;bottom:0;height:340px;background:repeating-linear-gradient(135deg,rgba(92,225,230,0.14) 0 16px,transparent 16px 32px);box-shadow:inset 0 3px 0 #5CE1E6;display:flex;align-items:flex-start;padding:12px 0 0 24px;box-sizing:border-box;font-family:ui-monospace,Menlo,monospace;font-size:18px;font-weight:700;color:#5CE1E6">interfaz de la app · 340</div>
+            </sc-if>
+          </div>
+          <div style="font-size:14px;font-weight:700">{{ s.caption }}</div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+
+  <!-- ============ CORREO ============ -->
+  <div data-screen-label="Correo destronado" style="display:flex;flex-direction:column;gap:20px">
+    <div style="display:flex;flex-direction:column;gap:6px;max-width:1100px"><div style="font-size:20px;font-weight:700">Correo «You were dethroned»</div><div style="font-size:14px;line-height:1.5;color:#A89FB8;text-wrap:pretty">A 600 px y a 375 px, en móvil. Una sola columna y un único botón. Los avatares van en una sola imagen (el servidor la genera como las tarjetas) y la bandera es la pixel en imagen, no emoji. El botón es dorado porque es la acción de la corona. Asunto: «You were dethroned by kenji». Texto previo: «Take it back for $34 before the price goes up.»</div></div>
+    <div style="display:flex;gap:120px;align-items:flex-start">
+      <sc-for list="{{ mails }}" as="m" hint-placeholder-count="2">
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <div style="font-size:14px;color:#A89FB8">{{ m.label }}</div>
+          <div style="width:{{ m.outer }}px;padding:{{ m.op }}px 0;background:#0E0C14;box-shadow:0 0 0 1px #3D3550;display:flex;justify-content:center">
+            <div style="width:{{ m.w }}px;background:#14111C;display:flex;flex-direction:column">
+              <div style="padding:20px {{ m.p }}px;display:flex;align-items:center;justify-content:space-between;background:#1E1A29"><div style="font-family:'Pixelify Sans',sans-serif;font-size:24px;font-weight:700">Crown</div><div style="font-size:12px;color:#A89FB8">{{ t.season }}</div></div>
+              <div style="padding:32px {{ m.p }}px 8px;display:flex;flex-direction:column;align-items:center;gap:10px">
+                <div style="position:relative;outline:{{ Z.ol }};outline-offset:6px"><img src="{{ c.mail }}" width="{{ m.iw }}" height="{{ m.ih }}" style="display:block;image-rendering:pixelated"><sc-if value="{{ Z.zones }}"><div style="position:absolute;left:-6px;top:-34px;height:24px;padding:0 8px;display:flex;align-items:center;background:#5CE1E6;color:#0E0C14;font-family:ui-monospace,Menlo,monospace;font-size:12px;font-weight:700;white-space:nowrap">{user_avatar} → {king_avatar}</div></sc-if></div>
+                <div style="width:{{ m.iw }}px;display:flex;justify-content:space-between;font-size:12px;color:#A89FB8"><div style="width:{{ m.cw }}px;text-align:center">{{ t.you }}</div><div style="width:{{ m.cw }}px;text-align:center">{{ t.newKing }}</div></div>
+              </div>
+              <div style="padding:20px {{ m.p }}px 32px;display:flex;flex-direction:column;gap:16px">
+                <div style="font-size:28px;font-weight:700;line-height:1.2">{{ t.mTitle }}</div>
+                <div style="font-size:16px;line-height:1.6;color:#F3EDE2">
+                  <span>{{ t.m1 }} </span><span style="font-family:'Pixelify Sans',sans-serif;font-weight:700;outline:{{ Z.ol }};outline-offset:2px">4h 12m</span><span>{{ t.m2 }}</span><span style="font-weight:700;outline:{{ Z.ol }};outline-offset:2px">kenji</span> <img src="{{ c.flags.JP }}" width="24" height="16" style="display:inline-block;vertical-align:-2px;image-rendering:pixelated;outline:{{ Z.ol }};outline-offset:2px"><span>. {{ t.m3 }} </span><span style="font-family:'Pixelify Sans',sans-serif;font-weight:700;color:#F2C14E;outline:{{ Z.ol }};outline-offset:2px">$34</span><span>.</span>
+                </div>
+                <sc-if value="{{ Z.zones }}"><div style="font-family:ui-monospace,Menlo,monospace;font-size:12px;font-weight:700;color:#5CE1E6">{duration} {king_name} {king_flag} {price}</div></sc-if>
+                <div style="display:flex;padding-top:8px"><div style="flex:{{ m.btnFlex }};height:52px;padding:0 28px;margin:4px;display:flex;align-items:center;justify-content:center;background:#F2C14E;color:#14111C;font-size:16px;font-weight:700;box-shadow:0 -4px 0 #F7D57F,-4px 0 0 #F7D57F,0 4px 0 #C9962C,4px 0 0 #C9962C">{{ t.btn }}</div></div>
+                <div style="font-size:14px;line-height:1.5;color:#A89FB8">{{ t.mNote }}</div>
+              </div>
+              <div style="padding:20px {{ m.p }}px 28px;box-shadow:inset 0 2px 0 #1E1A29;font-size:12px;line-height:1.6;color:#A89FB8">{{ t.mFoot }} <span style="color:#F3EDE2;text-decoration:underline;text-decoration-color:#3D3550">{{ t.unsub }}</span></div>
+            </div>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+</section>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { lang: 'en', ready: false, zones: (() => { try { return new URLSearchParams(location.search).get('zones') !== '0'; } catch (e) { return true; } })() };
+
+  dict = {
+    en: { season: 'Season 0: Genesis', duke: 'Duke', knight: 'Knight', peasant: 'Peasant', vicHead: "I'm the king of the internet.", vicLabel: 'Reigning for', chaHead: 'holds the crown.', chaLabel: 'Dethrone her for', achLabel: 'Achievement unlocked', regicide: 'Regicide', rare: 'Rare', pct: '6.2% of players have it', dthHead: 'I was king for', dthNum: '11', dthUnit: 'seconds.', dthBy: 'Dethroned by',
+      cVic: 'Victoria', cCha: 'Desafío', cAch: 'Logro', cDth: 'Destronado',
+      you: 'You', newKing: 'kenji · new king', mTitle: 'You were dethroned', m1: 'You were dethroned after', m2: ' by ', m3: 'Take it back for', btn: 'Take back the crown', mNote: 'The price drops 2% every hour. Floor price $5.', mFoot: "You're getting this because you reigned on Crown.", unsub: 'Turn off dethrone alerts' },
+    es: { season: 'Temporada 0: Génesis', duke: 'Duque', knight: 'Caballero', peasant: 'Plebeyo', vicHead: 'Soy el rey de internet.', vicLabel: 'Reino desde hace', chaHead: 'tiene la corona.', chaLabel: 'Destrónala por', achLabel: 'Logro desbloqueado', regicide: 'Regicida', rare: 'Raro', pct: 'Lo tiene el 6,2% de los jugadores', dthHead: 'Fui rey durante', dthNum: '11', dthUnit: 'segundos.', dthBy: 'Me destronó',
+      cVic: 'Victoria', cCha: 'Desafío', cAch: 'Logro', cDth: 'Destronado',
+      you: 'Tú', newKing: 'kenji · nuevo rey', mTitle: 'Te destronaron', m1: 'Te destronaron después de', m2: '. Te la quitó ', m3: 'Recupérala por', btn: 'Recupera la corona', mNote: 'El precio baja 2% cada hora. Precio mínimo $5.', mFoot: 'Recibes este correo porque reinaste en Crown.', unsub: 'Desactivar alertas de destronamiento' }
+  };
+
+  componentDidMount() {
+    const ok = () => window.CrownAvatarLib && window.CrownThroneLib && window.CrownMedalLib && window.CrownSeasons;
+    const init = () => { this.setup(); this.setState({ ready: true }); };
+    if (ok()) init(); else this.poll = setInterval(() => { if (ok()) { clearInterval(this.poll); init(); } }, 50);
+  }
+  componentWillUnmount() { clearInterval(this.poll); }
+
+  setup() {
+    const lib = window.CrownAvatarLib(), T = window.CrownThroneLib, ML = window.CrownMedalLib();
+    const gen = (n, crown, ex) => { const c = lib.gen(n); if (crown && c.cr < 0) c.cr = 0; if (!crown) c.cr = -1; if (ex != null) c.ex = ex; return c; };
+    const av = c => lib.avatar(c, 'A', null, true);
+    const setPx = (col, W, H, x, y, c) => { if (x >= 0 && y >= 0 && x < W && y < H) col[y * W + x] = c; };
+    const outlined = (col, W, H, pts, c, o) => {
+      const S = new Set(pts.map(([x, y]) => x + ',' + y));
+      pts.forEach(([x, y]) => [[1, 0], [-1, 0], [0, 1], [0, -1]].forEach(([a, b]) => { if (!S.has((x + a) + ',' + (y + b))) setPx(col, W, H, x + a, y + b, o); }));
+      pts.forEach(([x, y]) => setPx(col, W, H, x, y, c));
+    };
+    const reticle = (col, W, H) => {
+      const P = T.portraitAt(W, H), x0 = P.x - 4, y0 = P.y - 4, x1 = P.x + 47, y1 = P.y + 47, L = 7, pts = [];
+      for (let i = 0; i < L; i++) { pts.push([x0 + i, y0], [x0, y0 + i], [x1 - i, y0], [x1, y0 + i], [x0 + i, y1], [x0, y1 - i], [x1 - i, y1], [x1, y1 - i]); }
+      const mx = P.x + 21, my = P.y + 21;
+      for (let i = 0; i < 4; i++) { pts.push([mx, y0 - 3 + i], [mx + 1, y0 - 3 + i], [mx, y1 + i], [mx + 1, y1 + i], [x0 - 3 + i, my], [x0 - 3 + i, my + 1], [x1 + i, my], [x1 + i, my + 1]); }
+      outlined(col, W, H, pts, '#F3EDE2', '#14111C');
+    };
+    const sparkle = (col, W, H) => {
+      const P = T.portraitAt(W, H);
+      [[-10, 2, '#F7D57F'], [53, 6, '#F3EDE2'], [-14, 22, '#F3EDE2'], [57, 26, '#F7D57F'], [-5, -9, '#F2C14E'], [49, -6, '#F2C14E']].forEach(([dx, dy, c]) => {
+        const x = P.x + dx, y = P.y + dy;
+        outlined(col, W, H, [[x, y], [x - 1, y], [x + 1, y], [x, y - 1], [x, y + 1]], c, '#5A3A12');
+      });
+    };
+    const fallen = c => (col, W, H) => {
+      const cr = lib.avatar({ ...c, cr: c.cr < 0 ? 0 : c.cr }, 'A', 'crown', true);
+      let x0 = 99, y0 = 99, x1 = -1, y1 = -1;
+      cr.forEach((v, i) => { if (!v) return; const x = i % 32, y = (i / 32) | 0; x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y); });
+      const cw = x1 - x0 + 1, ch = y1 - y0 + 1, ox = Math.round(W / 2 - cw / 2), oy = H - 1 - ch;
+      for (let y = 0; y < ch; y++) for (let x = 0; x < cw; x++) { const v = cr[(y0 + (ch - 1 - y)) * 32 + x0 + x]; if (v) setPx(col, W, H, ox + x, oy + y, v); }
+    };
+    const scene = (W, H, rank, c, extra) => { const col = T.scene(W, H, { frame: T.frameCol(rank, av(c)) }); if (extra) extra(col, W, H); return T.enc(W, H, col); };
+    const cV = gen('valeruiz', true), cA = gen('ana.codes', true), cM = gen('maru.jpg', false, 3);
+    const both = (rank, c, extra) => ({ sceneL: scene(100, 90, rank, c, extra), sceneS: scene(120, 84, rank, c, extra) });
+
+    const W = 110, H = 44, col = new Array(W * H).fill(null);
+    const fU = T.frameCol('duke', av(gen('valeruiz', false))), fK = T.frameCol('count', av(gen('kenji', true)));
+    for (let y = 0; y < 44; y++) for (let x = 0; x < 44; x++) { col[y * W + x] = fU[y * 44 + x]; col[y * W + 66 + x] = fK[y * 44 + x]; }
+    ['....#...', '....##..', '#######.', '########', '#######.', '....##..', '....#...'].forEach((r, y) => [...r].forEach((ch, x) => { if (ch === '#') col[(19 + y) * W + 51 + x] = '#A89FB8'; }));
+
+    this.art = {
+      vic: both('duke', cV, sparkle), cha: both('knight', cA, reticle), dth: both('peasant', cM, fallen(cM)),
+      medal: ML.medal('regicide', 'rare', false),
+      ach: { av: T.enc(44, 44, T.frameCol('count', av(gen('kenji', false)))) },
+      mail: T.enc(W, H, col),
+      flags: Object.fromEntries(['AR', 'MX', 'JP', 'CL', 'KR'].map(k => [k, T.flag(k)]))
+    };
+  }
+
+  renderVals() {
+    const SEA = window.CrownSeasons && window.CrownSeasons.current();
+    const s = this.state, t = { ...this.dict[s.lang], ...((SEA && SEA.ui && SEA.ui[s.lang]) || {}) }, en = s.lang === 'en';
+    const seg = on => (on ? { bg: '#2A2438', fg: '#F3EDE2', sh: 'inset 4px 4px 0 #3D3550, inset -4px -4px 0 #1E1A29' } : { bg: 'transparent', fg: '#A89FB8', sh: 'none' });
+    const ol = s.zones ? '3px dashed #5CE1E6' : '0 solid transparent';
+    const base = {
+      t, seg: { en: seg(en), es: seg(!en) }, setEn: () => this.setState({ lang: 'en' }), setEs: () => this.setState({ lang: 'es' }),
+      toggleZones: () => this.setState({ zones: !s.zones }), zonesLabel: s.zones ? 'Ocultar zonas variables' : 'Mostrar zonas variables',
+      Z: { zones: s.zones, ol },
+      views: [
+        { label: 'Miniatura en el feed de X', title: 'Así se ven en el feed de X', sub: 'Tarjeta grande de X a 506 px de ancho (escala 0,42). Se lee quién, cuánto tiempo o cuánto cuesta, y la corona se ve.', s: 0.42, w: 504, h: 265, gap: 32, rowW: 2480, zones: false, ol: '0 solid transparent' },
+        { label: 'Tarjetas 1200×630', title: '1200×630 · X y vistas previas de enlaces', sub: 'La escena ocupa 700×630 a ×7 (100×90 píxeles de escena) y el texto va en la columna derecha, de 500 px.', s: 1, w: 1200, h: 630, gap: 80, rowW: 2480, zones: s.zones, ol }
+      ],
+      mails: [
+        { label: '600 px · escritorio', outer: 760, op: 40, w: 600, p: 40, iw: 440, ih: 176, cw: 176, btnFlex: '0 0 auto' },
+        { label: '375 px · móvil', outer: 375, op: 0, w: 375, p: 20, iw: 330, ih: 132, cw: 132, btnFlex: '1' }
+      ]
+    };
+    if (!s.ready) return { ...base, c: { vic: {}, cha: {}, dth: {}, ach: {}, flags: {} }, stories: [] };
+    const A = this.art;
+    const st = (o) => ({ isScene: true, isAch: false, hasRank: true, hasLabel: true, labelC: '#A89FB8', bigC: '#F3EDE2', sceneTop: 820, sceneH: 756, fillTop: 1576, zAv: '{avatar} + {rank_frame} + {crown}', ...o });
+    const stories = [
+      st({ caption: t.cVic, name: 'valeruiz', flag: A.flags.AR, rank: t.duke, sw: '#F2C14E', zName: '{name} {flag} {rank}', head: t.vicHead, label: t.vicLabel, big: '2h 15m', zBig: '{time}', scene: A.vic.sceneS }),
+      st({ caption: t.cCha, name: '@ana.codes', flag: A.flags.MX, rank: t.knight, sw: '#6E7480', zName: '{name} {flag} {rank}', head: t.chaHead, label: t.chaLabel, labelC: '#F3EDE2', big: '$34', bigC: '#F2C14E', zBig: '{price}', scene: A.cha.sceneS }),
+      { isScene: false, isAch: true, caption: t.cAch },
+      st({ caption: t.cDth, name: 'maru.jpg', flag: A.flags.CL, rank: t.peasant, sw: '#8A5A34', zName: '{name} {flag} {rank}', head: t.dthHead, hasLabel: false, big: t.dthNum, hasUnit: true, unit: t.dthUnit, zBig: '{time}', scene: A.dth.sceneS, zAv: '{avatar} sin corona + {rank_frame}' })
+    ];
+    return { ...base, c: A, stories };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,125 @@
+/* Crown · tokens de interfaz (sistema base 2b: rejilla de 4 px, esquinas escalonadas, relieve con luz arriba-izquierda).
+   Solo modo oscuro. La interfaz NO cambia con la temporada, salvo --crown-season (color de la temporada activa). */
+:root {
+  /* ---------- Superficies ---------- */
+  --crown-page: #0E0C14;          /* fondo del documento, por detrás de la app */
+  --crown-ink: #14111C;           /* Tinta real · fondo de la app, campos hundidos, sombra de relieve */
+  --crown-velvet: #1E1A29;        /* Terciopelo · superficie (barras, tarjetas, campos) */
+  --crown-hall: #2A2438;          /* Salón · superficie elevada, botón secundario, segmento activo */
+  --crown-stone: #3D3550;         /* Piedra · bordes, luz del relieve, hover del secundario */
+  --crown-stone-hi: #574C70;      /* luz inferior del relieve invertido (pulsado sobre Piedra) */
+  --crown-abyss: #0B0910;         /* sombra dura desplazada de modales y avisos */
+
+  /* ---------- Texto ---------- */
+  --crown-text: #F3EDE2;          /* Pergamino · texto principal; también botón claro (guardar) y segmento activo */
+  --crown-text-muted: #A89FB8;    /* Niebla · texto secundario, placeholders (4.5:1+ sobre Tinta y Terciopelo) */
+  --crown-parchment-shade: #BFB29C;
+  --crown-parchment-hi: #FFFBF2;
+
+  /* ---------- Oro: SOLO corona (botón de tomarla, precio, rey actual, legendario, "Just crowned"). Nunca decoración. <4 % de la pantalla. Un solo botón dorado por pantalla. */
+  --crown-gold: #F2C14E;          /* Oro corona */
+  --crown-gold-old: #C9962C;      /* Oro viejo · sombra del relieve y pulsado */
+  --crown-gold-glow: #F7D57F;     /* Oro brillo (derivado) · SOLO hover/relieve del botón principal */
+
+  /* ---------- Estados (siempre con ícono + texto) ---------- */
+  --crown-success: #3DD68C;       /* Esmeralda · pago confirmado, guardado, enlace enviado */
+  --crown-danger: #E5484D;        /* Rubí · destronado, errores, rechazo de moderación */
+  /* El carmesí (#9A1F35 / #B3263B) NO es de interfaz: vive en el arte pixel. */
+
+  /* ---------- Rareza (aro de medalla, etiqueta) ---------- */
+  --crown-rarity-common: #9AA3AE;
+  --crown-rarity-rare: #4A90E2;
+  --crown-rarity-epic: #9B5DE5;
+  --crown-rarity-legendary: #F2C14E;
+  --crown-rarity-seasonal: var(--crown-season); /* color de la temporada de ORIGEN de la medalla */
+
+  /* ---------- Temporada activa (la pone el servidor en <html data-season="N">) ---------- */
+  --crown-season: #4FA39B;        /* T0 Génesis · verdín */
+
+  /* ---------- Tipografía ---------- */
+  --crown-font-ui: 'Manrope', system-ui, sans-serif;          /* 400 · 500 · 700 · toda la interfaz y titulares */
+  --crown-font-pixel: 'Pixelify Sans', 'Manrope', sans-serif; /* 500 · 700 · SOLO marca, reloj, precio, etiquetas de juego pequeñas, cifras de Hazañas */
+  --crown-text-12: 12px;  /* legal, rareza en tarjetas, metadatos */
+  --crown-text-14: 14px;  /* feed, etiquetas, ayuda de campos, rango/medalla (pixel) */
+  --crown-text-16: 16px;  /* cuerpo, botones secundarios, campos */
+  --crown-text-18: 18px;  /* botón principal en escritorio */
+  --crown-text-20: 20px;  /* títulos de bloque */
+  --crown-text-24: 24px;
+  --crown-text-28: 28px;  /* marca "Crown" (pixel), títulos de sección, precio/reloj móvil (pixel) */
+  --crown-text-40: 40px;  /* titulares de pantalla, precio (pixel) */
+  --crown-text-64: 64px;  /* reloj escritorio (pixel), titular grande */
+  --crown-leading-none: 1;     /* cifras pixel */
+  --crown-leading-tight: 1.1;  /* titulares */
+  --crown-leading-snug: 1.4;
+  --crown-leading-body: 1.5;
+  --crown-tracking-display: -0.02em; /* solo Manrope ≥ 64 px */
+
+  /* ---------- Espaciado: rejilla de 4 px. 2/6/10/14 son ajustes ópticos permitidos en componentes pequeños. ---------- */
+  --crown-space-0-5: 2px;
+  --crown-space-1: 4px;
+  --crown-space-1-5: 6px;
+  --crown-space-2: 8px;
+  --crown-space-2-5: 10px;
+  --crown-space-3: 12px;
+  --crown-space-3-5: 14px;
+  --crown-space-4: 16px;
+  --crown-space-5: 20px;
+  --crown-space-6: 24px;
+  --crown-space-8: 32px;
+  --crown-space-10: 40px;
+  --crown-space-12: 48px;
+  --crown-space-16: 64px;
+  --crown-space-20: 80px;
+
+  /* ---------- Radios: la interfaz es cuadrada; las esquinas "escalonadas" salen del relieve de 4 px. ---------- */
+  --crown-radius-none: 0;
+  --crown-radius-tag: 4px;   /* solo pastillas pequeñas (etiqueta de rango en tarjetas para compartir) */
+
+  /* ---------- Relieve (box-shadow en 4 lados = esquina escalonada de 4 px). Requiere margin: 4px para no recortarse. ---------- */
+  --crown-relief: 0 -4px 0 #3D3550, -4px 0 0 #3D3550, 0 4px 0 #1E1A29, 4px 0 0 #1E1A29;              /* secundario, reposo */
+  --crown-relief-card: 0 -4px 0 #3D3550, -4px 0 0 #3D3550, 0 4px 0 #14111C, 4px 0 0 #14111C;         /* tarjeta/opción sobre Terciopelo */
+  --crown-relief-pressed: 0 -4px 0 #14111C, -4px 0 0 #14111C, 0 4px 0 #3D3550, 4px 0 0 #3D3550;      /* pulsado: luz invertida + padding-top 4px */
+  --crown-relief-selected: 0 -4px 0 #14111C, -4px 0 0 #14111C, 0 4px 0 #574C70, 4px 0 0 #574C70;     /* opción seleccionada (fondo Piedra) */
+  --crown-relief-gold: 0 -4px 0 #F7D57F, -4px 0 0 #F7D57F, 0 4px 0 #C9962C, 4px 0 0 #C9962C;
+  --crown-relief-gold-hover: 0 -4px 0 #F3EDE2, -4px 0 0 #F3EDE2, 0 4px 0 #C9962C, 4px 0 0 #C9962C;
+  --crown-relief-gold-pressed: 0 -4px 0 #C9962C, -4px 0 0 #C9962C, 0 4px 0 #F2C14E, 4px 0 0 #F2C14E;
+  --crown-relief-parchment: 0 -4px 0 #FFFBF2, -4px 0 0 #FFFBF2, 0 4px 0 #BFB29C, 4px 0 0 #BFB29C;    /* botón Guardar (Pergamino, sin oro) */
+  --crown-relief-parchment-pressed: 0 -4px 0 #BFB29C, -4px 0 0 #BFB29C, 0 4px 0 #F3EDE2, 4px 0 0 #F3EDE2;
+  --crown-inset-field: inset 4px 4px 0 #14111C;                           /* campo de texto hundido */
+  --crown-inset-field-error: inset 4px 4px 0 #14111C, inset 0 0 0 2px #E5484D;
+  --crown-inset-segment-on: inset 4px 4px 0 #3D3550, inset -4px -4px 0 #1E1A29; /* segmento activo del conmutador */
+  --crown-bar-bottom: inset 0 -4px 0 #14111C;                             /* barra superior */
+  --crown-bar-top: inset 0 4px 0 #1E1A29;
+  --crown-clock-cell: inset 0 4px 0 #2A2438, inset 0 -4px 0 #14111C;       /* celda del reloj */
+  --crown-ring-1: 0 0 0 1px #3D3550;
+  --crown-ring-2: 0 0 0 2px #3D3550;
+  --crown-modal: 0 0 0 4px #1E1A29, 12px 12px 0 4px #0B0910;              /* modal / hoja */
+  --crown-toast: 0 0 0 4px #14111C, 8px 8px 0 4px #0B0910;                /* aviso de logro (más inset 0 4px 0 color de rareza) */
+  --crown-flag-danger: inset 4px 0 0 #E5484D;                             /* aviso de error: franja izquierda */
+  --crown-flag-success: inset 4px 0 0 #3DD68C;
+
+  /* ---------- Foco y accesibilidad ---------- */
+  --crown-focus: 2px solid #F3EDE2;
+  --crown-focus-offset: 2px;         /* campos, enlaces, segmentos */
+  --crown-focus-offset-relief: 6px;  /* botones con relieve (el anillo queda fuera del escalón) */
+  --crown-hit-min: 44px;             /* zona táctil mínima: si el control es menor, ::before centrado de max(100%,44px) */
+
+  /* ---------- Controles ---------- */
+  --crown-button-h: 56px;        /* escritorio */
+  --crown-button-h-mobile: 48px;
+  --crown-field-h: 52px;
+  --crown-topbar-h: 72px;        /* escritorio; 56px en móvil */
+
+  /* ---------- Pixel art: escala entera por bloque ---------- */
+  --crown-px-mobile: 4;   /* escena 98×72 → 392×288 */
+  --crown-px-desktop: 6;  /* escena 240×84 → 1440×504 */
+}
+[data-season="0"] { --crown-season: #4FA39B; }
+[data-season="1"] { --crown-season: #F28C28; }
+
+/* Todo arte pixel: sin suavizado */
+.crown-pixel, img[src$=".svg"].crown-pixel { image-rendering: pixelated; image-rendering: crisp-edges; }
+
+@media (prefers-reduced-motion: reduce) {
+  :root { --crown-motion: reduced; }
+}

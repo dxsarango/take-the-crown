@@ -1,0 +1,377 @@
+{
+  "$doc": "Paleta NÚCLEO del arte pixel: no cambia con la temporada. Rampa = { o: contorno, s2: sombra profunda, s1: sombra, b: base, h: brillo }. Las temporadas añaden hasta 32 colores propios (design/seasons/*.json).",
+  "ramps": {
+    "gold": {
+      "o": "#5A3A12",
+      "s2": "#8A5A1C",
+      "s1": "#C9962C",
+      "b": "#F2C14E",
+      "h": "#F7D57F",
+      "use": "Coronas, joyas, marcos Duque/Emperador. h (#F7D57F) = Oro brillo"
+    },
+    "ivory": {
+      "o": "#4E4034",
+      "s2": "#8C7E6C",
+      "s1": "#BFB29C",
+      "b": "#F3EDE2",
+      "h": "#FFFBF2",
+      "use": "Perlas, cuellos, cera de velas, calavera"
+    },
+    "ivory2": {
+      "o": "#4E4034",
+      "s2": "#6E6050",
+      "s1": "#8C7E6C",
+      "b": "#BFB29C",
+      "h": "#DDD3C2",
+      "use": "Forro de capas"
+    },
+    "crimson": {
+      "o": "#3A0A14",
+      "s2": "#54101D",
+      "s1": "#6E1626",
+      "b": "#9A1F35",
+      "h": "#C27478",
+      "use": "Carmesí heráldico #9A1F35: gemas, medallas, Guardián III, capa Carmesí. NO es el rubí de la interfaz"
+    },
+    "silver": {
+      "o": "#3E4452",
+      "s2": "#666D7B",
+      "s1": "#8E96A4",
+      "b": "#C3C8D0",
+      "h": "#DBDAD5",
+      "use": "Gafas, marcos Barón/Conde"
+    },
+    "stone": {
+      "o": "#14111C",
+      "s2": "#1E1A29",
+      "s1": "#2A2438",
+      "b": "#3D3550",
+      "h": "#574C70",
+      "use": "Parche, interior de medallas (#3D3550)"
+    },
+    "iron": {
+      "o": "#1E2230",
+      "s1": "#4A5060",
+      "b": "#6E7480",
+      "h": "#A4AAB6",
+      "use": "Marco Caballero"
+    },
+    "wood": {
+      "o": "#3A2214",
+      "s1": "#6E4428",
+      "b": "#8A5A34",
+      "h": "#A8744A",
+      "use": "Marco Plebeyo"
+    },
+    "blue": {
+      "o": "#16284A",
+      "s1": "#3566B0",
+      "b": "#4A90E2",
+      "h": "#8CC0F2",
+      "use": "Gemas del marco Conde/Emperador"
+    },
+    "silverFrame": {
+      "o": "#3E4452",
+      "s1": "#8E96A4",
+      "b": "#C3C8D0",
+      "h": "#E4E8EE",
+      "use": "Marco Barón/Conde"
+    },
+    "lock": {
+      "o": "#24212C",
+      "s1": "#3E3A48",
+      "b": "#57525F",
+      "h": "#57525F",
+      "use": "Bloqueado: aro de medalla, marcos y coronas bloqueados"
+    },
+    "lockIn": {
+      "o": "#14111C",
+      "s1": "#2A2438",
+      "b": "#2A2438",
+      "use": "Bloqueado: interior de medalla"
+    },
+    "lockIcon": {
+      "o": "#24212C",
+      "s1": "#45404F",
+      "b": "#45404F",
+      "use": "Bloqueado: silueta del icono"
+    },
+    "bronze": {
+      "o": "#3A2214",
+      "s1": "#8A5A34",
+      "b": "#B98050",
+      "h": "#D8A070",
+      "use": "3.er puesto del podio (Reino)"
+    }
+  },
+  "skins": [
+    {
+      "id": "porcelain",
+      "es": "Porcelana",
+      "o": "#6E3F2C",
+      "s2": "#B57A60",
+      "s1": "#DDA98A",
+      "b": "#F2D3B8",
+      "h": "#F6DDC3"
+    },
+    {
+      "id": "sand",
+      "es": "Arena",
+      "o": "#5E3420",
+      "s2": "#A06A46",
+      "s1": "#C98F66",
+      "b": "#E6B68C",
+      "h": "#EEC9A4"
+    },
+    {
+      "id": "honey",
+      "es": "Miel",
+      "o": "#4E2C16",
+      "s2": "#8A5632",
+      "s1": "#AE7446",
+      "b": "#CF9563",
+      "h": "#DDB287"
+    },
+    {
+      "id": "cinnamon",
+      "es": "Canela",
+      "o": "#3E200E",
+      "s2": "#6A3C20",
+      "s1": "#88522F",
+      "b": "#A86B42",
+      "h": "#C29470"
+    },
+    {
+      "id": "cocoa",
+      "es": "Cacao",
+      "o": "#2C160A",
+      "s2": "#4C2A14",
+      "s1": "#643B20",
+      "b": "#80502F",
+      "h": "#A68163"
+    },
+    {
+      "id": "ebony",
+      "es": "Ébano",
+      "o": "#1E0E06",
+      "s2": "#361C0E",
+      "s1": "#462816",
+      "b": "#5C3822",
+      "h": "#8D705A"
+    }
+  ],
+  "hairColors": [
+    {
+      "id": "jet",
+      "es": "Azabache",
+      "o": "#0E0C12",
+      "s2": "#18151E",
+      "s1": "#211E29",
+      "b": "#2F2B38",
+      "h": "#827B7A"
+    },
+    {
+      "id": "dark-brown",
+      "es": "Castaño oscuro",
+      "o": "#1A0E08",
+      "s2": "#2A1810",
+      "s1": "#3A2218",
+      "b": "#4E3022",
+      "h": "#957E6C"
+    },
+    {
+      "id": "brown",
+      "es": "Castaño",
+      "o": "#2C180C",
+      "s2": "#462817",
+      "s1": "#603822",
+      "b": "#7E4E2E",
+      "h": "#B29074"
+    },
+    {
+      "id": "copper",
+      "es": "Cobrizo",
+      "o": "#461C0A",
+      "s2": "#692D14",
+      "s1": "#8C3E1E",
+      "b": "#B8582C",
+      "h": "#D49672"
+    },
+    {
+      "id": "wheat",
+      "es": "Trigo",
+      "o": "#5A4424",
+      "s2": "#876E43",
+      "s1": "#B39862",
+      "b": "#D9BE86",
+      "h": "#E8D4A8"
+    },
+    {
+      "id": "platinum",
+      "es": "Platino",
+      "o": "#5A5244",
+      "s2": "#8D8575",
+      "s1": "#C0B8A6",
+      "b": "#E8E2D4",
+      "h": "#F1E9D7"
+    },
+    {
+      "id": "ash",
+      "es": "Ceniza",
+      "o": "#3A3644",
+      "s2": "#5D5967",
+      "s1": "#807C8A",
+      "b": "#A6A2AE",
+      "h": "#CAC3C0"
+    },
+    {
+      "id": "indigo",
+      "es": "Añil",
+      "o": "#1A2250",
+      "s2": "#2B3776",
+      "s1": "#3C4C9C",
+      "b": "#5266C8",
+      "h": "#979FD0"
+    }
+  ],
+  "medalRings": {
+    "gold": {
+      "o": "#5A3A12",
+      "s1": "#C9962C",
+      "b": "#F2C14E",
+      "h": "#F7D57F"
+    },
+    "silver": {
+      "o": "#3E4452",
+      "s1": "#8E96A4",
+      "b": "#C3C8D0",
+      "h": "#E4E8EE"
+    },
+    "iron": {
+      "o": "#1E2230",
+      "s1": "#4A5060",
+      "b": "#6E7480",
+      "h": "#A4AAB6"
+    },
+    "wood": {
+      "o": "#3A2214",
+      "s1": "#6E4428",
+      "b": "#8A5A34",
+      "h": "#A8744A"
+    },
+    "crimson": {
+      "o": "#3A0A14",
+      "s1": "#6E1626",
+      "b": "#9A1F35",
+      "h": "#D24660"
+    },
+    "blue": {
+      "o": "#16284A",
+      "s1": "#3566B0",
+      "b": "#4A90E2",
+      "h": "#8CC0F2"
+    },
+    "ivory": {
+      "o": "#4E4034",
+      "s1": "#BFB29C",
+      "b": "#F3EDE2"
+    },
+    "glass": {
+      "o": "#BFB29C",
+      "s1": "#2A2438",
+      "b": "#3D3550"
+    },
+    "stone": {
+      "o": "#14111C",
+      "s1": "#3D3550",
+      "b": "#3D3550"
+    },
+    "common": {
+      "o": "#3A3F48",
+      "s1": "#6E7682",
+      "b": "#9AA3AE"
+    },
+    "rare": {
+      "o": "#16284A",
+      "s1": "#3566B0",
+      "b": "#4A90E2"
+    },
+    "epic": {
+      "o": "#2E1650",
+      "s1": "#6E3AB0",
+      "b": "#9B5DE5"
+    },
+    "legendary": {
+      "o": "#5A3A12",
+      "s1": "#C9962C",
+      "b": "#F2C14E"
+    },
+    "seasonal0": {
+      "o": "#133A3C",
+      "s1": "#2E6A6C",
+      "b": "#4FA39B"
+    },
+    "lockRing": {
+      "o": "#24212C",
+      "s1": "#3E3A48",
+      "b": "#57525F"
+    },
+    "lockIn": {
+      "o": "#14111C",
+      "s1": "#2A2438",
+      "b": "#2A2438"
+    },
+    "lockIcon": {
+      "o": "#24212C",
+      "s1": "#45404F",
+      "b": "#45404F"
+    }
+  },
+  "rarity": {
+    "common": "#9AA3AE",
+    "rare": "#4A90E2",
+    "epic": "#9B5DE5",
+    "legendary": "#F2C14E",
+    "seasonal": "color de la temporada de ORIGEN (T0 #4FA39B verdín · T1 #F28C28 cempasúchil)"
+  },
+  "ranks": {
+    "peasant": {
+      "material": "wood",
+      "swatch": "#8A5A34"
+    },
+    "knight": {
+      "material": "iron",
+      "swatch": "#6E7480"
+    },
+    "baron": {
+      "material": "silver",
+      "swatch": "#C3C8D0"
+    },
+    "count": {
+      "material": "silver",
+      "swatch": "#C3C8D0"
+    },
+    "duke": {
+      "material": "gold",
+      "swatch": "#F2C14E"
+    },
+    "emperor": {
+      "material": "gold",
+      "swatch": "#F2C14E"
+    }
+  },
+  "flags": {
+    "W": "#F3EDE2",
+    "RED": "#D63A2F",
+    "GRN": "#1F8A4C",
+    "NAVY": "#1F2A6B",
+    "BLU": "#2E4FB0",
+    "YEL": "#F2C94C",
+    "BLK": "#1F1B24",
+    "note": "Colores base de las 20 banderas 12×8; algunos países usan variantes puntuales (ver SVG)."
+  },
+  "countryPill": {
+    "background": "#3D3550",
+    "ink": "#F3EDE2"
+  }
+}

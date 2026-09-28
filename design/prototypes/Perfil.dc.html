@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700&family=Pixelify+Sans:wght@500;700&display=swap" rel="stylesheet">
+<script src="season-lib.js"></script>
+<script src="avatar-lib.js"></script>
+<script src="throne-lib.js"></script>
+<script src="medal-lib.js"></script>
+<script src="social-lib.js"></script>
+<style>
+body{margin:0;background:#0E0C14;-webkit-font-smoothing:antialiased}
+a{color:#F3EDE2;text-decoration-color:#3D3550}a:hover{color:#F3EDE2;text-decoration-color:#F3EDE2}
+</style>
+</helmet>
+<section id="turn11" style="background:#0E0C14;padding:72px;display:flex;flex-direction:column;gap:96px;font-family:Manrope,sans-serif;color:#F3EDE2;width:max-content">
+  <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:48px;width:2070px">
+    <div style="display:flex;flex-direction:column;gap:8px;max-width:960px">
+      <div style="font-size:28px;font-weight:700">Paso 8 · Perfil de usuario</div>
+      <div style="font-size:16px;line-height:1.5;color:#A89FB8;text-wrap:pretty">Dos ejemplos en móvil (390) y escritorio (1440). <a href="#p1" style-focus="outline:2px solid #F3EDE2;outline-offset:2px">p1</a> es un Duque veterano en vista pública. <a href="#p2" style-focus="outline:2px solid #F3EDE2;outline-offset:2px">p2</a> es un jugador nuevo en su propia vista: un reinado de 11 s. El perfil lo recibe con lo que sí tiene (Fundador, marco Genesis y un rival) y con metas a su alcance.</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:24px">
+    
+    <div style="display:flex;gap:4px;padding:4px;background:#14111C;box-shadow:0 0 0 2px #3D3550">
+      <button onClick="{{ setEn }}" style="position:relative;height:40px;min-width:88px;border:0;cursor:pointer;font-family:Manrope,sans-serif;font-size:14px;font-weight:700;background:{{ seg.en.bg }};color:{{ seg.en.fg }};box-shadow:{{ seg.en.sh }}" style-focus="outline:2px solid #F3EDE2;outline-offset:4px" style-before="content:'';position:absolute;left:50%;top:50%;width:max(100%, 44px);height:max(100%, 44px);transform:translate(-50%, -50%)">English</button>
+      <button onClick="{{ setEs }}" style="position:relative;height:40px;min-width:88px;border:0;cursor:pointer;font-family:Manrope,sans-serif;font-size:14px;font-weight:700;background:{{ seg.es.bg }};color:{{ seg.es.fg }};box-shadow:{{ seg.es.sh }}" style-focus="outline:2px solid #F3EDE2;outline-offset:4px" style-before="content:'';position:absolute;left:50%;top:50%;width:max(100%, 44px);height:max(100%, 44px);transform:translate(-50%, -50%)">Español</button>
+    </div>
+    </div>
+  </div>
+
+  <sc-for list="{{ profiles }}" as="p" hint-placeholder-count="2">
+    <div id="{{ p.id }}" data-screen-label="{{ p.label }}" style="display:flex;flex-direction:column;gap:20px">
+      <div style="display:flex;align-items:flex-start;gap:16px;max-width:1100px">
+        <div style="font-size:14px;font-weight:700;background:#F3EDE2;color:#14111C;padding:4px 10px;border-radius:4px;flex:none">{{ p.id }}</div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <div style="font-size:20px;font-weight:700">{{ p.title }}</div>
+          <div style="font-size:14px;line-height:1.5;color:#A89FB8;text-wrap:pretty">{{ p.desc }}</div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:240px;align-items:flex-start">
+
+        <!-- ================= MÓVIL ================= -->
+        <div data-crop="mob" style="width:390px;flex:none;background:#14111C;box-shadow:0 0 0 1px #3D3550;overflow:hidden">
+          <div style="height:56px;padding:0 16px;display:flex;align-items:center;justify-content:space-between;background:#1E1A29;box-shadow:inset 0 -4px 0 #14111C">
+            <div style="font-family:'Pixelify Sans',sans-serif;font-size:20px;font-weight:700">Crown</div>
+            <div style="font-size:12px;color:#A89FB8">{{ t.seasonShort }}</div>
+          </div>
+
+          <div style="padding:24px 16px;display:flex;flex-direction:column;gap:18px;background:#1E1A29">
+            <div style="display:flex;gap:16px;align-items:center">
+              <img src="{{ p.av }}" width="132" height="132" style="display:block;image-rendering:pixelated;flex:none">
+              <div style="display:flex;flex-direction:column;gap:10px;min-width:0">
+                <div style="font-size:24px;font-weight:700;line-height:1.1;overflow-wrap:anywhere">{{ p.name }}</div>
+                <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+                  <img src="{{ p.flag }}" width="24" height="16" style="display:block;image-rendering:pixelated">
+                  <div style="height:28px;padding:0 10px;display:flex;align-items:center;gap:8px;border:1px solid #3D3550;border-radius:4px"><div style="width:10px;height:10px;background:{{ p.rankSw }}"></div><div style="font-family:'Pixelify Sans',sans-serif;font-size:14px;font-weight:500">{{ p.rank }}</div></div>
+                </div>
+                <div style="font-size:12px;color:#A89FB8">{{ p.joined }}</div>
+              </div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px"><div style="font-size:14px;font-weight:700">{{ p.progTitle }}</div><div style="font-family:'Pixelify Sans',sans-serif;font-size:14px;font-weight:500">{{ p.progVal }}</div></div>
+              <div style="display:flex;gap:2px"><sc-for list="{{ p.segs }}" as="g" hint-placeholder-count="20"><div style="flex:1;height:8px;background:{{ g }}"></div></sc-for></div>
+              <div style="font-size:12px;color:#A89FB8">{{ p.progNote }}</div>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
+              <a href="#turn11" style="position:relative;font-size:16px;font-weight:700;text-decoration-thickness:2px;text-underline-offset:5px" style-focus="outline:2px solid #F3EDE2;outline-offset:2px" style-before="content:'';position:absolute;left:50%;top:50%;width:max(100%, 44px);height:max(100%, 44px);transform:translate(-50%, -50%)">{{ p.link }}</a>
+              <button style="position:relative;height:40px;padding:0 14px;margin:4px;border:0;background:#2A2438;color:#F3EDE2;font-family:Manrope,sans-serif;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 -4px 0 #3D3550,-4px 0 0 #3D3550,0 4px 0 #14111C,4px 0 0 #14111C" style-hover="background:#3D3550" style-active="background:#14111C" style-focus="outline:2px solid #F3EDE2;outline-offset:6px" style-before="content:'';position:absolute;left:50%;top:50%;width:max(100%, 44px);height:max(100%, 44px);transform:translate(-50%, -50%)">{{ t.share }}</button>
+            </div>
+            <sc-if value="{{ p.hasSoc }}"><div role="list" aria-label="{{ t.socials }}" style="display:flex;gap:8px;flex-wrap:wrap"><sc-for list="{{ p.soc }}" as="q" hint-placeholder-count="2"><a role="listitem" href="{{ q.url }}" target="_blank" rel="noopener me" aria-label="{{ q.aria }}" title="{{ q.aria }}" style="width:44px;height:44px;display:flex;align-items:center;justify-content:center;background:#2A2438" style-hover="background:#3D3550" style-focus="outline:2px solid #F3EDE2;outline-offset:2px"><img src="{{ q.logo }}" width="20" height="20" alt="" style="display:block"></a></sc-for></div></sc-if>
+            <sc-if value="{{ p.socEmpty }}"><div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:0 4px 0 14px;min-height:52px;border:2px dashed #3D3550"><div style="font-size:12px;line-height:1.4;color:#A89FB8">{{ t.socNone }}</div><a href="Editar Perfil.dc.html" style="position:relative;display:flex;align-items:center;min-height:44px;padding:0 10px;flex:none;font-size:14px;font-weight:700;text-underline-offset:4px" style-focus="outline:2px solid #F3EDE2;outline-offset:-2px">{{ t.editProfile }}</a></div></sc-if>
+          </div>
+
+          <sc-if value="{{ p.isNew }}">
+            <div style="margin:16px;padding:16px;background:#1E1A29;display:flex;flex-direction:column;gap:14px">
+              <div style="display:flex;align-items:center;gap:10px">
+                <div style="width:20px;height:20px;flex:none;display:flex;align-items:center;justify-content:center;background:#E5484D"><img src="{{ icons.x }}" width="8" height="8" style="display:block;image-rendering:pixelated"></div>
+                <div style="font-size:14px;font-weight:700">{{ p.hook.status }}</div>
+              </div>
+              <div style="font-size:20px;font-weight:700;line-height:1.25">{{ t.comeBack }}</div>
+              <div style="display:flex;align-items:center;gap:12px">
+                <img src="{{ p.hook.kingSrc }}" width="44" height="44" style="display:block;image-rendering:pixelated;flex:none">
+                <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px">
+                  <div style="display:flex;align-items:center;gap:6px"><div style="font-size:14px;font-weight:700">valeruiz</div><img src="{{ p.hook.kingFlag }}" width="24" height="16" style="display:block;image-rendering:pixelated"></div>
+                  <div style="font-size:12px;color:#A89FB8">{{ t.reigningNow }} <span style="font-family:'Pixelify Sans',sans-serif;color:#F3EDE2">{{ clock }}</span></div>
+                </div>
+                <div style="display:flex;flex-direction:column;align-items:flex-end;gap:2px"><div style="font-family:'Pixelify Sans',sans-serif;font-size:28px;font-weight:700;line-height:1;color:#F2C14E">$34</div><div style="font-size:12px;color:#A89FB8">{{ t.dropShort }}</div></div>
+              </div>
+              <button style="position:relative;height:56px;margin:4px;border:0;background:#F2C14E;color:#14111C;font-family:Manrope,sans-serif;font-size:18px;font-weight:700;cursor:pointer;box-shadow:0 -4px 0 #F7D57F,-4px 0 0 #F7D57F,0 4px 0 #C9962C,4px 0 0 #C9962C" style-hover="background:#F7D57F;box-shadow:0 -4px 0 #F3EDE2,-4px 0 0 #F3EDE2,0 4px 0 #C9962C,4px 0 0 #C9962C" style-active="background:#C9962C;padding-top:4px;box-shadow:0 -4px 0 #C9962C,-4px 0 0 #C9962C,0 4px 0 #F2C14E,4px 0 0 #F2C14E" style-focus="outline:2px solid #F3EDE2;outline-offset:6px" style-before="content:'';position:absolute;left:50%;top:50%;width:max(100%, 44px);height:max(100%, 44px);transform:translate(-50%, -50%)">{{ t.take }}</button>
+            </div>
+          </sc-if>
+
+          <div style="margin:0 16px;padding:24px 0;box-shadow:inset 0 4px 0 #1E1A29;display:flex;flex-direction:column;gap:14px">
+            <div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px"><div style="font-size:20px;font-weight:700">{{ t.showcase }}</div><div style="font-size:12px;color:#A89FB8">{{ p.showNote }}</div></div>
+            <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px">
+              <sc-for list="{{ p.showcase }}" as="s" hint-placeholder-count="3">
+                <div style="display:flex;flex-direction:column;gap:8px;min-width:0">
+                  <sc-if value="{{ s.full }}" hint-placeholder-val="{{ true }}">
+                    <div style="height:112px;display:flex;align-items:center;justify-content:center;background:#1E1A29;box-shadow:inset 0 4px 0 {{ s.hex }}"><img src="{{ s.src }}" width="96" height="96" style="display:block;image-rendering:pixelated"></div>
+                    <div style="font-size:14px;font-weight:700;line-height:1.25">{{ s.name }}</div>
+                    <div style="display:flex;align-items:center;gap:6px"><div style="width:8px;height:8px;background:{{ s.hex }}"></div><div style="font-family:'Pixelify Sans',sans-serif;font-size:12px;font-weight:500;color:#A89FB8">{{ s.rar }}</div></div>
+                  </sc-if>
+                  <sc-if value="{{ s.empty }}">
+                    <div style="height:112px;box-sizing:border-box;display:flex;align-items:center;justify-content:center;padding:10px;border:2px dashed #3D3550"><img src="{{ s.src }}" width="48" height="48" style="display:block;image-rendering:pixelated"></div>
+                    <div style="font-size:12px;line-height:1.4;color:#A89FB8">{{ s.text }}</div>
+                  </sc-if>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+
+          <sc-if value="{{ p.isNew }}">
+            <div style="margin:0 16px;padding:24px 0;box-shadow:inset 0 4px 0 #1E1A29;display:flex;flex-direction:column;gap:12px">
+              <div style="font-size:20px;font-weight:700">{{ t.reach }}</div>
+              <sc-for list="{{ p.reach }}" as="r" hint-placeholder-count="3">
+                <div style="display:flex;gap:12px;align-items:center;padding:12px;background:#1E1A29">
+                  <img src="{{ r.src }}" width="{{ r.w }}" height="{{ r.w }}" style="display:block;image-rendering:pixelated;flex:none">
+                  <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:6px">
+                    <div style="display:flex;align-items:center;justify-content:space-between;gap:8px"><div style="font-size:14px;font-weight:700">{{ r.name }}</div><div style="font-family:'Pixelify Sans',sans-serif;font-size:12px;font-weight:500;white-space:nowrap">{{ r.val }}</div></div>
+                    <div style="font-size:12px;line-height:1.4;color:#A89FB8">{{ r.desc }}</div>
+                    <div style="display:flex;gap:2px"><sc-for list="{{ r.segs }}" as="g" hint-placeholder-count="10"><div style="flex:1;height:4px;background:{{ g }}"></div></sc-for></div>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+          </sc-if>
+
+          <div style="margin:0 16px;padding:24px 0;box-shadow:inset 0 4px 0 #1E1A29;display:flex;flex-direction:column;gap:14px">
+            <div style="font-size:20px;font-weight:700">{{ t.stats }}</div>
+            <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px">
+              <sc-for list="{{ p.stats }}" as="s" hint-placeholder-count="4">
+                <div style="padding:14px;background:#1E1A29;display:flex;flex-direction:column;gap:10px;min-width:0"><div style="display:flex;flex-wrap:wrap;align-items:baseline;gap:0 8px;font-family:'Pixelify Sans',sans-serif;font-weight:700;line-height:1"><sc-for list="{{ s.parts }}" as="q" hint-placeholder-count="2"><div style="display:flex;align-items:baseline;gap:2px"><div style="font-size:36px">{{ q.v }}</div><div style="font-size:16px;color:#A89FB8">{{ q.u }}</div></div></sc-for></div><div style="font-size:12px;line-height:1.4;color:#A89FB8">{{ s.label }}</div></div>
+              </sc-for>
+            </div>
+          </div>
+
+          <div style="margin:0 16px;padding:24px 0;box-shadow:inset 0 4px 0 #1E1A29;display:flex;flex-direction:column;gap:14px">
+            <div style="font-size:20px;font-weight:700">{{ t.rival }}</div>
+            <div style="padding:16px;background:#1E1A29;display:flex;flex-direction:column;gap:14px">
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+                <div style="display:flex;flex-direction:column;align-items:center;gap:8px;width:88px"><img src="{{ p.rv.me }}" width="88" height="88" style="display:block;image-rendering:pixelated"><div style="font-size:12px;font-weight:700;max-width:88px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ p.name }}</div></div>
+                <div style="display:flex;align-items:baseline;gap:10px;font-family:'Pixelify Sans',sans-serif;font-weight:700;line-height:1"><div style="font-size:40px">{{ p.rv.a }}</div><div style="font-size:20px;color:#A89FB8">:</div><div style="font-size:40px">{{ p.rv.b }}</div></div>
+                <div style="display:flex;flex-direction:column;align-items:center;gap:8px;width:88px"><img src="{{ p.rv.them }}" width="88" height="88" style="display:block;image-rendering:pixelated"><div style="display:flex;align-items:center;gap:4px"><div style="font-size:12px;font-weight:700">{{ p.rv.name }}</div><img src="{{ p.rv.flag }}" width="24" height="16" style="display:block;image-rendering:pixelated"></div></div>
+              </div>
+              <div style="font-size:12px;line-height:1.45;color:#A89FB8;text-align:center;text-wrap:pretty">{{ p.rv.note }}</div>
+            </div>
+          </div>
+
+          <div style="margin:0 16px;padding:24px 0;box-shadow:inset 0 4px 0 #1E1A29;display:flex;flex-direction:column;gap:14px">
+            <div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px"><div style="font-size:20px;font-weight:700">{{ t.achievements }}</div><div style="font-family:'Pixelify Sans',sans-serif;font-size:14px;font-weight:500">{{ p.achCount }}</div></div>
+            <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px">
+              <sc-for list="{{ p.ach }}" as="a" hint-placeholder-count="13">
+                <div style="padding:12px 10px;background:{{ a.bg }};display:flex;flex-direction:column;gap:6px;min-width:0">
+                  <img src="{{ a.src }}" width="48" height="48" style="display:block;image-rendering:pixelated">
+                  <div style="font-size:12px;font-weight:700;line-height:1.3;color:{{ a.fg }}">{{ a.name }}</div>
+                  <div style="display:flex;align-items:center;gap:5px"><div style="width:6px;height:6px;flex:none;background:{{ a.hex }}"></div><div style="font-size:12px;color:#A89FB8">{{ a.pct }}</div></div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+
+          <div style="margin:0 16px;padding:24px 0;box-shadow:inset 0 4px 0 #1E1A29;display:flex;flex-direction:column;gap:6px">
+            <div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding-bottom:6px"><div style="font-size:20px;font-weight:700">{{ t.history }}</div><div style="font-size:12px;color:#A89FB8">{{ p.histCount }}</div></div>
+            <sc-for list="{{ p.hist }}" as="h" hint-placeholder-count="4">
+              <div style="display:grid;grid-template-columns:36px minmax(0,1fr) auto;gap:12px;align-items:start;box-shadow:inset 0 -2px 0 #1E1A29">
+                <div style="align-self:stretch;padding:14px 0;box-shadow:inset -2px 0 0 #2A2438;font-family:'Pixelify Sans',sans-serif;font-size:14px;font-weight:700;color:#A89FB8">{{ h.num }}</div>
+                <div style="padding:14px 0;display:flex;flex-direction:column;gap:6px;min-width:0">
+                  <div style="font-size:12px;color:#A89FB8">{{ h.date }}</div>
+                  <div style="display:flex;flex-direction:column;gap:2px;font-size:14px;line-height:1.5">
+                    <div style="display:flex;flex-wrap:wrap;align-items:center;gap:0 6px"><div style="color:#A89FB8">{{ t.chFrom2 }}</div><div style="display:flex;align-items:center;gap:6px;white-space:nowrap"><div style="font-weight:700">{{ h.from.name }}</div><sc-if value="{{ h.from.hasFlag }}"><img src="{{ h.from.flag }}" width="24" height="16" alt="" style="display:block;flex:none;image-rendering:pixelated"></sc-if><sc-if value="{{ h.from.noFlag }}"><div style="width:24px;height:16px;flex:none;display:flex;align-items:center;justify-content:center;background:#3D3550;font-family:'Pixelify Sans',sans-serif;font-size:12px;font-weight:700">{{ h.from.code }}</div></sc-if></div></div>
+                    <div style="display:flex;flex-wrap:wrap;align-items:center;gap:0 6px"><div style="color:#A89FB8">{{ t.chTo2 }}</div><div style="display:flex;align-items:center;gap:6px;white-space:nowrap"><div style="font-weight:700">{{ h.to.name }}</div><sc-if value="{{ h.to.hasFlag }}"><img src="{{ h.to.flag }}" width="24" height="16" alt="" style="display:block;flex:none;image-rendering:pixelated"></sc-if><sc-if value="{{ h.to.noFlag }}"><div style="width:24px;height:16px;flex:none;display:flex;align-items:center;justify-content:center;background:#3D3550;font-family:'Pixelify Sans',sans-serif;font-size:12px;font-weight:700">{{ h.to.code }}</div></sc-if></div></div>
+                  </div>
+                </div>
+                <div style="padding:14px 0;font-family:'Pixelify Sans',sans-serif;font-size:20px;font-weight:700;line-height:1.2;white-space:nowrap">{{ h.dur }}</div>
+              </div>
+            </sc-for>
+            <sc-if value="{{ p.isVet }}"><a href="#turn11" style="position:relative;margin-top:8px;font-size:14px;font-weight:700;text-underline-offset:5px" style-focus="outline:2px solid #F3EDE2;outline-offset:2px" style-before="content:'';position:absolute;left:50%;top:50%;width:max(100%, 44px);height:max(100%, 44px);transform:translate(-50%, -50%)">{{ t.allReigns }}</a></sc-if>
+          </div>
+
+          <div style="margin:0 16px;padding:24px 0 32px;box-shadow:inset 0 4px 0 #1E1A29;display:flex;flex-direction:column;gap:14px">
+            <div style="font-size:20px;font-weight:700">{{ t.collect }}</div>
+            <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px">
+              <sc-for list="{{ p.coll }}" as="c" hint-placeholder-count="3">
+                <div style="display:flex;flex-direction:column;gap:8px;min-width:0">
+                  <div style="height:112px;box-sizing:border-box;display:flex;align-items:center;justify-content:center;background:{{ c.bg }};border:{{ c.border }}">
+                    <sc-if value="{{ c.hasImg }}" hint-placeholder-val="{{ true }}"><img src="{{ c.src }}" width="{{ c.w }}" height="{{ c.h }}" style="display:block;image-rendering:pixelated"></sc-if>
+                    <sc-if value="{{ c.q }}"><div style="font-family:'Pixelify Sans',sans-serif;font-size:40px;font-weight:700;color:#A89FB8">?</div></sc-if>
+                  </div>
+                  <div style="font-size:14px;font-weight:700;line-height:1.25;color:{{ c.fg }}">{{ c.name }}</div>
+                  <div style="font-size:12px;line-height:1.4;color:#A89FB8">{{ c.sub }}</div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+
+        <!-- ================= ESCRITORIO ================= -->
+        <div data-crop="desk" style="width:1440px;flex:none;background:#14111C;box-shadow:0 0 0 1px #3D3550;overflow:hidden">
+          <div style="height:72px;padding:0 48px;display:flex;align-items:center;justify-content:space-between;background:#1E1A29;box-shadow:inset 0 -4px 0 #14111C">
+            <div style="display:flex;align-items:center;gap:24px"><div style="font-family:'Pixelify Sans',sans-serif;font-size:28px;font-weight:700">Crown</div><div style="height:28px;padding:0 10px;display:flex;align-items:center;background:#14111C;font-size:14px;color:#A89FB8">{{ t.seasonLong }}</div></div>
+            <div style="display:flex;gap:4px;padding:4px;background:#14111C">
+              <button onClick="{{ setEn }}" style="position:relative;height:32px;min-width:44px;border:0;cursor:pointer;font-family:Manrope,sans-serif;font-size:14px;font-weight:700;background:{{ seg.en.bg }};color:{{ seg.en.fg }};box-shadow:{{ seg.en.sh }}" style-focus="outline:2px solid #F3EDE2;outline-offset:2px" style-before="content:'';position:absolute;left:50%;top:50%;width:max(100%, 44px);height:max(100%, 44px);transform:translate(-50%, -50%)">EN</button>
+              <button onClick="{{ setEs }}" style="position:relative;height:32px;min-width:44px;border:0;cursor:pointer;font-family:Manrope,sans-serif;font-size:14px;font-weight:700;background:{{ seg.es.bg }};color:{{ seg.es.fg }};box-shadow:{{ seg.es.sh }}" style-focus="outline:2px solid #F3EDE2;outline-offset:2px" style-before="content:'';position:absolute;left:50%;top:50%;width:max(100%, 44px);height:max(100%, 44px);transform:translate(-50%, -50%)">ES</button>
+            </div>
+          </div>
+
+          <div style="padding:48px 72px;background:#1E1A29;display:grid;grid-template-columns:220px minmax(0,1fr) auto;gap:40px;align-items:center">
+            <img src="{{ p.av }}" width="220" height="220" style="display:block;image-rendering:pixelated">
+            <div style="display:flex;flex-direction:column;gap:14px;min-width:0">
+              <div style="font-size:40px;font-weight:700;line-height:1.1">{{ p.name }}</div>
+              <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+                <img src="{{ p.flag }}" width="24" height="16" style="display:block;image-rendering:pixelated">
+                <div style="height:28px;padding:0 10px;display:flex;align-items:center;gap:8px;border:1px solid #3D3550;border-radius:4px"><div style="width:10px;height:10px;background:{{ p.rankSw }}"></div><div style="font-family:'Pixelify Sans',sans-serif;font-size:14px;font-weight:500">{{ p.rank }}</div></div>
+                <div style="font-size:14px;color:#A89FB8">{{ p.joined }}</div>
+              </div>
+              <div style="width:480px;display:flex;flex-direction:column;gap:8px;margin-top:6px">
+                <div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px"><div style="font-size:14px;font-weight:700">{{ p.progTitle }}</div><div style="font-family:'Pixelify Sans',sans-serif;font-size:14px;font-weight:500">{{ p.progVal }}</div></div>
+                <div style="display:flex;gap:2px"><sc-for list="{{ p.segs }}" as="g" hint-placeholder-count="20"><div style="flex:1;height:8px;background:{{ g }}"></div></sc-for></div>
+                <div style="font-size:12px;color:#A89FB8">{{ p.progNote }}</div>
+              </div>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:16px;align-self:end">
+              <sc-if value="{{ p.hasSoc }}"><div role="list" aria-label="{{ t.socials }}" style="display:flex;gap:8px;justify-content:flex-end"><sc-for list="{{ p.soc }}" as="q" hint-placeholder-count="2"><a role="listitem" href="{{ q.url }}" target="_blank" rel="noopener me" aria-label="{{ q.aria }}" title="{{ q.aria }}" style="width:44px;height:44px;display:flex;align-items:center;justify-content:center;background:#2A2438" style-hover="background:#3D3550" style-focus="outline:2px solid #F3EDE2;outline-offset:2px"><img src="{{ q.logo }}" width="20" height="20" alt="" style="display:block"></a></sc-for></div></sc-if>
+              <sc-if value="{{ p.socEmpty }}"><div style="display:flex;align-items:center;gap:12px;padding:0 4px 0 14px;min-height:52px;border:2px dashed #3D3550"><div style="font-size:14px;color:#A89FB8">{{ t.socNone }}</div><a href="Editar Perfil.dc.html" style="position:relative;display:flex;align-items:center;min-height:44px;padding:0 10px;font-size:14px;font-weight:700;text-underline-offset:4px" style-focus="outline:2px solid #F3EDE2;outline-offset:-2px">{{ t.editProfile }}</a></div></sc-if>
+              <a href="#turn11" style="position:relative;font-size:20px;font-weight:700;text-decoration-thickness:2px;text-underline-offset:6px" style-focus="outline:2px solid #F3EDE2;outline-offset:2px" style-before="content:'';position:absolute;left:50%;top:50%;width:max(100%, 44px);height:max(100%, 44px);transform:translate(-50%, -50%)">{{ p.link }}</a>
+              <button style="position:relative;height:48px;padding:0 20px;margin:4px;border:0;background:#2A2438;color:#F3EDE2;font-family:Manrope,sans-serif;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 -4px 0 #3D3550,-4px 0 0 #3D3550,0 4px 0 #14111C,4px 0 0 #14111C" style-hover="background:#3D3550" style-active="background:#14111C" style-focus="outline:2px solid #F3EDE2;outline-offset:6px" style-before="content:'';position:absolute;left:50%;top:50%;width:max(100%, 44px);height:max(100%, 44px);transform:translate(-50%, -50%)">{{ t.shareProfile }}</button>
+            </div>
+          </div>
+
+          <div style="padding:48px 72px 64px;display:grid;grid-template-columns:minmax(0,1fr) 400px;gap:48px;align-items:start">
+            <div style="display:flex;flex-direction:column;gap:48px;min-width:0">
+              <sc-if value="{{ p.isNew }}">
+                <div style="padding:24px;background:#1E1A29;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:32px;align-items:center">
+                  <div style="display:flex;flex-direction:column;gap:12px">
+                    <div style="display:flex;align-items:center;gap:10px">
+                      <div style="width:20px;height:20px;flex:none;display:flex;align-items:center;justify-content:center;background:#E5484D"><img src="{{ icons.x }}" width="8" height="8" style="display:block;image-rendering:pixelated"></div>
+                      <div style="font-size:14px;font-weight:700">{{ p.hook.status }}</div>
+                    </div>
+                    <div style="font-size:28px;font-weight:700;line-height:1.2">{{ t.comeBack }}</div>
+                    <div style="display:flex;align-items:center;gap:12px">
+                      <img src="{{ p.hook.kingSrc }}" width="44" height="44" style="display:block;image-rendering:pixelated">
+                      <div style="display:flex;flex-direction:column;gap:2px">
+                        <div style="display:flex;align-items:center;gap:6px"><div style="font-size:14px;font-weight:700">valeruiz</div><img src="{{ p.hook.kingFlag }}" width="24" height="16" style="display:block;image-rendering:pixelated"></div>
+                        <div style="font-size:14px;color:#A89FB8">{{ t.reigningNow }} <span style="font-family:'Pixelify Sans',sans-serif;color:#F3EDE2">{{ clock }}</span></div>
+                      </div>
+                    </div>
+                  </div>
+                  <div style="display:flex;flex-direction:column;align-items:flex-end;gap:14px">
+                    <div style="display:flex;align-items:center;gap:16px"><div style="font-size:14px;font-weight:500">{{ t.dropShort }}</div><div style="font-family:'Pixelify Sans',sans-serif;font-size:40px;font-weight:700;line-height:1;color:#F2C14E">$34</div></div>
+                    <button style="position:relative;height:56px;min-width:320px;padding:0 24px;margin:4px;border:0;background:#F2C14E;color:#14111C;font-family:Manrope,sans-serif;font-size:18px;font-weight:700;cursor:pointer;box-shadow:0 -4px 0 #F7D57F,-4px 0 0 #F7D57F,0 4px 0 #C9962C,4px 0 0 #C9962C" style-hover="background:#F7D57F;box-shadow:0 -4px 0 #F3EDE2,-4px 0 0 #F3EDE2,0 4px 0 #C9962C,4px 0 0 #C9962C" style-active="background:#C9962C;padding-top:4px;box-shadow:0 -4px 0 #C9962C,-4px 0 0 #C9962C,0 4px 0 #F2C14E,4px 0 0 #F2C14E" style-focus="outline:2px solid #F3EDE2;outline-offset:6px" style-before="content:'';position:absolute;left:50%;top:50%;width:max(100%, 44px);height:max(100%, 44px);transform:translate(-50%, -50%)">{{ t.take }}</button>
+                  </div>
+                </div>
+              </sc-if>
+
+              <div style="display:flex;flex-direction:column;gap:16px">
+                <div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px"><div style="font-size:28px;font-weight:700">{{ t.showcase }}</div><div style="font-size:14px;color:#A89FB8">{{ p.showNote }}</div></div>
+                <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px">
+                  <sc-for list="{{ p.showcase }}" as="s" hint-placeholder-count="3">
+                    <div style="min-width:0">
+                      <sc-if value="{{ s.full }}" hint-placeholder-val="{{ true }}">
+                        <div style="background:#1E1A29;box-shadow:inset 0 4px 0 {{ s.hex }};padding:28px 20px 20px;display:flex;flex-direction:column;align-items:center;gap:16px;text-align:center">
+                          <img src="{{ s.src }}" width="120" height="120" style="display:block;image-rendering:pixelated">
+                          <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+                            <div style="font-size:20px;font-weight:700">{{ s.name }}</div>
+                            <div style="height:24px;padding:0 8px;display:flex;align-items:center;gap:6px;border:1px solid #3D3550;border-radius:4px"><div style="width:8px;height:8px;background:{{ s.hex }}"></div><div style="font-family:'Pixelify Sans',sans-serif;font-size:12px;font-weight:500">{{ s.rar }}</div></div>
+                            <div style="font-size:12px;color:#A89FB8">{{ s.date }}</div>
+                          </div>
+                        </div>
+                      </sc-if>
+                      <sc-if value="{{ s.empty }}">
+                        <div style="height:100%;min-height:264px;box-sizing:border-box;border:2px dashed #3D3550;padding:28px 20px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;text-align:center">
+                          <img src="{{ s.src }}" width="72" height="72" style="display:block;image-rendering:pixelated">
+                          <div style="font-size:14px;line-height:1.45;color:#A89FB8;max-width:200px">{{ s.text }}</div>
+                        </div>
+                      </sc-if>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+
+              <sc-if value="{{ p.isNew }}">
+                <div style="display:flex;flex-direction:column;gap:16px">
+                  <div style="font-size:28px;font-weight:700">{{ t.reach }}</div>
+                  <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px">
+                    <sc-for list="{{ p.reach }}" as="r" hint-placeholder-count="3">
+                      <div style="padding:20px;background:#1E1A29;display:flex;flex-direction:column;gap:12px">
+                        <div style="display:flex;align-items:center;gap:12px"><img src="{{ r.src }}" width="{{ r.w }}" height="{{ r.w }}" style="display:block;image-rendering:pixelated"><div style="font-size:16px;font-weight:700">{{ r.name }}</div></div>
+                        <div style="font-size:14px;line-height:1.45;color:#A89FB8;min-height:40px">{{ r.desc }}</div>
+                        <div style="display:flex;flex-direction:column;gap:6px"><div style="font-family:'Pixelify Sans',sans-serif;font-size:14px;font-weight:500">{{ r.val }}</div><div style="display:flex;gap:2px"><sc-for list="{{ r.segs }}" as="g" hint-placeholder-count="10"><div style="flex:1;height:4px;background:{{ g }}"></div></sc-for></div></div>
+                      </div>
+                    </sc-for>
+                  </div>
+                </div>
+              </sc-if>
+
+              <div style="display:flex;flex-direction:column;gap:16px">
+                <div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px"><div style="font-size:28px;font-weight:700">{{ t.achievements }}</div><div style="font-family:'Pixelify Sans',sans-serif;font-size:20px;font-weight:700">{{ p.achCount }}</div></div>
+                <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px">
+                  <sc-for list="{{ p.ach }}" as="a" hint-placeholder-count="13">
+                    <div style="padding:14px;background:{{ a.bg }};display:flex;gap:12px;align-items:flex-start;min-width:0">
+                      <img src="{{ a.src }}" width="48" height="48" style="display:block;image-rendering:pixelated;flex:none">
+                      <div style="display:flex;flex-direction:column;gap:4px;min-width:0">
+                        <div style="font-size:14px;font-weight:700;line-height:1.25;color:{{ a.fg }}">{{ a.name }}</div>
+                        <div style="display:flex;align-items:center;gap:6px"><div style="width:6px;height:6px;flex:none;background:{{ a.hex }}"></div><div style="font-size:12px;color:#A89FB8">{{ a.pct }}</div></div>
+                        <sc-if value="{{ a.locked }}"><div style="font-size:12px;line-height:1.4;color:#A89FB8">{{ a.cond }}</div></sc-if>
+                      </div>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+
+              <div style="display:flex;flex-direction:column;gap:12px">
+                <div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px"><div style="font-size:28px;font-weight:700">{{ t.history }}</div><div style="font-size:14px;color:#A89FB8">{{ p.histCount }}</div></div>
+                <sc-for list="{{ p.hist }}" as="h" hint-placeholder-count="4">
+                  <div style="display:grid;grid-template-columns:48px 96px minmax(0,1fr) 120px;gap:16px;align-items:center;box-shadow:inset 0 -2px 0 #1E1A29">
+                    <div style="align-self:stretch;display:flex;align-items:center;box-shadow:inset -2px 0 0 #2A2438;font-family:'Pixelify Sans',sans-serif;font-size:14px;font-weight:700;color:#A89FB8">{{ h.num }}</div>
+                    <div style="padding:16px 0;font-size:14px;color:#A89FB8">{{ h.date }}</div>
+                    <div style="padding:16px 0;display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;font-size:16px;line-height:1.5;min-width:0">
+                      <div style="color:#A89FB8">{{ t.chFrom }}</div><div style="display:flex;align-items:center;gap:6px;white-space:nowrap"><div style="font-weight:700">{{ h.from.name }}</div><sc-if value="{{ h.from.hasFlag }}"><img src="{{ h.from.flag }}" width="24" height="16" alt="" style="display:block;flex:none;image-rendering:pixelated"></sc-if><sc-if value="{{ h.from.noFlag }}"><div style="width:24px;height:16px;flex:none;display:flex;align-items:center;justify-content:center;background:#3D3550;font-family:'Pixelify Sans',sans-serif;font-size:12px;font-weight:700">{{ h.from.code }}</div></sc-if></div>
+                      <div style="color:#A89FB8">{{ t.chTo }}</div><div style="display:flex;align-items:center;gap:6px;white-space:nowrap"><div style="font-weight:700">{{ h.to.name }}</div><sc-if value="{{ h.to.hasFlag }}"><img src="{{ h.to.flag }}" width="24" height="16" alt="" style="display:block;flex:none;image-rendering:pixelated"></sc-if><sc-if value="{{ h.to.noFlag }}"><div style="width:24px;height:16px;flex:none;display:flex;align-items:center;justify-content:center;background:#3D3550;font-family:'Pixelify Sans',sans-serif;font-size:12px;font-weight:700">{{ h.to.code }}</div></sc-if></div>
+                    </div>
+                    <div style="padding:16px 0;font-family:'Pixelify Sans',sans-serif;font-size:20px;font-weight:700;text-align:right;white-space:nowrap">{{ h.dur }}</div>
+                  </div>
+                </sc-for>
+                <sc-if value="{{ p.isVet }}"><a href="#turn11" style="position:relative;margin-top:6px;font-size:14px;font-weight:700;text-underline-offset:5px" style-focus="outline:2px solid #F3EDE2;outline-offset:2px" style-before="content:'';position:absolute;left:50%;top:50%;width:max(100%, 44px);height:max(100%, 44px);transform:translate(-50%, -50%)">{{ t.allReigns }}</a></sc-if>
+              </div>
+            </div>
+
+            <div style="display:flex;flex-direction:column;gap:40px">
+              <div style="display:flex;flex-direction:column;gap:14px">
+                <div style="font-size:20px;font-weight:700">{{ t.stats }}</div>
+                <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px">
+                  <sc-for list="{{ p.stats }}" as="s" hint-placeholder-count="4">
+                    <div style="padding:18px;background:#1E1A29;display:flex;flex-direction:column;gap:12px;min-width:0"><div style="display:flex;flex-wrap:wrap;align-items:baseline;gap:0 8px;font-family:'Pixelify Sans',sans-serif;font-weight:700;line-height:1"><sc-for list="{{ s.parts }}" as="q" hint-placeholder-count="2"><div style="display:flex;align-items:baseline;gap:2px"><div style="font-size:44px">{{ q.v }}</div><div style="font-size:16px;color:#A89FB8">{{ q.u }}</div></div></sc-for></div><div style="font-size:14px;line-height:1.4;color:#A89FB8">{{ s.label }}</div></div>
+                  </sc-for>
+                </div>
+              </div>
+
+              <div style="display:flex;flex-direction:column;gap:14px">
+                <div style="font-size:20px;font-weight:700">{{ t.rival }}</div>
+                <div style="padding:20px;background:#1E1A29;display:flex;flex-direction:column;gap:16px">
+                  <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+                    <div style="display:flex;flex-direction:column;align-items:center;gap:8px;width:88px"><img src="{{ p.rv.me }}" width="88" height="88" style="display:block;image-rendering:pixelated"><div style="font-size:12px;font-weight:700;max-width:88px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ p.name }}</div></div>
+                    <div style="display:flex;align-items:baseline;gap:12px;font-family:'Pixelify Sans',sans-serif;font-weight:700;line-height:1"><div style="font-size:40px">{{ p.rv.a }}</div><div style="font-size:20px;color:#A89FB8">:</div><div style="font-size:40px">{{ p.rv.b }}</div></div>
+                    <div style="display:flex;flex-direction:column;align-items:center;gap:8px;width:88px"><img src="{{ p.rv.them }}" width="88" height="88" style="display:block;image-rendering:pixelated"><div style="display:flex;align-items:center;gap:4px"><div style="font-size:12px;font-weight:700">{{ p.rv.name }}</div><img src="{{ p.rv.flag }}" width="24" height="16" style="display:block;image-rendering:pixelated"></div></div>
+                  </div>
+                  <div style="font-size:12px;line-height:1.45;color:#A89FB8;text-align:center;text-wrap:pretty">{{ p.rv.note }}</div>
+                </div>
+              </div>
+
+              <div style="display:flex;flex-direction:column;gap:14px">
+                <div style="font-size:20px;font-weight:700">{{ t.collect }}</div>
+                <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px">
+                  <sc-for list="{{ p.coll }}" as="c" hint-placeholder-count="3">
+                    <div style="display:flex;flex-direction:column;gap:8px;min-width:0">
+                      <div style="height:112px;box-sizing:border-box;display:flex;align-items:center;justify-content:center;background:{{ c.bg }};border:{{ c.border }}">
+                        <sc-if value="{{ c.hasImg }}" hint-placeholder-val="{{ true }}"><img src="{{ c.src }}" width="{{ c.w }}" height="{{ c.h }}" style="display:block;image-rendering:pixelated"></sc-if>
+                        <sc-if value="{{ c.q }}"><div style="font-family:'Pixelify Sans',sans-serif;font-size:40px;font-weight:700;color:#A89FB8">?</div></sc-if>
+                      </div>
+                      <div style="font-size:14px;font-weight:700;line-height:1.25;color:{{ c.fg }}">{{ c.name }}</div>
+                      <div style="font-size:12px;line-height:1.4;color:#A89FB8">{{ c.sub }}</div>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </sc-for>
+</section>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { lang: 'en', ready: false, tick: 0, socN: 2 };
+
+  dict = {
+    en: { seasonShort: 'Season 0 · 34 days left', seasonLong: 'Season 0: Genesis · 34 days left', share: 'Share', shareProfile: 'Share profile', showcase: 'Showcase', reach: 'Within reach', stats: 'Deeds', rival: 'Main rival', achievements: 'Achievements', history: 'Chronicle of reigns', collect: 'Season collectibles', from: 'Took it from', to: 'Lost it to', fromH: 'Took it from', toH: 'Lost it to', date: 'Date', duration: 'Duration', allReigns: 'View all 12 reigns', comeBack: 'Come back for the crown.', reigningNow: 'Reigning now', dropShort: 'Dropping 2% every hour', take: 'Take the crown for $34',
+      totalR: 'Time upon the throne', longest: 'Longest unbroken reign', crowns: 'Crowns seized', dethr: 'Times cast down', chFrom: 'Took the crown from', chTo: '· lost it to', chTo2: 'Lost it to', chFrom2: 'Took it from', ofPlayers: p => `${p} of players`, socials: 'Social links', socNone: 'No social links yet.', editProfile: 'Edit profile' },
+    es: { seasonShort: 'T0 · quedan 34 días', seasonLong: 'Temporada 0: Génesis · quedan 34 días', share: 'Compartir', shareProfile: 'Compartir perfil', showcase: 'Vitrina', reach: 'Al alcance', stats: 'Hazañas', rival: 'Rival principal', achievements: 'Logros', history: 'Crónica de reinados', collect: 'Coleccionables de temporada', from: 'Se la quitó a', to: 'La perdió ante', fromH: 'Se la quitó a', toH: 'La perdió ante', date: 'Fecha', duration: 'Duración', allReigns: 'Ver los 12 reinados', comeBack: 'Vuelve por la corona.', reigningNow: 'Reina ahora', dropShort: 'Baja 2% cada hora', take: 'Toma la corona por $34',
+      totalR: 'Tiempo en el trono', longest: 'Reinado más largo sin caer', crowns: 'Coronas arrebatadas', dethr: 'Caídas del trono', chFrom: 'Le quitó la corona a', chTo: '· la perdió ante', chTo2: 'La perdió ante', chFrom2: 'Se la quitó a', ofPlayers: p => `${p} de los jugadores`, socials: 'Redes sociales', socNone: 'Aún no tienes redes.', editProfile: 'Editar perfil' }
+  };
+
+  ACH = [
+    ['oneMin', 'common', 'One-Minute King', 'Rey de un minuto', 'Get dethroned in under 60 s', 'Ser destronado en menos de 60 s', 41],
+    ['owl', 'common', 'Night Owl', 'Noctámbulo', 'Take the crown between 3 and 5 a.m.', 'Tomar la corona entre las 3 y las 5 a. m.', 18],
+    ['bag', 'common', 'Bargain Hunter', 'Cazador de gangas', 'Take the crown at the floor price', 'Tomar la corona al precio mínimo', 12],
+    ['regicide', 'rare', 'Regicide', 'Regicida', 'Dethrone a king who reigned 24 h+', 'Destronar a un rey de más de 24 h', 6.2],
+    ['revenge', 'rare', 'Revenge', 'Venganza', 'Take the crown back from whoever took it', 'Recuperar la corona de quien te la quitó', 9.4],
+    ['g1', 'rare', 'Guardian I', 'Guardián I', 'Reign 12 h straight', 'Reinar 12 h seguidas', 7.1],
+    ['patriot', 'rare', 'Patriot', 'Patriota', 'Be the first king from your country', 'Ser el primer rey de tu país', 3.3],
+    ['firstBlood', 'epic', 'First Blood', 'Primera sangre', 'Be the first king of a season', 'Ser el primer rey de una temporada', 0.1],
+    ['g2', 'epic', 'Guardian II', 'Guardián II', 'Reign 24 h straight', 'Reinar 24 h seguidas', 2.4],
+    ['collector', 'epic', 'Collector', 'Coleccionista', 'Take 10 crowns', 'Tomar 10 coronas', 1.8],
+    ['rivalry', 'epic', 'Rivalry', 'Rivalidad', 'Trade the crown 5 times with one person', 'Quitarse la corona 5 veces con la misma persona', 1.2],
+    ['g3', 'legendary', 'Guardian III', 'Guardián III', 'Reign 72 h straight', 'Reinar 72 h seguidas', 0.4],
+    ['founder', 'seasonal0', 'Founder', 'Fundador', 'Reign during Season 0', 'Reinar en la Temporada 0', 34],
+    ['remembered', 'seasonal', 'Remembered', 'Recordado', 'Reign during Season 1', 'Reinar en la Temporada 1', 9.6]
+  ];
+  HEX = { common: '#9AA3AE', rare: '#4A90E2', epic: '#9B5DE5', legendary: '#F2C14E', seasonal: '#F28C28', seasonal0: '#4FA39B' };
+  RAR = { en: { common: 'Common', rare: 'Rare', epic: 'Epic', legendary: 'Legendary', seasonal: 'Seasonal', seasonal0: 'Seasonal' }, es: { common: 'Común', rare: 'Raro', epic: 'Épico', legendary: 'Legendario', seasonal: 'De temporada', seasonal0: 'De temporada' } };
+
+  componentDidMount() {
+    const ok = () => window.CrownAvatarLib && window.CrownThroneLib && window.CrownMedalLib && window.CrownSeasons && window.CrownSocial;
+    const init = () => { this.setup(); this.setState({ ready: true }); };
+    if (ok()) init(); else this.poll = setInterval(() => { if (ok()) { clearInterval(this.poll); init(); } }, 50);
+    this.iv = setInterval(() => this.setState(s => ({ tick: s.tick + 1 })), 1000);
+  }
+  componentWillUnmount() { clearInterval(this.iv); clearInterval(this.poll); }
+
+  setup() {
+    const lib = window.CrownAvatarLib(), T = window.CrownThroneLib, ML = window.CrownMedalLib();
+    const av = (n, crown) => { const c = lib.gen(n); if (!crown) c.cr = -1; return lib.avatar(c, 'A', null, true); };
+    const fr = (rank, n, crown) => T.enc(44, 44, T.frameCol(rank, av(n, crown)));
+    const S = 44;
+    const genesis = a => {
+      const col = new Array(S * S).fill(null);
+      for (let y = 0; y < 32; y++) for (let x = 0; x < 32; x++) col[(y + 6) * S + x + 6] = a[y * 32 + x];
+      const P = { o: '#1F1C27', s1: '#2C2936', b: '#4E4A5A' };
+      const CR = { o: '#133A3C', s1: '#2E6A6C', b: '#4FA39B', h: '#8FD1C4' };
+      const GD = { h: '#F7D57F', b: '#F2C14E', s1: '#C9962C' };
+      const rr = (x, y) => Math.min(x, y, S - 1 - x, S - 1 - y);
+      for (let y = 0; y < S; y++) for (let x = 0; x < S; x++) {
+        const r = rr(x, y); if (r > 5) continue;
+        const i = y * S + x;
+        if (r === 0 || r === 5) { col[i] = P.o; continue; }
+        const top = y === r, left = x === r, bot = S - 1 - y === r, right = S - 1 - x === r;
+        col[i] = (r === 1 && (bot || right)) || (r === 4 && (top || left)) ? P.s1 : P.b;
+      }
+      const put = (x, y, c) => { col[y * S + x] = c; };
+      const side = (t, r, c) => { put(t, r, c); put(t, S - 1 - r, c); put(r, t, c); put(S - 1 - r, t, c); };
+      for (let t = 6; t <= 37; t++) { if (t % 8 === 2) { side(t, 1, P.s1); side(t, 2, P.s1); } if (t % 8 === 6) { side(t, 3, P.s1); side(t, 4, P.s1); } }
+      const stamp = (pat, ox, oy, ramp) => pat.forEach((row, y) => row.forEach((k, x) => { if (k) put(ox + x, oy + y, ramp[k]); }));
+      const gem = [['o', 'b', 'b', 'o'], ['b', 'h', 'b', 's1'], ['b', 'b', 's1', 's1'], ['o', 's1', 's1', 'o']];
+      [[1, 1], [39, 1], [1, 39], [39, 39]].forEach(([x, y]) => stamp(gem, x, y, CR));
+      [[21, 2], [21, 40], [2, 21], [40, 21]].forEach(([x, y]) => stamp([['h', 'b'], ['b', 's1']], x, y, GD));
+      return T.enc(S, S, col);
+    };
+    const crownSprite = gray => {
+      const half = ['p.......p', '#......##', '##....###', '###..####', '#########', '#########', '##r#####r', '#########', '#########'];
+      const rows = half.map(h => h + [...h].reverse().join(''));
+      const W = 20, H = 11, m = new Array(W * H).fill(null);
+      rows.forEach((r, y) => [...r].forEach((ch, x) => { if (ch !== '.') m[(y + 1) * W + x + 1] = ch; }));
+      const G = gray ? { o: '#24212C', s1: '#45404F', b: '#45404F' } : { o: '#5A3A12', s1: '#C9962C', b: '#F2C14E' };
+      const inM = (x, y) => x >= 0 && y >= 0 && x < W && y < H && m[y * W + x];
+      const col = new Array(W * H).fill(null);
+      for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+        const i = y * W + x;
+        if (!m[i]) { if ([[1, 0], [-1, 0], [0, 1], [0, -1]].some(([a, b]) => inM(x + a, y + b))) col[i] = G.o; continue; }
+        if (gray) { col[i] = G.b; continue; }
+        if (m[i] === 'p') col[i] = '#F3EDE2';
+        else if (m[i] === 'r') col[i] = '#9A1F35';
+        else { const tl = !inM(x - 1, y) || !inM(x, y - 1), br = !inM(x + 1, y) || !inM(x, y + 1); col[i] = br && !tl ? G.s1 : G.b; }
+      }
+      return T.enc(W, H, col);
+    };
+    const icon = (rows, color) => { const c = []; rows.forEach(r => [...r].forEach(ch => c.push(ch === '#' ? color : null))); return T.enc(rows[0].length, rows.length, c); };
+    const med = {};
+    this.ACH.forEach(([k, r]) => { med[k] = { on: ML.medal(k, r, false), off: ML.medal(k, r, true) }; });
+    this.art = {
+      med,
+      pri: fr('duke', 'priya_ships'), kenji: fr('count', 'kenji'), maru: fr('peasant', 'maru.jpg'), dk: fr('baron', 'danielkim'), vale: fr('duke', 'valeruiz', true),
+      knight: fr('knight', 'maru.jpg'),
+      genPri: genesis(av('priya_ships')), genMaru: genesis(av('maru.jpg')),
+      ...(() => { const SE = window.CrownSeasons.current(); return SE.frame ? { sPri: T.enc(44, 44, SE.frame(av('priya_ships'))), sMaru: T.enc(44, 44, SE.frame(av('maru.jpg'), true)) } : {}; })(),
+      crown: crownSprite(false), crownOff: crownSprite(true),
+      x: icon(['##....##', '###..###', '.######.', '..####..', '..####..', '.######.', '###..###', '##....##'], '#14111C')
+    };
+  }
+
+  renderVals() {
+    const SEA = window.CrownSeasons && window.CrownSeasons.current();
+    const s = this.state, lang = s.lang, t = { ...this.dict[lang], ...((SEA && SEA.ui && SEA.ui[lang]) || {}) }, en = lang === 'en';
+    const L = (a, b) => (en ? a : b);
+    const b = on => (on ? { bg: '#2A2438', fg: '#F3EDE2', sh: 'inset 4px 4px 0 #3D3550, inset -4px -4px 0 #1E1A29' } : { bg: 'transparent', fg: '#A89FB8', sh: 'none' });
+    const p2 = n => String(n).padStart(2, '0');
+    const kc = 5 * 3600 + 41 * 60 + 9 + s.tick;
+    const base = { t, seg: { en: b(en), es: b(!en) }, socSeg: [0, 2, 5].map(n => ({ n: String(n), ...b(s.socN === n), ck: s.socN === n ? 'true' : 'false', on: () => this.setState({ socN: n }) })), setEn: () => this.setState({ lang: 'en' }), setEs: () => this.setState({ lang: 'es' }), clock: `${Math.floor(kc / 3600)}h ${p2(Math.floor(kc / 60) % 60)}m ${p2(kc % 60)}s` };
+    if (!s.ready) return { ...base, profiles: [], icons: {} };
+    const A = this.art, T = window.CrownThroneLib;
+    const F = (name, cc) => { const f = T.flag(cc); return { name, code: cc, flag: f, hasFlag: !!f, noFlag: !f }; };
+    const pct = v => { const n = v < 1 ? v.toFixed(1) : String(Math.round(v)); return t.ofPlayers((en ? n : n.replace('.', ',')) + '%'); };
+    const segs = (n, tot, c) => Array.from({ length: tot }, (_, i) => (i < n ? c : '#2A2438'));
+    const byKey = Object.fromEntries(this.ACH.map(a => [a[0], a]));
+    const S1ON = !!(SEA && SEA.id >= 1), ACHV = this.ACH.filter(a => S1ON || a[0] !== 'remembered'), NA = ACHV.length;
+    const cnt = n => L(`${n} of ${NA}`, `${n} de ${NA}`);
+    const achList = have => ACHV.map(([k, r, ne, ns, ce, cs, pc]) => {
+      const on = have.includes(k);
+      return { src: on ? A.med[k].on : A.med[k].off, name: L(ne, ns), cond: L(ce, cs), pct: pct(pc), hex: this.HEX[r], locked: !on, bg: on ? '#1E1A29' : '#17141F', fg: on ? '#F3EDE2' : '#A89FB8' };
+    });
+    const show = (k, date) => { const [, r, ne, ns] = byKey[k]; return { full: true, empty: false, src: A.med[k].on, name: L(ne, ns), rar: this.RAR[lang][r], hex: this.HEX[r], date }; };
+    const H = (date, dur, from, to) => ({ date, dur, from, to });
+    const ROM = n => [[10, 'X'], [9, 'IX'], [5, 'V'], [4, 'IV'], [1, 'I']].reduce((acc, [v, r]) => { while (n >= v) { acc += r; n -= v; } return acc; }, '');
+    const CH = (tot, arr) => arr.map((h, i) => ({ ...h, num: ROM(tot - i) }));
+    const PARTS = v => String(v).split(' ').map(x => { const m = x.match(/^(\d+)([a-z]*)$/); return m ? { v: m[1], u: m[2] } : { v: x, u: '' }; });
+    const ST = arr => arr.map(s => ({ ...s, parts: PARTS(s.v) }));
+
+    const vetHave = ['owl', 'bag', 'regicide', 'revenge', 'g1', 'patriot', 'g2', 'collector', 'rivalry', 'founder'].concat(S1ON ? ['remembered'] : []);
+    const vet = {
+      id: 'p1', label: 'p1 Perfil veterano', isVet: true, isNew: false,
+      title: 'Veterano · Duque · vista pública',
+      desc: '12 reinados y 118 h en la corona, y rival fijo de kenji. La cabecera usa el busto a ×3 en móvil y a ×5 en escritorio, con el marco de su rango. La barra de rango usa Pergamino y no oro, porque no es la corona. Todo lo demás del perfil tampoco lleva oro: solo aparece en el color legendario de las medallas.',
+      name: 'priya_ships', flag: T.flag('IN'), rank: L('Duke', 'Duque'), rankSw: '#F2C14E', av: A.pri,
+      joined: L('Joined Sep 15, 2026', 'Desde el 15 sep 2026'), link: 'lumen-notes.app',
+      progTitle: L('Duke → Emperor', 'Duque → Emperador'), progVal: '118h / 168h', progNote: L('50 more hours on the throne to become Emperor.', '50 horas más en el trono para ser Emperador.'), segs: segs(14, 20, '#F3EDE2'),
+      showNote: L('Chosen by priya_ships', 'Elegidos por priya_ships'),
+      showcase: [show('founder', L('Unlocked Sep 16', 'Desbloqueado el 16 sep')), show('g2', L('Unlocked Sep 26', 'Desbloqueado el 26 sep')), show('regicide', L('Unlocked Sep 20', 'Desbloqueado el 20 sep'))],
+      stats: ST([{ label: t.totalR, v: '118h 24m' }, { label: t.longest, v: '26h 40m' }, { label: t.crowns, v: '12' }, { label: t.dethr, v: '12' }]),
+      rv: { me: A.pri, them: A.kenji, name: 'kenji', flag: T.flag('JP'), a: '9', b: '7', note: L('16 crowns traded between them. Last clash 2 days ago.', '16 coronas intercambiadas entre los dos. Último choque hace 2 días.') },
+      achCount: cnt(vetHave.length), ach: achList(vetHave),
+      histCount: L('Latest 6', 'Últimos 6'),
+      hist: CH(12, [
+        H(L('Sep 27', '27 sep'), '11h 05m', F('lucas.fm', 'BR'), F('ana.codes', 'MX')),
+        H(L('Sep 25', '25 sep'), '26h 40m', F('kenji', 'JP'), F('kenji', 'JP')),
+        H(L('Sep 24', '24 sep'), '4h 12m', F('mbali', 'ZA'), F('kenji', 'JP')),
+        H(L('Sep 22', '22 sep'), '9h 58m', F('kenji', 'JP'), F('sorenh', 'DK')),
+        H(L('Sep 20', '20 sep'), '18m', F('theo_builds', 'GB'), F('kenji', 'JP')),
+        H(L('Sep 19', '19 sep'), '14h 31m', F('camila.vc', 'CO'), F('kenji', 'JP'))
+      ]),
+      coll: [
+        { hasImg: true, q: false, src: A.genPri, w: 88, h: 88, bg: '#1E1A29', border: '0', fg: '#F3EDE2', name: L('Genesis frame', 'Marco Genesis'), sub: L('Season 0 · Reigned in Season 0', 'Temporada 0 · Reinó en la T0') },
+        { hasImg: true, q: false, src: A.crown, w: 80, h: 44, bg: '#1E1A29', border: '0', fg: '#F3EDE2', name: L('Genesis crown', 'Corona Génesis'), sub: L('Season 0 · 24h on the throne', 'Temporada 0 · 24 h en el trono') },
+        { hasImg: false, q: true, src: null, w: 0, h: 0, bg: 'transparent', border: '2px dashed #3D3550', fg: '#A89FB8', name: L('Season 1', 'Temporada 1'), sub: L('Starts Nov 1', 'Empieza el 1 nov') }
+      ]
+    };
+
+    const nw = {
+      id: 'p2', label: 'p2 Perfil nuevo', isVet: false, isNew: true,
+      title: 'Nuevo · Plebeyo · su propia vista',
+      desc: 'Un solo reinado de 11 s. En vez de ceros, el perfil muestra lo que sí ganó (Fundador, legendario, y Rey de un minuto), un rival con nombre y un marcador 0:1, y tres metas a su alcance con su progreso. El bloque de arriba lo devuelve a la portada: quién reina ahora, el precio en vivo y el botón dorado.',
+      name: 'maru.jpg', flag: T.flag('CL'), rank: L('Peasant', 'Plebeyo'), rankSw: '#8A5A34', av: A.maru,
+      joined: L('Joined Sep 24, 2026', 'Desde el 24 sep 2026'), link: 'maruprints.cl',
+      progTitle: L('Peasant → Knight', 'Plebeyo → Caballero'), progVal: '11s / 1h', progNote: L('59m 49s more on the throne to become Knight.', '59 min 49 s más en el trono para ser Caballero.'), segs: segs(0, 20, '#F3EDE2'),
+      hook: { status: L('danielkim took your crown after 11 seconds.', 'danielkim te quitó la corona a los 11 segundos.'), kingSrc: A.vale, kingFlag: T.flag('AR') },
+      showNote: L('2 of 3 slots', '2 de 3 huecos'),
+      showcase: [show('founder', L('Unlocked Sep 24', 'Desbloqueado el 24 sep')), show('oneMin', L('Unlocked Sep 24', 'Desbloqueado el 24 sep')), { full: false, empty: true, src: A.med.revenge.off, text: L('Your next achievement goes here. Revenge is the closest.', 'Aquí irá tu próximo logro. Venganza es el más cercano.') }],
+      reach: [
+        { src: A.med.revenge.off, w: 48, name: L('Revenge', 'Venganza'), desc: L('Next time danielkim reigns, take the crown back.', 'La próxima vez que reine danielkim, recupera la corona.'), val: '0 / 1', segs: segs(0, 10, '#4A90E2') },
+        { src: A.knight, w: 44, name: L('Knight', 'Caballero'), desc: L('Reign 1 hour in total to earn the iron frame.', 'Reina 1 hora en total para ganar el marco de hierro.'), val: '11s / 1h', segs: segs(0, 10, '#F3EDE2') },
+        { src: A.med.bag.off, w: 48, name: L('Bargain Hunter', 'Cazador de gangas'), desc: L('Take the crown at the $5 floor. About 95h if nobody buys.', 'Toma la corona al mínimo de $5. Unas 95 h si nadie compra.'), val: '$34 → $5', segs: segs(0, 10, '#9AA3AE') }
+      ],
+      stats: ST([{ label: t.totalR, v: '11s' }, { label: t.longest, v: '11s' }, { label: t.crowns, v: '1' }, { label: t.dethr, v: '1' }]),
+      rv: { me: A.maru, them: A.dk, name: 'danielkim', flag: T.flag('KR'), a: '0', b: '1', note: L('Your only clash so far. Even the score to start a rivalry.', 'Tu único choque por ahora. Empata el marcador para empezar una rivalidad.') },
+      achCount: cnt(2), ach: achList(['oneMin', 'founder']),
+      histCount: L('1 reign', '1 reinado'),
+      hist: CH(1, [H(L('Sep 24', '24 sep'), '11s', F('jules', 'FR'), F('danielkim', 'KR'))]),
+      coll: [
+        { hasImg: true, q: false, src: A.genMaru, w: 88, h: 88, bg: '#1E1A29', border: '0', fg: '#F3EDE2', name: L('Genesis frame', 'Marco Genesis'), sub: L('Yours forever. Only Season 0 kings get it.', 'Tuyo para siempre. Solo lo tienen los reyes de la T0.') },
+        { hasImg: true, q: false, src: A.crownOff, w: 80, h: 44, bg: '#17141F', border: '0', fg: '#A89FB8', name: L('Genesis crown', 'Corona Génesis'), sub: L('11s of 24h · 34 days left', '11 s de 24 h · quedan 34 días') },
+        { hasImg: false, q: true, src: null, w: 0, h: 0, bg: 'transparent', border: '2px dashed #3D3550', fg: '#A89FB8', name: L('Season 1', 'Temporada 1'), sub: L('Starts Nov 1', 'Empieza el 1 nov') }
+      ]
+    };
+    if (SEA && SEA.frame && A.sPri) {
+      const nm = L(SEA.frameName.en, SEA.frameName.es);
+      vet.coll[2] = { hasImg: true, q: false, src: A.sPri, w: 88, h: 88, bg: '#1E1A29', border: '0', fg: '#F3EDE2', name: nm, sub: L('Season 1 · Reigned Nov 4', 'Temporada 1 · Reinó el 4 nov') };
+      nw.coll[1] = { ...nw.coll[1], sub: L('Season 0 · Not earned', 'Temporada 0 · No conseguida') };
+      nw.coll[2] = { hasImg: true, q: false, src: A.sMaru, w: 88, h: 88, bg: '#17141F', border: '0', fg: '#A89FB8', name: nm, sub: L('Reign once in Season 1 · 23 days left', 'Reina una vez en la T1 · quedan 23 días') };
+    }
+    const SO = window.CrownSocial, HANDLES = [['x', 'priya_ships'], ['gh', 'priyaships'], ['ig', 'priya.ships'], ['li', 'priya-ships'], ['yt', 'priyaships']];
+    const socOf = list => list.map(([k, h]) => ({ url: SO.url(k, h), logo: SO.logo(k), aria: `${SO.by[k].name}: ${SO.shown(k, h)}` }));
+    vet.soc = socOf(HANDLES.slice(0, s.socN)); vet.hasSoc = vet.soc.length > 0; vet.socEmpty = false;
+    nw.soc = []; nw.hasSoc = false; nw.socEmpty = true;
+    return { ...base, profiles: [vet, nw], icons: { x: A.x } };
+  }
+}
+</script>
+</body>
+</html>
