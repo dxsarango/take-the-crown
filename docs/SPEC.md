@@ -4,7 +4,7 @@ Working name. One crown on the internet: whoever holds it is featured on the hom
 
 Operator: Dario Sarango, natural person, Ecuador. Sales go through a merchant of record.
 
-Design source of truth: the Claude Design handoff in `/design`. Data and game logic source of truth: `supabase/migrations`. This document explains how they connect.
+Design source of truth: the design handoff in `/design`. Data and game logic source of truth: `supabase/migrations`. This document explains how they connect.
 
 ---
 
@@ -191,8 +191,6 @@ Minimal, server-rendered: current crown and lock, recent payments with status an
 Operator: Dario Sarango (natural person, Ecuador). Governing law: Ecuador. Privacy policy covering Ecuador's personal data protection law (LOPDP) and GDPR basics. Drafts will be provided separately and should be reviewed by a lawyer.
 
 ## 15. Testing
-
-Claude Code runs tests itself and only asks for help with credentials or external accounts.
 
 - Unit: price formula (client implementation must match `price_at`), rank thresholds, link validation, moderation parsing.
 - Database (against local Supabase): lock contention, duplicate webhooks, late payments inside and outside grace, self-takeover, season rollover, every achievement rule, guest claim.
