@@ -1,0 +1,9 @@
+node_modules/
+.next/
+.env
+.env.*
+!.env.example
+.vercel/
+supabase/.temp/
+.DS_Store
+Thumbs.db
