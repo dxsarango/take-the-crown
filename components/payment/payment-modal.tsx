@@ -3,15 +3,18 @@
 import { useLocale, useMessages, useTranslations } from "next-intl";
 import { type ReactNode, useEffect, useId, useMemo, useRef, useState } from "react";
 import { Flag, Icon, RankTag } from "@/components/art";
+import { signInHref } from "@/components/auth/login-dialog";
 import type { Locale } from "@/i18n/routing";
-import { pixelsToSVG } from "@/lib/art/avatar";
+import { type AvatarSource, pixelsToSVG } from "@/lib/art/avatar";
 import { portraitPixels } from "@/lib/art/portrait";
-import { seasonScene } from "@/lib/art/scenes";
+import { portraitOrigin, seasonScene } from "@/lib/art/scenes";
 import { COUNTRY_CODES, countryName } from "@/lib/countries";
 import { displayLink, formatCountdown, formatPrice } from "@/lib/format";
 import { NAME_PATTERN, normalizeLink } from "@/lib/locks/input";
 import type { LockFailure, LockField } from "@/lib/locks/outcome";
+import type { Rank } from "@/lib/game/rank";
 import { lockSegments } from "@/lib/home/hero";
+import type { ViewerSummary } from "@/lib/profile/viewer";
 import { type Draft, type PaymentResult, usePayment } from "./use-payment";
 
 const SEGMENTS = 20;
@@ -50,18 +53,31 @@ function useNameCheck(name: string): NameCheck {
   return local ?? check;
 }
 
-function Preview({ seed, season, scale, width }: { seed: string; season: number; scale: number; width: number }) {
+function Preview({ avatar, rank, season, scale, width }: { avatar: AvatarSource; rank: Rank; season: number; scale: number; width: number }) {
+  const traitsKey = JSON.stringify(avatar.traits ?? null);
   const svg = useMemo(() => {
-    const frame = portraitPixels({ seed }, "peasant", { season, crown: true });
+    const frame = portraitPixels(avatar, rank, { season, crown: true });
     return pixelsToSVG(seasonScene(season, width, 72, { frame }), width, 72);
-  }, [seed, season, width]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- keyed by value, not identity
+  }, [avatar.seed, traitsKey, avatar.image?.pixelUrl, rank, season, width]);
+  const origin = portraitOrigin(width, 72);
+  const image = avatar.image;
   return (
-    <span
-      aria-hidden
-      className="block flex-none [image-rendering:pixelated] [&>svg]:block [&>svg]:size-full"
-      style={{ width: width * scale, height: 72 * scale }}
-      dangerouslySetInnerHTML={{ __html: svg }}
-    />
+    <span aria-hidden className="relative block flex-none" style={{ width: width * scale, height: 72 * scale }}>
+      {image && (
+        // eslint-disable-next-line @next/next/no-img-element -- pixel art must not be resampled by next/image
+        <img
+          src={image.pixelated ? image.pixelUrl : image.originalUrl}
+          alt=""
+          className={`absolute object-cover ${image.pixelated ? "[image-rendering:pixelated]" : ""}`}
+          style={{ left: (origin.x + 6) * scale, top: (origin.y + 6) * scale, width: 32 * scale, height: 32 * scale }}
+        />
+      )}
+      <span
+        className="absolute inset-0 block [image-rendering:pixelated] [&>svg]:block [&>svg]:size-full"
+        dangerouslySetInnerHTML={{ __html: svg }}
+      />
+    </span>
   );
 }
 
@@ -190,21 +206,26 @@ type Props = {
   now: number;
   initial: Draft;
   detectedCountry: boolean;
+  /** Signed-in buyers keep their name, avatar and email. */
+  viewer: ViewerSummary | null;
   onDone: (result: PaymentResult) => void;
+  /** "Email me a magic link" after paying: the home closes this and opens the sign-in sheet. */
+  onSignIn: (draft: Draft) => void;
 };
 
-export function PaymentModal({ season, priceCents, lockSeconds, messageMax, now, initial, detectedCountry, onDone }: Props) {
+export function PaymentModal({ season, priceCents, lockSeconds, messageMax, now, initial, detectedCountry, viewer, onDone, onSignIn }: Props) {
   const t = useTranslations("payment");
   const common = useTranslations("common");
   const login = useTranslations("login");
   const editProfile = useTranslations("editProfile");
   const units = useTranslations("common.units");
+  const rankLabel = useTranslations("rank");
   const locale = useLocale() as Locale;
   const dialog = useRef<HTMLDialogElement>(null);
   const [draft, setDraft] = useState<Draft>(initial);
   const [countryTouched, setCountryTouched] = useState(false);
   const { phase, submit, payTest, decline, close, clearFailure } = usePayment({ locale, now, onDone });
-  const nameCheck = useNameCheck(draft.name);
+  const nameCheck = useNameCheck(viewer ? "" : draft.name);
   const titleId = useId();
 
   useEffect(() => {
@@ -229,10 +250,14 @@ export function PaymentModal({ season, priceCents, lockSeconds, messageMax, now,
 
   const emailOk = EMAIL.test(draft.email.trim());
   const nameOk = nameCheck === "available" || nameCheck === "checking";
-  const canPay = phase.kind === "form" && nameOk && emailOk;
+  const canPay = phase.kind === "form" && (viewer !== null || (nameOk && emailOk));
   const busy = phase.kind === "submitting" || (locked && phase.paying);
   const payOff = busy || locked ? t("processing") : t("needName");
-  const shownName = draft.name.trim() || t("youName");
+  // Signed-in buyers keep their public name (SPEC §4).
+  const name = viewer ? viewer.name : draft.name;
+  const shownName = name.trim() || t("youName");
+  const avatar: AvatarSource = viewer?.avatar ?? { seed: draft.avatarSeed };
+  const rank: Rank = viewer?.rank ?? "peasant";
   const link = draft.link.trim() ? displayLink(normalizeLink(draft.link)) : "";
 
   const update = (field: keyof Draft, value: string | null) => {
@@ -256,6 +281,7 @@ export function PaymentModal({ season, priceCents, lockSeconds, messageMax, now,
   const notice = failure ? noticeFor(failure) : null;
 
   const nameLine = () => {
+    if (viewer) return <div className="text-12 text-crown-muted">{t("nameSignedIn")}</div>;
     if (failure?.error === "name_taken" || nameCheck === "taken")
       return <FieldError>{editProfile("nameTaken", { name: draft.name.trim() })}</FieldError>;
     if (nameCheck === "short") return <FieldError>{editProfile("nameShort")}</FieldError>;
@@ -331,16 +357,16 @@ export function PaymentModal({ season, priceCents, lockSeconds, messageMax, now,
       </div>
       {size === "mobile" ? (
         <div className="flex h-36 justify-center overflow-hidden bg-crown-ink">
-          <Preview seed={draft.avatarSeed} season={season} scale={2} width={180} />
+          <Preview avatar={avatar} rank={rank} season={season} scale={2} width={180} />
         </div>
       ) : (
-        <Preview seed={draft.avatarSeed} season={season} scale={3} width={120} />
+        <Preview avatar={avatar} rank={rank} season={season} scale={3} width={120} />
       )}
       <div className="flex flex-col gap-2">
         <div className="flex flex-wrap items-center gap-2">
           <span className="text-16 font-bold break-all">{shownName}</span>
           <Flag code={draft.country} />
-          <RankTag rank="peasant" label={t("rank")} />
+          <RankTag rank={rank} label={viewer ? rankLabel(rank) : t("rank")} />
         </div>
         {draft.message.trim() && <p className="text-14 leading-[1.45] text-pretty">“{draft.message.trim()}”</p>}
         {link && <span className="text-14 font-bold underline decoration-crown-stone decoration-2 underline-offset-[5px]">{link}</span>}
@@ -355,8 +381,9 @@ export function PaymentModal({ season, priceCents, lockSeconds, messageMax, now,
       </label>
       <input
         id={`pay-${size}-name`}
-        value={draft.name}
+        value={name}
         onChange={(e) => update("name", e.target.value.slice(0, 24))}
+        readOnly={viewer !== null}
         maxLength={24}
         autoComplete="nickname"
         placeholder={t("namePh")}
@@ -487,19 +514,21 @@ export function PaymentModal({ season, priceCents, lockSeconds, messageMax, now,
     </div>
   );
 
-  const signIn = (
+  const next = `/${locale}`;
+  const signInClass =
+    "hit-area m-1 flex h-13 items-center justify-center bg-crown-hall text-16 font-bold shadow-relief hover:bg-crown-stone focus-visible:outline-offset-[6px]";
+  const signIn = viewer ? null : (
     <>
       <p className="text-16 leading-snug font-bold text-pretty lg:text-20">{t("signin")}</p>
-      {/* Sign-in providers are wired in M5. */}
-      {[common("google"), t("xLogin"), t("email")].map((label) => (
-        <button
-          key={label}
-          type="button"
-          className="hit-area m-1 h-13 bg-crown-hall text-16 font-bold shadow-relief hover:bg-crown-stone focus-visible:outline-offset-[6px]"
-        >
-          {label}
-        </button>
-      ))}
+      <a href={signInHref("google", next)} className={signInClass}>
+        {common("google")}
+      </a>
+      <a href={signInHref("x", next)} className={signInClass}>
+        {t("xLogin")}
+      </a>
+      <button type="button" onClick={() => onSignIn(draft)} className={signInClass}>
+        {t("email")}
+      </button>
     </>
   );
 
@@ -535,7 +564,7 @@ export function PaymentModal({ season, priceCents, lockSeconds, messageMax, now,
         id="payment-form"
         onSubmit={(e) => {
           e.preventDefault();
-          if (canPay) void submit(draft);
+          if (canPay) void submit(viewer ? { ...draft, name: viewer.name } : draft);
         }}
         className="flex h-full flex-col lg:max-h-[calc(100dvh-48px)]"
       >
@@ -553,13 +582,13 @@ export function PaymentModal({ season, priceCents, lockSeconds, messageMax, now,
                   {nameField("mobile")}
                   {nameLine()}
                 </div>
-                {emailField("mobile")}
+                {!viewer && emailField("mobile")}
                 {linkField("mobile")}
                 {messageField("mobile")}
                 {country(false)}
               </fieldset>
             )}
-            {isSuccess && <div className="flex flex-col gap-3 pt-5 shadow-[var(--crown-bar-top)]">{signIn}</div>}
+            {isSuccess && signIn && <div className="flex flex-col gap-3 pt-5 shadow-[var(--crown-bar-top)]">{signIn}</div>}
           </div>
           {showForm && (
             <div className="flex flex-none flex-col gap-2.5 bg-crown-ink px-4 pt-3.5 pb-4 shadow-[var(--crown-bar-top)]">
@@ -568,14 +597,16 @@ export function PaymentModal({ season, priceCents, lockSeconds, messageMax, now,
                 {common("final")}
               </div>
               {payButton("")}
-              <div className="text-center text-12 text-crown-muted">{t("noAcct")}</div>
+              {!viewer && <div className="text-center text-12 text-crown-muted">{t("noAcct")}</div>}
             </div>
           )}
           {isSuccess && (
             <div className="flex flex-none items-center justify-between gap-3 px-4 pt-3 pb-4 shadow-[var(--crown-bar-top)]">
-              <button type="button" onClick={close} className="hit-area h-11 px-3 text-14 font-bold underline decoration-crown-stone decoration-2 underline-offset-[6px] hover:bg-crown-velvet">
-                {common("notNow")}
-              </button>
+              {!viewer && (
+                <button type="button" onClick={close} className="hit-area h-11 px-3 text-14 font-bold underline decoration-crown-stone decoration-2 underline-offset-[6px] hover:bg-crown-velvet">
+                  {common("notNow")}
+                </button>
+              )}
               <button type="button" onClick={close} className="hit-area text-14 font-bold underline decoration-2 underline-offset-[6px]">
                 {t("watch")}
               </button>
@@ -603,7 +634,7 @@ export function PaymentModal({ season, priceCents, lockSeconds, messageMax, now,
                     {country(true)}
                   </div>
                   <div className="-mt-3">{nameLine()}</div>
-                  {emailField("desktop")}
+                  {!viewer && emailField("desktop")}
                   {linkField("desktop")}
                   {messageField("desktop")}
                 </fieldset>
@@ -611,7 +642,7 @@ export function PaymentModal({ season, priceCents, lockSeconds, messageMax, now,
             ) : (
               <div className="flex flex-col gap-3.5">
                 {signIn}
-                <p className="text-12 leading-body text-crown-muted">{t("skipNote")}</p>
+                {signIn && <p className="text-12 leading-body text-crown-muted">{t("skipNote")}</p>}
               </div>
             )}
             {previewCard("desktop")}
@@ -624,16 +655,18 @@ export function PaymentModal({ season, priceCents, lockSeconds, messageMax, now,
                   <span className="mt-[7px] size-2 flex-none bg-crown-text" />
                   {common("final")}
                 </div>
-                <div className="pl-[18px] text-12 text-crown-muted">{t("noAcct")}</div>
+                {!viewer && <div className="pl-[18px] text-12 text-crown-muted">{t("noAcct")}</div>}
               </div>
               {payButton("min-w-[380px] px-7")}
             </div>
           )}
           {isSuccess && (
             <div className="flex items-center justify-between gap-6 px-7 pt-4 pb-5 shadow-[var(--crown-bar-top)]">
-              <button type="button" onClick={close} className="hit-area h-11 px-3 text-14 font-bold underline decoration-crown-stone decoration-2 underline-offset-[6px] hover:bg-crown-velvet">
-                {common("notNow")}
-              </button>
+              {!viewer && (
+                <button type="button" onClick={close} className="hit-area h-11 px-3 text-14 font-bold underline decoration-crown-stone decoration-2 underline-offset-[6px] hover:bg-crown-velvet">
+                  {common("notNow")}
+                </button>
+              )}
               <button type="button" onClick={close} className="hit-area text-14 font-bold underline decoration-2 underline-offset-[6px]">
                 {t("watch")}
               </button>

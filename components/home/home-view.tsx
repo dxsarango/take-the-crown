@@ -1,6 +1,8 @@
 "use client";
 
+import { useLocale } from "next-intl";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useAuth } from "@/components/auth/auth-provider";
 import { PaymentModal } from "@/components/payment/payment-modal";
 import { type Draft, type PaymentResult, newAvatarSeed, takeDraft } from "@/components/payment/use-payment";
 import { TopBar } from "@/components/top-bar";
@@ -63,6 +65,13 @@ function emptyDraft(country: string | null): Draft {
   return { name: "", email: "", link: "", message: "", country, avatarSeed: newAvatarSeed() };
 }
 
+/** Removes a one-off query parameter and says whether it was there. */
+function takeParam(url: URL, key: string): boolean {
+  if (!url.searchParams.has(key)) return false;
+  url.searchParams.delete(key);
+  return true;
+}
+
 export function HomeView({ initial }: { initial: HomeData }) {
   const live = useLiveHome(initial);
   const now = useServerNow(initial.readAt);
@@ -72,6 +81,8 @@ export function HomeView({ initial }: { initial: HomeData }) {
   const [modal, setModal] = useState<{ draft: Draft; detected: boolean } | null>(null);
   const [notice, setNotice] = useState<HomeNotice | null>(null);
   const geo = useRef<string | null>(null);
+  const { viewer, openLogin } = useAuth();
+  const locale = useLocale();
 
   // The server sets data-season on <html>; keep it in step when a season rolls over live.
   useEffect(() => {
@@ -80,11 +91,10 @@ export function HomeView({ initial }: { initial: HomeData }) {
 
   useEffect(() => {
     const url = new URL(window.location.href);
-    const resume = url.searchParams.has("resume");
-    if (resume) {
-      url.searchParams.delete("resume");
-      window.history.replaceState(null, "", url);
-    }
+    const resume = takeParam(url, "resume");
+    // "Take the crown" from another page (the profile's come-back block).
+    const take = takeParam(url, "take");
+    if (resume || take) window.history.replaceState(null, "", url);
     fetch("/api/geo")
       .then((r) => r.json() as Promise<{ country: string | null }>)
       .then((r) => {
@@ -92,13 +102,21 @@ export function HomeView({ initial }: { initial: HomeData }) {
         // Back from the magic link sent to a known email: reopen the form where the buyer left it.
         const draft = resume ? takeDraft() : null;
         if (draft) setModal({ draft, detected: false });
+        else if (take) setModal({ draft: emptyDraft(r.country), detected: r.country !== null });
       })
       .catch(() => undefined);
   }, []);
 
   const openPayment = () => {
     setNotice(null);
-    setModal({ draft: emptyDraft(geo.current), detected: geo.current !== null });
+    const country = viewer ? viewer.countryCode : geo.current;
+    setModal({ draft: emptyDraft(country), detected: !viewer && geo.current !== null });
+  };
+
+  /** "Email me a magic link" after paying: the coronation replays, then the sign-in sheet opens. */
+  const signInAfterPayment = (draft: Draft) => {
+    onPaymentDone("crowned");
+    openLogin({ variant: "afterPayment", email: draft.email, avatar: { seed: draft.avatarSeed }, next: `/${locale}` });
   };
 
   const onPaymentDone = (result: PaymentResult) => {
@@ -151,7 +169,9 @@ export function HomeView({ initial }: { initial: HomeData }) {
           now={now}
           initial={modal.draft}
           detectedCountry={modal.detected}
+          viewer={viewer}
           onDone={onPaymentDone}
+          onSignIn={signInAfterPayment}
         />
       )}
     </div>
