@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import type pg from "pg";
 
 // Mirrors the seed in supabase/migrations/0001_init.sql.
@@ -44,4 +45,12 @@ export async function resetToSeed(client: pg.ClientBase, extraTables: string[] =
   await client.query("update achievements set active = true");
   await client.query(SEED_SEASONS);
   await client.query("insert into crown_state (season_id, base_price_cents) values (0, 500)");
+}
+
+/** Re-applies the local development seed, as {"_tag":"Error","error":{"code":"UnknownSubcommand","message":"Unknown subcommand "reset\" for "supabase db"
+
+  Did you mean this?
+    reset"}} does. */
+export async function applyDevSeed(client: pg.ClientBase): Promise<void> {
+  await client.query(readFileSync(new URL("../../supabase/seed.sql", import.meta.url), "utf8"));
 }

@@ -1,6 +1,6 @@
 import pg from "pg";
 import { DB_URL } from "./db-url";
-import { resetToSeed } from "./reset";
+import { applyDevSeed, resetToSeed } from "./reset";
 
 // pg_cron runs rollover and live achievements every minute; pause it so tests control time.
 export default async function setup() {
@@ -17,6 +17,7 @@ export default async function setup() {
     const teardown = new pg.Client({ connectionString: DB_URL });
     await teardown.connect();
     await resetToSeed(teardown);
+    await applyDevSeed(teardown);
     await teardown.query("select cron.alter_job(jobid, active := true) from cron.job");
     await teardown.end();
   };
