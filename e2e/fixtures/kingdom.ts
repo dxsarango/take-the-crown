@@ -52,6 +52,9 @@ async function withClient<T>(fn: (client: pg.Client) => Promise<T>): Promise<T> 
 
 /** Seed state with `season` open since yesterday and the previous one closed. */
 async function resetTo(client: pg.Client, season: 0 | 1): Promise<void> {
+  // A request still in flight from the previous test could otherwise recreate a profile for its
+  // signed-in user between the truncate and the seed.
+  await client.query("delete from auth.users where email like '%@test.local'");
   await resetToSeed(client, ["profile_name_history"]);
   await applyDevSeed(client);
   if (season === 1) {
