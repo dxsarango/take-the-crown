@@ -95,6 +95,27 @@ test("updates live when the crown changes hands", async ({ page }) => {
   await expect(page.getByText(en.homeStates.someone).filter({ visible: true }).first()).toBeVisible({ timeout: 10_000 });
 });
 
+for (const locale of ["en", "es"] as const) {
+  test(`fits the full brand in the top bar in ${locale}`, async ({ page }, testInfo) => {
+    await seedKingdom();
+    await page.goto(`/${locale}`);
+    const header = page.locator("header");
+    const brand = header.getByText("Take the Crown", { exact: true });
+    await expect(brand).toBeVisible();
+    expect(await brand.evaluate((el) => el.scrollWidth <= el.clientWidth)).toBe(true);
+    expect(await header.evaluate((el) => el.scrollWidth <= el.clientWidth)).toBe(true);
+
+    const signIn = header.getByRole("button", { name: messages[locale].home.signin });
+    await expect(signIn).toBeVisible();
+    const touch = await signIn.evaluate((el) => {
+      const before = getComputedStyle(el, "::before");
+      return Math.min(parseFloat(before.width), parseFloat(before.height));
+    });
+    expect(touch).toBeGreaterThanOrEqual(44);
+    await header.screenshot({ path: `test-results/screens/topbar-${locale}-${testInfo.project.name}.png` });
+  });
+}
+
 for (const season of [0, 1] as const) {
   for (const locale of ["en", "es"] as const) {
     test(`screenshot T${season} ${locale}`, async ({ page }, testInfo) => {

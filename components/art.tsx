@@ -80,6 +80,18 @@ const DROP_ARROW_SVG = pixelsToSVG(
   6,
 );
 
+// Sign-in icon (8×8, currentColor), in the style of the design's 8×8 icons; the design has no user icon.
+const PERSON = ["..####..", ".######.", ".######.", "..####..", "........", ".######.", "########", "########"];
+const PERSON_SVG = pixelsToSVG(
+  PERSON.flatMap((row) => [...row].map((c) => (c === "#" ? "currentColor" : null))),
+  8,
+  8,
+);
+
+export function PersonIcon() {
+  return <PixelSVG svg={PERSON_SVG} width={8} height={8} scale={2} />;
+}
+
 export function DropArrow() {
   return <PixelSVG svg={DROP_ARROW_SVG} width={7} height={6} scale={2} className="motion-safe:animate-crown-drop" />;
 }
