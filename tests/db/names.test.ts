@@ -124,6 +124,30 @@ describe("public names", () => {
       await expect(rename(await other.id(), player.name)).rejects.toThrow("name_taken");
     });
 
+    it("lets an admin release a reserved name", async () => {
+      const player = new Player("released");
+      await player.takeover();
+      const id = await player.id();
+      await rename(id, "Moved.On");
+
+      const [released] = await svc<{ ok: boolean }>("select release_profile_name($1) as ok", [player.name.toUpperCase()]);
+      expect(released.ok).toBe(true);
+      expect(await available(player.name)).toBe(true);
+      expect(await resolve(player.name)).toBeNull();
+      expect(await profile(id)).toMatchObject({ name: "Moved.On" });
+
+      const [again] = await svc<{ ok: boolean }>("select release_profile_name($1) as ok", [player.name]);
+      expect(again.ok).toBe(false);
+    });
+
+    it("does not release a name in current use", async () => {
+      const player = new Player("current");
+      await player.takeover();
+      const [released] = await svc<{ ok: boolean }>("select release_profile_name($1) as ok", [player.name]);
+      expect(released.ok).toBe(false);
+      expect(await available(player.name)).toBe(false);
+    });
+
     it("lets the owner take back an old name after the cooldown", async () => {
       const player = new Player("comeback");
       await player.takeover();
