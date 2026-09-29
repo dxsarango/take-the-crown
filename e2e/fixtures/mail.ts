@@ -6,6 +6,7 @@ const MAILPIT = "http://127.0.0.1:54324/api/v1";
 /** The newest sign-in link emailed to this address. */
 export async function latestSignInLink(email: string): Promise<string> {
   let id: string | undefined;
+  // Under a full run the local mail catcher can take a few seconds to receive the email.
   await expect
     .poll(async () => {
       const list = (await (await fetch(`${MAILPIT}/messages?limit=20`)).json()) as {
@@ -13,7 +14,7 @@ export async function latestSignInLink(email: string): Promise<string> {
       };
       id = list.messages.find((m) => m.To.some((t) => t.Address === email))?.ID;
       return id;
-    })
+    }, { timeout: 15_000 })
     .toBeTruthy();
   const message = (await (await fetch(`${MAILPIT}/message/${id}`)).json()) as { Text: string };
   const link = /https?:\/\/\S+verify\S+/.exec(message.Text)?.[0];
