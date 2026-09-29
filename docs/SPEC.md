@@ -46,7 +46,7 @@ All values live in `app_config` and must never be hardcoded in the app.
 
 **Seasons.** A season is open from `starts_at` to `ends_at` (UTC); locks and payments outside that window are rejected or refunded. `rollover_season()` closes the current reign with `season_end`, awards any Guardian tier that reign reached, stores the season king (most total reign time), notifies players with season-start alerts on, and resets the crown to the floor price with an empty throne. The next season must exist in `seasons` beforehand; if it doesn't, rollover raises `no_next_season_configured` and payments refund until it is added. Current calendar: T0 Genesis until 2026-11-01, T1 Day of the Dead (November), T2 Frost (December). Dates shown in the UI always come from `seasons`, never from copy.
 
-**Ranks** (total reign time): Peasant 0, Knight 1 h, Baron 6 h, Count 24 h, Duke 72 h, Emperor 168 h.
+**Ranks** (total reign time): Peasant 0, Knight 1 h, Baron 6 h, Count 24 h, Duke 72 h, Emperor 168 h. Reaching a rank publishes a `rank_up` event once per profile per rank (unique in the database), shown in the feed, as a toast to the player and as a share card.
 
 **Achievements.** Evaluated inside the database on each takeover (`award_takeover_achievements`) and every minute for the reigning king (`check_live_achievements`). Seasonal achievements are defined per season via `seasons.exclusive_achievement`. `profile_achievements.season_id` stores where it was earned, which determines the ring color.
 

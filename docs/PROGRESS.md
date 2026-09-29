@@ -24,11 +24,9 @@ Conflicts between the design handoff (`/design`), the spec and the migrations, a
 16. **Social logos.** Pre-production task (see below).
 17. **Segmented switch relief.** Approved: follow the prototype (2 px insets).
 18. **Payment modal avatar upload.** Approved: upload only in edit profile.
-
-## Open questions
-
-1. **Rank-up proclamations.** The design's feed shows "priya_ships rose to Duke", but the database emits no rank-change events (ranks are derived from total reign time, which grows while reigning). Supporting it needs a migration: a `rank_up` event kind, emitted by `apply_payment` (when a reign ends) and by the per-minute live check. Until decided, the feed shows takeovers, first reigns and achievements.
-2. **Brand size on mobile.** The design was drawn with the 5-letter "Crown"; "Take the Crown" at the design's 20 px does not fit the 390 px top bar next to "Iniciar sesión". Interim: 16 px on mobile, 28 px on desktop as designed.
+19. **Rank-up events.** A `rank_up` event, emitted once per profile per rank (unique in the database, since the live check runs every minute). Shown in the feed, as a toast like an achievement unlock, and as a share card. Built in M6; the card in M8.
+20. **Mobile top bar.** The brand keeps the design's 20 px on mobile; "Sign in" becomes an icon button there (accessible label, 44 px touch area). The design has no user icon, so an 8×8 pixel bust in the style of its 8×8 icons is used. If a longer brand stops fitting, ask the design for a compact mobile lockup.
+21. **Avatar route.** `GET /avatar/[name].svg` moves to M8 with share cards and email; pages render portraits inline.
 
 ## Deployment checklist
 
@@ -108,7 +106,8 @@ Steps for every hosted environment (staging and production).
 - [x] Parameterized copy: config values (`{percent}`, `{price}`), `{brand}`, season number; neutral `share.chaLabel`; season names and dates from `seasons`
 - [x] Reduced motion: no arrow step animation, no crown shake
 - [x] Unit tests (price, hero state, clock offset, formatting, messages, art) and e2e (content, states, locale switch, live update); screenshots at 390/1440 in T0 and T1, en and es, compared with `Portada.dc.html` and `Portada Estados.dc.html`
-- [ ] Avatar route `GET /avatar/[name].svg?season=&crown=`: moved to M5 (profile) / M8 (share cards); the home renders portraits inline from `avatar_seed` + `avatar_traits`
+- [x] Mobile top bar: brand at the design's 20 px, "Sign in" as an icon button (decision 20); e2e checks the fit in en and es
+- [x] Avatar route moved to M8 (decision 21)
 
 ## Milestone 4 — Lock, test payment provider, webhook, coronation
 
@@ -138,7 +137,9 @@ Steps for every hosted environment (staging and production).
 ## Milestone 6 — Achievements UI, kingdom, hall of fame, season end
 
 - [ ] Medal component (on/off, rarity ring, seasonal ring by origin season)
-- [ ] Achievement unlocked toast (queue, pause on hover/focus, `aria-live`), per-user realtime event
+- [ ] Migration: `rank_up` event kind, emitted once per profile per rank (unique constraint) by `apply_payment` and the per-minute live check; db tests including repeated checks
+- [ ] Rank-up in the Proclamations feed ("rose to Duke")
+- [ ] Achievement unlocked toast (queue, pause on hover/focus, `aria-live`), per-user realtime event; the same toast for rank-ups
 - [ ] `/kingdom`: history timeline by day, size by duration, season filter
 - [ ] `/hall-of-fame`: 4 tabs, season / all-time scope, pixel podium
 - [ ] `/seasons/[slug]`: King of the Season banner portrait, podium, stats, next season announcement with "Remind me"
@@ -154,7 +155,8 @@ Steps for every hosted environment (staging and production).
 
 ## Milestone 8 — Share cards, email outbox, dethroned alert
 
-- [ ] `GET /og/[template]/[id]` for victory, challenge, achievement, dethroned at 1200×630 and 1080×1920 (fonts embedded, pixel art as PNG at integer scale)
+- [ ] `GET /og/[template]/[id]` for victory, challenge, achievement, rank-up, dethroned at 1200×630 and 1080×1920 (fonts embedded, pixel art as PNG at integer scale); rank-up card needs a design
+- [ ] Avatar route `GET /avatar/[name].svg?season=&crown=`, seeded by `avatar_seed` + `avatar_traits`, long cache per season (used by share cards and email)
 - [ ] OG/Twitter metadata on home, profile, season pages
 - [ ] Resend setup; Supabase Auth SMTP through Resend
 - [ ] react-email dethroned template (en/es) from the design
