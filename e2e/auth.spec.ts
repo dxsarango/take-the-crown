@@ -48,10 +48,24 @@ test("starts Google and X sign-in, and explains when a provider is off", async (
   await expect(loginDialog(page).getByRole("link", { name: en.common.google })).toHaveAttribute("href", "/auth/sign-in/google?next=%2Fen");
   await expect(loginDialog(page).getByRole("link", { name: en.login.x })).toHaveAttribute("href", "/auth/sign-in/x?next=%2Fen");
 
-  // Providers are off in the local stack until the OAuth apps exist.
-  await loginDialog(page).getByRole("link", { name: en.common.google }).click();
+  // X stays off in the local stack until its OAuth app exists.
+  await loginDialog(page).getByRole("link", { name: en.login.x }).click();
   await page.waitForURL(/\/en$/);
   await expect(loginDialog(page).getByText(en.login.errUnavailable)).toBeVisible();
+});
+
+test("hands Google sign-in to Supabase Auth with a PKCE challenge", async ({ page }) => {
+  const settings = await (await page.request.get("http://127.0.0.1:54321/auth/v1/settings", {
+    headers: { apikey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "" },
+  })).json();
+  test.skip(settings.external?.google !== true, "Google is not enabled in local Supabase");
+
+  const response = await page.request.get("/auth/sign-in/google?next=%2Fen", { maxRedirects: 0 });
+  const location = new URL(response.headers().location);
+  expect(location.pathname).toBe("/auth/v1/authorize");
+  expect(location.searchParams.get("provider")).toBe("google");
+  expect(location.searchParams.get("code_challenge")).toBeTruthy();
+  expect(location.searchParams.get("redirect_to")).toBe("http://localhost:3000/auth/callback?next=%2Fen");
 });
 
 test("comes back with an error when the callback fails", async ({ page }) => {
