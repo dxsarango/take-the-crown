@@ -3,10 +3,12 @@ import { hasLocale } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { KingdomView } from "@/components/realm/kingdom-view";
+import { TimeZoneProvider } from "@/components/time-zone";
 import { routing } from "@/i18n/routing";
 import { BRAND_NAME } from "@/lib/config/brand";
 import { fetchHistoryPage, fetchSeasonSummary, fetchSeasons } from "@/lib/realm/data";
 import { publicClient } from "@/lib/supabase/public";
+import { readerTimeZone } from "@/lib/time-zone.server";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/kingdom">): Promise<Metadata> {
   const { locale } = await params;
@@ -29,13 +31,15 @@ export default async function KingdomPage({ params, searchParams }: PageProps<"/
 
   const [entries, summary] = await Promise.all([fetchHistoryPage(db, selected.id), fetchSeasonSummary(db, selected.id)]);
   return (
-    <KingdomView
-      seasons={seasons}
-      currentId={currentId}
-      selected={selected}
-      entries={entries}
-      summary={summary}
-      readAt={new Date().toISOString()}
-    />
+    <TimeZoneProvider timeZone={await readerTimeZone()}>
+      <KingdomView
+        seasons={seasons}
+        currentId={currentId}
+        selected={selected}
+        entries={entries}
+        summary={summary}
+        readAt={new Date().toISOString()}
+      />
+    </TimeZoneProvider>
   );
 }

@@ -3,12 +3,12 @@ import { hasLocale } from "next-intl";
 import { setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { SeasonView } from "@/components/realm/season-view";
+import { TimeZoneProvider } from "@/components/time-zone";
 import { routing } from "@/i18n/routing";
 import { BRAND_NAME } from "@/lib/config/brand";
 import { fetchSeasonEnd, fetchSeasons } from "@/lib/realm/data";
 import { publicClient } from "@/lib/supabase/public";
-
-export const revalidate = 60;
+import { readerTimeZone } from "@/lib/time-zone.server";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/seasons/[slug]">): Promise<Metadata> {
   const { locale, slug } = await params;
@@ -28,5 +28,9 @@ export default async function SeasonPage({ params }: PageProps<"/[locale]/season
   // Only seasons that have started have a page.
   const current = seasons.find((s) => s.id === currentId);
   if (!data || !current) notFound();
-  return <SeasonView data={data} current={current} readAt={new Date().toISOString()} />;
+  return (
+    <TimeZoneProvider timeZone={await readerTimeZone()}>
+      <SeasonView data={data} current={current} readAt={new Date().toISOString()} />
+    </TimeZoneProvider>
+  );
 }
