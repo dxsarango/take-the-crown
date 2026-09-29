@@ -38,8 +38,9 @@ async function existingTables(client: pg.ClientBase, names: string[]): Promise<s
 /** Empties all game data and restores config, seasons and the crown to the migration seed. */
 export async function resetToSeed(client: pg.ClientBase, extraTables: string[] = []): Promise<void> {
   const tables = await existingTables(client, [...extraTables, ...GAME_TABLES]);
-  await client.query(`truncate ${tables.join(", ")} restart identity cascade`);
+  // Users first: a request still in flight with their session would otherwise recreate a profile.
   await client.query("delete from auth.users where email like '%@test.local'");
+  await client.query(`truncate ${tables.join(", ")} restart identity cascade`);
   await client.query("delete from app_config");
   await client.query("insert into app_config default values");
   await client.query("delete from seasons where id > 2");
