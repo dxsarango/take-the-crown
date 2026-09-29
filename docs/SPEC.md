@@ -153,6 +153,7 @@ API and assets:
 | `GET /api/time` | Server clock for the client clock offset |
 | `GET /og/[template]/[id]` | Share cards (victory, challenge, achievement, dethroned) |
 | `GET /api/cron/notifications` | Email outbox (Vercel cron, secret-protected) |
+| `GET /api/cron/moderation` | Retries quarantined moderations (Vercel cron every minute, secret-protected) |
 
 ## 6. Realtime and time
 
@@ -177,9 +178,12 @@ Before creating a lock:
   | GitHub | `https://github.com/<user>` |
   | LinkedIn | `https://linkedin.com/in/<slug>` |
 - Message, public name and link go through `claude-haiku-4-5` with a strict JSON verdict (`allow`, or `reject` with the field and a reason code: hate, harassment, sexual, violence, self_harm, illegal, scam, gambling, impersonation, personal_data, spam, manipulation). Reject → no lock, no charge, reason shown in the modal. The same check runs when a player saves a new public name or product link.
-- Player text is untrusted: it is HTML-escaped and wrapped in `<submission>` tags, and the prompt tells the model to classify it and never follow it; attempts to instruct the moderator are rejected as `manipulation`. No verdict (outage, refusal, invalid answer) fails closed: no lock, "try again".
+- Player text is untrusted: it is HTML-escaped and wrapped in `<submission>` tags, and the prompt tells the model to classify it and never follow it; attempts to instruct the moderator are rejected as `manipulation`.
+- The model is only called after the human check (Turnstile) and the hourly rate limits pass (`max_moderations_per_ip_per_hour` on takeovers, `max_profile_saves_per_hour` on profile saves), and on profile saves only when the name or product link changed.
+- No verdict after two attempts (timeout, API error, refusal, invalid answer): the takeover goes ahead with its message and link quarantined (`moderation_status = 'pending'`, hidden by `public_reigns`) and the buyer sees "Your message will appear after a short review." `GET /api/cron/moderation` retries pending reigns every minute: approved content becomes visible, rejected content stays hidden. A profile save without a verdict is refused ("try again").
+- Public names are never quarantined: the rules layer checks them against a word blocklist (impersonation of staff or the brand, slurs, hate symbols; leetspeak-normalized) before the model.
 - All user links render with `rel="sponsored ugc noopener"` and `target="_blank"`.
-- Reports are one per IP per reign (`report_reign`). Admins can set `reigns.message_hidden` (no refund). Every admin action is recorded in `admin_actions`.
+- Reports carry a reason (offensive, scam, spam) and are one per IP per reign (`report_reign`). Reports never hide anything by themselves; the third report on a reign queues a `reports_threshold` email to the admins. Admins can set `reigns.message_hidden` (no refund). Every admin action is recorded in `admin_actions`.
 
 ## 8. Avatars and images
 
