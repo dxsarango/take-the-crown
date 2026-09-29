@@ -76,6 +76,12 @@ isOneToOne: false
       foreignKeyName: "crown_state_current_reign_id_fkey"
       columns: ["current_reign_id"]
 isOneToOne: false
+      referencedRelation: "public_chronicle"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "crown_state_current_reign_id_fkey"
+      columns: ["current_reign_id"]
+isOneToOne: false
       referencedRelation: "public_reigns"
       referencedColumns: ["id"]
     },{
@@ -114,6 +120,12 @@ isOneToOne: false
       columns: ["profile_id"]
 isOneToOne: false
       referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "events_reign_id_fkey"
+      columns: ["reign_id"]
+isOneToOne: false
+      referencedRelation: "public_chronicle"
       referencedColumns: ["id"]
     },{
       foreignKeyName: "events_reign_id_fkey"
@@ -244,6 +256,12 @@ isOneToOne: false
       columns: ["profile_id"]
 isOneToOne: false
       referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "profile_achievements_reign_id_fkey"
+      columns: ["reign_id"]
+isOneToOne: false
+      referencedRelation: "public_chronicle"
       referencedColumns: ["id"]
     },{
       foreignKeyName: "profile_achievements_reign_id_fkey"
@@ -392,6 +410,12 @@ isOneToOne: false
       foreignKeyName: "reports_reign_id_fkey"
       columns: ["reign_id"]
 isOneToOne: false
+      referencedRelation: "public_chronicle"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "reports_reign_id_fkey"
+      columns: ["reign_id"]
+isOneToOne: false
       referencedRelation: "public_reigns"
       referencedColumns: ["id"]
     },{
@@ -458,12 +482,67 @@ isOneToOne: false
                   Relationships: [
                     
                   ]
+                },"public_chronicle": {
+                  Row: {
+                    "country_code": string | null,"duration_seconds": number | null,"end_reason": Database["public"]['Enums']["reign_end_reason"] | null,"ended_at": string | null,"from_country_code": string | null,"from_name": string | null,"from_profile_id": string | null,"id": number | null,"name": string | null,"profile_id": string | null,"season_id": number | null,"started_at": string | null,"to_country_code": string | null,"to_name": string | null,"to_profile_id": string | null
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "reigns_profile_id_fkey"
+      columns: ["profile_id"]
+isOneToOne: false
+      referencedRelation: "profile_stats"
+      referencedColumns: ["profile_id"]
+    },{
+      foreignKeyName: "reigns_profile_id_fkey"
+      columns: ["to_profile_id"]
+isOneToOne: false
+      referencedRelation: "profile_stats"
+      referencedColumns: ["profile_id"]
+    },{
+      foreignKeyName: "reigns_profile_id_fkey"
+      columns: ["from_profile_id"]
+isOneToOne: false
+      referencedRelation: "profile_stats"
+      referencedColumns: ["profile_id"]
+    },{
+      foreignKeyName: "reigns_profile_id_fkey"
+      columns: ["profile_id"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "reigns_profile_id_fkey"
+      columns: ["to_profile_id"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "reigns_profile_id_fkey"
+      columns: ["from_profile_id"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "reigns_season_id_fkey"
+      columns: ["season_id"]
+isOneToOne: false
+      referencedRelation: "seasons"
+      referencedColumns: ["id"]
+    }
+                  ]
                 },"public_crown_state": {
                   Row: {
                     "base_price_cents": number | null,"base_set_at": string | null,"current_reign_id": number | null,"decay_bps_per_hour": number | null,"floor_cents": number | null,"is_locked": boolean | null,"lock_expires_at": string | null,"price_cents": number | null,"season_id": number | null,"step_bps": number | null
                   }
                   Relationships: [
                     {
+      foreignKeyName: "crown_state_current_reign_id_fkey"
+      columns: ["current_reign_id"]
+isOneToOne: false
+      referencedRelation: "public_chronicle"
+      referencedColumns: ["id"]
+    },{
       foreignKeyName: "crown_state_current_reign_id_fkey"
       columns: ["current_reign_id"]
 isOneToOne: false
@@ -525,6 +604,13 @@ isOneToOne: false
       referencedRelation: "seasons"
       referencedColumns: ["id"]
     }
+                  ]
+                },"public_rivalries": {
+                  Row: {
+                    "last_at": string | null,"losses": number | null,"profile_id": string | null,"rival_id": string | null,"wins": number | null
+                  }
+                  Relationships: [
+                    
                   ]
                 },"season_leaderboard": {
                   Row: {
@@ -680,7 +766,41 @@ isOneToOne: false
                            },
 "set_lock_checkout":
 { Args: { "p_checkout_id": string,"p_lock_id": string }; Returns: undefined
-                           }
+                           },
+"update_profile":
+{ Args: { "p_alerts_dethroned": boolean,"p_alerts_price_below_cents": number,"p_alerts_season_start": boolean,"p_avatar_mode": string,"p_avatar_path": string,"p_avatar_pixelated": boolean,"p_avatar_traits": Json,"p_country_code": string,"p_link_github": string,"p_link_instagram": string,"p_link_linkedin": string,"p_link_tiktok": string,"p_link_website": string,"p_link_x": string,"p_link_youtube": string,"p_locale": string,"p_main_link": string,"p_name": string,"p_profile_id": string,"p_show_chronicle": boolean,"p_show_rival": boolean,"p_showcase": (string)[] }; Returns: {
+              "avatar_mode": string,
+"avatar_path": string | null,
+"avatar_pixelated": boolean,
+"avatar_seed": string,
+"avatar_traits": Json | null,
+"country_code": string | null,
+"created_at": string,
+"id": string,
+"is_banned": boolean,
+"link_github": string | null,
+"link_instagram": string | null,
+"link_linkedin": string | null,
+"link_tiktok": string | null,
+"link_website": string | null,
+"link_x": string | null,
+"link_youtube": string | null,
+"main_link": string | null,
+"name": string,
+"name_changed_at": string | null,
+"show_chronicle": boolean,
+"show_rival": boolean,
+"show_total_spent": boolean,
+"showcase": (string)[],
+"updated_at": string,
+"user_id": string | null
+            }
+                          SetofOptions: {
+        from: "*"
+        to: "profiles"
+        isOneToOne: true
+        isSetofReturn: false
+      } }
           }
           Enums: {
             "event_kind": "crown_taken"|"achievement_unlocked"|"season_started"|"season_ended","lock_status": "active"|"consumed"|"expired","payment_status": "paid"|"applied"|"refund_pending"|"refunded"|"failed","rarity": "common"|"rare"|"epic"|"legendary"|"seasonal","reign_end_reason": "dethroned"|"season_end"|"admin"
