@@ -26,6 +26,7 @@ const crown = (overrides: Partial<CrownState> = {}): CrownState => ({
   floorCents: 500,
   decayBpsPerHour: 200,
   lockSeconds: 300,
+  maxMessageLength: 80,
   ...overrides,
 });
 

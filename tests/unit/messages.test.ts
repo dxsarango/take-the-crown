@@ -58,6 +58,7 @@ const CHANGED_FROM_DESIGN = new Set([
   "share.mNote",
   "season.nextDesc.1",
   "season.nextDesc.2",
+  "payment.nameHelp",
 ]);
 
 describe("messages", () => {

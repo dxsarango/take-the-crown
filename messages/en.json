@@ -110,7 +110,7 @@
     "preview": "Preview",
     "previewSub": "How you'll look on the throne",
     "namePh": "your-name",
-    "nameHelp": "Your king is generated from this name.",
+    "nameHelp": "Your public name on the throne and your profile. Letters, numbers, . _ and -.",
     "upload": "Upload photo or logo",
     "linkL": "Link",
     "linkPh": "yourproduct.com or x.com/you",
@@ -136,7 +136,75 @@
     "rejMsgT": "We can't use this message.",
     "rejMsgW": "Messages can't include links.",
     "rejMsgF": "Move the link to the Link field and try again. You haven't been charged.",
-    "rejMsgLine": "Remove the link from your message."
+    "rejMsgLine": "Remove the link from your message.",
+    "nameAvailable": "Available",
+    "emailHelp": "For your receipt and to keep your reign.",
+    "noCountry": "No country",
+    "verifyTitle": "Check your email to continue.",
+    "verifyBody": "We sent a sign-in link to {email}. Open it on this device to keep taking the crown. You haven't been charged.",
+    "test": {
+      "title": "Test checkout",
+      "note": "No real money moves. This stands in for the payment provider.",
+      "pay": "Pay {price}",
+      "decline": "Decline payment"
+    },
+    "errors": {
+      "crown_locked": {
+        "title": "Someone else is taking the crown.",
+        "why": "Their price is on hold for up to 5 minutes.",
+        "fix": "If they don't pay in time, the crown opens up again. You haven't been charged."
+      },
+      "rate_limited": {
+        "title": "Too many attempts.",
+        "why": "This connection started too many checkouts in the last hour.",
+        "fix": "Try again later. You haven't been charged."
+      },
+      "already_king": {
+        "title": "You already hold the crown.",
+        "why": "The current king can't take it again.",
+        "fix": "Enjoy your reign. You haven't been charged."
+      },
+      "banned": {
+        "title": "This account can't take the crown.",
+        "why": "It was blocked for breaking the rules.",
+        "fix": "Contact us if you think this is a mistake. You haven't been charged."
+      },
+      "season_closed": {
+        "title": "The season is changing.",
+        "why": "The crown can't be taken between seasons.",
+        "fix": "Try again in a few minutes. You haven't been charged."
+      },
+      "message_too_long": {
+        "title": "Your message is too long.",
+        "why": "Messages have a character limit.",
+        "fix": "Shorten it and try again. You haven't been charged."
+      },
+      "name_taken": {
+        "title": "That name is taken.",
+        "why": "Every king has a name of their own.",
+        "fix": "Pick another name and try again. You haven't been charged."
+      },
+      "invalid_input": {
+        "title": "Check the highlighted fields.",
+        "why": "Something in the form isn't valid.",
+        "fix": "Fix it and try again. You haven't been charged."
+      },
+      "human_check_failed": {
+        "title": "We couldn't check that you're human.",
+        "why": "The security check didn't pass.",
+        "fix": "Reload the page and try again. You haven't been charged."
+      },
+      "checkout_failed": {
+        "title": "The payment page didn't open.",
+        "why": "Our payment provider didn't respond.",
+        "fix": "Try again. You haven't been charged."
+      },
+      "unknown": {
+        "title": "Something went wrong.",
+        "why": "The crown wasn't reserved.",
+        "fix": "Try again. You haven't been charged."
+      }
+    }
   },
   "coronation": {
     "reigning": "Reigning for"
