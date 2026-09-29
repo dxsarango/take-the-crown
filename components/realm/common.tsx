@@ -1,27 +1,12 @@
 "use client";
 
 import { useLocale } from "next-intl";
-import { useSyncExternalStore } from "react";
+import { useDisplayTimeZone } from "@/components/time-zone";
 import type { Locale } from "@/i18n/routing";
-
-const noop = () => () => undefined;
-
-/**
- * True once running in the browser. Times are formatted in UTC for the server render and switch to
- * the reader's time zone after hydration, so the two renders never disagree.
- */
-export function useIsClient(): boolean {
-  return useSyncExternalStore(
-    noop,
-    () => true,
-    () => false,
-  );
-}
 
 export function useDates() {
   const locale = useLocale() as Locale;
-  const client = useIsClient();
-  const tz = client ? undefined : "UTC";
+  const tz = useDisplayTimeZone();
   const tag = locale === "es" ? "es-419" : "en-US";
   return {
     locale,

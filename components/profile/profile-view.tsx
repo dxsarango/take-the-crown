@@ -5,6 +5,7 @@ import { type ReactNode, useState } from "react";
 import { Flag, Icon, Portrait, RankTag } from "@/components/art";
 import { useServerNow } from "@/components/home/use-live-home";
 import { Footer } from "@/components/home/sections";
+import { useDisplayTimeZone } from "@/components/time-zone";
 import { TopBar } from "@/components/top-bar";
 import { Link } from "@/i18n/navigation";
 import type { Locale } from "@/i18n/routing";
@@ -34,6 +35,7 @@ const titleClass = "text-20 font-bold lg:text-28";
 function useFormats() {
   const locale = useLocale() as Locale;
   const units = useTranslations("common.units");
+  const timeZone = useDisplayTimeZone();
   const u = { h: units("h"), m: units("m"), s: units("s") };
   return {
     locale,
@@ -43,7 +45,7 @@ function useFormats() {
         month: "short",
         day: "numeric",
         ...(withYear ? { year: "numeric" } : {}),
-        timeZone: "UTC",
+        timeZone,
       }).format(new Date(iso)),
   };
 }

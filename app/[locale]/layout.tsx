@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { AuthProvider } from "@/components/auth/auth-provider";
+import { TimeZoneCookie } from "@/components/time-zone";
 import { routing } from "@/i18n/routing";
 import { BRAND_NAME } from "@/lib/config/brand";
 import { publicClient } from "@/lib/supabase/public";
@@ -45,6 +46,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
       <body className="min-h-dvh">
         <NextIntlClientProvider>
           <AuthProvider season={crown?.season_id ?? 0}>{children}</AuthProvider>
+          <TimeZoneCookie />
         </NextIntlClientProvider>
       </body>
     </html>
