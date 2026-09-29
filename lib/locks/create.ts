@@ -44,6 +44,8 @@ export async function createLock(body: unknown, ip: string): Promise<LockOutcome
   if (verdict.verdict === "reject") {
     return { ok: false, error: "moderation_rejected", field: verdict.field, reason: verdict.reason };
   }
+  // Fail closed: nothing is published or charged without a verdict.
+  if (verdict.verdict === "unavailable") return { ok: false, error: "moderation_unavailable" };
 
   const buyer = await resolveBuyer(input.email);
   if (!buyer) return { ok: false, error: "invalid_input", fields: ["email"] };

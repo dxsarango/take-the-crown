@@ -8,6 +8,9 @@ const schema = z.object({
   IP_HASH_SALT: z.string().min(16),
   NEXT_PUBLIC_SITE_URL: z.url(),
   TURNSTILE_SECRET_KEY: z.string().optional(),
+  // "test" is a deterministic stand-in for local development and e2e; production uses "anthropic".
+  MODERATION_PROVIDER: z.enum(["anthropic", "test"]).default("anthropic"),
+  ANTHROPIC_API_KEY: z.string().optional(),
 });
 
 export type ServerEnv = z.infer<typeof schema>;

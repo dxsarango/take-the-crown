@@ -25,6 +25,10 @@ export default defineConfig({
           globalSetup: ["tests/db/global-setup.ts"],
         },
       },
+      // Real model calls cost money: only `pnpm test:moderation` runs them.
+      ...(process.env.npm_lifecycle_event === "test:moderation"
+        ? [{ resolve: { alias }, test: { name: "live", include: ["tests/live/**/*.test.ts"], environment: "node" } }]
+        : []),
     ],
   },
 });

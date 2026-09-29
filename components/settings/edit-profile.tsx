@@ -12,6 +12,7 @@ import { Link, usePathname, useRouter } from "@/i18n/navigation";
 import type { Locale } from "@/i18n/routing";
 import type { AvatarSource } from "@/lib/art/avatar";
 import { BRAND_NAME } from "@/lib/config/brand";
+import type { ModerationReason } from "@/lib/moderation/reasons";
 import { displayLink, formatPercent, formatPrice } from "@/lib/format";
 import { MEDAL_KEY } from "@/lib/game/achievements";
 import { priceAt } from "@/lib/game/price";
@@ -29,7 +30,7 @@ import {
 } from "@/lib/profile/settings";
 import { PLATFORMS, SOCIAL_KEYS, type SocialKey, isValidSocial, socialLabel, socialUrl } from "@/lib/profile/socials";
 
-type Phase = "idle" | "saving" | "saved" | "failed" | "rejected";
+type Phase = "idle" | "saving" | "saved" | "failed" | "rejected" | "unavailable";
 type Upload = { pixelUrl: string; originalUrl: string; name: string };
 type ServerErrors = Partial<Record<FieldKey, "taken" | "cooldown" | "bad">>;
 
@@ -214,6 +215,16 @@ export function EditProfile({ settings, season, readAt, countries }: Props) {
   const t = useTranslations("editProfile");
   const common = useTranslations("common");
   const login = useTranslations("login");
+  const payment = useTranslations("payment");
+  /** The design's wording for gambling and shorteners, the shared reason line otherwise. */
+  const rejectionWhy = (reason: ModerationReason) =>
+    reason === "gambling"
+      ? t("bRejWhy", { brand: BRAND_NAME })
+      : reason === "shortener"
+        ? t("bRejWhyShortener")
+        : reason === "link_in_message"
+          ? payment("rejMsgW")
+          : payment(`rejWhy.${reason}` as "rejWhy.hate");
   const rankName = useTranslations("rank");
   const medals = useTranslations("medals");
   const social = useTranslations("social");
@@ -226,7 +237,7 @@ export function EditProfile({ settings, season, readAt, countries }: Props) {
   const [form, setForm] = useState<SettingsForm>(settings.form);
   const [saved, setSaved] = useState<SettingsForm>(settings.form);
   const [phase, setPhase] = useState<Phase>("idle");
-  const [rejectReason, setRejectReason] = useState<string | null>(null);
+  const [rejection, setRejection] = useState<{ field: "name" | "link"; reason: ModerationReason } | null>(null);
   const [tried, setTried] = useState(false);
   const [touched, setTouched] = useState<Partial<Record<FieldKey, boolean>>>({});
   const [serverErrors, setServerErrors] = useState<ServerErrors>({});
@@ -330,9 +341,10 @@ export function EditProfile({ settings, season, readAt, countries }: Props) {
       return;
     }
     if (outcome.error === "rejected") {
-      setRejectReason(outcome.reason);
+      setRejection({ field: outcome.field, reason: outcome.reason });
       return setPhase("rejected");
     }
+    if (outcome.error === "moderation_unavailable") return setPhase("unavailable");
     if (outcome.error === "invalid") {
       const next: ServerErrors = {};
       for (const f of outcome.fields) next[f] = f === "name" ? (outcome.nameProblem ?? "bad") : "bad";
@@ -424,7 +436,7 @@ export function EditProfile({ settings, season, readAt, countries }: Props) {
   else if (invalid) {
     statusText = t("stInvalid", { n: invalidFields.length });
     statusTone = "bad";
-  } else if (phase === "failed" || phase === "rejected") {
+  } else if (phase === "failed" || phase === "rejected" || phase === "unavailable") {
     statusText = t("stFailed");
     statusTone = "bad";
   } else if (phase === "saved" && !dirty) {
@@ -517,16 +529,30 @@ export function EditProfile({ settings, season, readAt, countries }: Props) {
           </>,
         )}
       {phase === "rejected" &&
+        rejection &&
         banner(
           "danger",
           "bang",
           <>
-            <div className="font-bold">{t("bRejTitle")}</div>
-            <div>{rejectReason === "shortener" ? t("bRejWhyShortener") : t("bRejWhy", { brand: BRAND_NAME })}</div>
-            <div className="text-crown-muted">{t("bRejFix")}</div>
-            <button type="button" onClick={() => go(`${uid}-link`, true)} className="hit-area min-h-11 self-start font-bold underline underline-offset-4">
-              {t("editLink")}
+            <div className="font-bold">{rejection.field === "name" ? t("bRejNameTitle") : t("bRejTitle")}</div>
+            <div>{rejectionWhy(rejection.reason)}</div>
+            <div className="text-crown-muted">{rejection.field === "name" ? t("bRejNameFix") : t("bRejFix")}</div>
+            <button
+              type="button"
+              onClick={() => go(`${uid}-${rejection.field}`, true)}
+              className="hit-area min-h-11 self-start font-bold underline underline-offset-4"
+            >
+              {rejection.field === "name" ? t("editName") : t("editLink")}
             </button>
+          </>,
+        )}
+      {phase === "unavailable" &&
+        banner(
+          "danger",
+          "bang",
+          <>
+            <div className="font-bold">{t("bModTitle")}</div>
+            <div className="text-crown-muted">{t("bModWhy")}</div>
           </>,
         )}
       {phase === "failed" &&
@@ -731,7 +757,7 @@ export function EditProfile({ settings, season, readAt, countries }: Props) {
           spellCheck={false}
           aria-invalid={nameError !== null}
           aria-describedby={`${uid}-name-msg`}
-          className={fieldClass(nameError !== null)}
+          className={fieldClass(nameError !== null || (phase === "rejected" && rejection?.field === "name"))}
         />
         {nameError ? (
           <ErrorLine id={`${uid}-name-msg`}>{nameError}</ErrorLine>
@@ -786,7 +812,7 @@ export function EditProfile({ settings, season, readAt, countries }: Props) {
           placeholder={t("linkPh")}
           aria-invalid={visible("link")}
           aria-describedby={`${uid}-link-msg`}
-          className={fieldClass(visible("link") || phase === "rejected")}
+          className={fieldClass(visible("link") || (phase === "rejected" && rejection?.field === "link"))}
         />
         {visible("link") ? <ErrorLine id={`${uid}-link-msg`}>{errorOf("link")}</ErrorLine> : <Help id={`${uid}-link-msg`}>{t("linkHelp")}</Help>}
       </div>

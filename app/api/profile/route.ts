@@ -25,11 +25,15 @@ export async function PATCH(request: Request) {
     return Response.json({ ok: false, error: "invalid", fields } satisfies SaveOutcome, { status: 422 });
   }
 
-  // The product link goes through the same moderation as the throne link (SPEC §7).
+  // The public name and product link go through the same moderation as the throne (SPEC §7).
   const link = mainLinkUrl(form.link);
   const verdict = await moderate({ name: form.name, message: null, link });
   if (verdict.verdict === "reject") {
-    return Response.json({ ok: false, error: "rejected", reason: verdict.reason } satisfies SaveOutcome, { status: 422 });
+    const field = verdict.field === "name" ? "name" : "link";
+    return Response.json({ ok: false, error: "rejected", field, reason: verdict.reason } satisfies SaveOutcome, { status: 422 });
+  }
+  if (verdict.verdict === "unavailable") {
+    return Response.json({ ok: false, error: "moderation_unavailable" } satisfies SaveOutcome, { status: 503 });
   }
 
   // SQL parameters accept null; the generated types do not say so.
