@@ -26,6 +26,21 @@ async function tryToTake(page: Page, input: { message?: string; link?: string })
   await dialog.getByRole("button", { name: /^Pay \$/ }).filter({ visible: true }).click();
 }
 
+async function runModerationCron(page: Page) {
+  const response = await page.request.get("/api/cron/moderation", { headers: { Authorization: `Bearer ${process.env.CRON_SECRET}` } });
+  expect(response.status(), await response.text()).toBe(200);
+  const { approved, rejected, pending } = (await response.json()) as { approved: number; rejected: number; pending: number };
+  return { approved, rejected, pending };
+}
+
+async function payInTestCheckout(page: Page) {
+  await expect(page.getByTestId("test-checkout").filter({ visible: true })).toBeVisible();
+  await page.getByRole("button", { name: /^Pay \$/ }).filter({ visible: true }).click();
+  await expect(shown(page, en.payment.headOk)).toBeVisible({ timeout: 10_000 });
+}
+
+const CURRENT = "(select current_reign_id from crown_state)";
+
 async function lockCount(): Promise<number> {
   const [row] = await sql<{ n: number }>("select count(*)::int as n from price_locks where email = 'fresh.player@test.local'");
   return row.n;
@@ -61,20 +76,93 @@ test.describe("moderation", () => {
   });
 });
 
-test.describe("reports", () => {
-  test("reports the king's message once per visitor", async ({ page }) => {
+test.describe("moderation outage", () => {
+  test("lets the takeover through with the message held, then shows it once approved", async ({ page }, info) => {
+    const message = "Launch week is here [moderation:outage-then-allow]";
+    await tryToTake(page, { message, link: "https://turno.app" });
+    await expect(shown(page, en.payment.pendingReview)).toBeVisible();
+    await payInTestCheckout(page);
+    await expect(shown(page, en.payment.pendingReview)).toBeVisible();
+    await page.screenshot({ path: `test-results/screens/pending-review-${info.project.name}.png` });
+
+    const [held] = await sql(`select r.moderation_status, pr.message, pr.link from reigns r join public_reigns pr using (id) where r.id = ${CURRENT}`);
+    expect(held).toEqual({ moderation_status: "pending", message: null, link: null });
     await page.goto("/en");
+    await expect(page.getByText("Launch week is here")).toHaveCount(0);
+
+    expect(await runModerationCron(page)).toEqual({ approved: 1, rejected: 0, pending: 0 });
+    const [visibleRow] = await sql(`select message, link from public_reigns where id = ${CURRENT}`);
+    expect(visibleRow).toEqual({ message, link: "https://turno.app" });
+    await page.reload();
+    await expect(shown(page, message)).toBeVisible();
+  });
+
+  test("keeps the message hidden when the delayed verdict rejects it", async ({ page }) => {
+    await tryToTake(page, { message: "Send 1 get 2 back [moderation:outage-then-scam]" });
+    await payInTestCheckout(page);
+    expect(await runModerationCron(page)).toEqual({ approved: 0, rejected: 1, pending: 0 });
+    const [row] = await sql(
+      `select r.moderation_status, r.moderation_reason, pr.message from reigns r join public_reigns pr using (id) where r.id = ${CURRENT}`,
+    );
+    expect(row).toEqual({ moderation_status: "rejected", moderation_reason: "scam", message: null });
+    await page.goto("/en");
+    await expect(page.getByText("Send 1 get 2 back")).toHaveCount(0);
+  });
+
+  test("keeps retrying while the model stays down", async ({ page }) => {
+    await tryToTake(page, { message: "Still down [moderation:outage]" });
+    await payInTestCheckout(page);
+    expect(await runModerationCron(page)).toEqual({ approved: 0, rejected: 0, pending: 1 });
+    const [row] = await sql(`select moderation_status, moderation_attempts from reigns where id = ${CURRENT}`);
+    expect(row).toEqual({ moderation_status: "pending", moderation_attempts: 1 });
+  });
+
+  test("refuses the cron without its secret", async ({ page }) => {
+    expect((await page.request.get("/api/cron/moderation")).status()).toBe(401);
+    expect((await page.request.get("/api/cron/moderation", { headers: { Authorization: "Bearer wrong" } })).status()).toBe(401);
+  });
+
+  test("stops moderating after the hourly limit per address, without a lock", async ({ page }) => {
+    const [config] = await sql<{ n: number }>("select max_moderations_per_ip_per_hour as n from app_config");
+    await sql("update app_config set max_moderations_per_ip_per_hour = 1");
+    try {
+      await tryToTake(page, { message: "One [moderation:scam]" });
+      await expect(shown(page, en.payment.rejMsgT)).toBeVisible();
+      await modal(page).getByLabel(en.payment.msgL, { exact: true }).filter({ visible: true }).fill("Two");
+      await modal(page).getByRole("button", { name: /^Pay \$/ }).filter({ visible: true }).click();
+      await expect(shown(page, en.payment.errors.rate_limited.title)).toBeVisible();
+      expect(await lockCount()).toBe(0);
+    } finally {
+      await sql("update app_config set max_moderations_per_ip_per_hour = $1", [config.n]);
+    }
+  });
+});
+
+test.describe("reports", () => {
+  test("reports the king's message once per visitor", async ({ page }, info) => {
+    await page.goto("/en");
+    await page.waitForLoadState("networkidle");
     await page.getByRole("button", { name: en.home.reportMessage }).filter({ visible: true }).click();
+    const dialog = page.getByRole("dialog", { name: en.report.title });
+    await expect(dialog.getByRole("button", { name: en.report.send })).toBeDisabled();
+    await dialog.locator("label").filter({ hasText: en.report.reasons.scam }).click();
+    await expect(dialog.getByRole("radio", { name: new RegExp(`^${en.report.reasons.scam}`) })).toBeChecked();
+    await page.screenshot({ path: `test-results/screens/report-${info.project.name}.png` });
+    await dialog.getByRole("button", { name: en.report.send }).click();
     await expect(shown(page, en.home.reported)).toBeVisible();
 
     const [reign] = await sql<{ id: number }>("select current_reign_id as id from crown_state");
-    const again = await page.request.post("/api/reports", { data: { reignId: Number(reign.id) } });
+    const [first] = await sql("select reason from reports where reign_id = $1", [reign.id]);
+    expect(first.reason).toBe("scam");
+    const again = await page.request.post("/api/reports", { data: { reignId: Number(reign.id), reason: "spam" } });
     expect(again.status(), await again.text()).toBe(200);
     const [row] = await sql<{ n: number }>("select count(*)::int as n from reports where reign_id = $1", [reign.id]);
     expect(row.n).toBe(1);
 
-    expect((await page.request.post("/api/reports", { data: { reignId: "x" } })).status()).toBe(400);
-    expect((await page.request.post("/api/reports", { data: { reignId: 999999 } })).status()).toBe(404);
+    expect((await page.request.post("/api/reports", { data: { reignId: "x", reason: "spam" } })).status()).toBe(400);
+    expect((await page.request.post("/api/reports", { data: { reignId: Number(reign.id) } })).status()).toBe(400);
+    expect((await page.request.post("/api/reports", { data: { reignId: Number(reign.id), reason: "other" } })).status()).toBe(400);
+    expect((await page.request.post("/api/reports", { data: { reignId: 999999, reason: "spam" } })).status()).toBe(404);
   });
 });
 
