@@ -176,9 +176,10 @@ Before creating a lock:
   | Instagram | `https://instagram.com/<handle>` |
   | GitHub | `https://github.com/<user>` |
   | LinkedIn | `https://linkedin.com/in/<slug>` |
-- Message and public name go through `claude-haiku-4-5` with a strict JSON verdict (`allow` or `reject` with a reason code). Reject → no lock, no charge, reason shown in the modal.
+- Message, public name and link go through `claude-haiku-4-5` with a strict JSON verdict (`allow`, or `reject` with the field and a reason code: hate, harassment, sexual, violence, self_harm, illegal, scam, gambling, impersonation, personal_data, spam, manipulation). Reject → no lock, no charge, reason shown in the modal. The same check runs when a player saves a new public name or product link.
+- Player text is untrusted: it is HTML-escaped and wrapped in `<submission>` tags, and the prompt tells the model to classify it and never follow it; attempts to instruct the moderator are rejected as `manipulation`. No verdict (outage, refusal, invalid answer) fails closed: no lock, "try again".
 - All user links render with `rel="sponsored ugc noopener"` and `target="_blank"`.
-- Reports are one per IP per reign. Admins can set `reigns.message_hidden` (no refund).
+- Reports are one per IP per reign (`report_reign`). Admins can set `reigns.message_hidden` (no refund). Every admin action is recorded in `admin_actions`.
 
 ## 8. Avatars and images
 
