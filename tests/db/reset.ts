@@ -48,10 +48,7 @@ export async function resetToSeed(client: pg.ClientBase, extraTables: string[] =
   await client.query("insert into crown_state (season_id, base_price_cents) values (0, 500)");
 }
 
-/** Re-applies the local development seed, as {"_tag":"Error","error":{"code":"UnknownSubcommand","message":"Unknown subcommand "reset\" for "supabase db"
-
-  Did you mean this?
-    reset"}} does. */
+/** Re-applies the local development seed, as `supabase db reset` does. */
 export async function applyDevSeed(client: pg.ClientBase): Promise<void> {
   await client.query(readFileSync(path.join(process.cwd(), "supabase", "seed.sql"), "utf8"));
 }
