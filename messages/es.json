@@ -110,7 +110,7 @@
     "preview": "Vista previa",
     "previewSub": "Así te verás en el trono",
     "namePh": "tu-nombre",
-    "nameHelp": "Tu rey se genera a partir de este nombre.",
+    "nameHelp": "Tu nombre público en el trono y en tu perfil. Letras, números, . _ y -.",
     "upload": "Subir foto o logo",
     "linkL": "Enlace",
     "linkPh": "tuproducto.com o x.com/tu",
@@ -136,7 +136,75 @@
     "rejMsgT": "No podemos usar este mensaje.",
     "rejMsgW": "Los mensajes no pueden incluir enlaces.",
     "rejMsgF": "Pasa el enlace al campo Enlace y vuelve a intentarlo. No se te ha cobrado.",
-    "rejMsgLine": "Quita el enlace de tu mensaje."
+    "rejMsgLine": "Quita el enlace de tu mensaje.",
+    "nameAvailable": "Disponible",
+    "emailHelp": "Para tu recibo y para conservar tu reinado.",
+    "noCountry": "Sin país",
+    "verifyTitle": "Revisa tu correo para continuar.",
+    "verifyBody": "Enviamos un enlace para iniciar sesión a {email}. Ábrelo en este dispositivo para seguir tomando la corona. No se te ha cobrado.",
+    "test": {
+      "title": "Pago de prueba",
+      "note": "No se mueve dinero real. Esto sustituye al proveedor de pagos.",
+      "pay": "Pagar {price}",
+      "decline": "Rechazar el pago"
+    },
+    "errors": {
+      "crown_locked": {
+        "title": "Alguien más está tomando la corona.",
+        "why": "Su precio queda reservado hasta 5 minutos.",
+        "fix": "Si no paga a tiempo, la corona vuelve a estar disponible. No se te ha cobrado."
+      },
+      "rate_limited": {
+        "title": "Demasiados intentos.",
+        "why": "Desde esta conexión se iniciaron demasiados pagos en la última hora.",
+        "fix": "Vuelve a intentarlo más tarde. No se te ha cobrado."
+      },
+      "already_king": {
+        "title": "Ya tienes la corona.",
+        "why": "El rey actual no puede volver a tomarla.",
+        "fix": "Disfruta tu reinado. No se te ha cobrado."
+      },
+      "banned": {
+        "title": "Esta cuenta no puede tomar la corona.",
+        "why": "Se bloqueó por incumplir las reglas.",
+        "fix": "Escríbenos si crees que es un error. No se te ha cobrado."
+      },
+      "season_closed": {
+        "title": "La temporada está cambiando.",
+        "why": "La corona no se puede tomar entre temporadas.",
+        "fix": "Vuelve a intentarlo en unos minutos. No se te ha cobrado."
+      },
+      "message_too_long": {
+        "title": "Tu mensaje es demasiado largo.",
+        "why": "Los mensajes tienen un límite de caracteres.",
+        "fix": "Acórtalo y vuelve a intentarlo. No se te ha cobrado."
+      },
+      "name_taken": {
+        "title": "Ese nombre ya está en uso.",
+        "why": "Cada rey tiene un nombre propio.",
+        "fix": "Elige otro nombre y vuelve a intentarlo. No se te ha cobrado."
+      },
+      "invalid_input": {
+        "title": "Revisa los campos marcados.",
+        "why": "Algo en el formulario no es válido.",
+        "fix": "Corrígelo y vuelve a intentarlo. No se te ha cobrado."
+      },
+      "human_check_failed": {
+        "title": "No pudimos comprobar que eres humano.",
+        "why": "La verificación de seguridad no pasó.",
+        "fix": "Recarga la página y vuelve a intentarlo. No se te ha cobrado."
+      },
+      "checkout_failed": {
+        "title": "La página de pago no se abrió.",
+        "why": "Nuestro proveedor de pagos no respondió.",
+        "fix": "Vuelve a intentarlo. No se te ha cobrado."
+      },
+      "unknown": {
+        "title": "Algo salió mal.",
+        "why": "La corona no se reservó.",
+        "fix": "Vuelve a intentarlo. No se te ha cobrado."
+      }
+    }
   },
   "coronation": {
     "reigning": "Reina desde hace"

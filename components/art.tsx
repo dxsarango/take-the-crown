@@ -56,14 +56,27 @@ export function Flag({ code, className = "" }: { code: string | null; className?
 }
 
 /** Monochrome design icon (currentColor), drawn through a CSS mask so it takes the text color. */
-export function Icon({ name, size, className = "" }: { name: "pause" | "floor" | "up" | "bang" | "glass"; size: number; className?: string }) {
+type IconName = "pause" | "floor" | "up" | "bang" | "glass" | "close" | "check" | "chev";
+
+export function Icon({
+  name,
+  size,
+  height,
+  className = "",
+}: {
+  name: IconName;
+  /** Width in CSS pixels; height defaults to the same. Use integer multiples of the art size. */
+  size: number;
+  height?: number;
+  className?: string;
+}) {
   return (
     <span
       aria-hidden
       className={`block flex-none bg-current ${className}`}
       style={{
         width: size,
-        height: size,
+        height: height ?? size,
         maskImage: `url(/art/icons/${name}.svg)`,
         maskSize: "100% 100%",
         maskRepeat: "no-repeat",

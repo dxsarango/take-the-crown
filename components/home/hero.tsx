@@ -8,7 +8,17 @@ import { clockParts, displayLink, formatCountdown, formatPercent, formatPrice } 
 import type { CrownState, King } from "@/lib/home/data";
 import { type HeroState, lockSegments } from "@/lib/home/hero";
 
-type Props = { king: King | null; crown: CrownState; state: HeroState; season: number };
+/** Shown after the buyer's own payment attempt fails or their lock runs out (design states 4 and 5). */
+export type HomeNotice = "payment_failed" | "lock_expired";
+
+type Props = {
+  king: King | null;
+  crown: CrownState;
+  state: HeroState;
+  season: number;
+  notice: HomeNotice | null;
+  onTake: () => void;
+};
 
 const LOCK_SEGMENTS = 20;
 
@@ -84,11 +94,11 @@ function FloorTag() {
   );
 }
 
-function TakeButton({ label, className = "" }: { label: string; className?: string }) {
-  // Opens the payment modal in M4.
+function TakeButton({ label, onClick, className = "" }: { label: string; onClick: () => void; className?: string }) {
   return (
     <button
       type="button"
+      onClick={onClick}
       className={`hit-area m-1 h-14 bg-crown-gold text-18 font-bold text-crown-ink shadow-relief-gold hover:bg-crown-gold-glow hover:shadow-relief-gold-hover focus-visible:outline-offset-[6px] active:bg-crown-gold-old active:pt-1 active:shadow-relief-gold-pressed ${className}`}
     >
       {label}
@@ -153,7 +163,26 @@ export function KingMessage({ king, size }: { king: King; size: "mobile" | "desk
   );
 }
 
-export function Hero({ king, crown, state, season }: Props) {
+function Notice({ notice, priceCents, locale }: { notice: HomeNotice; priceCents: number; locale: Locale }) {
+  const t = useTranslations("homeStates");
+  const [title, body] =
+    notice === "payment_failed"
+      ? [t("payErr1"), t("payErr2")]
+      : [t("exp1"), t("exp2", { price: formatPrice(priceCents, locale) })];
+  return (
+    <div role="alert" className="flex items-start gap-3 bg-crown-velvet px-3.5 py-3 shadow-flag-danger lg:w-[400px] lg:px-4">
+      <span className="flex size-6 flex-none items-center justify-center bg-crown-danger text-crown-ink">
+        <Icon name={notice === "payment_failed" ? "bang" : "glass"} size={16} />
+      </span>
+      <div className="flex flex-col gap-0.5 text-14 leading-snug">
+        <div className="font-bold">{title}</div>
+        <div className="text-crown-muted">{body}</div>
+      </div>
+    </div>
+  );
+}
+
+export function Hero({ king, crown, state, season, notice, onTake }: Props) {
   const locale = useLocale() as Locale;
   const common = useTranslations("common");
   const home = useTranslations("home");
@@ -161,6 +190,7 @@ export function Hero({ king, crown, state, season }: Props) {
   const price = formatPrice(state.priceCents, locale);
   const buttonLabel = state.mode === "empty" ? states("takeFirst", { price }) : common("take", { price });
   const locked = state.mode === "locked";
+  const showNotice = notice !== null && !locked;
 
   return (
     <>
@@ -180,17 +210,21 @@ export function Hero({ king, crown, state, season }: Props) {
             <p className="text-16 leading-body text-crown-muted">{states("empty2", { n: season })}</p>
           </div>
         )}
-        <div className="flex items-center justify-between gap-3">
-          <div className="flex items-center gap-2.5">
-            <Price cents={state.priceCents} locale={locale} />
-            {state.mode === "floor" && <FloorTag />}
+        {showNotice ? (
+          <Notice notice={notice} priceCents={state.priceCents} locale={locale} />
+        ) : (
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-2.5">
+              <Price cents={state.priceCents} locale={locale} />
+              {state.mode === "floor" && <FloorTag />}
+            </div>
+            <PriceNotes mode={state.mode} crown={crown} locale={locale} />
           </div>
-          <PriceNotes mode={state.mode} crown={crown} locale={locale} />
-        </div>
+        )}
         {locked ? (
           <Reserved secondsLeft={state.lockSecondsLeft} lockSeconds={crown.lockSeconds} align="left" />
         ) : (
-          <TakeButton label={buttonLabel} />
+          <TakeButton label={buttonLabel} onClick={onTake} />
         )}
       </div>
 
@@ -214,17 +248,21 @@ export function Hero({ king, crown, state, season }: Props) {
           <Clock seconds={state.reignSeconds} muted={!king} />
         </div>
         <div className="flex flex-col items-end gap-4">
-          <div className="flex items-center gap-5">
-            <PriceNotes mode={state.mode} crown={crown} locale={locale} />
-            {state.mode === "floor" && <FloorTag />}
-            <Price cents={state.priceCents} locale={locale} />
-          </div>
+          {showNotice ? (
+            <Notice notice={notice} priceCents={state.priceCents} locale={locale} />
+          ) : (
+            <div className="flex items-center gap-5">
+              <PriceNotes mode={state.mode} crown={crown} locale={locale} />
+              {state.mode === "floor" && <FloorTag />}
+              <Price cents={state.priceCents} locale={locale} />
+            </div>
+          )}
           {locked ? (
             <div className="w-[400px]">
               <Reserved secondsLeft={state.lockSecondsLeft} lockSeconds={crown.lockSeconds} align="right" />
             </div>
           ) : (
-            <TakeButton label={buttonLabel} className={king ? "min-w-[340px] px-7" : "min-w-[400px] px-7"} />
+            <TakeButton label={buttonLabel} onClick={onTake} className={king ? "min-w-[340px] px-7" : "min-w-[400px] px-7"} />
           )}
         </div>
       </div>
