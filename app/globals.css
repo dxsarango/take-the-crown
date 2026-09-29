@@ -1,0 +1,42 @@
+@import "tailwindcss";
+@import "./theme-reset.css";
+@import "../design/tokens/tokens.css";
+@import "../design/tokens/tailwind-v4.css";
+
+@source not "../design";
+
+/* next/font serves hashed family names; point the token stacks at them. */
+:root {
+  --crown-font-ui: var(--font-manrope), system-ui, sans-serif;
+  --crown-font-pixel: var(--font-pixelify), var(--font-manrope), sans-serif;
+}
+
+html {
+  background: var(--crown-page);
+  color-scheme: dark;
+}
+
+body {
+  background: var(--crown-ink);
+  color: var(--crown-text);
+  font-family: var(--crown-font-ui);
+  line-height: var(--crown-leading-body);
+}
+
+:focus-visible {
+  outline: var(--crown-focus);
+  outline-offset: var(--crown-focus-offset);
+}
+
+@utility hit-area {
+  position: relative;
+  &::before {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: max(100%, var(--crown-hit-min));
+    height: max(100%, var(--crown-hit-min));
+    transform: translate(-50%, -50%);
+  }
+}

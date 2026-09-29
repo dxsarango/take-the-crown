@@ -1,0 +1,10 @@
+/* Drop Tailwind's default palette, fonts, sizes and shadows so only design tokens are available. */
+@theme {
+  --color-*: initial;
+  --font-*: initial;
+  --text-*: initial;
+  --shadow-*: initial;
+  --inset-shadow-*: initial;
+  --drop-shadow-*: initial;
+  --radius-*: initial;
+}
