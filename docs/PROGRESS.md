@@ -33,6 +33,10 @@ Conflicts between the design handoff (`/design`), the spec and the migrations, a
 24. **Edit profile extensions.** "No country" option instead of the design's country toggle (decision 7), a TikTok and a website field (decision 3), the name locked with its unlock date during the 30-day cooldown, "Sign out" at the end of the menu (desktop) and of the form (mobile), and a rejection reason per moderation rule.
 25. **Uploads and saving.** The image is stored when chosen (so the preview shows the processed result) and the profile points to it only when saved; replaced files stay in Storage until a cleanup job exists.
 
+26. **Realm copy with sample data.** The design's dates, season numbers, counts and the King of the Season story line become placeholders. The story ("Reached Emperor on Oct 12 and held off kenji…") cannot be derived, so it reads "{name} spent the most time on the throne this season. Their portrait stays in the hall forever." (no gendered pronoun).
+27. **Rank-up toast.** The design has no rank-up toast (decision 19): it reuses the achievement toast with the player's portrait in the new rank frame, the rank swatch as its color and "New rank" as the kicker.
+28. **History times.** Times and day separators render in UTC on the server and switch to the reader's time zone after hydration.
+
 ## Open questions
 
 1. **Knowing an email has a profile.** A signed-out buyer who types an email that already has a profile gets "check your email" instead of a checkout, so the form reveals that the email has bought before (not whose profile it is). Hiding it would mean sending every signed-out buyer through email verification before paying. Interim: keep the decided flow.
@@ -155,14 +159,15 @@ Steps for every hosted environment (staging and production).
 
 ## Milestone 6 — Achievements UI, kingdom, hall of fame, season end
 
-- [ ] Medal component (on/off, rarity ring, seasonal ring by origin season)
-- [ ] Migration: `rank_up` event kind, emitted once per profile per rank (unique constraint) by `apply_payment` and the per-minute live check; db tests including repeated checks
-- [ ] Rank-up in the Proclamations feed ("rose to Duke")
-- [ ] Achievement unlocked toast (queue, pause on hover/focus, `aria-live`), per-user realtime event; the same toast for rank-ups
-- [ ] `/kingdom`: history timeline by day, size by duration, season filter
-- [ ] `/hall-of-fame`: 4 tabs, season / all-time scope, pixel podium
-- [ ] `/seasons/[slug]`: King of the Season banner portrait, podium, stats, next season announcement with "Remind me"
-- [ ] Tests + screenshots vs `Reino.dc.html`, `Logro Desbloqueado.dc.html`
+- [x] Medal component (on/off art with the rarity ring); seasonal medals take the ring color of the season they were earned in (`profile_achievements.season_id`)
+- [x] Migration `0012`: `rank_up` event kind and `rank_ups` table (primary key per profile and rank), `record_rank_ups` called by a trigger when a reign ends and by the per-minute live check; ranks already reached are backfilled without events; `country_leaderboard.kings`, `season_stats` view
+- [x] Rank-up in the Proclamations feed ("rose to Duke")
+- [x] Unlock toast (MOTION §2: rise, ×1→×2→×4→×3 bounce, sparks, 6 s drain, pause on hover/focus, 700 ms queue, close, share link, `aria-live`; reduced motion fades only) for the signed-in player's own achievements and rank-ups, through a realtime channel filtered by profile
+- [x] `/kingdom`: timeline by day (UTC on the server, the reader's time zone after hydration), size by length (×1 / ×2 / ×3–×4, surface from 10 h), gold node and live clock for the current king, season filter (next season shown, not selectable), summary, "Show earlier reigns" paging
+- [x] `/hall-of-fame`: 4 tabs, season / all-time scope (with the design's note while only one season has started), pixel podium (stone pedestals with gold/silver/bronze trim, ×2 / ×3), flags for countries
+- [x] `/seasons/[slug]`: King of the Season banner (rank frame and crown, ×4 / ×6), podium, season in numbers with record holders, next season with its art (T2 provisional), countdown, "Remind me" (turns on the season-start alert; asks to sign in first), share; a season under way shows "Leading the season"; unstarted seasons are 404
+- [x] Top bar section nav on desktop (Throne · History · Hall of fame)
+- [x] Tests: db (rank-ups once per rank, skipped ranks, live check, privileges, season stats, country kings), unit (podium art, toast timing, record formats), e2e (history, paging, season filter, hall tabs and scopes, season end, remind, toasts only for the viewer, hover pause, reduced motion, feed), screenshots at 390 and 1440 in en and es compared with `Reino.dc.html` and `Logro Desbloqueado.dc.html`
 
 ## Milestone 7 — Moderation, reports, admin
 

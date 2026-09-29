@@ -145,6 +145,7 @@ API and assets:
 | `GET /api/me` | Signed-in player's summary for cached pages |
 | `POST /api/test-provider/pay` | Test provider only: simulate a completed checkout |
 | `PATCH /api/profile` | Update own profile |
+| `POST /api/profile/remind` | "Remind me": turn on the season-start alert |
 | `POST /api/profile/avatar` | Upload avatar |
 | `GET /avatar/[name].svg?season=&crown=` | Generated avatar |
 | `GET /art/throne/[file]` | Throne room scene per season and size (static) |
