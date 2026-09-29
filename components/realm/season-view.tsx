@@ -171,7 +171,7 @@ export function SeasonView({ data, current, readAt }: Props) {
                     <div className="font-pixel text-40 leading-none font-bold lg:text-64">{formatDuration(king.seconds, u)}</div>
                     <div className="text-14 text-crown-muted lg:text-16">{ended ? t("kosSub") : t("leadingSub")}</div>
                   </div>
-                  {ended && <p className="hidden max-w-160 text-20 leading-snug font-medium text-pretty text-crown-muted lg:block">{t("kosLine", { name: king.name })}</p>}
+                  {ended && <p className="hidden max-w-160 text-20 leading-snug font-medium text-pretty text-crown-muted lg:block">{t("kosLine", { name: king.name, time: formatDuration(king.seconds, u), crowns: king.crowns })}</p>}
                   <div className="mt-1 grid w-full grid-cols-3 gap-1 lg:flex lg:w-auto">
                     {kosStats.map((s) => (
                       <div key={s.l} className="flex min-w-0 flex-col gap-1.5 bg-crown-ink px-2 py-3 lg:w-45 lg:gap-2 lg:p-4">
