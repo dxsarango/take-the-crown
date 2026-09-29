@@ -24,7 +24,7 @@ describe("record_paid_payment", () => {
     const reign = await one<Record<string, unknown>>("select * from reigns");
     expect(reign).toMatchObject({
       price_paid_cents: 500,
-      display_name: "Ana",
+      name: "Ana",
       country_code: "MX",
       message: "hola",
       link: "https://ana.dev",
@@ -251,7 +251,7 @@ describe("record_paid_payment", () => {
     it("skips players who turned alerts off", async () => {
       const first = new Player("first");
       await first.takeover();
-      await q("update profile_private set alerts_email = false where profile_id = $1", [await first.id()]);
+      await q("update profile_private set alerts_dethroned = false where profile_id = $1", [await first.id()]);
       await new Player("second").takeover();
       expect(await count("notifications")).toBe(0);
     });

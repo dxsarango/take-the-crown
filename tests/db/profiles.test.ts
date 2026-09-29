@@ -18,21 +18,20 @@ async function ensureProfile(userId: string, email: string, name = "Signed In"):
 describe("guest purchase", () => {
   it("creates a profile keyed by the lowercased email", async () => {
     const email = uniqueEmail("Guest").replace("guest", "GuEsT");
-    const lock = await createLock({ email, name: "Guest King", country: "AR" });
+    const lock = await createLock({ email, name: "Guest.King", country: "AR" });
     expect(await pay(lock)).toBe("applied");
 
     const profile = await one<Record<string, unknown>>(
-      "select p.*, pp.email, pp.locale, pp.alerts_email from profiles p join profile_private pp on pp.profile_id = p.id",
+      "select p.*, pp.email, pp.locale, pp.alerts_dethroned from profiles p join profile_private pp on pp.profile_id = p.id",
     );
     expect(profile).toMatchObject({
       email: email.toLowerCase(),
-      display_name: "Guest King",
+      name: "Guest.King",
       country_code: "AR",
       user_id: null,
       locale: "en",
-      alerts_email: true,
+      alerts_dethroned: true,
     });
-    expect(String(profile.username)).toMatch(/^king_[0-9a-f]{8}$/);
   });
 
   it("stores the buyer's locale", async () => {
@@ -94,14 +93,14 @@ describe("ensure_profile_for_user", () => {
       "select p.*, pp.email from profiles p join profile_private pp on pp.profile_id = p.id where p.id = $1",
       [id],
     );
-    expect(profile).toMatchObject({ user_id: userId, display_name: "Fresh Player", email });
+    expect(profile).toMatchObject({ user_id: userId, name: "FreshPlayer", email });
   });
 
-  it("falls back to a default name", async () => {
+  it("falls back to a generated name", async () => {
     const email = uniqueEmail("blank");
     const id = await ensureProfile(await createAuthUser(email), email, "   ");
-    const profile = await one<{ display_name: string }>("select display_name from profiles where id = $1", [id]);
-    expect(profile.display_name).toBe("King");
+    const profile = await one<{ name: string }>("select name from profiles where id = $1", [id]);
+    expect(profile.name).toMatch(/^king_[0-9a-f]{8}$/);
   });
 
   it("returns the same profile on every sign-in", async () => {
