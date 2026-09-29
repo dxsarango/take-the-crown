@@ -1,4 +1,5 @@
 import { readFileSync } from "node:fs";
+import path from "node:path";
 import type pg from "pg";
 
 // Mirrors the seed in supabase/migrations/0001_init.sql.
@@ -52,5 +53,5 @@ export async function resetToSeed(client: pg.ClientBase, extraTables: string[] =
   Did you mean this?
     reset"}} does. */
 export async function applyDevSeed(client: pg.ClientBase): Promise<void> {
-  await client.query(readFileSync(new URL("../../supabase/seed.sql", import.meta.url), "utf8"));
+  await client.query(readFileSync(path.join(process.cwd(), "supabase", "seed.sql"), "utf8"));
 }
