@@ -522,7 +522,7 @@
     "dates": "{from} – {to}",
     "kos": "King of the Season",
     "kosSub": "on the throne this season",
-    "kosLine": "{name} spent the most time on the throne this season. Their portrait stays in the hall forever.",
+    "kosLine": "{name} held the throne for {time} across {crowns, plural, one {# reign} other {# reigns}} this season. Their portrait stays in the hall forever.",
     "kosStats": [
       "Crowns taken",
       "Longest reign",

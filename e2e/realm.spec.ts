@@ -62,6 +62,30 @@ test.describe("kingdom history", () => {
     expect(response?.status()).toBe(404);
   });
 
+  test("renders times in the reader's zone once it is known, with no switch", async ({ browser }) => {
+    const [king] = await sql<{ started_at: Date }>(
+      "select r.started_at from reigns r join crown_state s on s.current_reign_id = r.id",
+    );
+    const at = (timeZone: string) =>
+      new Intl.DateTimeFormat("en-US", { hour: "2-digit", minute: "2-digit", hourCycle: "h23", timeZone }).format(king.started_at);
+    const context = await browser.newContext({ timezoneId: "Asia/Tokyo", viewport: test.info().project.use.viewport });
+    const page = await context.newPage();
+    const firstEntry = (html: string) => /data-testid="history-entry"[\s\S]*?font-pixel[^>]*>(\d\d:\d\d)</.exec(html)?.[1];
+
+    // First visit: the server does not know the zone yet and renders UTC.
+    const first = await page.request.get("/en/kingdom");
+    expect(firstEntry(await first.text())).toBe(at("UTC"));
+    await page.goto("/en/kingdom");
+    await expect(page.getByTestId("history-entry").first()).toContainText(at("Asia/Tokyo"));
+    const cookies = await context.cookies();
+    expect(cookies.find((c) => c.name === "tz")?.value).toBe(encodeURIComponent("Asia/Tokyo"));
+
+    // Returning visit: the server renders the reader's zone, the same the browser shows.
+    const again = await page.request.get("/en/kingdom");
+    expect(firstEntry(await again.text())).toBe(at("Asia/Tokyo"));
+    await context.close();
+  });
+
   test("screenshot kingdom history", async ({ page }) => {
     await seedKingdom();
     await page.goto("/en/kingdom");
@@ -117,6 +141,9 @@ test.describe("season end", () => {
     await expect(shown(page, en.realm.kos)).toBeVisible();
     await expect(page.getByRole("link", { name: "theo_builds" }).filter({ visible: true }).first()).toBeVisible();
     await expect(shown(page, "Season 0 in numbers")).toBeVisible();
+    if (test.info().project.name === "desktop") {
+      await expect(shown(page, /^theo_builds held the throne for 170h 00m across 1 reign this season\. Their portrait stays in the hall forever\.$/)).toBeVisible();
+    }
     await expect(shown(page, "Season 1: Day of the Dead")).toBeVisible();
     // Season 1 is already under way, so there is nothing to be reminded of.
     await expect(page.getByRole("link", { name: en.realm.goThrone }).filter({ visible: true })).toBeVisible();

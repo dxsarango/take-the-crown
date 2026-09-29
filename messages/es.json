@@ -522,7 +522,7 @@
     "dates": "{from} – {to}",
     "kos": "Rey de la temporada",
     "kosSub": "en el trono esta temporada",
-    "kosLine": "{name} pasó más tiempo que nadie en el trono esta temporada. Su retrato se queda en el salón para siempre.",
+    "kosLine": "{name} ocupó el trono {time} en {crowns, plural, one {# reinado} other {# reinados}} esta temporada. Su retrato se queda en el salón para siempre.",
     "kosStats": [
       "Coronas tomadas",
       "Reinado más largo",

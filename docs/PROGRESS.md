@@ -33,13 +33,17 @@ Conflicts between the design handoff (`/design`), the spec and the migrations, a
 24. **Edit profile extensions.** "No country" option instead of the design's country toggle (decision 7), a TikTok and a website field (decision 3), the name locked with its unlock date during the 30-day cooldown, "Sign out" at the end of the menu (desktop) and of the form (mobile), and a rejection reason per moderation rule.
 25. **Uploads and saving.** The image is stored when chosen (so the preview shows the processed result) and the profile points to it only when saved; replaced files stay in Storage until a cleanup job exists.
 
-26. **Realm copy with sample data.** The design's dates, season numbers, counts and the King of the Season story line become placeholders. The story ("Reached Emperor on Oct 12 and held off kenji…") cannot be derived, so it reads "{name} spent the most time on the throne this season. Their portrait stays in the hall forever." (no gendered pronoun).
-27. **Rank-up toast.** The design has no rank-up toast (decision 19): it reuses the achievement toast with the player's portrait in the new rank frame, the rank swatch as its color and "New rank" as the kicker.
-28. **History times.** Times and day separators render in UTC on the server and switch to the reader's time zone after hydration.
+26. **Realm copy with sample data.** The design's dates, season numbers, counts and the King of the Season story line become placeholders. The story line uses the season leaderboard: "{name} held the throne for {time} across {crowns} reigns this season. Their portrait stays in the hall forever." (Spanish with the same placeholders, no gendered forms).
+27. **Rank-up toast.** Approved: the achievement toast with the player's portrait in the new rank frame, the rank swatch as its color and "New rank" as the kicker.
+28. **Displayed times.** The browser stores its time zone in a `tz` cookie on first load. Pages that show dates or times (kingdom, hall of fame, season end, profile) render them in that zone when the cookie exists, so returning readers see no switch; on a first visit the server renders UTC and the page switches to the reader's zone after hydration. Those pages render per request instead of from the ISR cache.
 
 ## Open questions
 
 1. **Knowing an email has a profile.** A signed-out buyer who types an email that already has a profile gets "check your email" instead of a checkout, so the form reveals that the email has bought before (not whose profile it is). Hiding it would mean sending every signed-out buyer through email verification before paying. Interim: keep the decided flow.
+
+## Test notes
+
+- **Sign-in emails in e2e.** The first full run in M6 had two intermittent failures after signing in by magic link through Mailpit; the wait went from 5 s to 15 s (`e2e/fixtures/mail.ts`). If these waits become flaky again, find the root cause (Auth's email sending, Mailpit's API, or the query by recipient) instead of raising the timeout, and record it here.
 
 ## Deployment checklist
 
@@ -163,7 +167,7 @@ Steps for every hosted environment (staging and production).
 - [x] Migration `0012`: `rank_up` event kind and `rank_ups` table (primary key per profile and rank), `record_rank_ups` called by a trigger when a reign ends and by the per-minute live check; ranks already reached are backfilled without events; `country_leaderboard.kings`, `season_stats` view
 - [x] Rank-up in the Proclamations feed ("rose to Duke")
 - [x] Unlock toast (MOTION §2: rise, ×1→×2→×4→×3 bounce, sparks, 6 s drain, pause on hover/focus, 700 ms queue, close, share link, `aria-live`; reduced motion fades only) for the signed-in player's own achievements and rank-ups, through a realtime channel filtered by profile
-- [x] `/kingdom`: timeline by day (UTC on the server, the reader's time zone after hydration), size by length (×1 / ×2 / ×3–×4, surface from 10 h), gold node and live clock for the current king, season filter (next season shown, not selectable), summary, "Show earlier reigns" paging
+- [x] `/kingdom`: timeline by day (times in the reader's zone, decision 28), size by length (×1 / ×2 / ×3–×4, surface from 10 h), gold node and live clock for the current king, season filter (next season shown, not selectable), summary, "Show earlier reigns" paging
 - [x] `/hall-of-fame`: 4 tabs, season / all-time scope (with the design's note while only one season has started), pixel podium (stone pedestals with gold/silver/bronze trim, ×2 / ×3), flags for countries
 - [x] `/seasons/[slug]`: King of the Season banner (rank frame and crown, ×4 / ×6), podium, season in numbers with record holders, next season with its art (T2 provisional), countdown, "Remind me" (turns on the season-start alert; asks to sign in first), share; a season under way shows "Leading the season"; unstarted seasons are 404
 - [x] Top bar section nav on desktop (Throne · History · Hall of fame)
