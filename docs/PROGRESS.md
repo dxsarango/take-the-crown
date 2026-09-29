@@ -37,8 +37,11 @@ Conflicts between the design handoff (`/design`), the spec and the migrations, a
 27. **Rank-up toast.** Approved: the achievement toast with the player's portrait in the new rank frame, the rank swatch as its color and "New rank" as the kicker.
 28. **Displayed times.** The browser stores its time zone in a `tz` cookie on first load. Pages that show dates or times (kingdom, hall of fame, season end, profile) render them in that zone when the cookie exists, so returning readers see no switch; on a first visit the server renders UTC and the page switches to the reader's zone after hydration. Those pages render per request instead of from the ISR cache.
 
-29. **Moderation fails closed.** If the model can't give a verdict (no key, outage, refusal, invalid answer), no lock is created and the buyer sees "We couldn't review your details. Try again in a minute. You haven't been charged." An outage therefore pauses takeovers instead of publishing unreviewed content.
-30. **Reports and admin UI.** The design has no report dialog or admin screens: the "Report" button reports in one click (no reason) and shows a thank-you line; the admin area uses the design system's surfaces, relief buttons and flags.
+29. ~~Moderation fails closed.~~ Superseded by 31.
+30. **Admin UI.** The design has no admin screens: the admin area uses the design system's surfaces, relief buttons and flags (approved).
+31. **Moderation outage: quarantine.** With no verdict after two attempts, the takeover goes ahead but its message and link are stored hidden (`moderation_status = 'pending'`); the buyer sees "Your message will appear after a short review." A cron retries every minute; approved content becomes visible, rejected content stays hidden. Public names skip quarantine and are checked against a word blocklist in the rules layer (`lib/moderation/name-blocklist.ts`). Profile saves without a verdict are still refused.
+32. **Reports.** The "Report" button opens a dialog built like the sign-in dialog, with three reasons (offensive, scam, spam). Report counts never hide anything. At 3 reports `report_reign` queues a `reports_threshold` notification for every admin; M8's outbox sender turns it into the email.
+33. **Model calls only after the gates.** Moderation runs after the human check and the hourly limits (per IP hash on takeovers, per profile on saves; both in `app_config`), and on profile saves only when the name or product link changed, so the model can't be called in bulk.
 
 ## Open questions
 
@@ -48,7 +51,7 @@ Conflicts between the design handoff (`/design`), the spec and the migrations, a
 
 - **Sign-in emails in e2e.** The first full run in M6 had two intermittent failures after signing in by magic link through Mailpit; the wait went from 5 s to 15 s (`e2e/fixtures/mail.ts`). If these waits become flaky again, find the root cause (Auth's email sending, Mailpit's API, or the query by recipient) instead of raising the timeout, and record it here.
 - **Clicks before hydration (M7).** "Loads earlier reigns" failed in a full run: Playwright clicked the server-rendered button before React attached its handler, so no request left the page. Tests that click right after navigating now wait for `networkidle` first.
-- **Dev-only 500s on `/art/[...path]`.** On a cold `next dev`, a burst of first requests to the static-params art route sometimes answers 500 with "Unexpected end of JSON input" (Next reading its route manifest while it is still being written). Production builds prerender these files, so it does not affect them; it only leaves a flag or icon missing in a dev screenshot.
+- **Dev-only 500s on `/art/[...path]`.** On a cold `next dev`, a burst of first requests to the static-params art route sometimes answers 500 with "Unexpected end of JSON input" (Next reading its route manifest while it is still being written). Checked on a production build (2026-09-29, `pnpm build && next start`): the art routes are prerendered (`.next/server/app/art/**`), and 10 rounds of 22 concurrent requests (flags, thrones, `/en`, `/es`) gave 200 on every existing file, 404 only for flags outside the set (NG, ZA), no 5xx and no errors in the server log. It only affects dev screenshots.
 
 ## Deployment checklist
 
@@ -61,6 +64,7 @@ Steps for every hosted environment (staging and production).
 - [ ] Google provider: OAuth client (web) with the Supabase callback `https://<project-ref>.supabase.co/auth/v1/callback` as redirect URI and scopes `openid`, `email`, `profile`; client id and secret in Supabase Auth → Providers → Google
 - [ ] X provider (`x`, OAuth 2.0): app with "Request email from users" on, callback `https://<project-ref>.supabase.co/auth/v1/callback`, scopes `users.read`, `tweet.read`, `users.email`; client id and secret in Supabase Auth → Providers → X
 - [ ] Moderation: `MODERATION_PROVIDER=anthropic` and `ANTHROPIC_API_KEY` set; run `pnpm test:moderation` against the key before launch
+- [ ] `CRON_SECRET` set (16+ chars); `vercel.json` schedules `/api/cron/moderation` every minute, which needs the Vercel Pro plan (Hobby only runs daily crons)
 - [ ] First admin: `update profile_private set is_admin = true where email = '<owner email>'` (SQL editor)
 - [ ] Storage: the `avatars` bucket comes from migration `0011`; check it is public with the 1 MB / PNG + WebP limits
 - [ ] Confirm pg_cron jobs (`rollover-season`, `live-achievements`, `price-alerts`) are scheduled and active
@@ -183,13 +187,17 @@ Steps for every hosted environment (staging and production).
 ## Milestone 7 — Moderation, reports, admin
 
 - [x] Link rules (`lib/moderation/rules.ts`): https only, no credentials, ports or IP hosts, shorteners, chat invites (host or host + path), a maintained blocklist and gambling/adult host words; no links inside messages; social links stay on their platform's domain (`lib/profile/socials.ts`)
-- [x] Moderation with `claude-haiku-4-5` (`lib/moderation/model.ts`, `classifier.ts`): structured output, parsed again with a strict zod schema; the submission is HTML-escaped inside `<submission>` tags and the system prompt says it is untrusted data to classify, never instructions; attempts to instruct the moderator are rejected as `manipulation`; refusals, truncation, bad JSON and API errors fail closed ("moderation unavailable", no lock)
+- [x] Moderation with `claude-haiku-4-5` (`lib/moderation/model.ts`, `classifier.ts`): structured output, parsed again with a strict zod schema; the submission is HTML-escaped inside `<submission>` tags and the system prompt says it is untrusted data to classify, never instructions; attempts to instruct the moderator are rejected as `manipulation`; refusals, truncation, bad JSON and API errors count as no verdict (two attempts)
 - [x] Wired into `POST /api/locks` (rules → model → lock, so rejected content is never charged) and `PATCH /api/profile` (public name and product link); every reason has modal and edit-profile copy
 - [x] `MODERATION_PROVIDER=test` for local and e2e (deterministic stand-in, refused in production)
 - [x] Migration `0013`: report reasons, `report_reign` (one per IP per reign), `hide_reign_message`, `set_profile_banned`, `dismiss_report`, `request_manual_refund`, `admin_actions` log
 - [x] `POST /api/reports` and the king's "Report" button
 - [x] `/admin` (404 unless `profile_private.is_admin`): crown and lock, payments with manual refund (through the provider; the reign stays), reports queue (hide message, ban/unban, dismiss), release a reserved former name, seasons (dates editable before a season starts, no overlaps), `app_config` editor with ranges, admin log; every action re-checks the admin
-- [x] Tests: unit (link rules, message rules, prompt wrapping and escaping with adversarial messages, strict verdict schema, fail-closed classifier, test stand-in), live suite against the model (`pnpm test:moderation`, 15 adversarial / harmful / benign cases, skipped without `ANTHROPIC_API_KEY`), db (report dedupe, admin functions, privileges), e2e (model rejection, rule rejection, manipulation, report, admin guard, hide/ban, refund, names, config, seasons)
+- [x] Quarantine on outage (migration `0014`): `moderation_status` on locks and reigns, `public_reigns` hides pending and rejected content, `settle_reign_moderation`, `note_moderation_attempt`; buyer notice in the modal; `GET /api/cron/moderation` (bearer `CRON_SECRET`, 20 per run) with a per-minute Vercel cron
+- [x] Name blocklist in the rules layer; hourly limits (`take_rate_limit`) checked before any model call on takeovers and profile saves; profile saves only moderate a changed name or link
+- [x] Report dialog with a reason (offensive, scam, spam), required by the API; admin alert queued at 3 reports (email sent by M8's outbox)
+- [x] Production build check for the dev-only `/art` 500s (see test notes)
+- [x] Tests: unit (link rules, message rules, prompt wrapping and escaping with adversarial messages, strict verdict schema, fail-closed classifier, test stand-in), live suite against the model (`pnpm test:moderation`, 15 adversarial / harmful / benign cases, skipped without `ANTHROPIC_API_KEY`), db (report dedupe, admin functions, privileges, quarantine, rate limits, report threshold alert), e2e (model rejection, rule rejection, manipulation, outage with delayed approval, delayed rejection and repeated outage, cron secret, takeover and profile rate limits, blocked name, report dialog with reason, admin guard, hide/ban, refund, names, config, seasons)
 
 ## Milestone 8 — Share cards, email outbox, dethroned alert
 
