@@ -37,6 +37,9 @@ Conflicts between the design handoff (`/design`), the spec and the migrations, a
 27. **Rank-up toast.** Approved: the achievement toast with the player's portrait in the new rank frame, the rank swatch as its color and "New rank" as the kicker.
 28. **Displayed times.** The browser stores its time zone in a `tz` cookie on first load. Pages that show dates or times (kingdom, hall of fame, season end, profile) render them in that zone when the cookie exists, so returning readers see no switch; on a first visit the server renders UTC and the page switches to the reader's zone after hydration. Those pages render per request instead of from the ISR cache.
 
+29. **Moderation fails closed.** If the model can't give a verdict (no key, outage, refusal, invalid answer), no lock is created and the buyer sees "We couldn't review your details. Try again in a minute. You haven't been charged." An outage therefore pauses takeovers instead of publishing unreviewed content.
+30. **Reports and admin UI.** The design has no report dialog or admin screens: the "Report" button reports in one click (no reason) and shows a thank-you line; the admin area uses the design system's surfaces, relief buttons and flags.
+
 ## Open questions
 
 1. **Knowing an email has a profile.** A signed-out buyer who types an email that already has a profile gets "check your email" instead of a checkout, so the form reveals that the email has bought before (not whose profile it is). Hiding it would mean sending every signed-out buyer through email verification before paying. Interim: keep the decided flow.
@@ -55,6 +58,8 @@ Steps for every hosted environment (staging and production).
 - [ ] Supabase Auth: site URL and redirect URLs for `/auth/callback`, SMTP through Resend, magic link expiry 15 min
 - [ ] Google provider: OAuth client (web) with the Supabase callback `https://<project-ref>.supabase.co/auth/v1/callback` as redirect URI and scopes `openid`, `email`, `profile`; client id and secret in Supabase Auth → Providers → Google
 - [ ] X provider (`x`, OAuth 2.0): app with "Request email from users" on, callback `https://<project-ref>.supabase.co/auth/v1/callback`, scopes `users.read`, `tweet.read`, `users.email`; client id and secret in Supabase Auth → Providers → X
+- [ ] Moderation: `MODERATION_PROVIDER=anthropic` and `ANTHROPIC_API_KEY` set; run `pnpm test:moderation` against the key before launch
+- [ ] First admin: `update profile_private set is_admin = true where email = '<owner email>'` (SQL editor)
 - [ ] Storage: the `avatars` bucket comes from migration `0011`; check it is public with the 1 MB / PNG + WebP limits
 - [ ] Confirm pg_cron jobs (`rollover-season`, `live-achievements`, `price-alerts`) are scheduled and active
 
@@ -175,11 +180,14 @@ Steps for every hosted environment (staging and production).
 
 ## Milestone 7 — Moderation, reports, admin
 
-- [ ] Link rules: https only, shortener / chat-invite / blocklist domains, social domain allowlists
-- [ ] Moderation with `claude-haiku-4-5`, strict JSON verdict parsed with zod; rejection reasons mapped to modal copy
-- [ ] `POST /api/reports` (one per IP per reign)
-- [ ] `/admin`: crown + lock, payments with manual refund, reports queue (hide message, ban), release a reserved former name (`release_profile_name`), seasons, `app_config` editor
-- [ ] Tests: link validation, moderation parsing, report dedupe, admin guard
+- [x] Link rules (`lib/moderation/rules.ts`): https only, no credentials, ports or IP hosts, shorteners, chat invites (host or host + path), a maintained blocklist and gambling/adult host words; no links inside messages; social links stay on their platform's domain (`lib/profile/socials.ts`)
+- [x] Moderation with `claude-haiku-4-5` (`lib/moderation/model.ts`, `classifier.ts`): structured output, parsed again with a strict zod schema; the submission is HTML-escaped inside `<submission>` tags and the system prompt says it is untrusted data to classify, never instructions; attempts to instruct the moderator are rejected as `manipulation`; refusals, truncation, bad JSON and API errors fail closed ("moderation unavailable", no lock)
+- [x] Wired into `POST /api/locks` (rules → model → lock, so rejected content is never charged) and `PATCH /api/profile` (public name and product link); every reason has modal and edit-profile copy
+- [x] `MODERATION_PROVIDER=test` for local and e2e (deterministic stand-in, refused in production)
+- [x] Migration `0013`: report reasons, `report_reign` (one per IP per reign), `hide_reign_message`, `set_profile_banned`, `dismiss_report`, `request_manual_refund`, `admin_actions` log
+- [x] `POST /api/reports` and the king's "Report" button
+- [x] `/admin` (404 unless `profile_private.is_admin`): crown and lock, payments with manual refund (through the provider; the reign stays), reports queue (hide message, ban/unban, dismiss), release a reserved former name, seasons (dates editable before a season starts, no overlaps), `app_config` editor with ranges, admin log; every action re-checks the admin
+- [x] Tests: unit (link rules, message rules, prompt wrapping and escaping with adversarial messages, strict verdict schema, fail-closed classifier, test stand-in), live suite against the model (`pnpm test:moderation`, 15 adversarial / harmful / benign cases, skipped without `ANTHROPIC_API_KEY`), db (report dedupe, admin functions, privileges), e2e (model rejection, rule rejection, manipulation, report, admin guard, hide/ban, refund, names, config, seasons)
 
 ## Milestone 8 — Share cards, email outbox, dethroned alert
 
