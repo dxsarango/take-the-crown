@@ -264,7 +264,7 @@
     "toH": "La perdió ante",
     "date": "Fecha",
     "duration": "Duración",
-    "allReigns": "Ver los 12 reinados",
+    "allReigns": "Ver los {n} reinados",
     "comeBack": "Vuelve por la corona.",
     "reigningNow": "Reina ahora",
     "dropShort": "Baja 2% cada hora",
@@ -279,7 +279,46 @@
     "ofPlayers": "{percent} de los jugadores",
     "socials": "Redes sociales",
     "socNone": "Aún no tienes redes.",
-    "editProfile": "Editar perfil"
+    "editProfile": "Editar perfil",
+    "joined": "Desde el {date}",
+    "rankNote": "{time} más en el trono para ser {rank}.",
+    "rankTop": "El rango más alto que existe.",
+    "showChosen": "Elegidos por {name}",
+    "showSlots": "{n} de 3 huecos",
+    "showNext": "Aquí irá tu próximo logro. {name} es el más cercano.",
+    "showEmpty": "Toma la corona para ganar tu primer logro.",
+    "unlockedOn": "Desbloqueado el {date}",
+    "achCount": "{n} de {total}",
+    "histLatest": "Últimos {n}",
+    "histCount": "{n, plural, one {# reinado} other {# reinados}}",
+    "histNone": "Aún no hay reinados.",
+    "showLess": "Ver menos",
+    "fromEmpty": "el trono vacío",
+    "hookStatus": "{name} te quitó la corona a los {duration}.",
+    "rivalNote": "{n, plural, one {# corona intercambiada entre los dos} other {# coronas intercambiadas entre los dos}}. Último choque {ago}.",
+    "rivalFirst": "Tu único choque por ahora. Empata el marcador para empezar una rivalidad.",
+    "reachRevenge": "La próxima vez que reine {name}, recupera la corona.",
+    "reachRank": "Reina {time} en total para ganar el marco {frame}.",
+    "reachBargain": "Toma la corona al mínimo de {floor}. Unas {hours} h si nadie compra.",
+    "reachBargainNow": "Toma la corona al mínimo de {floor}. Ahora mismo está ahí.",
+    "reachCollector": "Toma 10 coronas.",
+    "frameMaterial": {
+      "iron": "de hierro",
+      "silver": "de plata",
+      "gold": "de oro"
+    },
+    "frames": {
+      "genesis": "Marco Genesis",
+      "marigold": "Marco Cempasúchil"
+    },
+    "collEarned": "Temporada {n} · Reinó en la T{n}",
+    "collEarnedOwn": "Tuyo para siempre. Solo lo tienen los reyes de la T{n}.",
+    "collMissed": "Temporada {n} · No conseguido",
+    "collOpen": "Reina una vez en la T{n} · {days, plural, one {queda # día} other {quedan # días}}",
+    "collNext": "Temporada {n}",
+    "collStarts": "Empieza el {date}",
+    "copied": "Enlace copiado",
+    "notFound": "Ningún jugador se llama así."
   },
   "editProfile": {
     "title": "Editar perfil",
@@ -638,6 +677,14 @@
     "yt": {
       "name": "YouTube",
       "invalid": "Los identificadores de YouTube llevan letras, números, . _ y -, de 3 a 30."
+    },
+    "tt": {
+      "name": "TikTok",
+      "invalid": "Los usuarios de TikTok llevan letras, números, . y _, de 2 a 24."
+    },
+    "web": {
+      "name": "Web",
+      "invalid": "Escribe una dirección web como tunombre.com."
     }
   }
 }
