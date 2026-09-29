@@ -1,0 +1,556 @@
+{
+  "app": {
+    "name": "Crown",
+    "description": "Una sola corona en internet. Tómala, defiéndela y reina todo lo que puedas.",
+    "placeholderTitle": "El trono se está preparando.",
+    "placeholderBody": "Vuelve pronto para tomar la corona.",
+    "language": "Idioma",
+    "locales": {
+      "en": "EN",
+      "es": "ES"
+    }
+  },
+  "common": {
+    "take": "Toma la corona por {price}",
+    "dropping": "Baja 2% cada hora",
+    "floor": "Precio mínimo $5",
+    "report": "Reportar",
+    "final": "Los pagos son definitivos. Pagas por visibilidad, no por un premio.",
+    "close": "Cerrar",
+    "nameL": "Nombre visible",
+    "countryL": "País",
+    "google": "Continuar con Google",
+    "notNow": "Ahora no",
+    "share": "Compartir",
+    "duke": "Duque"
+  },
+  "season": {
+    "name": {
+      "0": "Temporada 0: Génesis",
+      "1": "Temporada 1: Día de Muertos",
+      "2": "Temporada 2: Escarcha"
+    },
+    "long": "{season} · {days, plural, one {queda # día} other {quedan # días}}",
+    "short": "T{n} · {days, plural, one {queda # día} other {quedan # días}}",
+    "firstKing": "Sé el primer rey de la Temporada {n}.",
+    "dates": {
+      "0": "15 sep – 31 oct 2026",
+      "1": "1 nov – 30 nov 2026",
+      "2": "Desde el 1 dic 2026"
+    },
+    "nextDesc": {
+      "1": "Papel picado, cempasúchil y velas, una corona de calavera de azúcar, un marco y una medalla de temporada nuevos. El trono empieza vacío a $5.",
+      "2": "Un salón helado, corona y marco de temporada nuevos, y nuevos logros. El trono empieza vacío a $5."
+    },
+    "frame": {
+      "0": "Marco Genesis",
+      "1": "Marco Cempasúchil"
+    },
+    "crown": {
+      "0": "Coronas base (3)",
+      "1": "Corona Calavera"
+    }
+  },
+  "home": {
+    "signin": "Iniciar sesión",
+    "reigning": "Reina desde hace",
+    "succession": "Línea de sucesión",
+    "history": "Ver historia",
+    "hof": "Salón de la fama",
+    "hofSub": "Esta temporada",
+    "hofAll": "Ver todo",
+    "longest": "Reinado más largo",
+    "most": "Más coronas tomadas",
+    "shortest": "Reinado más corto",
+    "crowns": "coronas",
+    "live": "Pregones del heraldo",
+    "last24": "Últimas 24 horas",
+    "rules": "Reglas",
+    "faq": "Preguntas frecuentes",
+    "terms": "Términos"
+  },
+  "homeStates": {
+    "signin": "Iniciar sesión",
+    "reigning": "Reina desde hace",
+    "someone": "Alguien está tomando la corona…",
+    "reservedNote": "Si no paga a tiempo, la corona vuelve a estar disponible.",
+    "onHold": "Precio en espera",
+    "empty1": "El trono está vacío",
+    "empty2": "Sé el primer rey de la Temporada 0.",
+    "noKing": "Nadie ha reinado todavía",
+    "opening": "Precio de apertura",
+    "rises": "Sube con cada nuevo rey",
+    "lowest": "Precio más bajo",
+    "floorHit": "Precio mínimo alcanzado",
+    "noLower": "No bajará más",
+    "payErr1": "Tu pago no se completó.",
+    "payErr2": "La corona sigue disponible.",
+    "exp1": "Tu reserva de precio expiró.",
+    "exp2": "El precio actual es $38.",
+    "takeFirst": "Ocupa el trono por $5"
+  },
+  "payment": {
+    "head": "Vas a ser rey.",
+    "headOk": "Ahora eres el rey.",
+    "lockPre": "Precio reservado por",
+    "reigning": "Reinas desde hace",
+    "preview": "Vista previa",
+    "previewSub": "Así te verás en el trono",
+    "namePh": "tu-nombre",
+    "nameHelp": "Tu rey se genera a partir de este nombre.",
+    "upload": "Subir foto o logo",
+    "linkL": "Enlace",
+    "linkPh": "tuproducto.com o x.com/tu",
+    "linkHelp": "Tu producto o tu perfil de X.",
+    "msgL": "Mensaje",
+    "msgPh": "¿Qué quieres que lea internet?",
+    "detected": "Detectado",
+    "rank": "Plebeyo",
+    "noAcct": "No hace falta cuenta. Inicia sesión después de pagar para guardar tu reinado.",
+    "pay": "Paga {price} y toma la corona",
+    "processing": "Procesando el pago…",
+    "needName": "Añade un nombre para continuar",
+    "signin": "Inicia sesión para guardar tus reinados, logros y alertas.",
+    "xLogin": "Continuar con X",
+    "email": "Envíame un enlace mágico",
+    "watch": "Ver tu coronación",
+    "skipNote": "Si lo saltas, tu reinado cuenta igual, pero no recibirás alertas ni guardarás logros.",
+    "youName": "tu-nombre",
+    "rejLinkT": "No podemos usar este enlace.",
+    "rejLinkW": "No se permiten acortadores como bit.ly, para que todos vean adónde lleva un enlace.",
+    "rejLinkF": "Pega la dirección completa de tu producto o de tu perfil de X. No se te ha cobrado.",
+    "rejLinkLine": "Usa la dirección completa, sin acortador.",
+    "rejMsgT": "No podemos usar este mensaje.",
+    "rejMsgW": "Los mensajes no pueden incluir enlaces.",
+    "rejMsgF": "Pasa el enlace al campo Enlace y vuelve a intentarlo. No se te ha cobrado.",
+    "rejMsgLine": "Quita el enlace de tu mensaje."
+  },
+  "coronation": {
+    "reigning": "Reina desde hace"
+  },
+  "achievement": {
+    "reigning": "Reina desde hace",
+    "unlocked": "Logro desbloqueado",
+    "copied": "Enlace copiado",
+    "rar": {
+      "common": "Común",
+      "rare": "Raro",
+      "epic": "Épico",
+      "legendary": "Legendario",
+      "seasonal": "De temporada",
+      "seasonal0": "De temporada"
+    },
+    "items": {
+      "owl": [
+        "Noctámbulo",
+        "Tomaste la corona entre las 3 y las 5 a. m."
+      ],
+      "regicide": [
+        "Regicida",
+        "Destronaste a un rey de más de 24 h."
+      ],
+      "firstBlood": [
+        "Primera sangre",
+        "Primer rey de la temporada."
+      ],
+      "g3": [
+        "Guardián III",
+        "Reinaste 72 h seguidas."
+      ],
+      "founder": [
+        "Fundador",
+        "Reinaste en la Temporada 0."
+      ],
+      "remembered": [
+        "Recordado",
+        "Reinaste en la Temporada 1: Día de Muertos."
+      ]
+    }
+  },
+  "profile": {
+    "shareProfile": "Compartir perfil",
+    "showcase": "Vitrina",
+    "reach": "Al alcance",
+    "stats": "Hazañas",
+    "rival": "Rival principal",
+    "achievements": "Logros",
+    "history": "Crónica de reinados",
+    "collect": "Coleccionables de temporada",
+    "from": "Se la quitó a",
+    "to": "La perdió ante",
+    "fromH": "Se la quitó a",
+    "toH": "La perdió ante",
+    "date": "Fecha",
+    "duration": "Duración",
+    "allReigns": "Ver los 12 reinados",
+    "comeBack": "Vuelve por la corona.",
+    "reigningNow": "Reina ahora",
+    "dropShort": "Baja 2% cada hora",
+    "totalR": "Tiempo en el trono",
+    "longest": "Reinado más largo sin caer",
+    "crowns": "Coronas arrebatadas",
+    "dethr": "Caídas del trono",
+    "chFrom": "Le quitó la corona a",
+    "chTo": "· la perdió ante",
+    "chTo2": "La perdió ante",
+    "chFrom2": "Se la quitó a",
+    "ofPlayers": "{percent} de los jugadores",
+    "socials": "Redes sociales",
+    "socNone": "Aún no tienes redes.",
+    "editProfile": "Editar perfil"
+  },
+  "editProfile": {
+    "title": "Editar perfil",
+    "titleSub": "Los cambios salen en tu perfil, en el trono y en la crónica.",
+    "back": "Perfil",
+    "secAvatar": "Avatar",
+    "secId": "Nombre y país",
+    "secSoc": "Redes sociales",
+    "secShow": "Vitrina",
+    "secPriv": "Privacidad",
+    "secAl": "Avisos",
+    "secLang": "Idioma",
+    "avHelp": "Es quien se sienta en el trono. El marco de tu rango va alrededor.",
+    "avAlt": "Tu avatar con el marco de Duque",
+    "modeGen": "Avatar pixel",
+    "modeUp": "Foto o logo",
+    "shuffle": "Al azar",
+    "reset": "Restablecer",
+    "parts": {
+      "skin": "Piel",
+      "hair": "Pelo",
+      "hc": "Color de pelo",
+      "fh": "Vello facial",
+      "ex": "Expresión",
+      "cr": "Corona",
+      "cape": "Capa",
+      "cc": "Color de capa",
+      "acc": "Accesorio",
+      "bg": "Fondo"
+    },
+    "prev": "Anterior",
+    "next": "Siguiente",
+    "upChoose": "Elige una imagen",
+    "upDrop": "o suéltala aquí",
+    "upRules": "PNG, JPG o WebP · hasta 5 MB · mejor cuadrada",
+    "upShowAs": "Mostrarla",
+    "upPix": "Pixelada",
+    "upAsIs": "Tal cual",
+    "replace": "Cambiar",
+    "remove": "Quitar",
+    "upNotePix": "{name} · reducida a 32×32 para que case con el trono.",
+    "upNoteAsIs": "{name} · se muestra tal cual dentro del marco.",
+    "upErrType": "Ese archivo no es PNG, JPG ni WebP. Elige otra imagen.",
+    "upErrSize": "Esa imagen pesa más de 5 MB. Elige una más ligera.",
+    "upErrNone": "Elige una imagen o vuelve al avatar pixel.",
+    "nameHelp": "Sale en el trono y en la crónica. Letras, números, . _ y -.",
+    "nameShort": "Usa al menos 3 caracteres.",
+    "nameChars": "Usa solo letras, números, . _ y -.",
+    "nameTaken": "{name} ya está en uso. Prueba otro nombre.",
+    "countryHelp": "Tu bandera sale junto a tu nombre.",
+    "linkL": "Link de producto",
+    "linkPh": "tuproducto.com",
+    "linkHelp": "Sale bajo tu nombre. Se revisa antes de publicarse.",
+    "linkBad": "Escribe una dirección web como tuproducto.com.",
+    "optional": "Opcional",
+    "socHelp": "Opcionales. Solo las que rellenes salen en tu perfil. Puedes pegar el enlace completo.",
+    "socPh": "usuario",
+    "showHelp": "Elige hasta 3 logros que hayas ganado. Salen en el orden en que los elijas.",
+    "showFull": "Vitrina llena. Quita uno para añadir otro.",
+    "showCount": "{count} de 3",
+    "inShow": "{name}, en la vitrina, posición {position}",
+    "notShow": "{name}, fuera de la vitrina",
+    "country": "Mostrar mi país",
+    "countryD": "Tu bandera en el trono, en tu perfil y en la crónica.",
+    "rival": "Mostrar mi rival principal",
+    "rivalD": "El marcador con quien más te quitas la corona.",
+    "chron": "Mostrar mi crónica de reinados",
+    "chronD": "A quién le quitaste la corona y quién te la quitó.",
+    "alHelp": "Se envían por correo a p••••@gmail.com.",
+    "dethr": "Alguien me quita la corona",
+    "dethrD": "Al momento, con quién fue y el nuevo precio.",
+    "price": "Baja el precio",
+    "priceD": "Cuando la corona llegue a tu precio.",
+    "priceL": "Avisarme a (USD)",
+    "priceErr": "Escribe un número entero del 5 al 999.",
+    "priceNote": "Ahora {price}. Baja 2% cada hora: ~{estimate}.",
+    "seasonD": "Con la nueva corona y los coleccionables.",
+    "digest": "Crónica semanal",
+    "digestD": "Cada lunes: reinados, caídas y tu rival.",
+    "on": "Sí",
+    "off": "No",
+    "langHelp": "Para la web, los correos y los avisos.",
+    "save": "Guardar cambios",
+    "saveShort": "Guardar",
+    "saving": "Guardando…",
+    "discard": "Descartar",
+    "stClean": "Sin cambios",
+    "stDirty": "{n, plural, one {1 cambio sin guardar} other {# cambios sin guardar}}",
+    "stSaved": "Todo guardado",
+    "stFailed": "No se guardó",
+    "stInvalid": "{n, plural, one {1 campo por corregir} other {# campos por corregir}}",
+    "bInv": "{n, plural, one {Hay 1 campo por corregir} other {Hay # campos por corregir}}",
+    "bInvSub": "Aún no se guardó nada.",
+    "bRejTitle": "Link de producto rechazado",
+    "bRejWhy": "Lleva a un sitio de apuestas, y eso no se permite en Crown.",
+    "bRejFix": "Quítalo o usa un link a tu propio producto. No se guardó nada.",
+    "editLink": "Editar el link",
+    "bFailTitle": "No se pudieron guardar los cambios",
+    "bFailWhy": "Se cortó la conexión. Tus cambios siguen aquí.",
+    "retry": "Reintentar",
+    "bSavedTitle": "Perfil guardado",
+    "bSavedWhy": "Tus cambios ya están publicados.",
+    "viewProfile": "Ver perfil",
+    "preview": "Vista pública",
+    "previewNote": "Así ven los demás la cabecera de tu perfil.",
+    "soon": "{h, plural, =0 {en menos de una hora} other {en # h}}",
+    "never": "nunca, no baja tanto"
+  },
+  "realm": {
+    "nav": [
+      "Trono",
+      "Historia",
+      "Salón de la fama"
+    ],
+    "histTitle": "Historia del reino",
+    "earlier": "Ver reinados anteriores",
+    "began": "La Temporada 0 empezó el 15 sep 2026.",
+    "legend": "Tamaño = duración del reinado",
+    "lg": [
+      "10 h o más",
+      "3 h o más",
+      "Menos de 3 h"
+    ],
+    "reigns": "reinados",
+    "kings": "reyes",
+    "countries": "países",
+    "reignsL": "Reinados",
+    "kingsL": "Reyes",
+    "countriesL": "Países",
+    "longestL": "Más largo por ahora",
+    "now": "Reinando ahora",
+    "by": "Destronado por {name}",
+    "today": "Hoy · 27 sep",
+    "d26": "26 sep",
+    "d25": "25 sep",
+    "hofTitle": "Salón de la fama",
+    "scopes": [
+      "Temporada 0",
+      "Todos los tiempos"
+    ],
+    "tabs": [
+      "Reinado más largo",
+      "Más coronas",
+      "Reinado más corto",
+      "Países"
+    ],
+    "tabSubs": [
+      "Reinado individual más largo de la temporada",
+      "Coronas tomadas en la temporada",
+      "Reinado individual más corto de la temporada",
+      "Tiempo total reinando por país"
+    ],
+    "allNote": "La Temporada 0 es la primera, así que los récords de todos los tiempos coinciden con ella hasta que empiece la Temporada 1 el 1 nov.",
+    "kingsN": "{count} reyes",
+    "crownsU": "",
+    "endedShort": "La Temporada 0 terminó",
+    "endedLong": "La Temporada 0: Génesis terminó",
+    "ended": "Terminó la Temporada 0: Génesis",
+    "dates": "15 sep – 31 oct 2026",
+    "kos": "Rey de la temporada",
+    "kosSub": "en el trono esta temporada",
+    "kosLine": "Llegó a Emperador el 12 de octubre y resistió a kenji en la última semana. Su retrato se queda en el salón para siempre.",
+    "kosStats": [
+      "Coronas tomadas",
+      "Reinado más largo",
+      "Rango"
+    ],
+    "emperor": "Emperador",
+    "podiumT": "Podio de la temporada",
+    "podiumSub": "Más tiempo reinando en la Temporada 0",
+    "seasonStats": "La Temporada 0 en cifras",
+    "st": [
+      "Reinados",
+      "Reyes",
+      "Países",
+      "Reinado más largo",
+      "Reinado más corto",
+      "Precio máximo"
+    ],
+    "next": "Próxima temporada",
+    "startsIn": "Empieza en",
+    "keep": "Los 214 reyes de la Temporada 0 conservan para siempre la medalla Fundador y el marco Genesis.",
+    "remind": "Avísame cuando empiece",
+    "shareSeason": "Compartir la temporada"
+  },
+  "login": {
+    "head": "Inicia sesión para guardar tus reinados, logros y alertas.",
+    "headKing": "Inicia sesión para guardar tus reinados, logros y alertas.",
+    "kicker": "Recién coronado · estás reinando",
+    "x": "Continuar con X",
+    "or": "o",
+    "emailL": "Correo",
+    "emailPh": "tu@ejemplo.com",
+    "magic": "Envíame un enlace mágico",
+    "emailBad": "Revisa tu dirección de correo.",
+    "legal": "Sin contraseña. ¿Eres nuevo? Creamos tu cuenta automáticamente.",
+    "sentHead": "Revisa tu correo",
+    "sentTo": "Enviamos un enlace de acceso a",
+    "sentHelp": "Ábrelo en este dispositivo para entrar. El enlace sirve durante 15 minutos. Mira en spam si no lo encuentras.",
+    "wrong": "Usar otro correo",
+    "resendIn": "Reenviar en 0:{ss}",
+    "resendNow": "Reenviar enlace"
+  },
+  "share": {
+    "knight": "Caballero",
+    "peasant": "Plebeyo",
+    "vicHead": "Soy el rey de internet.",
+    "vicLabel": "Reino desde hace",
+    "chaHead": "tiene la corona.",
+    "chaLabel": "Destrónala por",
+    "achLabel": "Logro desbloqueado",
+    "regicide": "Regicida",
+    "rare": "Raro",
+    "pct": "Lo tiene el 6,2% de los jugadores",
+    "dthHead": "Fui rey durante",
+    "dthNum": "11",
+    "dthUnit": "segundos.",
+    "dthBy": "Me destronó",
+    "cVic": "Victoria",
+    "cCha": "Desafío",
+    "cAch": "Logro",
+    "cDth": "Destronado",
+    "you": "Tú",
+    "newKing": "kenji · nuevo rey",
+    "mTitle": "Te destronaron",
+    "m1": "Te destronaron después de",
+    "m2": ". Te la quitó ",
+    "m3": "Recupérala por",
+    "btn": "Recupera la corona",
+    "mNote": "El precio baja 2% cada hora. Precio mínimo $5.",
+    "mFoot": "Recibes este correo porque reinaste en Crown.",
+    "unsub": "Desactivar alertas de destronamiento"
+  },
+  "medals": {
+    "oneMin": {
+      "name": "Rey de un minuto",
+      "condition": "Ser destronado en menos de 60 s"
+    },
+    "owl": {
+      "name": "Noctámbulo",
+      "condition": "Tomar la corona entre las 3 y las 5 a. m."
+    },
+    "bag": {
+      "name": "Cazador de gangas",
+      "condition": "Tomar la corona al precio mínimo"
+    },
+    "regicide": {
+      "name": "Regicida",
+      "condition": "Destronar a un rey de más de 24 h"
+    },
+    "revenge": {
+      "name": "Venganza",
+      "condition": "Recuperar la corona de quien te la quitó"
+    },
+    "g1": {
+      "name": "Guardián I",
+      "condition": "Reinar 12 h seguidas"
+    },
+    "patriot": {
+      "name": "Patriota",
+      "condition": "Ser el primer rey de tu país"
+    },
+    "firstBlood": {
+      "name": "Primera sangre",
+      "condition": "Ser el primer rey de una temporada"
+    },
+    "g2": {
+      "name": "Guardián II",
+      "condition": "Reinar 24 h seguidas"
+    },
+    "collector": {
+      "name": "Coleccionista",
+      "condition": "Tomar 10 coronas"
+    },
+    "rivalry": {
+      "name": "Rivalidad",
+      "condition": "Quitarse la corona 5 veces con la misma persona"
+    },
+    "g3": {
+      "name": "Guardián III",
+      "condition": "Reinar 72 h seguidas"
+    },
+    "founder": {
+      "name": "Fundador",
+      "condition": "Reinar en la Temporada 0"
+    },
+    "remembered": {
+      "name": "Recordado",
+      "condition": "Reinar en la Temporada 1"
+    }
+  },
+  "rarity": {
+    "common": "Común",
+    "rare": "Raro",
+    "epic": "Épico",
+    "legendary": "Legendario",
+    "seasonal": "De temporada"
+  },
+  "rank": {
+    "peasant": "Plebeyo",
+    "knight": "Caballero",
+    "baron": "Barón",
+    "count": "Conde",
+    "duke": "Duque",
+    "emperor": "Emperador"
+  },
+  "country": {
+    "US": "Estados Unidos",
+    "MX": "México",
+    "ES": "España",
+    "AR": "Argentina",
+    "CO": "Colombia",
+    "EC": "Ecuador",
+    "CL": "Chile",
+    "PE": "Perú",
+    "BR": "Brasil",
+    "CA": "Canadá",
+    "GB": "Reino Unido",
+    "DE": "Alemania",
+    "FR": "Francia",
+    "IT": "Italia",
+    "IN": "India",
+    "JP": "Japón",
+    "KR": "Corea del Sur",
+    "CN": "China",
+    "AU": "Australia",
+    "NL": "Países Bajos",
+    "PT": "Portugal",
+    "DK": "Dinamarca",
+    "ZA": "Sudáfrica",
+    "NG": "Nigeria",
+    "SE": "Suecia"
+  },
+  "social": {
+    "x": {
+      "name": "X",
+      "invalid": "Los usuarios de X solo llevan letras, números y _, hasta 15."
+    },
+    "ig": {
+      "name": "Instagram",
+      "invalid": "Los usuarios de Instagram llevan letras, números, . y _, hasta 30."
+    },
+    "gh": {
+      "name": "GitHub",
+      "invalid": "Los usuarios de GitHub llevan letras, números y guiones sueltos, hasta 39."
+    },
+    "li": {
+      "name": "LinkedIn",
+      "invalid": "Las URL de LinkedIn llevan letras, números y guiones, de 3 a 100."
+    },
+    "yt": {
+      "name": "YouTube",
+      "invalid": "Los identificadores de YouTube llevan letras, números, . _ y -, de 3 a 30."
+    }
+  }
+}

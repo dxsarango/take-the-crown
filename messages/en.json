@@ -1,0 +1,556 @@
+{
+  "app": {
+    "name": "Crown",
+    "description": "One crown on the internet. Take it, hold it, and reign as long as you can.",
+    "placeholderTitle": "The throne is being prepared.",
+    "placeholderBody": "Come back soon to take the crown.",
+    "language": "Language",
+    "locales": {
+      "en": "EN",
+      "es": "ES"
+    }
+  },
+  "common": {
+    "take": "Take the crown for {price}",
+    "dropping": "Dropping 2% every hour",
+    "floor": "Floor price $5",
+    "report": "Report",
+    "final": "Payments are final. You're paying for visibility, not a prize.",
+    "close": "Close",
+    "nameL": "Display name",
+    "countryL": "Country",
+    "google": "Continue with Google",
+    "notNow": "Not now",
+    "share": "Share",
+    "duke": "Duke"
+  },
+  "season": {
+    "name": {
+      "0": "Season 0: Genesis",
+      "1": "Season 1: Day of the Dead",
+      "2": "Season 2: Frost"
+    },
+    "long": "{season} · {days, plural, one {# day left} other {# days left}}",
+    "short": "Season {n} · {days, plural, one {# day left} other {# days left}}",
+    "firstKing": "Be the first king of Season {n}.",
+    "dates": {
+      "0": "Sep 15 – Oct 31, 2026",
+      "1": "Nov 1 – Nov 30, 2026",
+      "2": "From Dec 1, 2026"
+    },
+    "nextDesc": {
+      "1": "Papel picado, marigolds and candlelight, a sugar skull crown, a new seasonal frame and medal. The throne starts empty at $5.",
+      "2": "A frozen hall, a new seasonal crown and frame, and new achievements. The throne starts empty at $5."
+    },
+    "frame": {
+      "0": "Genesis frame",
+      "1": "Marigold frame"
+    },
+    "crown": {
+      "0": "Base crowns (3)",
+      "1": "Sugar skull crown"
+    }
+  },
+  "home": {
+    "signin": "Sign in",
+    "reigning": "Reigning for",
+    "succession": "Line of succession",
+    "history": "View history",
+    "hof": "Hall of fame",
+    "hofSub": "This season",
+    "hofAll": "View all",
+    "longest": "Longest reign",
+    "most": "Most crowns taken",
+    "shortest": "Shortest reign",
+    "crowns": "crowns",
+    "live": "Proclamations",
+    "last24": "Last 24 hours",
+    "rules": "Rules",
+    "faq": "FAQ",
+    "terms": "Terms"
+  },
+  "homeStates": {
+    "signin": "Sign in",
+    "reigning": "Reigning for",
+    "someone": "Someone is taking the crown…",
+    "reservedNote": "If they don't pay in time, the crown opens up again.",
+    "onHold": "Price on hold",
+    "empty1": "The throne is empty",
+    "empty2": "Be the first king of Season 0.",
+    "noKing": "No one has reigned yet",
+    "opening": "Opening price",
+    "rises": "Goes up with every new king",
+    "lowest": "Lowest price",
+    "floorHit": "Floor price reached",
+    "noLower": "It won't go any lower",
+    "payErr1": "Your payment didn't go through.",
+    "payErr2": "The crown is still available.",
+    "exp1": "Your price lock expired.",
+    "exp2": "The current price is $38.",
+    "takeFirst": "Take the empty throne for $5"
+  },
+  "payment": {
+    "head": "You'll become king.",
+    "headOk": "You're the king.",
+    "lockPre": "Price locked for",
+    "reigning": "Reigning for",
+    "preview": "Preview",
+    "previewSub": "How you'll look on the throne",
+    "namePh": "your-name",
+    "nameHelp": "Your king is generated from this name.",
+    "upload": "Upload photo or logo",
+    "linkL": "Link",
+    "linkPh": "yourproduct.com or x.com/you",
+    "linkHelp": "Your product or X profile.",
+    "msgL": "Message",
+    "msgPh": "What should the internet read?",
+    "detected": "Detected",
+    "rank": "Peasant",
+    "noAcct": "No account needed. Sign in after paying to keep your reign.",
+    "pay": "Pay {price} and take the crown",
+    "processing": "Processing payment…",
+    "needName": "Add a display name to continue",
+    "signin": "Sign in to keep your reigns, achievements, and alerts.",
+    "xLogin": "Continue with X",
+    "email": "Email me a magic link",
+    "watch": "Watch your coronation",
+    "skipNote": "If you skip this, your reign still counts, but you won't get alerts or keep achievements.",
+    "youName": "your-name",
+    "rejLinkT": "We can't use this link.",
+    "rejLinkW": "Link shorteners like bit.ly aren't allowed, so everyone can see where a link goes.",
+    "rejLinkF": "Paste the full address of your product or X profile. You haven't been charged.",
+    "rejLinkLine": "Use the full address, not a shortener.",
+    "rejMsgT": "We can't use this message.",
+    "rejMsgW": "Messages can't include links.",
+    "rejMsgF": "Move the link to the Link field and try again. You haven't been charged.",
+    "rejMsgLine": "Remove the link from your message."
+  },
+  "coronation": {
+    "reigning": "Reigning for"
+  },
+  "achievement": {
+    "reigning": "Reigning for",
+    "unlocked": "Achievement unlocked",
+    "copied": "Link copied",
+    "rar": {
+      "common": "Common",
+      "rare": "Rare",
+      "epic": "Epic",
+      "legendary": "Legendary",
+      "seasonal": "Seasonal",
+      "seasonal0": "Seasonal"
+    },
+    "items": {
+      "owl": [
+        "Night Owl",
+        "Took the crown between 3 and 5 a.m."
+      ],
+      "regicide": [
+        "Regicide",
+        "Dethroned a king who reigned over 24h."
+      ],
+      "firstBlood": [
+        "First Blood",
+        "First king of the season."
+      ],
+      "g3": [
+        "Guardian III",
+        "Reigned 72h straight."
+      ],
+      "founder": [
+        "Founder",
+        "Reigned during Season 0."
+      ],
+      "remembered": [
+        "Remembered",
+        "Reigned during Season 1: Day of the Dead."
+      ]
+    }
+  },
+  "profile": {
+    "shareProfile": "Share profile",
+    "showcase": "Showcase",
+    "reach": "Within reach",
+    "stats": "Deeds",
+    "rival": "Main rival",
+    "achievements": "Achievements",
+    "history": "Chronicle of reigns",
+    "collect": "Season collectibles",
+    "from": "Took it from",
+    "to": "Lost it to",
+    "fromH": "Took it from",
+    "toH": "Lost it to",
+    "date": "Date",
+    "duration": "Duration",
+    "allReigns": "View all 12 reigns",
+    "comeBack": "Come back for the crown.",
+    "reigningNow": "Reigning now",
+    "dropShort": "Dropping 2% every hour",
+    "totalR": "Time upon the throne",
+    "longest": "Longest unbroken reign",
+    "crowns": "Crowns seized",
+    "dethr": "Times cast down",
+    "chFrom": "Took the crown from",
+    "chTo": "· lost it to",
+    "chTo2": "Lost it to",
+    "chFrom2": "Took it from",
+    "ofPlayers": "{percent} of players",
+    "socials": "Social links",
+    "socNone": "No social links yet.",
+    "editProfile": "Edit profile"
+  },
+  "editProfile": {
+    "title": "Edit profile",
+    "titleSub": "Changes appear on your profile, the throne and the chronicle.",
+    "back": "Profile",
+    "secAvatar": "Avatar",
+    "secId": "Name and country",
+    "secSoc": "Social links",
+    "secShow": "Showcase",
+    "secPriv": "Privacy",
+    "secAl": "Alerts",
+    "secLang": "Language",
+    "avHelp": "This is who sits on the throne. Your rank frame goes around it.",
+    "avAlt": "Your avatar in the Duke frame",
+    "modeGen": "Pixel avatar",
+    "modeUp": "Photo or logo",
+    "shuffle": "Shuffle",
+    "reset": "Reset",
+    "parts": {
+      "skin": "Skin",
+      "hair": "Hair",
+      "hc": "Hair color",
+      "fh": "Facial hair",
+      "ex": "Expression",
+      "cr": "Crown",
+      "cape": "Cape",
+      "cc": "Cape color",
+      "acc": "Accessory",
+      "bg": "Background"
+    },
+    "prev": "Previous",
+    "next": "Next",
+    "upChoose": "Choose an image",
+    "upDrop": "or drop it here",
+    "upRules": "PNG, JPG or WebP · up to 5 MB · square works best",
+    "upShowAs": "Show it",
+    "upPix": "Pixelated",
+    "upAsIs": "As uploaded",
+    "replace": "Replace",
+    "remove": "Remove",
+    "upNotePix": "{name} · shrunk to 32×32 to match the throne.",
+    "upNoteAsIs": "{name} · shown as is inside the frame.",
+    "upErrType": "That file isn’t a PNG, JPG or WebP. Choose another image.",
+    "upErrSize": "That image is over 5 MB. Choose a smaller one.",
+    "upErrNone": "Choose an image, or switch back to the pixel avatar.",
+    "nameHelp": "Shown on the throne and in the chronicle. Letters, numbers, . _ and -.",
+    "nameShort": "Use at least 3 characters.",
+    "nameChars": "Use only letters, numbers, . _ and -.",
+    "nameTaken": "{name} is taken. Try another name.",
+    "countryHelp": "Your flag appears next to your name.",
+    "linkL": "Product link",
+    "linkPh": "yourproduct.com",
+    "linkHelp": "Shown under your name. Reviewed before it goes live.",
+    "linkBad": "Enter a web address like yourproduct.com.",
+    "optional": "Optional",
+    "socHelp": "Optional. Only the ones you fill in appear on your profile. You can paste a full link.",
+    "socPh": "username",
+    "showHelp": "Pick up to 3 achievements you’ve earned. They appear in the order you pick them.",
+    "showFull": "Showcase full. Remove one to add another.",
+    "showCount": "{count} of 3",
+    "inShow": "{name}, in showcase, position {position}",
+    "notShow": "{name}, not in showcase",
+    "country": "Show my country",
+    "countryD": "Your flag on the throne, your profile and the chronicle.",
+    "rival": "Show my main rival",
+    "rivalD": "The score with the person you trade the crown with most.",
+    "chron": "Show my chronicle of reigns",
+    "chronD": "Who you took the crown from and who took it from you.",
+    "alHelp": "Sent by email to p••••@gmail.com.",
+    "dethr": "Someone takes my crown",
+    "dethrD": "Right away, with who took it and the new price.",
+    "price": "The price drops",
+    "priceD": "When the crown gets down to your price.",
+    "priceL": "Alert me at (USD)",
+    "priceErr": "Enter a whole number from 5 to 999.",
+    "priceNote": "Now {price}. It drops 2% an hour, so ~{estimate}.",
+    "seasonD": "With the new crown and collectibles.",
+    "digest": "Weekly chronicle",
+    "digestD": "Every Monday: reigns, falls and your rival.",
+    "on": "On",
+    "off": "Off",
+    "langHelp": "For the site, emails and alerts.",
+    "save": "Save changes",
+    "saveShort": "Save",
+    "saving": "Saving…",
+    "discard": "Discard",
+    "stClean": "No changes",
+    "stDirty": "{n, plural, one {1 unsaved change} other {# unsaved changes}}",
+    "stSaved": "All changes saved",
+    "stFailed": "Not saved",
+    "stInvalid": "{n, plural, one {1 field to fix} other {# fields to fix}}",
+    "bInv": "{n, plural, one {1 field needs fixing} other {# fields need fixing}}",
+    "bInvSub": "Nothing was saved yet.",
+    "bRejTitle": "Product link rejected",
+    "bRejWhy": "It points to a gambling site, which isn’t allowed on Crown.",
+    "bRejFix": "Remove it or use a link to your own product. Nothing was saved.",
+    "editLink": "Edit the link",
+    "bFailTitle": "Couldn’t save your changes",
+    "bFailWhy": "The connection dropped. Your edits are still here.",
+    "retry": "Try again",
+    "bSavedTitle": "Profile saved",
+    "bSavedWhy": "Your changes are live.",
+    "viewProfile": "View profile",
+    "preview": "Public preview",
+    "previewNote": "How others see the top of your profile.",
+    "soon": "{h, plural, =0 {in under an hour} other {in # h}}",
+    "never": "never, it doesn’t drop that low"
+  },
+  "realm": {
+    "nav": [
+      "Throne",
+      "History",
+      "Hall of fame"
+    ],
+    "histTitle": "History of the realm",
+    "earlier": "Show earlier reigns",
+    "began": "Season 0 began on Sep 15, 2026.",
+    "legend": "Size = length of reign",
+    "lg": [
+      "10h or more",
+      "3h or more",
+      "Under 3h"
+    ],
+    "reigns": "reigns",
+    "kings": "kings",
+    "countries": "countries",
+    "reignsL": "Reigns",
+    "kingsL": "Kings",
+    "countriesL": "Countries",
+    "longestL": "Longest so far",
+    "now": "Reigning now",
+    "by": "Dethroned by {name}",
+    "today": "Today · Sep 27",
+    "d26": "Sep 26",
+    "d25": "Sep 25",
+    "hofTitle": "Hall of fame",
+    "scopes": [
+      "Season 0",
+      "All time"
+    ],
+    "tabs": [
+      "Longest reign",
+      "Most crowns",
+      "Shortest reign",
+      "Countries"
+    ],
+    "tabSubs": [
+      "Longest single reign this season",
+      "Crowns taken this season",
+      "Shortest single reign this season",
+      "Total time reigning by country"
+    ],
+    "allNote": "Season 0 is the first season, so all-time records match it until Season 1 starts on Nov 1.",
+    "kingsN": "{count} kings",
+    "crownsU": "",
+    "endedShort": "Season 0 has ended",
+    "endedLong": "Season 0: Genesis has ended",
+    "ended": "Season 0: Genesis has ended",
+    "dates": "Sep 15 – Oct 31, 2026",
+    "kos": "King of the Season",
+    "kosSub": "on the throne this season",
+    "kosLine": "Reached Emperor on Oct 12 and held off kenji in the last week. Her portrait stays in the hall forever.",
+    "kosStats": [
+      "Crowns taken",
+      "Longest reign",
+      "Rank"
+    ],
+    "emperor": "Emperor",
+    "podiumT": "Season podium",
+    "podiumSub": "Most time reigning in Season 0",
+    "seasonStats": "Season 0 in numbers",
+    "st": [
+      "Reigns",
+      "Kings",
+      "Countries",
+      "Longest reign",
+      "Shortest reign",
+      "Peak price"
+    ],
+    "next": "Next season",
+    "startsIn": "Starts in",
+    "keep": "All 214 kings of Season 0 keep the Founder medal and the Genesis frame forever.",
+    "remind": "Remind me when it starts",
+    "shareSeason": "Share the season"
+  },
+  "login": {
+    "head": "Sign in to keep your reigns, achievements, and alerts.",
+    "headKing": "Sign in to keep your reigns, achievements, and alerts.",
+    "kicker": "Just crowned · you're reigning",
+    "x": "Continue with X",
+    "or": "or",
+    "emailL": "Email",
+    "emailPh": "you@example.com",
+    "magic": "Email me a magic link",
+    "emailBad": "Check your email address.",
+    "legal": "No password. New here? We create your account automatically.",
+    "sentHead": "Check your email",
+    "sentTo": "We sent a sign-in link to",
+    "sentHelp": "Open it on this device to sign in. The link works for 15 minutes. Check spam if you can’t find it.",
+    "wrong": "Use a different email",
+    "resendIn": "Resend in 0:{ss}",
+    "resendNow": "Resend link"
+  },
+  "share": {
+    "knight": "Knight",
+    "peasant": "Peasant",
+    "vicHead": "I'm the king of the internet.",
+    "vicLabel": "Reigning for",
+    "chaHead": "holds the crown.",
+    "chaLabel": "Dethrone her for",
+    "achLabel": "Achievement unlocked",
+    "regicide": "Regicide",
+    "rare": "Rare",
+    "pct": "6.2% of players have it",
+    "dthHead": "I was king for",
+    "dthNum": "11",
+    "dthUnit": "seconds.",
+    "dthBy": "Dethroned by",
+    "cVic": "Victoria",
+    "cCha": "Desafío",
+    "cAch": "Logro",
+    "cDth": "Destronado",
+    "you": "You",
+    "newKing": "kenji · new king",
+    "mTitle": "You were dethroned",
+    "m1": "You were dethroned after",
+    "m2": " by ",
+    "m3": "Take it back for",
+    "btn": "Take back the crown",
+    "mNote": "The price drops 2% every hour. Floor price $5.",
+    "mFoot": "You're getting this because you reigned on Crown.",
+    "unsub": "Turn off dethrone alerts"
+  },
+  "medals": {
+    "oneMin": {
+      "name": "One-Minute King",
+      "condition": "Get dethroned in under 60 s"
+    },
+    "owl": {
+      "name": "Night Owl",
+      "condition": "Take the crown between 3 and 5 a.m."
+    },
+    "bag": {
+      "name": "Bargain Hunter",
+      "condition": "Take the crown at the floor price"
+    },
+    "regicide": {
+      "name": "Regicide",
+      "condition": "Dethrone a king who reigned 24 h+"
+    },
+    "revenge": {
+      "name": "Revenge",
+      "condition": "Take the crown back from whoever took it"
+    },
+    "g1": {
+      "name": "Guardian I",
+      "condition": "Reign 12 h straight"
+    },
+    "patriot": {
+      "name": "Patriot",
+      "condition": "Be the first king from your country"
+    },
+    "firstBlood": {
+      "name": "First Blood",
+      "condition": "Be the first king of a season"
+    },
+    "g2": {
+      "name": "Guardian II",
+      "condition": "Reign 24 h straight"
+    },
+    "collector": {
+      "name": "Collector",
+      "condition": "Take 10 crowns"
+    },
+    "rivalry": {
+      "name": "Rivalry",
+      "condition": "Trade the crown 5 times with one person"
+    },
+    "g3": {
+      "name": "Guardian III",
+      "condition": "Reign 72 h straight"
+    },
+    "founder": {
+      "name": "Founder",
+      "condition": "Reign during Season 0"
+    },
+    "remembered": {
+      "name": "Remembered",
+      "condition": "Reign during Season 1"
+    }
+  },
+  "rarity": {
+    "common": "Common",
+    "rare": "Rare",
+    "epic": "Epic",
+    "legendary": "Legendary",
+    "seasonal": "Seasonal"
+  },
+  "rank": {
+    "peasant": "Peasant",
+    "knight": "Knight",
+    "baron": "Baron",
+    "count": "Count",
+    "duke": "Duke",
+    "emperor": "Emperor"
+  },
+  "country": {
+    "US": "United States",
+    "MX": "Mexico",
+    "ES": "Spain",
+    "AR": "Argentina",
+    "CO": "Colombia",
+    "EC": "Ecuador",
+    "CL": "Chile",
+    "PE": "Peru",
+    "BR": "Brazil",
+    "CA": "Canada",
+    "GB": "United Kingdom",
+    "DE": "Germany",
+    "FR": "France",
+    "IT": "Italy",
+    "IN": "India",
+    "JP": "Japan",
+    "KR": "South Korea",
+    "CN": "China",
+    "AU": "Australia",
+    "NL": "Netherlands",
+    "PT": "Portugal",
+    "DK": "Denmark",
+    "ZA": "South Africa",
+    "NG": "Nigeria",
+    "SE": "Sweden"
+  },
+  "social": {
+    "x": {
+      "name": "X",
+      "invalid": "X usernames use letters, numbers and _ only, up to 15."
+    },
+    "ig": {
+      "name": "Instagram",
+      "invalid": "Instagram usernames use letters, numbers, . and _, up to 30."
+    },
+    "gh": {
+      "name": "GitHub",
+      "invalid": "GitHub usernames use letters, numbers and single hyphens, up to 39."
+    },
+    "li": {
+      "name": "LinkedIn",
+      "invalid": "LinkedIn profile URLs use letters, numbers and hyphens, 3 to 100."
+    },
+    "yt": {
+      "name": "YouTube",
+      "invalid": "YouTube handles use letters, numbers, . _ and -, 3 to 30."
+    }
+  }
+}
