@@ -208,8 +208,19 @@ export class Player {
     this.name = uniqueName(label);
   }
 
-  takeover(input: LockInput = {}): Promise<Reign> {
-    return takeover({ email: this.email, name: this.name, country: this.country, ...input });
+  /** Buys as a guest the first time and as the signed-in owner of the profile afterwards. */
+  async takeover(input: LockInput = {}): Promise<Reign> {
+    const [existing] = await q<{ profile_id: string }>(
+      "select profile_id from profile_private where lower(email) = lower($1)",
+      [this.email],
+    );
+    return takeover({
+      email: this.email,
+      name: this.name,
+      country: this.country,
+      profileId: existing?.profile_id ?? null,
+      ...input,
+    });
   }
 
   id(): Promise<string> {

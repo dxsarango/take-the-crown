@@ -72,11 +72,11 @@ describe("public names", () => {
       expect((await profile(reign.profile_id)).name).toBe("Fresh.King");
     });
 
-    it("uses the known buyer's current name and ignores the one sent", async () => {
+    it("uses a signed-in buyer's current name and ignores the one sent", async () => {
       const player = new Player("known");
       await player.takeover();
       await new Player("other").takeover();
-      const lock = await createLock({ email: player.email, name: "Something.Else" });
+      const lock = await createLock({ email: player.email, profileId: await player.id(), name: "Something.Else" });
       expect(lock).toMatchObject({ name: player.name });
     });
 
