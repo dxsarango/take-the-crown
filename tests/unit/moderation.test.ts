@@ -73,7 +73,7 @@ describe("message rules", () => {
 describe("moderate", () => {
   it("applies the rules before the model", async () => {
     const classify = vi.fn(allow);
-    expect(await moderate({ name: "ana", message: null, link: "https://bit.ly/x" }, classify)).toEqual({
+    expect(await moderate({ name: "ana", message: null, link: "https://bit.ly/x" }, { classify })).toEqual({
       verdict: "reject",
       field: "link",
       reason: "shortener",
@@ -83,19 +83,43 @@ describe("moderate", () => {
   });
 
   it("returns the model's rejection", async () => {
-    const verdict = await moderate({ name: "ana", message: "hello", link: null }, async () => ({
-      verdict: "reject",
-      field: "message",
-      reason: "scam",
-    }));
+    const verdict = await moderate(
+      { name: "ana", message: "hello", link: null },
+      { classify: async () => ({ verdict: "reject", field: "message", reason: "scam" }) },
+    );
     expect(verdict).toEqual({ verdict: "reject", field: "message", reason: "scam" });
   });
 
-  it("fails closed when the model gives no verdict", async () => {
-    const verdict = await moderate({ name: "ana", message: "hello", link: null }, async () => {
+  it("tries the model twice before reporting no verdict", async () => {
+    const classify = vi.fn(async () => {
       throw new ModerationUnavailable("timeout");
     });
-    expect(verdict).toEqual({ verdict: "unavailable" });
+    expect(await moderate({ name: "ana", message: "hello", link: null }, { classify })).toEqual({ verdict: "unavailable" });
+    expect(classify).toHaveBeenCalledTimes(2);
+
+    let calls = 0;
+    const flaky = async () => {
+      calls += 1;
+      if (calls === 1) throw new ModerationUnavailable("invalid answer");
+      return { verdict: "allow" as const, field: null, reason: null };
+    };
+    expect(await moderate({ name: "ana", message: "hello", link: null }, { classify: flaky })).toEqual({ verdict: "allow" });
+  });
+
+  it("passes the retry flag to the model", async () => {
+    const classify = vi.fn(allow);
+    await moderate({ name: "ana", message: "hello", link: null }, { classify, retry: true });
+    expect(classify).toHaveBeenCalledWith({ name: "ana", message: "hello", link: null }, { retry: true });
+  });
+
+  it("stops blocked names before the model, even during an outage", async () => {
+    const classify = vi.fn(async () => {
+      throw new ModerationUnavailable("down");
+    });
+    for (const name of ["Admin_Crown", "s0p0rt3_official", "real.n4zi", "puta_madre", "TakeTheCrown"]) {
+      expect(await moderate({ name, message: null, link: null }, { classify }), name).toEqual({ verdict: "reject", field: "name", reason: "blocked_name" });
+    }
+    expect(classify).not.toHaveBeenCalled();
   });
 });
 
@@ -209,5 +233,30 @@ describe("the test classifier", () => {
       reason: "hate",
     });
     expect(await testClassifier({ name: "ana", message: "hello", link: null })).toEqual({ verdict: "allow", field: null, reason: null });
+  });
+});
+
+describe("the name blocklist", () => {
+  it("does not catch ordinary names that contain a short blocked word", async () => {
+    const { nameIsBlocked } = await import("@/lib/moderation/name-blocklist");
+    for (const name of ["nazir", "computadora", "shitake.fan", "scunthorpe", "priya_ships", "Assistant.dev"]) {
+      expect(nameIsBlocked(name), name).toBe(false);
+    }
+    expect(nameIsBlocked("fuck")).toBe(true);
+    expect(nameIsBlocked("sup.p0rt")).toBe(true);
+  });
+});
+
+describe("the test classifier's outages", () => {
+  it("has no verdict at first and gives the delayed one on a retry", async () => {
+    await expect(testClassifier({ name: "ana", message: "hi [moderation:outage]", link: null })).rejects.toBeInstanceOf(ModerationUnavailable);
+    const later = { name: "ana", message: "hi [moderation:outage-then-scam]", link: null };
+    await expect(testClassifier(later)).rejects.toBeInstanceOf(ModerationUnavailable);
+    expect(await testClassifier(later, { retry: true })).toEqual({ verdict: "reject", field: "message", reason: "scam" });
+    expect(await testClassifier({ name: "ana", message: "hi [moderation:outage-then-allow]", link: null }, { retry: true })).toEqual({
+      verdict: "allow",
+      field: null,
+      reason: null,
+    });
   });
 });

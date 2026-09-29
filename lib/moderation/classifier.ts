@@ -3,9 +3,10 @@ import Anthropic from "@anthropic-ai/sdk";
 import { zodOutputFormat } from "@anthropic-ai/sdk/helpers/zod";
 import { MODERATION_MODEL, MODERATION_SYSTEM, type ModelVerdict, type ModerationSubmission, submissionText, verdictSchema } from "./model";
 
-export type Classifier = (input: ModerationSubmission) => Promise<ModelVerdict>;
+/** `retry` is set when a quarantined submission is checked again (cron). */
+export type Classifier = (input: ModerationSubmission, context?: { retry: boolean }) => Promise<ModelVerdict>;
 
-/** The model is unreachable or answered something unusable: moderation fails closed. */
+/** The model is unreachable or answered something unusable: there is no verdict. */
 export class ModerationUnavailable extends Error {}
 
 /** claude-haiku-4-5 with a structured JSON verdict, validated again with zod. */
@@ -36,10 +37,22 @@ export function anthropicClassifier(client: Pick<Anthropic, "messages">): Classi
 /**
  * Local and e2e stand-in, never used in production: rejects a field containing
  * "[moderation:<reason>]" and allows everything else, so tests can reach every rejection state.
+ * "[moderation:outage]" never gets a verdict; "[moderation:outage-then-<reason or allow>]" gets
+ * none at first and that verdict on a retry.
  */
-export const testClassifier: Classifier = async (input) => {
+export const testClassifier: Classifier = async (input, context) => {
   for (const field of ["name", "message", "link"] as const) {
-    const match = /\[moderation:([a-z_]+)\]/.exec(input[field] ?? "");
+    const text = input[field] ?? "";
+    if (text.includes("[moderation:outage]")) throw new ModerationUnavailable("test outage");
+    const delayed = /\[moderation:outage-then-([a-z_]+)\]/.exec(text);
+    if (delayed) {
+      if (!context?.retry) throw new ModerationUnavailable("test outage");
+      if (delayed[1] === "allow") continue;
+      const parsed = verdictSchema.safeParse({ verdict: "reject", field, reason: delayed[1] });
+      if (parsed.success) return parsed.data;
+      continue;
+    }
+    const match = /\[moderation:([a-z_]+)\]/.exec(text);
     if (match) {
       const parsed = verdictSchema.safeParse({ verdict: "reject", field, reason: match[1] });
       if (parsed.success) return parsed.data;

@@ -518,6 +518,12 @@ export function PaymentModal({ season, priceCents, lockSeconds, messageMax, now,
     </div>
   );
 
+  const pendingReview = (phase.kind === "checkout" || phase.kind === "success") && phase.moderationPending && (
+    <div role="status" className="bg-crown-velvet p-3.5 text-14 leading-[1.45] font-bold shadow-[inset_4px_0_0_var(--crown-text)] lg:p-4">
+      {t("pendingReview")}
+    </div>
+  );
+
   const verify = phase.kind === "verify" && (
     <div role="status" className="flex gap-3 bg-crown-velvet p-3.5 shadow-flag-success lg:p-4">
       <span className="flex size-6 flex-none items-center justify-center bg-crown-success text-crown-ink lg:size-7">
@@ -590,6 +596,7 @@ export function PaymentModal({ season, priceCents, lockSeconds, messageMax, now,
           <div className="flex min-h-0 flex-1 flex-col gap-5 overflow-x-hidden overflow-y-auto px-4 pt-4 pb-6">
             {notice && <Notice {...notice} size="mobile" />}
             {verify}
+            {pendingReview}
             {testCheckout}
             {previewCard("mobile")}
             {showForm && (
@@ -643,6 +650,7 @@ export function PaymentModal({ season, priceCents, lockSeconds, messageMax, now,
             {showForm ? (
               <div className="flex flex-col gap-5">
                 {verify}
+                {pendingReview}
                 {testCheckout}
                 <fieldset disabled={formDisabled} className="flex flex-col gap-5">
                   <div className="grid grid-cols-[minmax(0,1fr)_200px] gap-4">
@@ -657,6 +665,7 @@ export function PaymentModal({ season, priceCents, lockSeconds, messageMax, now,
               </div>
             ) : (
               <div className="flex flex-col gap-3.5">
+                {pendingReview}
                 {signIn}
                 {signIn && <p className="text-12 leading-body text-crown-muted">{t("skipNote")}</p>}
               </div>

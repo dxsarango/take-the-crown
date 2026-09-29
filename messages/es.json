@@ -83,8 +83,7 @@
     },
     "copyright": "© {year} {brand}",
     "reportMessage": "Reportar mensaje",
-    "reported": "Reportado. Gracias por avisarnos.",
-    "reportFailed": "El reporte no se envió. Inténtalo de nuevo."
+    "reported": "Reportado. Gracias por avisarnos."
   },
   "homeStates": {
     "signin": "Iniciar sesión",
@@ -207,11 +206,6 @@
         "title": "Algo salió mal.",
         "why": "La corona no se reservó.",
         "fix": "Vuelve a intentarlo. No se te ha cobrado."
-      },
-      "moderation_unavailable": {
-        "title": "No pudimos revisar tus datos.",
-        "why": "Nuestra revisión de contenido no respondió a tiempo.",
-        "fix": "Inténtalo de nuevo en un minuto. No se ha cobrado nada."
       }
     },
     "nameSignedIn": "Tu nombre público. Cámbialo en tu perfil.",
@@ -238,8 +232,10 @@
       "impersonation": "Se hace pasar por otra persona.",
       "personal_data": "Comparte datos personales como un teléfono o una dirección.",
       "spam": "Parece spam.",
-      "manipulation": "Intenta dar instrucciones a nuestra revisión de contenido."
-    }
+      "manipulation": "Intenta dar instrucciones a nuestra revisión de contenido.",
+      "blocked_name": "Ese nombre usa una palabra que no permitimos en nombres públicos."
+    },
+    "pendingReview": "Tu mensaje aparecerá tras una breve revisión."
   },
   "coronation": {
     "reigning": "Reina desde hace"
@@ -505,7 +501,9 @@
     "bRejNameFix": "Elige otro nombre. No se guardó nada.",
     "editName": "Editar el nombre",
     "bModTitle": "No pudimos revisar tus cambios",
-    "bModWhy": "Nuestra revisión de contenido no respondió. No se guardó nada. Inténtalo de nuevo en un minuto."
+    "bModWhy": "Nuestra revisión de contenido no respondió. No se guardó nada. Inténtalo de nuevo en un minuto.",
+    "bLimitTitle": "Demasiados guardados por ahora",
+    "bLimitWhy": "Has guardado muchas veces en la última hora. No se guardó nada. Inténtalo más tarde."
   },
   "realm": {
     "nav": [
@@ -875,5 +873,21 @@
     },
     "done": "Hecho.",
     "failed": "No funcionó. No cambió nada."
+  },
+  "report": {
+    "title": "Denunciar este mensaje",
+    "question": "¿Qué problema tiene?",
+    "reasons": {
+      "offensive": "Ofensivo",
+      "scam": "Estafa",
+      "spam": "Spam"
+    },
+    "hints": {
+      "offensive": "Odio, contenido sexual, violencia o insultos.",
+      "scam": "Promete dinero o intenta engañar.",
+      "spam": "Publicidad no deseada o basura repetida."
+    },
+    "send": "Enviar denuncia",
+    "failed": "La denuncia no se envió. Vuelve a intentarlo."
   }
 }

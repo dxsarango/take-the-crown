@@ -1,6 +1,9 @@
 import { revalidatePath } from "next/cache";
 import { currentViewer } from "@/lib/auth/viewer";
 import { moderate } from "@/lib/moderation";
+import { clientIp } from "@/lib/security/request";
+import { verifyHuman } from "@/lib/security/human";
+import { withinHourlyLimit } from "@/lib/security/rate-limit";
 import { type FieldKey, type SaveOutcome, fieldForDbError, mainLinkUrl, settingsSchema, toUpdateArgs } from "@/lib/profile/settings";
 import type { Database } from "@/lib/supabase/database.types";
 import { serviceClient } from "@/lib/supabase/service";
@@ -16,6 +19,15 @@ export async function PATCH(request: Request) {
   if (!parsed.success) return Response.json({ ok: false, error: "failed" } satisfies SaveOutcome, { status: 400 });
   const form = parsed.data;
 
+  // Human check and rate limit first, so moderation (a paid model call) can never run in bulk.
+  const ip = clientIp(request.headers);
+  if (!(await verifyHuman(form.turnstileToken, ip))) {
+    return Response.json({ ok: false, error: "failed" } satisfies SaveOutcome, { status: 403 });
+  }
+  if (!(await withinHourlyLimit(`profile_save:${viewer.profileId}`, "max_profile_saves_per_hour"))) {
+    return Response.json({ ok: false, error: "rate_limited" } satisfies SaveOutcome, { status: 429 });
+  }
+
   const db = serviceClient();
   const { data: config } = await db.from("app_config").select("floor_cents").single();
   const floorDollars = Math.ceil((config?.floor_cents ?? 500) / 100);
@@ -25,9 +37,12 @@ export async function PATCH(request: Request) {
     return Response.json({ ok: false, error: "invalid", fields } satisfies SaveOutcome, { status: 422 });
   }
 
-  // The public name and product link go through the same moderation as the throne (SPEC §7).
+  // The public name and product link go through the same moderation as the throne (SPEC §7), only
+  // when one of them changed.
   const link = mainLinkUrl(form.link);
-  const verdict = await moderate({ name: form.name, message: null, link });
+  const { data: current } = await db.from("profiles").select("name, main_link").eq("id", viewer.profileId).single();
+  const changed = !current || current.name !== form.name.trim() || current.main_link !== link;
+  const verdict = changed ? await moderate({ name: form.name.trim(), message: null, link }) : ({ verdict: "allow" } as const);
   if (verdict.verdict === "reject") {
     const field = verdict.field === "name" ? "name" : "link";
     return Response.json({ ok: false, error: "rejected", field, reason: verdict.reason } satisfies SaveOutcome, { status: 422 });
