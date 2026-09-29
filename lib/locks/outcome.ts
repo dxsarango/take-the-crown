@@ -23,8 +23,6 @@ export type LockFailure =
   | { ok: false; error: LockDbError }
   | { ok: false; error: "invalid_input"; fields: LockField[] }
   | { ok: false; error: "moderation_rejected"; field: "link" | "message" | "name"; reason: ModerationReason }
-  /** The model could not give a verdict: no lock, try again. */
-  | { ok: false; error: "moderation_unavailable" }
   | { ok: false; error: "human_check_failed" }
   | { ok: false; error: "checkout_failed" }
   | { ok: false; error: "unknown" };
@@ -36,6 +34,8 @@ export type LockOutcome =
       priceCents: number;
       expiresAt: string;
       checkout: { mode: "overlay" | "redirect"; url: string };
+      /** The moderator had no verdict: the message and link appear after a review. */
+      moderationPending: boolean;
     }
   /** The email belongs to a profile: a sign-in link was sent. Same answer for claimed and unclaimed profiles. */
   | { ok: true; verifyEmail: true }

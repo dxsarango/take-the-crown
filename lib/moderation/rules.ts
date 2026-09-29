@@ -1,10 +1,12 @@
+import { nameIsBlocked } from "./name-blocklist";
+
 /**
  * Deterministic moderation rules (SPEC §7), checked before the model: links must be plain https
  * addresses on a real domain, and never shorteners, chat invites or blocklisted domains. Messages
  * cannot carry links. Social links are held to their platform's domain by lib/profile/socials.ts.
  */
 
-export const RULE_REASONS = ["not_https", "invalid_link", "shortener", "chat_invite", "blocked_domain", "link_in_message"] as const;
+export const RULE_REASONS = ["not_https", "invalid_link", "shortener", "chat_invite", "blocked_domain", "link_in_message", "blocked_name"] as const;
 export type RuleReason = (typeof RULE_REASONS)[number];
 
 /** Hide where a link goes. */
@@ -97,4 +99,9 @@ const URL_IN_TEXT =
 /** Messages cannot carry links: they go in the link field, where the rules above apply. */
 export function messageProblem(message: string): RuleReason | null {
   return URL_IN_TEXT.test(message) ? "link_in_message" : null;
+}
+
+/** Names are published right away, even during a model outage: blocked words stop them here. */
+export function nameProblem(name: string): RuleReason | null {
+  return nameIsBlocked(name) ? "blocked_name" : null;
 }

@@ -83,8 +83,7 @@
     },
     "copyright": "© {year} {brand}",
     "reportMessage": "Report message",
-    "reported": "Reported. Thanks for telling us.",
-    "reportFailed": "The report didn't go through. Try again."
+    "reported": "Reported. Thanks for telling us."
   },
   "homeStates": {
     "signin": "Sign in",
@@ -207,11 +206,6 @@
         "title": "Something went wrong.",
         "why": "The crown wasn't reserved.",
         "fix": "Try again. You haven't been charged."
-      },
-      "moderation_unavailable": {
-        "title": "We couldn't review your details.",
-        "why": "Our content check didn't answer in time.",
-        "fix": "Try again in a minute. You haven't been charged."
       }
     },
     "nameSignedIn": "Your public name. Change it in your profile.",
@@ -238,8 +232,10 @@
       "impersonation": "It pretends to be someone else.",
       "personal_data": "It shares personal details like a phone number or an address.",
       "spam": "It reads as spam.",
-      "manipulation": "It tries to give instructions to our content check."
-    }
+      "manipulation": "It tries to give instructions to our content check.",
+      "blocked_name": "That name uses a word we don't allow in public names."
+    },
+    "pendingReview": "Your message will appear after a short review."
   },
   "coronation": {
     "reigning": "Reigning for"
@@ -505,7 +501,9 @@
     "bRejNameFix": "Choose another name. Nothing was saved.",
     "editName": "Edit the name",
     "bModTitle": "We couldn't review your changes",
-    "bModWhy": "Our content check didn't answer. Nothing was saved. Try again in a minute."
+    "bModWhy": "Our content check didn't answer. Nothing was saved. Try again in a minute.",
+    "bLimitTitle": "Too many saves for now",
+    "bLimitWhy": "You've saved a lot in the last hour. Nothing was saved. Try again later."
   },
   "realm": {
     "nav": [
@@ -875,5 +873,21 @@
     },
     "done": "Done.",
     "failed": "That didn't work. Nothing changed."
+  },
+  "report": {
+    "title": "Report this message",
+    "question": "What's wrong with it?",
+    "reasons": {
+      "offensive": "Offensive",
+      "scam": "Scam",
+      "spam": "Spam"
+    },
+    "hints": {
+      "offensive": "Hateful, sexual, violent or insulting.",
+      "scam": "Promises money or tries to trick people.",
+      "spam": "Unwanted ads or repeated junk."
+    },
+    "send": "Send report",
+    "failed": "The report didn't go through. Try again."
   }
 }

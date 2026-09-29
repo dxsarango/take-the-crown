@@ -15,9 +15,9 @@ export type Draft = {
 export type PaymentPhase =
   | { kind: "form"; failure?: LockFailure }
   | { kind: "submitting" }
-  | { kind: "checkout"; lockId: string; priceCents: number; expiresAt: string; paying: boolean }
+  | { kind: "checkout"; lockId: string; priceCents: number; expiresAt: string; paying: boolean; moderationPending: boolean }
   | { kind: "verify"; email: string }
-  | { kind: "success"; crownedAt: number };
+  | { kind: "success"; crownedAt: number; moderationPending: boolean };
 
 /** How the modal ended, so the home can show the matching state. */
 export type PaymentResult = "crowned" | "payment_failed" | "lock_expired" | "closed";
@@ -96,7 +96,14 @@ export function usePayment({ locale, now, onDone }: Options) {
         window.location.assign(outcome.checkout.url);
         return;
       }
-      setPhase({ kind: "checkout", lockId: outcome.lockId, priceCents: outcome.priceCents, expiresAt: outcome.expiresAt, paying: false });
+      setPhase({
+        kind: "checkout",
+        lockId: outcome.lockId,
+        priceCents: outcome.priceCents,
+        expiresAt: outcome.expiresAt,
+        paying: false,
+        moderationPending: outcome.moderationPending,
+      });
     },
     [locale],
   );
@@ -132,7 +139,9 @@ export function usePayment({ locale, now, onDone }: Options) {
       const response = await fetch(`/api/locks/${lockId}`, { cache: "no-store" }).catch(() => null);
       const body = response?.ok ? ((await response.json()) as { status: string }) : null;
       if (stopped || !body) return;
-      if (body.status === "applied") setPhase({ kind: "success", crownedAt: Date.now() });
+      if (body.status === "applied") {
+        setPhase((p) => ({ kind: "success", crownedAt: Date.now(), moderationPending: p.kind === "checkout" && p.moderationPending }));
+      }
       else if (body.status === "refunded" || body.status === "expired") finish("lock_expired");
     };
     const timer = setInterval(poll, POLL_MS);

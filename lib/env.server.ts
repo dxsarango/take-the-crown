@@ -11,6 +11,7 @@ const schema = z.object({
   // "test" is a deterministic stand-in for local development and e2e; production uses "anthropic".
   MODERATION_PROVIDER: z.enum(["anthropic", "test"]).default("anthropic"),
   ANTHROPIC_API_KEY: z.string().optional(),
+  CRON_SECRET: z.string().min(16).optional(),
 });
 
 export type ServerEnv = z.infer<typeof schema>;

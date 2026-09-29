@@ -30,7 +30,7 @@ import {
 } from "@/lib/profile/settings";
 import { PLATFORMS, SOCIAL_KEYS, type SocialKey, isValidSocial, socialLabel, socialUrl } from "@/lib/profile/socials";
 
-type Phase = "idle" | "saving" | "saved" | "failed" | "rejected" | "unavailable";
+type Phase = "idle" | "saving" | "saved" | "failed" | "rejected" | "unavailable" | "limited";
 type Upload = { pixelUrl: string; originalUrl: string; name: string };
 type ServerErrors = Partial<Record<FieldKey, "taken" | "cooldown" | "bad">>;
 
@@ -345,6 +345,7 @@ export function EditProfile({ settings, season, readAt, countries }: Props) {
       return setPhase("rejected");
     }
     if (outcome.error === "moderation_unavailable") return setPhase("unavailable");
+    if (outcome.error === "rate_limited") return setPhase("limited");
     if (outcome.error === "invalid") {
       const next: ServerErrors = {};
       for (const f of outcome.fields) next[f] = f === "name" ? (outcome.nameProblem ?? "bad") : "bad";
@@ -436,7 +437,7 @@ export function EditProfile({ settings, season, readAt, countries }: Props) {
   else if (invalid) {
     statusText = t("stInvalid", { n: invalidFields.length });
     statusTone = "bad";
-  } else if (phase === "failed" || phase === "rejected" || phase === "unavailable") {
+  } else if (phase === "failed" || phase === "rejected" || phase === "unavailable" || phase === "limited") {
     statusText = t("stFailed");
     statusTone = "bad";
   } else if (phase === "saved" && !dirty) {
@@ -553,6 +554,15 @@ export function EditProfile({ settings, season, readAt, countries }: Props) {
           <>
             <div className="font-bold">{t("bModTitle")}</div>
             <div className="text-crown-muted">{t("bModWhy")}</div>
+          </>,
+        )}
+      {phase === "limited" &&
+        banner(
+          "danger",
+          "bang",
+          <>
+            <div className="font-bold">{t("bLimitTitle")}</div>
+            <div className="text-crown-muted">{t("bLimitWhy")}</div>
           </>,
         )}
       {phase === "failed" &&

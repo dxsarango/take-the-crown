@@ -106,6 +106,7 @@ export const settingsSchema = z.object({
   priceOn: z.boolean(),
   price: z.string().max(3),
   alertsSeasonStart: z.boolean(),
+  turnstileToken: z.string().max(2048).nullish(),
   locale: z.enum(LOCALES),
 });
 
@@ -152,6 +153,7 @@ export type SaveOutcome =
   | { ok: false; error: "invalid"; fields: FieldKey[]; nameProblem?: "taken" | "cooldown" }
   | { ok: false; error: "rejected"; field: "name" | "link"; reason: ModerationReason }
   | { ok: false; error: "moderation_unavailable" }
+  | { ok: false; error: "rate_limited" }
   | { ok: false; error: "failed" };
 
 /** Maps an update_profile error to the field it concerns. */

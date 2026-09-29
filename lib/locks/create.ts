@@ -5,6 +5,7 @@ import { serverEnv } from "@/lib/env.server";
 import { moderate } from "@/lib/moderation";
 import { paymentProvider } from "@/lib/payments";
 import { verifyHuman } from "@/lib/security/human";
+import { withinHourlyLimit } from "@/lib/security/rate-limit";
 import { hashIp } from "@/lib/security/request";
 import type { Database } from "@/lib/supabase/database.types";
 import { serviceClient } from "@/lib/supabase/service";
@@ -25,8 +26,9 @@ async function resolveBuyer(guestEmail: string | undefined): Promise<Buyer | nul
 }
 
 /**
- * POST /api/locks: validate → human check → moderation → create_price_lock → checkout.
- * Moderation runs before any lock exists, so a rejection never holds the crown.
+ * POST /api/locks: validate → human check → rate limit → moderation → create_price_lock → checkout.
+ * Moderation runs before any lock exists, so a rejection never holds the crown, and only after the
+ * human check and the per-IP limit, so the model cannot be called in bulk.
  */
 export async function createLock(body: unknown, ip: string): Promise<LockOutcome> {
   const parsed = lockRequestSchema.safeParse(body);
@@ -39,13 +41,17 @@ export async function createLock(body: unknown, ip: string): Promise<LockOutcome
   const input: LockRequest = parsed.data;
 
   if (!(await verifyHuman(input.turnstileToken, ip))) return { ok: false, error: "human_check_failed" };
+  const ipHash = hashIp(ip);
+  if (!(await withinHourlyLimit(`moderation:${ipHash}`, "max_moderations_per_ip_per_hour"))) {
+    return { ok: false, error: "rate_limited" };
+  }
 
   const verdict = await moderate({ name: input.name, message: input.message, link: input.link });
   if (verdict.verdict === "reject") {
     return { ok: false, error: "moderation_rejected", field: verdict.field, reason: verdict.reason };
   }
-  // Fail closed: nothing is published or charged without a verdict.
-  if (verdict.verdict === "unavailable") return { ok: false, error: "moderation_unavailable" };
+  // No verdict: the takeover goes ahead, its message and link held for review (decision 31).
+  const moderationPending = verdict.verdict === "unavailable" && (input.message !== null || input.link !== null);
 
   const buyer = await resolveBuyer(input.email);
   if (!buyer) return { ok: false, error: "invalid_input", fields: ["email"] };
@@ -53,7 +59,7 @@ export async function createLock(body: unknown, ip: string): Promise<LockOutcome
   const db = serviceClient();
   const args: NullableLockArgs = {
     p_email: buyer.email,
-    p_ip_hash: hashIp(ip),
+    p_ip_hash: ipHash,
     p_profile_id: buyer.profileId,
     p_name: input.name,
     p_country_code: input.country,
@@ -64,6 +70,14 @@ export async function createLock(body: unknown, ip: string): Promise<LockOutcome
     p_avatar_seed: input.avatarSeed ?? null,
   };
   const { data: lock, error } = await db.rpc("create_price_lock", args as LockArgs);
+  if (lock && moderationPending) {
+    const { error: holdError } = await db.from("price_locks").update({ moderation_status: "pending" }).eq("id", lock.id);
+    if (holdError) {
+      await db.rpc("release_price_lock", { p_lock_id: lock.id });
+      console.error("could not hold the lock for review", holdError.message);
+      return { ok: false, error: "unknown" };
+    }
+  }
 
   if (error || !lock) {
     const mapped = lockErrorFromDb(error?.message ?? "");
@@ -96,6 +110,7 @@ export async function createLock(body: unknown, ip: string): Promise<LockOutcome
       priceCents: lock.price_cents,
       expiresAt: lock.expires_at,
       checkout: { mode: checkout.mode, url: checkout.url },
+      moderationPending,
     };
   } catch (e) {
     console.error("checkout failed", e);

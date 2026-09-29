@@ -119,6 +119,31 @@ test("rejects a shortened product link before saving", async ({ page }) => {
   expect(row.main_link).toBe("https://maruprints.cl");
 });
 
+test("rejects a blocked word in the name without asking the model", async ({ page }) => {
+  await openAs(page, NEWCOMER.email);
+  await page.getByLabel(en.common.nameL, { exact: true }).fill("maru_0fficial");
+  await saveButton(page).click();
+  await expect(shown(page, ep.bRejNameTitle)).toBeVisible();
+  await expect(shown(page, en.payment.rejWhy.blocked_name)).toBeVisible();
+  const [row] = await sql("select name from profiles where id = (select profile_id from profile_private where email = $1)", [NEWCOMER.email]);
+  expect(row.name).toBe(NEWCOMER.name);
+});
+
+test("stops saving after the hourly limit, before any moderation", async ({ page }) => {
+  await openAs(page, NEWCOMER.email);
+  await sql(
+    `insert into rate_limit_hits (key)
+     select 'profile_save:' || pp.profile_id from profile_private pp, app_config c, generate_series(1, c.max_profile_saves_per_hour)
+     where pp.email = $1`,
+    [NEWCOMER.email],
+  );
+  await page.getByLabel(ep.linkL, { exact: true }).fill("https://maruprints.cl/shop");
+  await saveButton(page).click();
+  await expect(shown(page, ep.bLimitTitle)).toBeVisible();
+  const [row] = await sql("select main_link from profiles where name = $1", [NEWCOMER.name]);
+  expect(row.main_link).toBe("https://maruprints.cl");
+});
+
 test("uploads a photo, shows it pixelated or as is, and keeps it after saving", async ({ page }) => {
   await openAs(page, NEWCOMER.email);
   await page.getByRole("radio", { name: ep.modeUp }).click();
