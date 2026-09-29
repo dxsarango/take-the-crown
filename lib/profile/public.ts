@@ -110,7 +110,7 @@ export async function fetchProfilePage(db: PublicClient, profileId: string, now 
         .eq("profile_id", profileId)
         .order("started_at", { ascending: false })
         .limit(CHRONICLE_LIMIT),
-      db.from("profile_achievements").select("achievement_code, earned_at").eq("profile_id", profileId),
+      db.from("profile_achievements").select("achievement_code, earned_at, season_id").eq("profile_id", profileId),
       db.from("achievements").select("code, rarity, season_id, sort_order").eq("active", true).order("sort_order"),
       db.from("achievement_stats").select("code, holder_pct"),
       db
@@ -143,6 +143,7 @@ export async function fetchProfilePage(db: PublicClient, profileId: string, now 
   };
 
   const earnedAt = new Map(earned.map((e) => [e.achievement_code, e.earned_at]));
+  const earnedIn = new Map(earned.map((e) => [e.achievement_code, e.season_id]));
   const holders = new Map((holdersRes.data ?? []).map((h) => [h.code, Number(h.holder_pct ?? 0)]));
   // Seasonal achievements of seasons that have not started stay hidden (design: Remembered from T1).
   const achievements: ProfileAchievement[] = must(achievementsRes, "achievements")
@@ -150,7 +151,8 @@ export async function fetchProfilePage(db: PublicClient, profileId: string, now 
     .map((a) => ({
       code: a.code as AchievementCode,
       rarity: a.rarity,
-      seasonId: a.season_id,
+      // Seasonal rings keep the color of the season the medal was earned in.
+      seasonId: earnedIn.get(a.code) ?? a.season_id,
       earnedAt: earnedAt.get(a.code) ?? null,
       holderPct: holders.get(a.code) ?? 0,
     }));

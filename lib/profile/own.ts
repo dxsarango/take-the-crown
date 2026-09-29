@@ -36,7 +36,7 @@ export async function fetchOwnSettings(profileId: string): Promise<OwnSettings |
     db.from("profiles").select("*").eq("id", profileId).maybeSingle(),
     db.from("profile_private").select("*").eq("profile_id", profileId).maybeSingle(),
     db.from("profile_stats").select("total_reign_seconds").eq("profile_id", profileId).maybeSingle(),
-    db.from("profile_achievements").select("achievement_code").eq("profile_id", profileId),
+    db.from("profile_achievements").select("achievement_code, season_id").eq("profile_id", profileId),
     db.from("achievements").select("code, rarity, season_id, sort_order").order("sort_order"),
     db.from("app_config").select("name_change_days, floor_cents").single(),
     db.from("public_crown_state").select("base_price_cents, base_set_at, decay_bps_per_hour").single(),
@@ -47,10 +47,10 @@ export async function fetchOwnSettings(profileId: string): Promise<OwnSettings |
   const crown = crownRes.data;
   if (!profile || !priv || !config || !crown) return null;
 
-  const earnedCodes = new Set((earnedRes.data ?? []).map((e) => e.achievement_code));
+  const earnedIn = new Map((earnedRes.data ?? []).map((e) => [e.achievement_code, e.season_id]));
   const earned: EarnedMedal[] = (achievementsRes.data ?? [])
-    .filter((a) => isAchievementCode(a.code) && earnedCodes.has(a.code))
-    .map((a) => ({ code: a.code as AchievementCode, rarity: a.rarity, seasonId: a.season_id }));
+    .filter((a) => isAchievementCode(a.code) && earnedIn.has(a.code))
+    .map((a) => ({ code: a.code as AchievementCode, rarity: a.rarity, seasonId: earnedIn.get(a.code) ?? a.season_id }));
 
   const changeAt = profile.name_changed_at
     ? new Date(new Date(profile.name_changed_at).getTime() + config.name_change_days * 86_400_000)
