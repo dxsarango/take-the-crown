@@ -17,3 +17,7 @@ export function rankForSeconds(seconds: number): Rank {
   }
   return current;
 }
+
+export function isRank(value: unknown): value is Rank {
+  return typeof value === "string" && RANKS.some((r) => r.rank === value);
+}

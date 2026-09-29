@@ -1,6 +1,6 @@
 import type { AvatarSource } from "@/lib/art/avatar";
 import { type AchievementCode, isAchievementCode } from "@/lib/game/achievements";
-import { type Rank, rankForSeconds } from "@/lib/game/rank";
+import { type Rank, isRank, rankForSeconds } from "@/lib/game/rank";
 import { avatarSource } from "@/lib/profile/avatar";
 import type { PublicClient } from "@/lib/supabase/public";
 
@@ -55,7 +55,8 @@ export type HallOfFame = {
 export type FeedItem =
   | { id: number; createdAt: string; kind: "dethroned"; who: Person; by: Person; durationSeconds: number | null }
   | { id: number; createdAt: string; kind: "first_reign"; who: Person }
-  | { id: number; createdAt: string; kind: "achievement"; who: Person; code: AchievementCode };
+  | { id: number; createdAt: string; kind: "achievement"; who: Person; code: AchievementCode }
+  | { id: number; createdAt: string; kind: "rank_up"; who: Person; rank: Rank };
 
 export type HomeData = {
   /** When the data was read. The first client render uses it so server and client HTML match. */
@@ -96,7 +97,7 @@ export async function fetchHomeData(db: PublicClient, now = new Date()): Promise
     db
       .from("events")
       .select("id, kind, profile_id, created_at, payload")
-      .in("kind", ["crown_taken", "achievement_unlocked"])
+      .in("kind", ["crown_taken", "achievement_unlocked", "rank_up"])
       .gte("created_at", since)
       .order("id", { ascending: false })
       .limit(FEED_SIZE),
@@ -212,6 +213,10 @@ export async function fetchHomeData(db: PublicClient, now = new Date()): Promise
           durationSeconds: typeof duration === "number" ? duration : null,
         },
       ];
+    }
+    if (e.kind === "rank_up") {
+      const rank = payloadField(e.payload, "rank");
+      return isRank(rank) ? [{ ...base, kind: "rank_up", who, rank }] : [];
     }
     const code = payloadField(e.payload, "code");
     return isAchievementCode(code) ? [{ ...base, kind: "achievement", who, code }] : [];

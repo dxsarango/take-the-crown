@@ -127,6 +127,7 @@ export function HallOfFamePreview({ hall, season }: { hall: HallOfFame; season: 
 function FeedLine({ item }: { item: FeedItem }) {
   const t = useTranslations("home.feed");
   const medals = useTranslations("medals");
+  const rank = useTranslations("rank");
   switch (item.kind) {
     case "dethroned":
       return (
@@ -141,6 +142,12 @@ function FeedLine({ item }: { item: FeedItem }) {
       return (
         <>
           {t("earned")} <span className="font-bold text-crown-text">{medals(`${MEDAL_KEY[item.code]}.name`)}</span>
+        </>
+      );
+    case "rank_up":
+      return (
+        <>
+          {t("rose")} <span className="font-bold text-crown-text">{rank(item.rank)}</span>
         </>
       );
   }
