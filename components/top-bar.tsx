@@ -10,10 +10,18 @@ import { PersonIcon, Portrait } from "./art";
 import { useAuth } from "./auth/auth-provider";
 import { LocaleSwitch } from "./locale-switch";
 
-export function TopBar({ season, now }: { season: Season; now: number }) {
+const NAV = [
+  { href: "/", key: "throne" },
+  { href: "/kingdom", key: "history" },
+  { href: "/hall-of-fame", key: "hof" },
+] as const;
+export type TopBarSection = (typeof NAV)[number]["key"];
+
+export function TopBar({ season, now, section }: { season: Season; now: number; section?: TopBarSection }) {
   const t = useTranslations("season");
   const home = useTranslations("home");
   const login = useTranslations("login");
+  const realm = useTranslations("realm");
   const locale = useLocale() as Locale;
   const { viewer, ready, openLogin } = useAuth();
   const days = daysLeft(season.endsAt, now);
@@ -26,6 +34,22 @@ export function TopBar({ season, now }: { season: Season; now: number }) {
           {BRAND_NAME}
         </Link>
         <div className="text-12 whitespace-nowrap text-crown-muted lg:hidden">{t("short", { n: season.id, days })}</div>
+        {section && (
+          <nav aria-label={realm("tabsLabel")} className="hidden h-18 gap-7 lg:flex">
+            {NAV.map((item, i) => (
+              <Link
+                key={item.key}
+                href={item.href}
+                aria-current={item.key === section ? "page" : undefined}
+                className={`flex items-center text-14 font-bold focus-visible:outline-offset-[-2px] ${
+                  item.key === section ? "shadow-[inset_0_-4px_0_var(--crown-text)]" : "text-crown-muted hover:text-crown-text"
+                }`}
+              >
+                {realm(`nav.${i}` as "nav.0")}
+              </Link>
+            ))}
+          </nav>
+        )}
         <div className="hidden h-7 items-center bg-crown-ink px-2.5 text-14 text-crown-muted lg:flex">
           {t("long", { season: title, days })}
         </div>

@@ -53,17 +53,17 @@ export function Portrait({
 
 const OWN_FLAGS = new Set<string>(FLAGS);
 
-/** 12×8 flag at ×2; countries without their own flag get the code pill. */
-export function Flag({ code, className = "" }: { code: string | null; className?: string }) {
+/** 12×8 flag (×2 by default); countries without their own flag get the code pill. */
+export function Flag({ code, className = "", scale = 2 }: { code: string | null; className?: string; scale?: number }) {
   const pill = useMemo(() => (code && !OWN_FLAGS.has(code) ? countryPillSVG(code, 1) : null), [code]);
   if (!code) return null;
-  if (pill) return <PixelSVG svg={pill} width={12} height={8} scale={2} className={className} />;
+  if (pill) return <PixelSVG svg={pill} width={12} height={8} scale={scale} className={className} />;
   return (
     // eslint-disable-next-line @next/next/no-img-element -- pixel art must not be resampled by next/image
     <img
       src={`/art/flags/${code}.svg`}
-      width={24}
-      height={16}
+      width={12 * scale}
+      height={8 * scale}
       alt=""
       className={`block flex-none [image-rendering:pixelated] ${className}`}
     />
@@ -124,11 +124,11 @@ export function DropArrow() {
   return <PixelSVG svg={DROP_ARROW_SVG} width={7} height={6} scale={2} className="motion-safe:animate-crown-drop" />;
 }
 
-export function RankTag({ rank, label }: { rank: Rank; label: string }) {
+export function RankTag({ rank, label, small = false }: { rank: Rank; label: string; small?: boolean }) {
   return (
-    <span className="flex h-7 items-center gap-2 rounded-tag border border-crown-stone px-2.5">
-      <span className="size-2.5" style={{ background: RANK_STYLE[rank].swatch }} />
-      <span className="font-pixel text-14 font-medium">{label}</span>
+    <span className={`flex items-center rounded-tag border border-crown-stone ${small ? "h-6 gap-1.5 px-2" : "h-7 gap-2 px-2.5"}`}>
+      <span className={small ? "size-2" : "size-2.5"} style={{ background: RANK_STYLE[rank].swatch }} />
+      <span className={`font-pixel font-medium ${small ? "text-12" : "text-14"}`}>{label}</span>
     </span>
   );
 }

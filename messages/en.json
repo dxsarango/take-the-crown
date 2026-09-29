@@ -78,7 +78,8 @@
       "fellTo": "fell to",
       "earned": "earned",
       "firstReign": "took the empty throne",
-      "patriot": "first of their nation"
+      "patriot": "first of their nation",
+      "rose": "rose to"
     },
     "copyright": "© {year} {brand}"
   },
@@ -246,8 +247,42 @@
       "remembered": [
         "Remembered",
         "Reigned during Season 1: Day of the Dead."
+      ],
+      "oneMin": [
+        "One-Minute King",
+        "Got dethroned in under 60 s."
+      ],
+      "bag": [
+        "Bargain Hunter",
+        "Took the crown at the floor price."
+      ],
+      "revenge": [
+        "Revenge",
+        "Took the crown back from whoever took it."
+      ],
+      "g1": [
+        "Guardian I",
+        "Reigned 12h straight."
+      ],
+      "g2": [
+        "Guardian II",
+        "Reigned 24h straight."
+      ],
+      "patriot": [
+        "Patriot",
+        "First king from your country."
+      ],
+      "collector": [
+        "Collector",
+        "Took 10 crowns."
+      ],
+      "rivalry": [
+        "Rivalry",
+        "Traded the crown 5 times with one person."
       ]
-    }
+    },
+    "rankUp": "New rank",
+    "rankDesc": "{time} on the throne in total."
   },
   "profile": {
     "shareProfile": "Share profile",
@@ -442,7 +477,7 @@
     ],
     "histTitle": "History of the realm",
     "earlier": "Show earlier reigns",
-    "began": "Season 0 began on Sep 15, 2026.",
+    "began": "{season} began on {date}.",
     "legend": "Size = length of reign",
     "lg": [
       "10h or more",
@@ -458,12 +493,12 @@
     "longestL": "Longest so far",
     "now": "Reigning now",
     "by": "Dethroned by {name}",
-    "today": "Today · Sep 27",
+    "today": "Today · {date}",
     "d26": "Sep 26",
     "d25": "Sep 25",
     "hofTitle": "Hall of fame",
     "scopes": [
-      "Season 0",
+      "Season {n}",
       "All time"
     ],
     "tabs": [
@@ -478,16 +513,16 @@
       "Shortest single reign this season",
       "Total time reigning by country"
     ],
-    "allNote": "Season 0 is the first season, so all-time records match it until Season 1 starts on Nov 1.",
+    "allNote": "Season {n} is the first season, so all-time records match it until Season {next} starts on {date}.",
     "kingsN": "{count} kings",
     "crownsU": "",
-    "endedShort": "Season 0 has ended",
-    "endedLong": "Season 0: Genesis has ended",
-    "ended": "Season 0: Genesis has ended",
-    "dates": "Sep 15 – Oct 31, 2026",
+    "endedShort": "Season {n} has ended",
+    "endedLong": "{season} has ended",
+    "ended": "{season} has ended",
+    "dates": "{from} – {to}",
     "kos": "King of the Season",
     "kosSub": "on the throne this season",
-    "kosLine": "Reached Emperor on Oct 12 and held off kenji in the last week. Her portrait stays in the hall forever.",
+    "kosLine": "{name} spent the most time on the throne this season. Their portrait stays in the hall forever.",
     "kosStats": [
       "Crowns taken",
       "Longest reign",
@@ -495,8 +530,8 @@
     ],
     "emperor": "Emperor",
     "podiumT": "Season podium",
-    "podiumSub": "Most time reigning in Season 0",
-    "seasonStats": "Season 0 in numbers",
+    "podiumSub": "Most time reigning in Season {n}",
+    "seasonStats": "Season {n} in numbers",
     "st": [
       "Reigns",
       "Kings",
@@ -507,9 +542,29 @@
     ],
     "next": "Next season",
     "startsIn": "Starts in",
-    "keep": "All 214 kings of Season 0 keep the Founder medal and the Genesis frame forever.",
+    "keep": "{count, plural, one {The # king of Season {n} keeps} other {All # kings of Season {n} keep}} the {medal} medal and the {frame} forever.",
     "remind": "Remind me when it starts",
-    "shareSeason": "Share the season"
+    "shareSeason": "Share the season",
+    "allNoteMany": "All time adds up every season so far.",
+    "seasonN": "Season {n}",
+    "nowTag": "Now",
+    "endedTag": "Ended",
+    "leading": "Leading the season",
+    "leadingSub": "on the throne so far",
+    "inProgress": "{season} is under way",
+    "soFar": "Season {n} so far",
+    "paidBy": "Paid by {name} on {date}",
+    "nextStarted": "Started on {date}",
+    "goThrone": "Go to the throne",
+    "reminded": "Done. We'll email you when it starts.",
+    "noMore": "That's every reign of the season.",
+    "tabsLabel": "Records",
+    "scopeLabel": "Scope",
+    "frameNames": {
+      "genesis": "Genesis frame",
+      "marigold": "Marigold frame"
+    },
+    "season": "Season"
   },
   "login": {
     "head": "Sign in to keep your reigns, achievements, and alerts.",

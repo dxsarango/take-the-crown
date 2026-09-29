@@ -69,3 +69,16 @@ export function displayLink(url: string): string {
     .replace(/^www\./, "")
     .replace(/\/$/, "");
 }
+
+/** Record lengths, down to the second under an hour: "11s", "1m 04s", "31h 07m". */
+export function formatDurationPrecise(totalSeconds: number, units: Units): string {
+  const seconds = Math.max(0, Math.floor(totalSeconds));
+  if (seconds < 60 || seconds >= 3600) return formatDuration(seconds, units);
+  return `${Math.floor(seconds / 60)}${units.m} ${String(seconds % 60).padStart(2, "0")}${units.s}`;
+}
+
+/** A running clock: "5h 41m 09s". */
+export function formatClock(totalSeconds: number, units: Units): string {
+  const p = clockParts(totalSeconds);
+  return `${p.h}${units.h} ${p.m}${units.m} ${p.s}${units.s}`;
+}
