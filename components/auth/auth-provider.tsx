@@ -4,6 +4,7 @@ import { type ReactNode, createContext, useCallback, useContext, useEffect, useM
 import { type AuthError, isAuthError } from "@/lib/auth/next";
 import type { AvatarSource } from "@/lib/art/avatar";
 import type { ViewerSummary } from "@/lib/profile/viewer";
+import { UnlockToasts } from "@/components/achievements/unlock-toasts";
 import { LoginDialog } from "./login-dialog";
 
 export type LoginRequest = {
@@ -79,6 +80,7 @@ export function AuthProvider({ season, children }: { season: number; children: R
     <AuthContext.Provider value={value}>
       {children}
       {login && <LoginDialog season={season} request={login} onClose={() => setLogin(null)} />}
+      {viewer && <UnlockToasts viewer={viewer} season={season} />}
     </AuthContext.Provider>
   );
 }
