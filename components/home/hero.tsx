@@ -7,6 +7,7 @@ import type { Locale } from "@/i18n/routing";
 import { clockParts, displayLink, formatCountdown, formatPercent, formatPrice } from "@/lib/format";
 import type { CrownState, King } from "@/lib/home/data";
 import { type HeroState, lockSegments } from "@/lib/home/hero";
+import { ReportDialog } from "./report-dialog";
 
 /** Shown after the buyer's own payment attempt fails or their lock runs out (design states 4 and 5). */
 export type HomeNotice = "payment_failed" | "lock_expired";
@@ -131,7 +132,7 @@ function Reserved({ secondsLeft, lockSeconds, align }: { secondsLeft: number; lo
 function ReportButton({ reignId }: { reignId: number }) {
   const home = useTranslations("home");
   const common = useTranslations("common");
-  const [state, setState] = useState<"idle" | "sending" | "done" | "failed">("idle");
+  const [state, setState] = useState<"idle" | "open" | "done">("idle");
   if (state === "done") {
     return (
       <span role="status" className="text-12 text-crown-muted">
@@ -140,30 +141,18 @@ function ReportButton({ reignId }: { reignId: number }) {
     );
   }
   return (
-    <span className="flex items-center gap-2">
-      {state === "failed" && (
-        <span role="alert" className="text-12 text-crown-muted">
-          {home("reportFailed")}
-        </span>
-      )}
+    <>
       <button
         type="button"
         aria-label={home("reportMessage")}
-        disabled={state === "sending"}
-        onClick={async () => {
-          setState("sending");
-          const response = await fetch("/api/reports", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ reignId }),
-          }).catch(() => null);
-          setState(response?.ok ? "done" : "failed");
-        }}
+        aria-haspopup="dialog"
+        onClick={() => setState("open")}
         className="hit-area h-8 px-2 text-12 font-medium text-crown-muted hover:bg-crown-velvet hover:text-crown-text"
       >
         {common("report")}
       </button>
-    </span>
+      {state === "open" && <ReportDialog reignId={reignId} onClose={(sent) => setState(sent ? "done" : "idle")} />}
+    </>
   );
 }
 
