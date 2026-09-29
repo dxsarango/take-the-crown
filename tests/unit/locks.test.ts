@@ -1,0 +1,128 @@
+import { describe, expect, it, vi } from "vitest";
+import { localHour, lockRequestSchema, normalizeLink } from "@/lib/locks/input";
+import { LOCK_DB_ERRORS, lockErrorFromDb } from "@/lib/locks/outcome";
+import { moderate } from "@/lib/moderation";
+
+vi.mock("server-only", () => ({}));
+const { TestProvider, signTestPayload, TEST_SIGNATURE_HEADER } = await import("@/lib/payments/test-provider");
+
+const valid = { name: "nadia.builds", email: "nadia@example.com", locale: "en" as const };
+
+describe("lock request", () => {
+  it("normalizes links to https", () => {
+    expect(normalizeLink("turno.app")).toBe("https://turno.app");
+    expect(normalizeLink(" https://turno.app/beta ")).toBe("https://turno.app/beta");
+    expect(normalizeLink("")).toBe("");
+  });
+
+  it("accepts a minimal guest request", () => {
+    const parsed = lockRequestSchema.parse(valid);
+    expect(parsed).toMatchObject({ name: "nadia.builds", link: null, message: null, country: null });
+  });
+
+  it("cleans up the message and link", () => {
+    const parsed = lockRequestSchema.parse({ ...valid, message: "  Beta\n is  open ", link: "turno.app" });
+    expect(parsed.message).toBe("Beta is open");
+    expect(parsed.link).toBe("https://turno.app");
+  });
+
+  it.each([
+    [{ name: "ab" }, "name"],
+    [{ name: "has space" }, "name"],
+    [{ email: "nope" }, "email"],
+    [{ link: "http://turno.app" }, "link"],
+    [{ link: "javascript:alert(1)" }, "link"],
+    [{ link: "localhost" }, "link"],
+    [{ country: "ecuador" }, "country"],
+    [{ avatarSeed: "xyz" }, "avatarSeed"],
+    [{ locale: "fr" }, "locale"],
+  ])("rejects %j", (patch, field) => {
+    const result = lockRequestSchema.safeParse({ ...valid, ...patch });
+    expect(result.success).toBe(false);
+    expect(result.error?.issues.map((i) => i.path[0])).toContain(field);
+  });
+
+  it("derives the buyer's local hour from their time zone", () => {
+    const at = new Date("2026-10-10T08:30:00Z");
+    expect(localHour("America/Guayaquil", at)).toBe(3);
+    expect(localHour("Asia/Tokyo", at)).toBe(17);
+    expect(localHour("Not/AZone", at)).toBeNull();
+    expect(localHour(undefined, at)).toBeNull();
+  });
+});
+
+describe("database errors", () => {
+  it.each(LOCK_DB_ERRORS)("maps %s to its UI state", (code) => {
+    expect(lockErrorFromDb(code)).toBe(code);
+  });
+
+  it("maps verification, link checks and unknown errors", () => {
+    expect(lockErrorFromDb("email_verification_required")).toBe("email_verification_required");
+    expect(lockErrorFromDb('new row violates check constraint "price_locks_link_format"')).toBe("invalid_link");
+    expect(lockErrorFromDb("connection reset")).toBeNull();
+  });
+});
+
+describe("moderation placeholder", () => {
+  it("rejects link shorteners", async () => {
+    expect(await moderate({ name: "x", message: null, link: "https://bit.ly/abc" })).toMatchObject({
+      verdict: "reject",
+      field: "link",
+    });
+  });
+
+  it("rejects links inside the message", async () => {
+    expect(await moderate({ name: "x", message: "visit turno.app now", link: null })).toMatchObject({
+      verdict: "reject",
+      field: "message",
+    });
+  });
+
+  it("allows a normal submission", async () => {
+    expect(await moderate({ name: "x", message: "Beta is open", link: "https://turno.app" })).toEqual({
+      verdict: "allow",
+    });
+  });
+});
+
+describe("test provider webhooks", () => {
+  const secret = "s".repeat(32);
+  const provider = new TestProvider(secret, "http://localhost:3000");
+  const event = {
+    type: "payment_succeeded",
+    eventId: "evt_1",
+    providerPaymentId: "pay_1",
+    lockId: "7b0d2c4e-8f1a-4a57-9c1e-2f3d4b5a6c7d",
+    amountCents: 3400,
+    currency: "USD",
+    email: "nadia@example.com",
+  };
+  const request = (body: string, signature: string) =>
+    new Request("http://localhost/api/webhooks/test", { method: "POST", body, headers: { [TEST_SIGNATURE_HEADER]: signature } });
+
+  it("accepts a correctly signed event", async () => {
+    const body = JSON.stringify(event);
+    expect(await provider.verifyWebhook(request(body, signTestPayload(body, secret)))).toEqual(event);
+  });
+
+  it("rejects a bad signature, a tampered body and a malformed event", async () => {
+    const body = JSON.stringify(event);
+    expect(await provider.verifyWebhook(request(body, "0".repeat(64)))).toBeNull();
+    const tampered = JSON.stringify({ ...event, amountCents: 1 });
+    expect(await provider.verifyWebhook(request(tampered, signTestPayload(body, secret)))).toBeNull();
+    const malformed = JSON.stringify({ type: "payment_succeeded" });
+    expect(await provider.verifyWebhook(request(malformed, signTestPayload(malformed, secret)))).toBeNull();
+  });
+
+  it("opens checkout as an overlay", async () => {
+    const checkout = await provider.createCheckout({
+      lockId: event.lockId,
+      priceCents: 3400,
+      email: event.email,
+      locale: "en",
+      successUrl: "http://localhost:3000/en",
+    });
+    expect(checkout.mode).toBe("overlay");
+    expect(checkout.checkoutId).toMatch(/^test_chk_/);
+  });
+});

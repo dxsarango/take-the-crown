@@ -1,0 +1,23 @@
+import { createLock } from "@/lib/locks/create";
+import { clientIp } from "@/lib/security/request";
+
+const STATUS: Record<string, number> = {
+  invalid_input: 400,
+  moderation_rejected: 422,
+  human_check_failed: 403,
+  crown_locked: 409,
+  already_king: 409,
+  season_closed: 409,
+  name_taken: 409,
+  rate_limited: 429,
+  banned: 403,
+  checkout_failed: 502,
+  unknown: 500,
+};
+
+export async function POST(request: Request) {
+  const body: unknown = await request.json().catch(() => null);
+  const outcome = await createLock(body, clientIp(request.headers));
+  const status = outcome.ok ? 200 : (STATUS[outcome.error] ?? 400);
+  return Response.json(outcome, { status, headers: { "Cache-Control": "no-store" } });
+}
