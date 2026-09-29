@@ -1,9 +1,6 @@
 {
   "app": {
-    "name": "Crown",
     "description": "Una sola corona en internet. Tómala, defiéndela y reina todo lo que puedas.",
-    "placeholderTitle": "El trono se está preparando.",
-    "placeholderBody": "Vuelve pronto para tomar la corona.",
     "language": "Idioma",
     "locales": {
       "en": "EN",
@@ -12,8 +9,8 @@
   },
   "common": {
     "take": "Toma la corona por {price}",
-    "dropping": "Baja 2% cada hora",
-    "floor": "Precio mínimo $5",
+    "dropping": "Baja {percent} cada hora",
+    "floor": "Precio mínimo {price}",
     "report": "Reportar",
     "final": "Los pagos son definitivos. Pagas por visibilidad, no por un premio.",
     "close": "Cerrar",
@@ -22,7 +19,12 @@
     "google": "Continuar con Google",
     "notNow": "Ahora no",
     "share": "Compartir",
-    "duke": "Duque"
+    "duke": "Duque",
+    "units": {
+      "h": "h",
+      "m": "m",
+      "s": "s"
+    }
   },
   "season": {
     "name": {
@@ -39,8 +41,8 @@
       "2": "Desde el 1 dic 2026"
     },
     "nextDesc": {
-      "1": "Papel picado, cempasúchil y velas, una corona de calavera de azúcar, un marco y una medalla de temporada nuevos. El trono empieza vacío a $5.",
-      "2": "Un salón helado, corona y marco de temporada nuevos, y nuevos logros. El trono empieza vacío a $5."
+      "1": "Papel picado, cempasúchil y velas, una corona de calavera de azúcar, un marco y una medalla de temporada nuevos. El trono empieza vacío a {price}.",
+      "2": "Un salón helado, corona y marco de temporada nuevos, y nuevos logros. El trono empieza vacío a {price}."
     },
     "frame": {
       "0": "Marco Genesis",
@@ -49,7 +51,8 @@
     "crown": {
       "0": "Coronas base (3)",
       "1": "Corona Calavera"
-    }
+    },
+    "title": "Temporada {n}: {name}"
   },
   "home": {
     "signin": "Iniciar sesión",
@@ -67,7 +70,17 @@
     "last24": "Últimas 24 horas",
     "rules": "Reglas",
     "faq": "Preguntas frecuentes",
-    "terms": "Términos"
+    "terms": "Términos",
+    "quote": "“{message}”",
+    "noReigns": "Nadie ha reinado aún esta temporada.",
+    "feedEmpty": "Sin pregones en las últimas 24 horas.",
+    "feed": {
+      "fellTo": "cayó ante",
+      "earned": "ganó",
+      "firstReign": "ocupó el trono vacío",
+      "patriot": "primer rey de su país"
+    },
+    "copyright": "© {year} {brand}"
   },
   "homeStates": {
     "signin": "Iniciar sesión",
@@ -76,7 +89,7 @@
     "reservedNote": "Si no paga a tiempo, la corona vuelve a estar disponible.",
     "onHold": "Precio en espera",
     "empty1": "El trono está vacío",
-    "empty2": "Sé el primer rey de la Temporada 0.",
+    "empty2": "Sé el primer rey de la Temporada {n}.",
     "noKing": "Nadie ha reinado todavía",
     "opening": "Precio de apertura",
     "rises": "Sube con cada nuevo rey",
@@ -86,8 +99,8 @@
     "payErr1": "Tu pago no se completó.",
     "payErr2": "La corona sigue disponible.",
     "exp1": "Tu reserva de precio expiró.",
-    "exp2": "El precio actual es $38.",
-    "takeFirst": "Ocupa el trono por $5"
+    "exp2": "El precio actual es {price}.",
+    "takeFirst": "Ocupa el trono por {price}"
   },
   "payment": {
     "head": "Vas a ser rey.",
@@ -273,7 +286,7 @@
     "priceD": "Cuando la corona llegue a tu precio.",
     "priceL": "Avisarme a (USD)",
     "priceErr": "Escribe un número entero del 5 al 999.",
-    "priceNote": "Ahora {price}. Baja 2% cada hora: ~{estimate}.",
+    "priceNote": "Ahora {price}. Baja {percent} cada hora: ~{estimate}.",
     "seasonD": "Con la nueva corona y los coleccionables.",
     "digest": "Crónica semanal",
     "digestD": "Cada lunes: reinados, caídas y tu rival.",
@@ -292,7 +305,7 @@
     "bInv": "{n, plural, one {Hay 1 campo por corregir} other {Hay # campos por corregir}}",
     "bInvSub": "Aún no se guardó nada.",
     "bRejTitle": "Link de producto rechazado",
-    "bRejWhy": "Lleva a un sitio de apuestas, y eso no se permite en Crown.",
+    "bRejWhy": "Lleva a un sitio de apuestas, y eso no se permite en {brand}.",
     "bRejFix": "Quítalo o usa un link a tu propio producto. No se guardó nada.",
     "editLink": "Editar el link",
     "bFailTitle": "No se pudieron guardar los cambios",
@@ -407,7 +420,7 @@
     "vicHead": "Soy el rey de internet.",
     "vicLabel": "Reino desde hace",
     "chaHead": "tiene la corona.",
-    "chaLabel": "Destrónala por",
+    "chaLabel": "Quítale la corona por",
     "achLabel": "Logro desbloqueado",
     "regicide": "Regicida",
     "rare": "Raro",
@@ -427,8 +440,8 @@
     "m2": ". Te la quitó ",
     "m3": "Recupérala por",
     "btn": "Recupera la corona",
-    "mNote": "El precio baja 2% cada hora. Precio mínimo $5.",
-    "mFoot": "Recibes este correo porque reinaste en Crown.",
+    "mNote": "El precio baja {percent} cada hora. Precio mínimo {price}.",
+    "mFoot": "Recibes este correo porque reinaste en {brand}.",
     "unsub": "Desactivar alertas de destronamiento"
   },
   "medals": {

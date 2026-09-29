@@ -1,9 +1,6 @@
 {
   "app": {
-    "name": "Crown",
     "description": "One crown on the internet. Take it, hold it, and reign as long as you can.",
-    "placeholderTitle": "The throne is being prepared.",
-    "placeholderBody": "Come back soon to take the crown.",
     "language": "Language",
     "locales": {
       "en": "EN",
@@ -12,8 +9,8 @@
   },
   "common": {
     "take": "Take the crown for {price}",
-    "dropping": "Dropping 2% every hour",
-    "floor": "Floor price $5",
+    "dropping": "Dropping {percent} every hour",
+    "floor": "Floor price {price}",
     "report": "Report",
     "final": "Payments are final. You're paying for visibility, not a prize.",
     "close": "Close",
@@ -22,7 +19,12 @@
     "google": "Continue with Google",
     "notNow": "Not now",
     "share": "Share",
-    "duke": "Duke"
+    "duke": "Duke",
+    "units": {
+      "h": "h",
+      "m": "m",
+      "s": "s"
+    }
   },
   "season": {
     "name": {
@@ -39,8 +41,8 @@
       "2": "From Dec 1, 2026"
     },
     "nextDesc": {
-      "1": "Papel picado, marigolds and candlelight, a sugar skull crown, a new seasonal frame and medal. The throne starts empty at $5.",
-      "2": "A frozen hall, a new seasonal crown and frame, and new achievements. The throne starts empty at $5."
+      "1": "Papel picado, marigolds and candlelight, a sugar skull crown, a new seasonal frame and medal. The throne starts empty at {price}.",
+      "2": "A frozen hall, a new seasonal crown and frame, and new achievements. The throne starts empty at {price}."
     },
     "frame": {
       "0": "Genesis frame",
@@ -49,7 +51,8 @@
     "crown": {
       "0": "Base crowns (3)",
       "1": "Sugar skull crown"
-    }
+    },
+    "title": "Season {n}: {name}"
   },
   "home": {
     "signin": "Sign in",
@@ -67,7 +70,17 @@
     "last24": "Last 24 hours",
     "rules": "Rules",
     "faq": "FAQ",
-    "terms": "Terms"
+    "terms": "Terms",
+    "quote": "“{message}”",
+    "noReigns": "No one has reigned this season yet.",
+    "feedEmpty": "No proclamations in the last 24 hours.",
+    "feed": {
+      "fellTo": "fell to",
+      "earned": "earned",
+      "firstReign": "took the empty throne",
+      "patriot": "first of their nation"
+    },
+    "copyright": "© {year} {brand}"
   },
   "homeStates": {
     "signin": "Sign in",
@@ -76,7 +89,7 @@
     "reservedNote": "If they don't pay in time, the crown opens up again.",
     "onHold": "Price on hold",
     "empty1": "The throne is empty",
-    "empty2": "Be the first king of Season 0.",
+    "empty2": "Be the first king of Season {n}.",
     "noKing": "No one has reigned yet",
     "opening": "Opening price",
     "rises": "Goes up with every new king",
@@ -86,8 +99,8 @@
     "payErr1": "Your payment didn't go through.",
     "payErr2": "The crown is still available.",
     "exp1": "Your price lock expired.",
-    "exp2": "The current price is $38.",
-    "takeFirst": "Take the empty throne for $5"
+    "exp2": "The current price is {price}.",
+    "takeFirst": "Take the empty throne for {price}"
   },
   "payment": {
     "head": "You'll become king.",
@@ -273,7 +286,7 @@
     "priceD": "When the crown gets down to your price.",
     "priceL": "Alert me at (USD)",
     "priceErr": "Enter a whole number from 5 to 999.",
-    "priceNote": "Now {price}. It drops 2% an hour, so ~{estimate}.",
+    "priceNote": "Now {price}. It drops {percent} an hour, so ~{estimate}.",
     "seasonD": "With the new crown and collectibles.",
     "digest": "Weekly chronicle",
     "digestD": "Every Monday: reigns, falls and your rival.",
@@ -292,7 +305,7 @@
     "bInv": "{n, plural, one {1 field needs fixing} other {# fields need fixing}}",
     "bInvSub": "Nothing was saved yet.",
     "bRejTitle": "Product link rejected",
-    "bRejWhy": "It points to a gambling site, which isn’t allowed on Crown.",
+    "bRejWhy": "It points to a gambling site, which isn’t allowed on {brand}.",
     "bRejFix": "Remove it or use a link to your own product. Nothing was saved.",
     "editLink": "Edit the link",
     "bFailTitle": "Couldn’t save your changes",
@@ -407,7 +420,7 @@
     "vicHead": "I'm the king of the internet.",
     "vicLabel": "Reigning for",
     "chaHead": "holds the crown.",
-    "chaLabel": "Dethrone her for",
+    "chaLabel": "Dethrone them for",
     "achLabel": "Achievement unlocked",
     "regicide": "Regicide",
     "rare": "Rare",
@@ -427,8 +440,8 @@
     "m2": " by ",
     "m3": "Take it back for",
     "btn": "Take back the crown",
-    "mNote": "The price drops 2% every hour. Floor price $5.",
-    "mFoot": "You're getting this because you reigned on Crown.",
+    "mNote": "The price drops {percent} every hour. Floor price {price}.",
+    "mFoot": "You're getting this because you reigned on {brand}.",
     "unsub": "Turn off dethrone alerts"
   },
   "medals": {
