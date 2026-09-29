@@ -25,10 +25,17 @@ Conflicts between the design handoff (`/design`), the spec and the migrations, a
 17. **Segmented switch relief.** Approved: follow the prototype (2 px insets).
 18. **Payment modal avatar upload.** Approved: upload only in edit profile.
 
+## Deployment checklist
+
+Steps for every hosted environment (staging and production).
+
+- [ ] Set the real season dates in `seasons` (T0 launch date first) with a migration or the admin seasons list; the seed dates in `0001_init.sql` are placeholders
+- [ ] Push migrations with `supabase db push` and never `--include-seed`: `supabase/seed.sql` is local-only
+- [ ] Confirm pg_cron jobs (`rollover-season`, `live-achievements`, `price-alerts`) are scheduled and active
+
 ## Pre-production
 
 - [ ] Replace the social logos in `design/assets/icons/social/` (drawn from memory) and the new TikTok, website, GitHub and LinkedIn icons with marks checked against the official brand kits
-- [ ] Set the real T0 launch date in `seasons`
 
 ## Milestone 1 — Scaffold, tokens, i18n, local Supabase
 
@@ -73,7 +80,9 @@ Conflicts between the design handoff (`/design`), the spec and the migrations, a
   - `0003`: `generate_username()` used pgcrypto from the wrong schema; pin `search_path` on every function
   - `0004`: clients could `TRUNCATE` tables and rewrite reigns through the updatable `public_reigns` view; revoke everything but `SELECT` on public data
   - `0005`: locks and payments were accepted before `seasons.starts_at`; the reign closed by a season rollover lost Guardian tiers reached in its last minute
-- [x] Decision migrations: `0006` social links, `0007` privacy and alerts, `0008` public name and avatar
+- [x] Decision migrations: `0006` social links, `0007` privacy and alerts, `0008` public name and avatar, `0009` admin release of a reserved name
+- [x] Local-only `supabase/seed.sql` opens the current season; test teardown re-applies it
+- [x] Re-checked the local backend crash (function permission error after switching roles from a `postgres` session): gone with Supabase CLI 2.118 / Postgres 17.6.1.171. Role tests still log in as `authenticator`, like PostgREST
 
 ## Milestone 3 — Read-only home
 
@@ -101,6 +110,8 @@ Conflicts between the design handoff (`/design`), the spec and the migrations, a
 - [ ] `POST /api/locks`: zod validation, IP hash, map DB errors to UI states, `set_lock_checkout`
 - [ ] `POST /api/locks/[id]/release`
 - [ ] `POST /api/webhooks/[provider]`: signature verification, normalize, `record_paid_payment`, refund on `refund_pending`, `mark_payment_refunded`
+- [ ] Known emails: a signed-out buyer whose email already has a profile (claimed or not) gets a magic link instead of a lock, with one neutral message that never reveals the profile's name or whether the typed name differs; only emails without a profile buy as guests. Enforce it in a migration (`create_price_lock` rejects guest locks for known emails; `apply_payment` refunds a guest payment whose email gained a profile after the lock) and in `POST /api/locks`
+- [ ] Impersonation tests (db + API + e2e): paying with someone else's email never creates a reign under their profile, and responses for claimed, unclaimed and unknown emails don't reveal which is which
 - [ ] Payment modal (bottom sheet mobile / modal desktop): form with public name + live availability check, country detection (`cf-ipcountry`) or no country, avatar seed generated on open for the live preview, countdown only after the lock is created on submit, moderation rejection before any lock, processing, completed, errors
 - [ ] Home states: payment error, lock expired
 - [ ] Coronation animation (canvas, 1.8 s, reduced 400 ms fade) triggered by realtime
@@ -132,7 +143,7 @@ Conflicts between the design handoff (`/design`), the spec and the migrations, a
 - [ ] Link rules: https only, shortener / chat-invite / blocklist domains, social domain allowlists
 - [ ] Moderation with `claude-haiku-4-5`, strict JSON verdict parsed with zod; rejection reasons mapped to modal copy
 - [ ] `POST /api/reports` (one per IP per reign)
-- [ ] `/admin`: crown + lock, payments with manual refund, reports queue (hide message, ban), seasons, `app_config` editor
+- [ ] `/admin`: crown + lock, payments with manual refund, reports queue (hide message, ban), release a reserved former name (`release_profile_name`), seasons, `app_config` editor
 - [ ] Tests: link validation, moderation parsing, report dedupe, admin guard
 
 ## Milestone 8 — Share cards, email outbox, dethroned alert
@@ -158,6 +169,6 @@ Conflicts between the design handoff (`/design`), the spec and the migrations, a
 
 - [ ] Implement the approved provider (Paddle, Lemon Squeezy or Dodo) behind the interface
 - [ ] Staging deploy on Vercel behind Cloudflare, spend limits, Vercel cron
-- [ ] Supabase project: migrations, pg_cron, realtime, Storage bucket, Auth providers
+- [ ] Supabase project: migrations, pg_cron, realtime, Storage bucket, Auth providers (follow the deployment checklist above)
 - [ ] End-to-end run with small real payments, including a refund
 - [ ] Tag `v0.1.0` at launch
