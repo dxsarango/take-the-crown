@@ -85,7 +85,7 @@ Write access: none for `anon`/`authenticated`. They have `SELECT` on public tabl
 
 ### Take the crown
 
-1. Client opens the payment modal and generates an `avatar_seed` (32 hex chars) for the live preview. Form: public name with a live availability check (signed-in buyers keep their current name), main link, message, country (detected from `cf-ipcountry`, editable, or none), email if signed out. Client sends its IANA timezone and the seed.
+1. Client opens the payment modal and generates an `avatar_seed` (32 hex chars) for the live preview. Form: public name with a live availability check (signed-in buyers keep their current name), email (signed out), main link, message, country (detected from `cf-ipcountry`, editable, or none), email if signed out. Client sends its IANA timezone and the seed.
 2. `POST /api/locks`: validate input (zod), verify Cloudflare Turnstile, run moderation (§7), then call `create_price_lock`. A moderation rejection returns before any lock exists. Map DB errors to UI states: `crown_locked`, `rate_limited`, `already_king`, `banned`, `season_closed`, `message_too_long`, `name_invalid`, `name_taken`, `avatar_seed_invalid`. The modal's 5:00 countdown starts once the lock is returned.
    - **Known emails.** Only an email with no profile can buy directly as a guest. If a signed-out buyer enters an email that already belongs to a profile (claimed or not), no lock is created: the server sends a magic link to that email and the modal shows the same neutral message in every case ("Check your email to continue"). It never reveals the profile's name or whether the typed name differs. After signing in, the buyer continues as that profile. Paying with someone else's email must never create a reign under their profile; a guest payment whose email gained a profile after its lock was created is refunded.
 3. Create the provider checkout with the locked price and `lock_id` in metadata; store it with `set_lock_checkout`. Return the checkout URL or overlay data.
@@ -132,10 +132,14 @@ API and assets:
 | Route | Purpose |
 |---|---|
 | `POST /api/locks` | Create price lock + checkout |
+| `GET /api/locks/[id]` | Lock status while checkout is open |
 | `POST /api/locks/[id]/release` | Release own lock |
 | `POST /api/webhooks/[provider]` | Payment webhooks |
 | `POST /api/reports` | Report the current king's message |
 | `GET /api/names/availability?name=` | Live public name check |
+| `GET /api/geo` | Country from `cf-ipcountry` for the payment modal |
+| `GET /auth/callback` | Magic link / OAuth return: session, claim or create profile |
+| `POST /api/test-provider/pay` | Test provider only: simulate a completed checkout |
 | `PATCH /api/profile` | Update own profile |
 | `POST /api/profile/avatar` | Upload avatar |
 | `GET /avatar/[name].svg?season=&crown=` | Generated avatar |
@@ -195,7 +199,7 @@ interface PaymentProvider {
 }
 ```
 
-Requirements for the chosen provider: custom price per checkout, metadata passthrough, signed webhooks, refund API. The `test` provider simulates checkout and webhooks locally and is used in e2e tests.
+Requirements for the chosen provider: custom price per checkout, metadata passthrough, signed webhooks, refund API. `createCheckout` also says whether checkout opens as an overlay inside the payment modal or as a redirect. The `test` provider simulates checkout and webhooks locally and is used in e2e tests: its checkout is an overlay with Pay and Decline, paying posts an HMAC-SHA256-signed webhook (`x-test-signature`, `PAYMENT_WEBHOOK_SECRET`) to `/api/webhooks/test`, and refunds are confirmed by a webhook too. It refuses to run in production.
 
 Checkout terms shown before paying: payments are final; buyers pay for visibility, not a prize.
 
