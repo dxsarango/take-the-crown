@@ -2,6 +2,7 @@ import { createHmac, randomUUID } from "node:crypto";
 import { type Page, expect, test } from "@playwright/test";
 import en from "../messages/en.json";
 import { sql } from "./fixtures/db";
+import { latestSignInLink } from "./fixtures/mail";
 import { resetKingdom, seedKingdom } from "./fixtures/kingdom";
 
 test.afterAll(resetKingdom);
@@ -155,24 +156,6 @@ test("paying with someone else's email never crowns their profile", async ({ pag
   const locks = await sql("select 1 from price_locks where lower(email) = 'crowned.owner@test.local'");
   expect(locks).toHaveLength(0);
 });
-
-async function latestSignInLink(email: string): Promise<string> {
-  const mailpit = "http://127.0.0.1:54324/api/v1";
-  let id: string | undefined;
-  await expect
-    .poll(async () => {
-      const list = (await (await fetch(`${mailpit}/messages?limit=20`)).json()) as {
-        messages: { ID: string; To: { Address: string }[] }[];
-      };
-      id = list.messages.find((m) => m.To.some((t) => t.Address === email))?.ID;
-      return id;
-    })
-    .toBeTruthy();
-  const message = (await (await fetch(`${mailpit}/message/${id}`)).json()) as { Text: string };
-  const link = /https?:\/\/\S+verify\S+/.exec(message.Text)?.[0];
-  if (!link) throw new Error("No sign-in link in the email");
-  return link.replace(/[)\]>]+$/, "");
-}
 
 test("the owner of a known email verifies it and takes the crown as themselves", async ({ page }) => {
   await seedKingdom();
