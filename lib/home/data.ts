@@ -1,6 +1,7 @@
-import type { AvatarSource, AvatarTraits } from "@/lib/art/avatar";
+import type { AvatarSource } from "@/lib/art/avatar";
 import { type AchievementCode, isAchievementCode } from "@/lib/game/achievements";
 import { type Rank, rankForSeconds } from "@/lib/game/rank";
+import { avatarSource } from "@/lib/profile/avatar";
 import type { PublicClient } from "@/lib/supabase/public";
 
 const SUCCESSION_SIZE = 10;
@@ -79,10 +80,6 @@ function payloadField(payload: unknown, key: string): unknown {
     : undefined;
 }
 
-function asTraits(value: unknown): Partial<AvatarTraits> | null {
-  return value && typeof value === "object" && !Array.isArray(value) ? (value as Partial<AvatarTraits>) : null;
-}
-
 /** Everything the home page shows, read from public tables and views only. */
 export async function fetchHomeData(db: PublicClient, now = new Date()): Promise<HomeData> {
   const since = new Date(now.getTime() - FEED_WINDOW_MS).toISOString();
@@ -135,7 +132,9 @@ export async function fetchHomeData(db: PublicClient, now = new Date()): Promise
   const people = new Map<string, Person>();
   if (ids.size) {
     const [profilesRes, statsRes] = await Promise.all([
-      db.from("profiles").select("id, name, country_code, avatar_seed, avatar_traits").in("id", [...ids]),
+      db
+        .from("profiles")
+        .select("id, name, country_code, avatar_seed, avatar_traits, avatar_mode, avatar_path, avatar_pixelated").in("id", [...ids]),
       db.from("profile_stats").select("profile_id, total_reign_seconds").in("profile_id", [...ids]),
     ]);
     const stats = must(statsRes, "profile stats");
@@ -146,7 +145,7 @@ export async function fetchHomeData(db: PublicClient, now = new Date()): Promise
         name: p.name,
         countryCode: p.country_code,
         rank: rankForSeconds(total),
-        avatar: { seed: p.avatar_seed, traits: asTraits(p.avatar_traits) },
+        avatar: avatarSource(p),
       });
     }
   }
