@@ -102,9 +102,17 @@ export type LockInput = {
   link?: string | null;
   localHour?: number | null;
   locale?: string;
+  avatarSeed?: string | null;
 };
 
 let counter = 0;
+
+/** A valid, unused public name: 3–24 chars of letters, numbers, dot, underscore and hyphen. */
+export function uniqueName(prefix = "player"): string {
+  counter += 1;
+  return `${prefix.slice(0, 14)}_${counter}`;
+}
+
 export function uniqueEmail(prefix = "buyer"): string {
   counter += 1;
   return `${prefix}${counter}_${randomUUID().slice(0, 6)}@test.local`;
@@ -112,17 +120,18 @@ export function uniqueEmail(prefix = "buyer"): string {
 
 export async function createLock(input: LockInput = {}): Promise<Lock> {
   const rows = await svc<Lock>(
-    "select * from create_price_lock($1, $2, $3, $4, $5, $6, $7, $8::smallint, $9)",
+    "select * from create_price_lock($1, $2, $3, $4, $5, $6, $7, $8::smallint, $9, $10)",
     [
       input.email ?? uniqueEmail(),
       input.ip ?? `ip-${randomUUID()}`,
       input.profileId ?? null,
-      input.name ?? "Tester",
+      input.name ?? uniqueName(),
       input.country === undefined ? "EC" : input.country,
       input.message ?? null,
       input.link ?? null,
       input.localHour === undefined ? 12 : input.localHour,
       input.locale ?? "en",
+      input.avatarSeed ?? null,
     ],
   );
   return rows[0];
@@ -190,15 +199,17 @@ export async function profileIdByEmail(email: string): Promise<string> {
 /** A player identified by email; buys as a guest unless a profile id is known. */
 export class Player {
   readonly email: string;
+  readonly name: string;
   constructor(
     readonly label: string,
     readonly country: string | null = "EC",
   ) {
     this.email = uniqueEmail(label);
+    this.name = uniqueName(label);
   }
 
   takeover(input: LockInput = {}): Promise<Reign> {
-    return takeover({ email: this.email, name: this.label, country: this.country, ...input });
+    return takeover({ email: this.email, name: this.name, country: this.country, ...input });
   }
 
   id(): Promise<string> {

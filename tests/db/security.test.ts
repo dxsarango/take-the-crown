@@ -16,6 +16,7 @@ const PUBLIC_READ = [
   "crown_state",
   "events",
   "profile_achievements",
+  "profile_name_history",
   "profile_stats",
   "profiles",
   "public_crown_state",
@@ -107,7 +108,7 @@ describe("privileges", () => {
         "update crown_state set base_price_cents = 1 where true",
         "update reigns set message = 'hacked' where true",
         "update public_reigns set message = 'hacked' where true",
-        "update public_reigns set display_name = 'hacked' where true",
+        "update public_reigns set name = 'hacked' where true",
         "delete from events where true",
         "truncate reigns cascade",
         "update profiles set is_banned = true where true",
@@ -119,7 +120,7 @@ describe("privileges", () => {
           `${role}: ${sql}`,
         ).rejects.toThrow(/permission denied|cannot update column/);
       }
-      expect(await count("reigns", "message = 'hacked' or display_name = 'hacked'")).toBe(0);
+      expect(await count("reigns", "message = 'hacked' or name = 'hacked'")).toBe(0);
     });
 
     it(`refuses ${role} calls to the takeover functions`, async () => {
