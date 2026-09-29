@@ -47,28 +47,33 @@ Conflicts between the design handoff (`/design`), the spec and the migrations, a
 
 ## Milestone 2 — Database test suite
 
-- [ ] Fix `generate_username()` / `gen_random_bytes` in a new migration (bug found in M1: on Supabase `pgcrypto` lives in schema `extensions`, and functions pinned to `search_path = public` cannot find it, so every guest purchase and first sign-in fails). Audit every function that uses pgcrypto or relies on `search_path` for the same problem; cover with tests
-- [ ] Migration: public name replaces `username` + `display_name` (unique case-insensitive, 3–24, `[A-Za-z0-9._-]`), `name_changed_at` with 30-day limit, `profile_name_history` for redirects; lock and reign keep a name snapshot; availability check function
-- [ ] Migration: `avatar_seed` (random, set at creation; guests pass it through the lock) and `avatar_traits` jsonb validated against avatar-lib layers
-- [ ] Migration: social links website, X, YouTube, TikTok, Instagram, GitHub, LinkedIn stored as normalized URLs with per-platform domain checks
-- [ ] Migration: privacy toggles (main rival, chronicle), "no country" allowed; price-drop alert threshold (USD cents), season-start alert / "Remind me" subscriptions, outbox jobs for both
-- [ ] Update `docs/SPEC.md` to match the decisions and new migrations
-- [ ] Test harness against local Supabase (service role client or direct `pg`), reset between tests
-- [ ] Price: `price_at` decay, floor, ceil rounding; TS client formula matches `price_at` for sampled inputs
-- [ ] Rank thresholds (`rank_for_seconds`) and TS mirror for display only
-- [ ] Lock contention: second lock raises `crown_locked`; expired lock can be replaced
-- [ ] Lock errors: `rate_limited`, `already_king`, `banned`, `season_closed`, `message_too_long`
-- [ ] Duplicate webhooks: same event id and same provider payment id return `duplicate`
-- [ ] Late payments inside and outside grace; wrong currency; underpayment → `refund_pending`
-- [ ] Payment for a stale expected reign → `refund_pending`
-- [ ] Self-takeover blocked at lock and at apply
-- [ ] Concurrency: two parallel `record_paid_payment` for different locks → exactly one reign
-- [ ] Season rollover: closes reign with `season_end`, stores season king, resets to floor, events; `no_next_season_configured`
-- [ ] Every achievement rule (first_blood, regicide, one_minute_king, night_owl, revenge, guardian 1/2/3 on takeover and live, bargain_hunter, collector, rivalry, patriot, founder, remembered)
-- [ ] Guest claim: `resolve_buyer_profile` by email, `ensure_profile_for_user` claims or creates
-- [ ] RLS: anon cannot write any table, cannot read `profile_private`, `payments`, `price_locks`; can read public views
-- [ ] Dethroned notification only when alerts enabled
-- [ ] CI-ready script (`pnpm test:db`) documented
+- [x] Fix `generate_username()` / `gen_random_bytes` in a new migration (bug found in M1: on Supabase `pgcrypto` lives in schema `extensions`, and functions pinned to `search_path = public` cannot find it, so every guest purchase and first sign-in fails). Audit every function that uses pgcrypto or relies on `search_path` for the same problem; cover with tests
+- [x] Migration: public name replaces `username` + `display_name` (unique case-insensitive, 3–24, `[A-Za-z0-9._-]`), `name_changed_at` with 30-day limit, `profile_name_history` for redirects; lock and reign keep a name snapshot; availability check function
+- [x] Migration: `avatar_seed` (random, set at creation; guests pass it through the lock) and `avatar_traits` jsonb validated against avatar-lib layers
+- [x] Migration: social links website, X, YouTube, TikTok, Instagram, GitHub, LinkedIn stored as normalized URLs with per-platform domain checks
+- [x] Migration: privacy toggles (main rival, chronicle), "no country" allowed; price-drop alert threshold (USD cents), season-start alert / "Remind me" subscriptions, outbox jobs for both
+- [x] Update `docs/SPEC.md` to match the decisions and new migrations
+- [x] Test harness against local Supabase (service role client or direct `pg`), reset between tests
+- [x] Price: `price_at` decay, floor, ceil rounding; TS client formula matches `price_at` for sampled inputs
+- [x] Rank thresholds (`rank_for_seconds`) and TS mirror for display only
+- [x] Lock contention: second lock raises `crown_locked`; expired lock can be replaced
+- [x] Lock errors: `rate_limited`, `already_king`, `banned`, `season_closed`, `message_too_long`
+- [x] Duplicate webhooks: same event id and same provider payment id return `duplicate`
+- [x] Late payments inside and outside grace; wrong currency; underpayment → `refund_pending`
+- [x] Payment for a stale expected reign → `refund_pending`
+- [x] Self-takeover blocked at lock and at apply
+- [x] Concurrency: parallel `record_paid_payment` for different locks → exactly one reign
+- [x] Season rollover: closes reign with `season_end`, stores season king, resets to floor, events; `no_next_season_configured`
+- [x] Every achievement rule (first_blood, regicide, one_minute_king, night_owl, revenge, guardian 1/2/3 on takeover and live, bargain_hunter, collector, rivalry, patriot, founder, remembered)
+- [x] Guest claim: `resolve_buyer_profile` by email, `ensure_profile_for_user` claims or creates
+- [x] RLS and privileges: anon and authenticated cannot write any table or view, cannot execute any `security definer` function, read only public data (+ own `profile_private`)
+- [x] Dethroned notification only when alerts enabled
+- [x] `pnpm test:db` (and `pnpm test` for unit + db) documented in SPEC §15
+- [x] Fix migrations for bugs the suite found:
+  - `0003`: `generate_username()` used pgcrypto from the wrong schema; pin `search_path` on every function
+  - `0004`: clients could `TRUNCATE` tables and rewrite reigns through the updatable `public_reigns` view; revoke everything but `SELECT` on public data
+  - `0005`: locks and payments were accepted before `seasons.starts_at`; the reign closed by a season rollover lost Guardian tiers reached in its last minute
+- [x] Decision migrations: `0006` social links, `0007` privacy and alerts, `0008` public name and avatar
 
 ## Milestone 3 — Read-only home
 

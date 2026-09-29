@@ -1,6 +1,6 @@
 # Take the Crown — Technical Spec
 
-Working name. One crown on the internet: whoever holds it is featured on the homepage. Taking it costs the current price, which rises on every takeover and decays over time. Glory is measured in time reigned. Profiles, ranks, achievements and monthly seasons sit on top.
+Brand name: **Take the Crown**. One crown on the internet: whoever holds it is featured on the homepage. Taking it costs the current price, which rises on every takeover and decays over time. Glory is measured in time reigned. Profiles, ranks, achievements and monthly seasons sit on top.
 
 Operator: Dario Sarango, natural person, Ecuador. Sales go through a merchant of record.
 
@@ -34,16 +34,17 @@ All values live in `app_config` and must never be hardcoded in the app.
 | Late payment grace | 600 s after lock expiry |
 | Max message length | 80 chars |
 | Max locks per IP per hour | 5 |
+| Public name change cooldown | 30 days |
 
 **Price.** `price(t) = max(floor, ceil(base × (1 − decay)^(hours since base_set_at)))`. On takeover, `base = ceil(price_paid × 1.20)` and `base_set_at = now()`. Empty throne and new seasons start at `floor`. The client computes the live price with the same formula from `public_crown_state`; the server value from `create_price_lock` is authoritative.
 
-**Lock.** Only one active lock. Buying requires a lock; the lock freezes the price for 5 minutes. While a lock is active, everyone else sees "Someone is taking the crown…" with its countdown.
+**Lock.** Only one active lock. Buying requires a lock; it is created when the buyer submits the payment form, after validation, Turnstile and moderation, and freezes the price for 5 minutes from then. While a lock is active, everyone else sees "Someone is taking the crown…" with its countdown.
 
 **Takeover validity.** A paid payment is applied only if the reign it expected is still current, no other active lock exists, it arrives before `expires_at + grace`, it is in USD for at least the locked amount, the season is open, and the buyer is not the current king. Otherwise it becomes `refund_pending` and the app refunds it through the provider automatically.
 
 **Self-takeover.** The current king cannot buy the crown again.
 
-**Seasons.** A season ends at `ends_at` (UTC). `rollover_season()` closes the current reign with `season_end`, stores the season king (most total reign time), and resets the crown to the floor price with an empty throne. The next season must exist in `seasons` beforehand; if it doesn't, rollover raises `no_next_season_configured` and payments refund until it is added. Current calendar: T0 Genesis until 2026-11-01, T1 Day of the Dead (November), T2 Frost (December).
+**Seasons.** A season is open from `starts_at` to `ends_at` (UTC); locks and payments outside that window are rejected or refunded. `rollover_season()` closes the current reign with `season_end`, awards any Guardian tier that reign reached, stores the season king (most total reign time), notifies players with season-start alerts on, and resets the crown to the floor price with an empty throne. The next season must exist in `seasons` beforehand; if it doesn't, rollover raises `no_next_season_configured` and payments refund until it is added. Current calendar: T0 Genesis until 2026-11-01, T1 Day of the Dead (November), T2 Frost (December). Dates shown in the UI always come from `seasons`, never from copy.
 
 **Ranks** (total reign time): Peasant 0, Knight 1 h, Baron 6 h, Count 24 h, Duke 72 h, Emperor 168 h.
 
@@ -66,24 +67,26 @@ All values live in `app_config` and must never be hardcoded in the app.
 
 ## 3. Data model
 
-Defined in `supabase/migrations/0001_init.sql`. Key points:
+Defined in `supabase/migrations` (`0001_init.sql` plus later migrations). Key points:
 
 - `crown_state`: singleton with current reign, price base and active lock.
 - `reigns`: one row per reign with snapshots of name, country, message and link. Only one open reign is allowed (partial unique index).
-- `price_locks`: buyer input is stored here before checkout and copied to the reign on success.
+- `price_locks`: buyer input (public name, avatar seed, country, message, link) is stored here before checkout and copied to the reign or new profile on success.
 - `payments` + `webhook_events`: idempotency on provider event id and provider payment id.
-- `profiles` (public) and `profile_private` (email, alert settings, locale, admin flag; owner-only).
+- `profiles` (public): one public **name** (unique case-insensitive, 3–24 chars of letters, numbers, `.`, `_`, `-`; changeable once every `name_change_days`), `avatar_seed` + optional `avatar_traits`, seven optional links, privacy toggles (`show_rival`, `show_chronicle`, `show_total_spent`). `country_code` may be null ("no country").
+- `profile_name_history` (public): former names, reserved for their owner and redirected to the current profile.
+- `profile_private` (owner-only): email, locale, admin flag and alerts: `alerts_dethroned`, `alerts_price_below_cents`, `alerts_season_start`.
 - `events`: public feed and realtime source. `notifications`: outbox for emails.
 - Public views: `public_crown_state`, `public_reigns` (hides moderated messages), `profile_stats` (with rank), `achievement_stats`, `season_leaderboard`, `country_leaderboard`.
 
-Write access: none for `anon`/`authenticated`. All writes go through Next.js server code using the service role and the SQL functions. Never reimplement takeover logic in TypeScript.
+Write access: none for `anon`/`authenticated`. They have `SELECT` on public tables and views only (plus their own `profile_private` row) and cannot execute any `security definer` function. All writes go through Next.js server code using the service role and the SQL functions. Never reimplement takeover logic in TypeScript.
 
 ## 4. Flows
 
 ### Take the crown
 
-1. Client opens the payment modal. Form: display name, main link, message, country (detected from `cf-ipcountry`, editable), email if signed out. Client sends its IANA timezone.
-2. `POST /api/locks`: validate input (zod), verify Cloudflare Turnstile, run moderation (§7), then call `create_price_lock`. Map DB errors to UI states: `crown_locked`, `rate_limited`, `already_king`, `banned`, `season_closed`, `message_too_long`.
+1. Client opens the payment modal and generates an `avatar_seed` (32 hex chars) for the live preview. Form: public name with a live availability check (signed-in and known buyers keep their current name), main link, message, country (detected from `cf-ipcountry`, editable, or none), email if signed out. Client sends its IANA timezone and the seed.
+2. `POST /api/locks`: validate input (zod), verify Cloudflare Turnstile, run moderation (§7), then call `create_price_lock`. A moderation rejection returns before any lock exists. Map DB errors to UI states: `crown_locked`, `rate_limited`, `already_king`, `banned`, `season_closed`, `message_too_long`, `name_invalid`, `name_taken`, `avatar_seed_invalid`. The modal's 5:00 countdown starts once the lock is returned.
 3. Create the provider checkout with the locked price and `lock_id` in metadata; store it with `set_lock_checkout`. Return the checkout URL or overlay data.
 4. If the user closes the checkout, `POST /api/locks/:id/release` calls `release_price_lock`.
 5. Provider webhook → `POST /api/webhooks/[provider]`: verify signature, normalize, call `record_paid_payment`. On `refund_pending`, call the provider refund API and then `mark_payment_refunded` when the refund webhook arrives.
@@ -92,11 +95,21 @@ Write access: none for `anon`/`authenticated`. All writes go through Next.js ser
 
 ### Guest purchase and claiming
 
-Buying without an account creates or reuses a profile keyed by email (`resolve_buyer_profile`). On sign-in, the auth callback calls `ensure_profile_for_user`, which claims that profile if the verified email matches, or creates a new one.
+Buying without an account creates or reuses a profile keyed by email (`resolve_buyer_profile`). A new profile gets the lock's name and avatar seed; if the name was taken between lock and payment, it gets a generated `king_xxxxxxxx` name the player can change. On sign-in, the auth callback calls `ensure_profile_for_user`, which claims that profile if the verified email matches, or creates a new one named after the provider's display name when that is a valid, free public name.
 
-### Dethroned alert
+### Public names
 
-`apply_payment` inserts a `dethroned` notification when the previous king has alerts enabled. A sender processes the outbox right after the webhook and a Vercel cron retries every minute (max 5 attempts).
+`is_profile_name_available` backs the live availability check. `change_profile_name` enforces the format, the cooldown and uniqueness, and moves the old name to `profile_name_history`. `/u/[name]` resolves current and former names with `profile_id_for_name` and redirects former ones to the current URL.
+
+### Alerts
+
+All alerts are rows in the `notifications` outbox:
+
+- `dethroned`: inserted by `apply_payment` when the previous king has `alerts_dethroned` on.
+- `price_drop`: `queue_price_alerts()` (pg_cron, every minute) inserts one when the live price reaches a player's `alerts_price_below_cents` (whole dollars, $1–$999; the UI enforces at least the floor). At most one per price cycle (`base_set_at`); never for the current king, banned players or a closed season.
+- `season_started`: inserted by `rollover_season()` for players with `alerts_season_start` on. The "Remind me" button on the season end page turns that setting on.
+
+A sender processes the outbox right after the webhook and a Vercel cron retries every minute (max 5 attempts).
 
 ## 5. Routes
 
@@ -105,7 +118,7 @@ Pages (all under `/[locale]`):
 | Route | Screen |
 |---|---|
 | `/` | Throne room (home) |
-| `/u/[username]` | Public profile |
+| `/u/[name]` | Public profile (lowercased; former names redirect) |
 | `/settings/profile` | Edit profile (auth) |
 | `/kingdom` | Kingdom history, filter by season |
 | `/hall-of-fame` | Hall of fame |
@@ -121,9 +134,10 @@ API and assets:
 | `POST /api/locks/[id]/release` | Release own lock |
 | `POST /api/webhooks/[provider]` | Payment webhooks |
 | `POST /api/reports` | Report the current king's message |
+| `GET /api/names/availability?name=` | Live public name check |
 | `PATCH /api/profile` | Update own profile |
 | `POST /api/profile/avatar` | Upload avatar |
-| `GET /avatar/[username].svg?season=` | Generated avatar |
+| `GET /avatar/[name].svg?season=&crown=` | Generated avatar |
 | `GET /og/[template]/[id]` | Share cards (victory, challenge, achievement, dethroned) |
 | `GET /api/cron/notifications` | Email outbox (Vercel cron, secret-protected) |
 
@@ -138,21 +152,31 @@ API and assets:
 Before creating a lock:
 
 - Links must be `https`. Block URL shorteners, chat invite domains (Telegram, Discord, WhatsApp), and a maintained blocklist.
-- Social fields accept only their own domains: `x.com`/`twitter.com`, `youtube.com`/`youtu.be`, `tiktok.com`, `instagram.com`. Website is any valid `https` URL.
-- Message and display name go through `claude-haiku-4-5` with a strict JSON verdict (`allow` or `reject` with a reason code). Reject → no lock, no charge, reason shown in the modal.
+- Profiles have seven optional links. The form accepts a handle or a URL; the server normalizes it and stores one canonical URL, which the database also checks:
+
+  | Link | Stored as |
+  |---|---|
+  | Website | any `https://` URL on a real domain, max 200 chars |
+  | X | `https://x.com/<handle>` (accepts `twitter.com` input) |
+  | YouTube | `https://youtube.com/@<handle>` |
+  | TikTok | `https://tiktok.com/@<handle>` |
+  | Instagram | `https://instagram.com/<handle>` |
+  | GitHub | `https://github.com/<user>` |
+  | LinkedIn | `https://linkedin.com/in/<slug>` |
+- Message and public name go through `claude-haiku-4-5` with a strict JSON verdict (`allow` or `reject` with a reason code). Reject → no lock, no charge, reason shown in the modal.
 - All user links render with `rel="sponsored ugc noopener"` and `target="_blank"`.
 - Reports are one per IP per reign. Admins can set `reigns.message_hidden` (no refund).
 
 ## 8. Avatars and images
 
-- Generated avatars reuse the design handoff's `avatar-lib.js`, deterministic from `username`, served as SVG with long cache headers keyed by season.
-- Uploads: Supabase Storage bucket `avatars`. Keep the original (max 512 px) and a pixelated version: resize to 32×32 with nearest neighbor and quantize to the core palette. The profile chooses which one to show.
+- Generated avatars reuse the design handoff's `avatar-lib.js`: traits come from `traitsFromUsername(avatar_seed)` with `avatar_traits` overrides on top (validated against the library's layers), so renaming never changes the avatar. Edit profile has a per-layer editor. Served as SVG with long cache headers keyed by season.
+- Uploads (edit profile only): PNG, JPG or WebP up to 5 MB, in Supabase Storage bucket `avatars`. Keep the original (max 512 px) and a pixelated version: resize to 32×32 with nearest neighbor and quantize to the core palette. The profile chooses which one to show.
 - Share cards with `next/og`, sizes 1200×630 and 1080×1920, cached at the edge. Pixel art is embedded as PNG rendered at integer scale.
 
 ## 9. Email
 
 - Supabase Auth magic links through Resend SMTP.
-- Transactional templates (en/es, user locale): dethroned alert. Built with react-email using the design handoff's template.
+- Transactional templates (en/es, user locale): dethroned, price drop and season started. Built with react-email using the design handoff's template.
 
 ## 10. Payments
 
@@ -174,13 +198,13 @@ Checkout terms shown before paying: payments are final; buyers pay for visibilit
 
 - Cloudflare proxy with WAF, bot protection and rate limiting on `/api/*`. Turnstile on lock creation.
 - IPs are stored only as salted SHA-256 hashes (`IP_HASH_SALT`).
-- Service role key only in server code. RLS on every table.
+- Service role key only in server code. RLS on every table. New tables, views and functions start with no client access; each migration grants what it needs explicitly.
 - Webhook signature verification is mandatory; never trust client payment status.
 - Strict CSP; no third-party scripts beyond the payment provider and Turnstile.
 
 ## 12. i18n
 
-All UI strings in `messages/en.json` and `messages/es.json`. Locale from path, then cookie, then `Accept-Language`. Prices always in USD, formatted per locale. Season names come from `seasons.name_en/name_es`.
+All UI strings in `messages/en.json` and `messages/es.json`. Locale from path, then cookie, then `Accept-Language`. Prices always in USD, formatted per locale. Season names come from `seasons.name_en/name_es` and season dates from `seasons`. The brand name is a single config constant inserted into copy through a placeholder, never written into messages.
 
 ## 13. Admin
 
@@ -193,8 +217,8 @@ Operator: Dario Sarango (natural person, Ecuador). Governing law: Ecuador. Priva
 ## 15. Testing
 
 - Unit: price formula (client implementation must match `price_at`), rank thresholds, link validation, moderation parsing.
-- Database (against local Supabase): lock contention, duplicate webhooks, late payments inside and outside grace, self-takeover, season rollover, every achievement rule, guest claim.
-- Concurrency: two parallel `record_paid_payment` calls for different locks; exactly one reign must result.
+- Database (`pnpm test:db`, against local Supabase after `supabase start`; pauses pg_cron while running): lock contention, duplicate webhooks, late payments inside and outside grace, self-takeover, season rollover, every achievement rule, guest claim, public names, links, alerts, and client privileges (anon and authenticated can't write or call `security definer` functions).
+- Concurrency: parallel `record_paid_payment` calls for different locks; exactly one reign must result.
 - E2E (Playwright, `test` provider): take the crown as guest, sign in and claim, dethroned flow, locked state, profile edit, locale switch.
 
 ## 16. Environment variables
@@ -218,6 +242,6 @@ Each milestone ends with passing tests and a short summary.
 
 ## 18. Open items
 
-- Final name and domain (placeholder: Take the Crown).
+- Domain.
 - Payment provider approval.
 - T0 start date (seed uses 2026-10-01; set it to the real launch date).
