@@ -1,25 +1,28 @@
 import { NextResponse } from "next/server";
-import { serviceClient } from "@/lib/supabase/service";
+import { safeNext, withParam } from "@/lib/auth/next";
+import { ensureProfile } from "@/lib/auth/viewer";
 import { sessionClient } from "@/lib/supabase/session";
 
-/** Magic-link (and later OAuth) return: start the session and claim or create the profile. */
+/** Magic link and OAuth return: start the session, then claim or create the profile. */
 export async function GET(request: Request) {
   const url = new URL(request.url);
   const code = url.searchParams.get("code");
-  const nextParam = url.searchParams.get("next") ?? "/";
-  // Only same-site paths, never "//evil.example".
-  const next = nextParam.startsWith("/") && !nextParam.startsWith("//") ? nextParam : "/";
+  const next = safeNext(url.searchParams.get("next"));
+  const go = (path: string) => NextResponse.redirect(new URL(path, url.origin));
 
-  if (code) {
-    const session = await sessionClient();
-    const { data, error } = await session.auth.exchangeCodeForSession(code);
-    if (!error && data.user?.email) {
-      await serviceClient().rpc("ensure_profile_for_user", {
-        p_user_id: data.user.id,
-        p_email: data.user.email,
-        p_name_hint: (data.user.user_metadata?.full_name as string | undefined) ?? "",
-      });
-    }
+  // Provider errors (a cancelled consent screen) and expired links arrive without a code.
+  if (!code) return go(withParam(next, "auth_error", "failed"));
+
+  const session = await sessionClient();
+  const { data, error } = await session.auth.exchangeCodeForSession(code);
+  if (error || !data.user) return go(withParam(next, "auth_error", "failed"));
+
+  // Profiles are keyed by email; an X account without one cannot own a profile.
+  if (!data.user.email) {
+    await session.auth.signOut();
+    return go(withParam(next, "auth_error", "no_email"));
   }
-  return NextResponse.redirect(new URL(next, url.origin));
+
+  await ensureProfile(data.user);
+  return go(next);
 }

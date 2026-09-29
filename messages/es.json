@@ -204,7 +204,8 @@
         "why": "La corona no se reservó.",
         "fix": "Vuelve a intentarlo. No se te ha cobrado."
       }
-    }
+    },
+    "nameSignedIn": "Tu nombre público. Cámbialo en tu perfil."
   },
   "coronation": {
     "reigning": "Reina desde hace"
@@ -480,7 +481,12 @@
     "sentHelp": "Ábrelo en este dispositivo para entrar. El enlace sirve durante 15 minutos. Mira en spam si no lo encuentras.",
     "wrong": "Usar otro correo",
     "resendIn": "Reenviar en 0:{ss}",
-    "resendNow": "Reenviar enlace"
+    "resendNow": "Reenviar enlace",
+    "errFailed": "No pudimos iniciar tu sesión. Inténtalo de nuevo o usa otra opción.",
+    "errNoEmail": "Tu cuenta de X no tiene correo, así que no puede guardar un perfil. Usa Google o un enlace mágico.",
+    "errUnavailable": "Esa opción de acceso no está disponible ahora. Usa un enlace mágico.",
+    "signOut": "Cerrar sesión",
+    "yourProfile": "Tu perfil"
   },
   "share": {
     "knight": "Caballero",
