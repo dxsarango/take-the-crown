@@ -85,8 +85,9 @@ Write access: none for `anon`/`authenticated`. They have `SELECT` on public tabl
 
 ### Take the crown
 
-1. Client opens the payment modal and generates an `avatar_seed` (32 hex chars) for the live preview. Form: public name with a live availability check (signed-in and known buyers keep their current name), main link, message, country (detected from `cf-ipcountry`, editable, or none), email if signed out. Client sends its IANA timezone and the seed.
+1. Client opens the payment modal and generates an `avatar_seed` (32 hex chars) for the live preview. Form: public name with a live availability check (signed-in buyers keep their current name), main link, message, country (detected from `cf-ipcountry`, editable, or none), email if signed out. Client sends its IANA timezone and the seed.
 2. `POST /api/locks`: validate input (zod), verify Cloudflare Turnstile, run moderation (§7), then call `create_price_lock`. A moderation rejection returns before any lock exists. Map DB errors to UI states: `crown_locked`, `rate_limited`, `already_king`, `banned`, `season_closed`, `message_too_long`, `name_invalid`, `name_taken`, `avatar_seed_invalid`. The modal's 5:00 countdown starts once the lock is returned.
+   - **Known emails.** Only an email with no profile can buy directly as a guest. If a signed-out buyer enters an email that already belongs to a profile (claimed or not), no lock is created: the server sends a magic link to that email and the modal shows the same neutral message in every case ("Check your email to continue"). It never reveals the profile's name or whether the typed name differs. After signing in, the buyer continues as that profile. Paying with someone else's email must never create a reign under their profile; a guest payment whose email gained a profile after its lock was created is refunded.
 3. Create the provider checkout with the locked price and `lock_id` in metadata; store it with `set_lock_checkout`. Return the checkout URL or overlay data.
 4. If the user closes the checkout, `POST /api/locks/:id/release` calls `release_price_lock`.
 5. Provider webhook → `POST /api/webhooks/[provider]`: verify signature, normalize, call `record_paid_payment`. On `refund_pending`, call the provider refund API and then `mark_payment_refunded` when the refund webhook arrives.
@@ -208,7 +209,7 @@ All UI strings in `messages/en.json` and `messages/es.json`. Locale from path, t
 
 ## 13. Admin
 
-Minimal, server-rendered: current crown and lock, recent payments with status and a manual refund action, reports queue with hide message and ban user, seasons list, `app_config` editor.
+Minimal, server-rendered: current crown and lock, recent payments with status and a manual refund action, reports queue with hide message and ban user, release a reserved former name (`release_profile_name`), seasons list, `app_config` editor.
 
 ## 14. Legal pages
 
@@ -217,6 +218,7 @@ Operator: Dario Sarango (natural person, Ecuador). Governing law: Ecuador. Priva
 ## 15. Testing
 
 - Unit: price formula (client implementation must match `price_at`), rank thresholds, link validation, moderation parsing.
+- Local development: `supabase db reset` applies the migrations and then `supabase/seed.sql`, which opens the current season so the crown can be taken before the real launch date. The seed is local only and is never pushed to hosted projects.
 - Database (`pnpm test:db`, against local Supabase after `supabase start`; pauses pg_cron while running): lock contention, duplicate webhooks, late payments inside and outside grace, self-takeover, season rollover, every achievement rule, guest claim, public names, links, alerts, and client privileges (anon and authenticated can't write or call `security definer` functions).
 - Concurrency: parallel `record_paid_payment` calls for different locks; exactly one reign must result.
 - E2E (Playwright, `test` provider): take the crown as guest, sign in and claim, dethroned flow, locked state, profile edit, locale switch.
