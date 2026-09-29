@@ -1,7 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import { localHour, lockRequestSchema, normalizeLink } from "@/lib/locks/input";
 import { LOCK_DB_ERRORS, lockErrorFromDb } from "@/lib/locks/outcome";
-import { moderate } from "@/lib/moderation";
 
 vi.mock("server-only", () => ({}));
 const { TestProvider, signTestPayload, TEST_SIGNATURE_HEADER } = await import("@/lib/payments/test-provider");
@@ -60,28 +59,6 @@ describe("database errors", () => {
     expect(lockErrorFromDb("email_verification_required")).toBe("email_verification_required");
     expect(lockErrorFromDb('new row violates check constraint "price_locks_link_format"')).toBe("invalid_link");
     expect(lockErrorFromDb("connection reset")).toBeNull();
-  });
-});
-
-describe("moderation placeholder", () => {
-  it("rejects link shorteners", async () => {
-    expect(await moderate({ name: "x", message: null, link: "https://bit.ly/abc" })).toMatchObject({
-      verdict: "reject",
-      field: "link",
-    });
-  });
-
-  it("rejects links inside the message", async () => {
-    expect(await moderate({ name: "x", message: "visit turno.app now", link: null })).toMatchObject({
-      verdict: "reject",
-      field: "message",
-    });
-  });
-
-  it("allows a normal submission", async () => {
-    expect(await moderate({ name: "x", message: "Beta is open", link: "https://turno.app" })).toEqual({
-      verdict: "allow",
-    });
   });
 });
 

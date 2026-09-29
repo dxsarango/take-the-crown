@@ -12,6 +12,7 @@ import { COUNTRY_CODES, countryName } from "@/lib/countries";
 import { displayLink, formatCountdown, formatPrice } from "@/lib/format";
 import { NAME_PATTERN, normalizeLink } from "@/lib/locks/input";
 import type { LockFailure, LockField } from "@/lib/locks/outcome";
+import type { ModerationReason } from "@/lib/moderation/reasons";
 import type { Rank } from "@/lib/game/rank";
 import { lockSegments } from "@/lib/home/hero";
 import type { ViewerSummary } from "@/lib/profile/viewer";
@@ -265,11 +266,23 @@ export function PaymentModal({ season, priceCents, lockSeconds, messageMax, now,
     if (field === "link" || field === "message" || field === "name" || field === "email") clearFailure(field);
   };
 
+  /** Moderation copy: the design's wording for shorteners and links in messages, a reason line otherwise. */
+  const rejection = (field: "link" | "message" | "name", reason: ModerationReason) => {
+    const why =
+      reason === "shortener" ? t("rejLinkW") : reason === "link_in_message" ? t("rejMsgW") : t(`rejWhy.${reason}` as "rejWhy.hate");
+    if (field === "name") return { title: t("rejNameT"), why, fix: t("rejNameF"), line: t("rejNameLine") };
+    if (field === "link") {
+      const design = reason === "shortener";
+      return { title: t("rejLinkT"), why, fix: design ? t("rejLinkF") : t("rejLinkFOther"), line: design ? t("rejLinkLine") : t("rejLinkLineOther") };
+    }
+    const design = reason === "link_in_message";
+    return { title: t("rejMsgT"), why, fix: design ? t("rejMsgF") : t("rejMsgFOther"), line: design ? t("rejMsgLine") : t("rejMsgLineOther") };
+  };
+
   const noticeFor = (f: LockFailure) => {
     if (f.error === "moderation_rejected") {
-      return f.field === "link"
-        ? { title: t("rejLinkT"), why: t("rejLinkW"), fix: t("rejLinkF") }
-        : { title: t("rejMsgT"), why: t("rejMsgW"), fix: t("rejMsgF") };
+      const { title, why, fix } = rejection(f.field, f.reason);
+      return { title, why, fix };
     }
     const code = f.error === "name_invalid" ? "invalid_input" : f.error === "avatar_seed_invalid" ? "unknown" : f.error;
     return {
@@ -281,6 +294,7 @@ export function PaymentModal({ season, priceCents, lockSeconds, messageMax, now,
   const notice = failure ? noticeFor(failure) : null;
 
   const nameLine = () => {
+    if (failure?.error === "moderation_rejected" && failure.field === "name") return <FieldError>{rejection("name", failure.reason).line}</FieldError>;
     if (viewer) return <div className="text-12 text-crown-muted">{t("nameSignedIn")}</div>;
     if (failure?.error === "name_taken" || nameCheck === "taken")
       return <FieldError>{editProfile("nameTaken", { name: draft.name.trim() })}</FieldError>;
@@ -291,7 +305,7 @@ export function PaymentModal({ season, priceCents, lockSeconds, messageMax, now,
   };
 
   const linkLine = () => {
-    if (failure?.error === "moderation_rejected" && failure.field === "link") return <FieldError>{t("rejLinkLine")}</FieldError>;
+    if (failure?.error === "moderation_rejected" && failure.field === "link") return <FieldError>{rejection("link", failure.reason).line}</FieldError>;
     if (failure?.error === "invalid_input" && failure.fields.includes("link")) return <FieldError>{editProfile("linkBad")}</FieldError>;
     return <div className="text-12 text-crown-muted">{t("linkHelp")}</div>;
   };
@@ -453,7 +467,9 @@ export function PaymentModal({ season, priceCents, lockSeconds, messageMax, now,
         <span className="bg-crown-muted" style={{ flex: draft.message.length }} />
         <span className="bg-crown-hall" style={{ flex: messageMax - draft.message.length }} />
       </div>
-      {fieldBad("message") && <FieldError>{t("rejMsgLine")}</FieldError>}
+      {fieldBad("message") && (
+        <FieldError>{failure?.error === "moderation_rejected" ? rejection("message", failure.reason).line : t("rejMsgLine")}</FieldError>
+      )}
     </div>
   );
 

@@ -1,3 +1,5 @@
+import type { ModerationReason } from "@/lib/moderation/reasons";
+
 /** What POST /api/locks answers; shared by the route and the payment modal. */
 
 /** Errors raised by create_price_lock, each with its own UI state. */
@@ -20,7 +22,9 @@ export type LockField = "name" | "email" | "link" | "message" | "country";
 export type LockFailure =
   | { ok: false; error: LockDbError }
   | { ok: false; error: "invalid_input"; fields: LockField[] }
-  | { ok: false; error: "moderation_rejected"; field: "link" | "message" | "name"; reason: string }
+  | { ok: false; error: "moderation_rejected"; field: "link" | "message" | "name"; reason: ModerationReason }
+  /** The model could not give a verdict: no lock, try again. */
+  | { ok: false; error: "moderation_unavailable" }
   | { ok: false; error: "human_check_failed" }
   | { ok: false; error: "checkout_failed" }
   | { ok: false; error: "unknown" };

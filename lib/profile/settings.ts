@@ -1,4 +1,5 @@
 import { z } from "zod";
+import type { ModerationReason } from "@/lib/moderation/reasons";
 import type { AvatarTraits } from "@/lib/art/avatar";
 import { type AchievementCode, MEDAL_KEY } from "@/lib/game/achievements";
 import { NAME_PATTERN, normalizeLink } from "@/lib/locks/input";
@@ -149,7 +150,8 @@ export function toUpdateArgs(
 export type SaveOutcome =
   | { ok: true }
   | { ok: false; error: "invalid"; fields: FieldKey[]; nameProblem?: "taken" | "cooldown" }
-  | { ok: false; error: "rejected"; reason: string }
+  | { ok: false; error: "rejected"; field: "name" | "link"; reason: ModerationReason }
+  | { ok: false; error: "moderation_unavailable" }
   | { ok: false; error: "failed" };
 
 /** Maps an update_profile error to the field it concerns. */

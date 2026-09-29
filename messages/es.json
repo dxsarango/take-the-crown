@@ -81,7 +81,10 @@
       "patriot": "primer rey de su país",
       "rose": "ascendió a"
     },
-    "copyright": "© {year} {brand}"
+    "copyright": "© {year} {brand}",
+    "reportMessage": "Reportar mensaje",
+    "reported": "Reportado. Gracias por avisarnos.",
+    "reportFailed": "El reporte no se envió. Inténtalo de nuevo."
   },
   "homeStates": {
     "signin": "Iniciar sesión",
@@ -204,9 +207,39 @@
         "title": "Algo salió mal.",
         "why": "La corona no se reservó.",
         "fix": "Vuelve a intentarlo. No se te ha cobrado."
+      },
+      "moderation_unavailable": {
+        "title": "No pudimos revisar tus datos.",
+        "why": "Nuestra revisión de contenido no respondió a tiempo.",
+        "fix": "Inténtalo de nuevo en un minuto. No se ha cobrado nada."
       }
     },
-    "nameSignedIn": "Tu nombre público. Cámbialo en tu perfil."
+    "nameSignedIn": "Tu nombre público. Cámbialo en tu perfil.",
+    "rejNameT": "No podemos usar este nombre.",
+    "rejNameF": "Elige otro nombre público e inténtalo de nuevo. No se ha cobrado nada.",
+    "rejNameLine": "Elige otro nombre.",
+    "rejLinkFOther": "Usa un link a tu propio producto o perfil. No se ha cobrado nada.",
+    "rejLinkLineOther": "Usa otro link.",
+    "rejMsgFOther": "Cambia tu mensaje e inténtalo de nuevo. No se ha cobrado nada.",
+    "rejMsgLineOther": "Cambia este mensaje.",
+    "rejWhy": {
+      "not_https": "Los links deben empezar por https:// para abrirse de forma segura.",
+      "invalid_link": "Esa dirección oculta adónde lleva de verdad.",
+      "chat_invite": "No se permiten invitaciones a chats privados como Telegram, Discord o WhatsApp.",
+      "blocked_domain": "Ese sitio está en nuestra lista de bloqueo.",
+      "hate": "Ataca a personas por lo que son.",
+      "harassment": "Insulta o señala a una persona real.",
+      "sexual": "No se permite contenido sexual.",
+      "violence": "Incluye violencia o amenazas.",
+      "self_harm": "Anima a hacerse daño.",
+      "illegal": "Promociona productos o servicios ilegales.",
+      "scam": "Parece una estafa o una promesa de dinero.",
+      "gambling": "No se permiten apuestas ni juegos de azar.",
+      "impersonation": "Se hace pasar por otra persona.",
+      "personal_data": "Comparte datos personales como un teléfono o una dirección.",
+      "spam": "Parece spam.",
+      "manipulation": "Intenta dar instrucciones a nuestra revisión de contenido."
+    }
   },
   "coronation": {
     "reigning": "Reina desde hace"
@@ -467,7 +500,12 @@
     "uploading": "Subiendo…",
     "upErrFailed": "La imagen no se subió. Revisa tu conexión e inténtalo de nuevo.",
     "noCountry": "Sin país",
-    "bRejWhyShortener": "No se permiten acortadores de enlaces, para que todos vean adónde lleva un enlace."
+    "bRejWhyShortener": "No se permiten acortadores de enlaces, para que todos vean adónde lleva un enlace.",
+    "bRejNameTitle": "Nombre rechazado",
+    "bRejNameFix": "Elige otro nombre. No se guardó nada.",
+    "editName": "Editar el nombre",
+    "bModTitle": "No pudimos revisar tus cambios",
+    "bModWhy": "Nuestra revisión de contenido no respondió. No se guardó nada. Inténtalo de nuevo en un minuto."
   },
   "realm": {
     "nav": [
@@ -748,5 +786,94 @@
       "name": "Web",
       "invalid": "Escribe una dirección web como tunombre.com."
     }
+  },
+  "admin": {
+    "title": "Administración",
+    "back": "Volver al trono",
+    "nav": {
+      "crown": "Trono",
+      "payments": "Pagos",
+      "reports": "Reportes",
+      "names": "Nombres",
+      "seasons": "Temporadas",
+      "config": "Configuración",
+      "log": "Registro"
+    },
+    "crown": {
+      "king": "Rey",
+      "noKing": "El trono está vacío.",
+      "since": "Desde el {date}",
+      "price": "Precio actual",
+      "lock": "Reserva",
+      "noLock": "No hay ninguna reserva activa.",
+      "lockUntil": "Reservada hasta el {date}",
+      "season": "Temporada"
+    },
+    "payments": {
+      "empty": "Aún no hay pagos.",
+      "when": "Cuándo",
+      "email": "Correo",
+      "amount": "Importe",
+      "status": "Estado",
+      "provider": "Proveedor",
+      "refund": "Reembolsar",
+      "confirmRefund": "¿Reembolsar {amount} a {email}? El reinado que pagó se mantiene.",
+      "status_paid": "Pagado",
+      "status_applied": "Aplicado",
+      "status_refund_pending": "Reembolso pendiente",
+      "status_refunded": "Reembolsado",
+      "status_failed": "Fallido"
+    },
+    "reports": {
+      "empty": "No hay reportes abiertos.",
+      "count": "{count, plural, one {# reporte} other {# reportes}}",
+      "by": "Reinado de {name}",
+      "hide": "Ocultar mensaje",
+      "ban": "Bloquear jugador",
+      "unban": "Desbloquear jugador",
+      "dismiss": "Descartar",
+      "reason": "Motivos",
+      "hidden": "Mensaje oculto",
+      "banned": "Bloqueado"
+    },
+    "names": {
+      "help": "Los nombres antiguos quedan reservados para su dueño. Liberar uno permite que cualquiera lo use.",
+      "label": "Nombre antiguo",
+      "release": "Liberar nombre",
+      "released": "{name} vuelve a estar libre.",
+      "notReserved": "{name} no estaba reservado."
+    },
+    "seasons": {
+      "slug": "Slug",
+      "starts": "Empieza (UTC)",
+      "ends": "Termina (UTC)",
+      "king": "Rey de la temporada",
+      "save": "Guardar fechas",
+      "help": "Solo se pueden cambiar las fechas de temporadas que no han empezado.",
+      "started": "Empezó",
+      "invalid": "El final debe ser posterior al inicio y las temporadas no pueden solaparse."
+    },
+    "config": {
+      "help": "Reglas del juego. Los cambios se aplican a la siguiente reserva y cálculo de precio.",
+      "save": "Guardar configuración",
+      "saved": "Configuración guardada.",
+      "invalid": "Algunos valores están fuera de rango. No se guardó nada.",
+      "floor_cents": "Precio mínimo (centavos)",
+      "step_bps": "Subida por toma (puntos básicos)",
+      "decay_bps_per_hour": "Bajada por hora (puntos básicos)",
+      "lock_seconds": "Reserva de precio (segundos)",
+      "late_payment_grace_seconds": "Margen para pagos tardíos (segundos)",
+      "max_message_length": "Longitud máxima del mensaje",
+      "max_locks_per_ip_per_hour": "Reservas máximas por IP y hora",
+      "name_change_days": "Días entre cambios de nombre"
+    },
+    "log": {
+      "empty": "Aún no hay acciones de administración.",
+      "action": "Acción",
+      "target": "Objetivo",
+      "admin": "Admin"
+    },
+    "done": "Hecho.",
+    "failed": "No funcionó. No cambió nada."
   }
 }

@@ -81,7 +81,10 @@
       "patriot": "first of their nation",
       "rose": "rose to"
     },
-    "copyright": "© {year} {brand}"
+    "copyright": "© {year} {brand}",
+    "reportMessage": "Report message",
+    "reported": "Reported. Thanks for telling us.",
+    "reportFailed": "The report didn't go through. Try again."
   },
   "homeStates": {
     "signin": "Sign in",
@@ -204,9 +207,39 @@
         "title": "Something went wrong.",
         "why": "The crown wasn't reserved.",
         "fix": "Try again. You haven't been charged."
+      },
+      "moderation_unavailable": {
+        "title": "We couldn't review your details.",
+        "why": "Our content check didn't answer in time.",
+        "fix": "Try again in a minute. You haven't been charged."
       }
     },
-    "nameSignedIn": "Your public name. Change it in your profile."
+    "nameSignedIn": "Your public name. Change it in your profile.",
+    "rejNameT": "We can't use this name.",
+    "rejNameF": "Choose another public name and try again. You haven't been charged.",
+    "rejNameLine": "Choose a different name.",
+    "rejLinkFOther": "Use a link to your own product or profile. You haven't been charged.",
+    "rejLinkLineOther": "Use a different link.",
+    "rejMsgFOther": "Change your message and try again. You haven't been charged.",
+    "rejMsgLineOther": "Change this message.",
+    "rejWhy": {
+      "not_https": "Links must start with https:// so they're safe to open.",
+      "invalid_link": "That address hides where it really goes.",
+      "chat_invite": "Invites to private chats like Telegram, Discord or WhatsApp aren't allowed.",
+      "blocked_domain": "That site is on our blocklist.",
+      "hate": "It attacks people for who they are.",
+      "harassment": "It insults or targets a real person.",
+      "sexual": "Sexual content isn't allowed.",
+      "violence": "It includes violence or threats.",
+      "self_harm": "It encourages self-harm.",
+      "illegal": "It promotes illegal goods or services.",
+      "scam": "It looks like a scam or a promise of money.",
+      "gambling": "Gambling and betting aren't allowed.",
+      "impersonation": "It pretends to be someone else.",
+      "personal_data": "It shares personal details like a phone number or an address.",
+      "spam": "It reads as spam.",
+      "manipulation": "It tries to give instructions to our content check."
+    }
   },
   "coronation": {
     "reigning": "Reigning for"
@@ -467,7 +500,12 @@
     "uploading": "Uploading…",
     "upErrFailed": "The image didn't upload. Check your connection and try again.",
     "noCountry": "No country",
-    "bRejWhyShortener": "Link shorteners aren't allowed, so everyone can see where a link goes."
+    "bRejWhyShortener": "Link shorteners aren't allowed, so everyone can see where a link goes.",
+    "bRejNameTitle": "Name rejected",
+    "bRejNameFix": "Choose another name. Nothing was saved.",
+    "editName": "Edit the name",
+    "bModTitle": "We couldn't review your changes",
+    "bModWhy": "Our content check didn't answer. Nothing was saved. Try again in a minute."
   },
   "realm": {
     "nav": [
@@ -748,5 +786,94 @@
       "name": "Website",
       "invalid": "Enter a web address like yourname.com."
     }
+  },
+  "admin": {
+    "title": "Admin",
+    "back": "Back to the throne",
+    "nav": {
+      "crown": "Throne",
+      "payments": "Payments",
+      "reports": "Reports",
+      "names": "Names",
+      "seasons": "Seasons",
+      "config": "Config",
+      "log": "Log"
+    },
+    "crown": {
+      "king": "King",
+      "noKing": "The throne is empty.",
+      "since": "Since {date}",
+      "price": "Current price",
+      "lock": "Lock",
+      "noLock": "No active lock.",
+      "lockUntil": "Held until {date}",
+      "season": "Season"
+    },
+    "payments": {
+      "empty": "No payments yet.",
+      "when": "When",
+      "email": "Email",
+      "amount": "Amount",
+      "status": "Status",
+      "provider": "Provider",
+      "refund": "Refund",
+      "confirmRefund": "Refund {amount} to {email}? The reign it paid for stays.",
+      "status_paid": "Paid",
+      "status_applied": "Applied",
+      "status_refund_pending": "Refund pending",
+      "status_refunded": "Refunded",
+      "status_failed": "Failed"
+    },
+    "reports": {
+      "empty": "No open reports.",
+      "count": "{count, plural, one {# report} other {# reports}}",
+      "by": "Reign of {name}",
+      "hide": "Hide message",
+      "ban": "Ban player",
+      "unban": "Unban player",
+      "dismiss": "Dismiss",
+      "reason": "Reasons",
+      "hidden": "Message hidden",
+      "banned": "Banned"
+    },
+    "names": {
+      "help": "Former names stay reserved for their owner. Releasing one lets anyone take it.",
+      "label": "Former name",
+      "release": "Release name",
+      "released": "{name} is free again.",
+      "notReserved": "{name} wasn't reserved."
+    },
+    "seasons": {
+      "slug": "Slug",
+      "starts": "Starts (UTC)",
+      "ends": "Ends (UTC)",
+      "king": "King of the Season",
+      "save": "Save dates",
+      "help": "Dates can change only for seasons that haven't started.",
+      "started": "Started",
+      "invalid": "The end must come after the start, and seasons can't overlap."
+    },
+    "config": {
+      "help": "Game rules. Changes apply to the next lock and price calculation.",
+      "save": "Save config",
+      "saved": "Config saved.",
+      "invalid": "Some values are out of range. Nothing was saved.",
+      "floor_cents": "Floor price (cents)",
+      "step_bps": "Increase per takeover (basis points)",
+      "decay_bps_per_hour": "Decay per hour (basis points)",
+      "lock_seconds": "Price lock (seconds)",
+      "late_payment_grace_seconds": "Late payment grace (seconds)",
+      "max_message_length": "Max message length",
+      "max_locks_per_ip_per_hour": "Max locks per IP per hour",
+      "name_change_days": "Days between name changes"
+    },
+    "log": {
+      "empty": "No admin actions yet.",
+      "action": "Action",
+      "target": "Target",
+      "admin": "Admin"
+    },
+    "done": "Done.",
+    "failed": "That didn't work. Nothing changed."
   }
 }
