@@ -332,7 +332,7 @@ email_optional = false
 # Google and X sign-in. Off locally until the OAuth apps exist: set the env vars in supabase/.env
 # and flip enabled to true (see docs/PROGRESS.md, deployment checklist).
 [auth.external.google]
-enabled = false
+enabled = true
 client_id = "env(SUPABASE_AUTH_EXTERNAL_GOOGLE_CLIENT_ID)"
 secret = "env(SUPABASE_AUTH_EXTERNAL_GOOGLE_SECRET)"
 skip_nonce_check = true
