@@ -29,6 +29,10 @@ Conflicts between the design handoff (`/design`), the spec and the migrations, a
 21. **Avatar route.** `GET /avatar/[name].svg` moves to M8 with share cards and email; pages render portraits inline.
 22. **Email in the payment modal.** The design's modal has no email field, but guests need one (receipt, profile, known-email check). Added under the name, with the design's field style and login copy.
 
+23. **Profile extensions.** Where the profile design has no copy or slot: an "Edit profile" button next to Share in your own view, the come-back block whenever your last reign ended in a dethronement, "the empty throne" as the first reign's origin, "Show fewer" after expanding the chronicle. The unapproved "Genesis crown" collectible is left out; collectibles are the season frames plus the next season as "?".
+24. **Edit profile extensions.** "No country" option instead of the design's country toggle (decision 7), a TikTok and a website field (decision 3), the name locked with its unlock date during the 30-day cooldown, "Sign out" at the end of the menu (desktop) and of the form (mobile), and a rejection reason per moderation rule.
+25. **Uploads and saving.** The image is stored when chosen (so the preview shows the processed result) and the profile points to it only when saved; replaced files stay in Storage until a cleanup job exists.
+
 ## Open questions
 
 1. **Knowing an email has a profile.** A signed-out buyer who types an email that already has a profile gets "check your email" instead of a checkout, so the form reveals that the email has bought before (not whose profile it is). Hiding it would mean sending every signed-out buyer through email verification before paying. Interim: keep the decided flow.
@@ -41,6 +45,9 @@ Steps for every hosted environment (staging and production).
 - [ ] Push migrations with `supabase db push` and never `--include-seed`: `supabase/seed.sql` is local-only
 - [ ] Set `PAYMENT_PROVIDER` to the real provider; the test provider refuses to run in production
 - [ ] Supabase Auth: site URL and redirect URLs for `/auth/callback`, SMTP through Resend, magic link expiry 15 min
+- [ ] Google provider: OAuth client (web) with the Supabase callback `https://<project-ref>.supabase.co/auth/v1/callback` as redirect URI and scopes `openid`, `email`, `profile`; client id and secret in Supabase Auth → Providers → Google
+- [ ] X provider (`x`, OAuth 2.0): app with "Request email from users" on, callback `https://<project-ref>.supabase.co/auth/v1/callback`, scopes `users.read`, `tweet.read`, `users.email`; client id and secret in Supabase Auth → Providers → X
+- [ ] Storage: the `avatars` bucket comes from migration `0011`; check it is public with the 1 MB / PNG + WebP limits
 - [ ] Confirm pg_cron jobs (`rollover-season`, `live-achievements`, `price-alerts`) are scheduled and active
 
 ## Pre-production
@@ -128,19 +135,23 @@ Steps for every hosted environment (staging and production).
 - [x] Home states: payment error, lock expired (with the current price)
 - [x] Coronation: canvas port of the prototype (1.8 s; name, clock and price change at landing), reduced-motion 400 ms fade, for every open client via realtime; "Watch your coronation" replays it
 - [x] Tests: unit (input, errors, moderation placeholder, webhook signatures), db (0010), e2e (guest takeover, two browsers competing, moderation, decline, expiry, impersonation, owner verification, webhooks, refunds, reduced motion, screenshots)
-- [ ] Session-aware modal (prefill the signed-in player's name, hide the email field): M5, with sign-in
+- [x] Session-aware modal (prefill the signed-in player's name, hide the email field): done in M5
 - [ ] Redirect-mode checkout return (`/{locale}?lock=…`): M10, with the real provider (the test provider uses the overlay)
 
 ## Milestone 5 — Auth and profiles
 
-- [ ] Supabase Auth: Google, X, magic link (15 min); auth callback calls `ensure_profile_for_user`
-- [ ] Login sheet/modal: interactive, after-payment, link sent (resend after 30 s)
-- [ ] Public profile `/u/[name]` (old names redirect): veteran and new-player variants, stats, chronicle, rival, showcase, collection, socials
-- [ ] Edit profile `/settings/profile`: sections, save bar states, validation
-- [ ] `PATCH /api/profile` with zod; social validation
-- [ ] `POST /api/profile/avatar`: type/size check, original max 512 px + 32×32 nearest-neighbor quantized to core palette (sharp), Storage bucket `avatars`
-- [ ] Per-layer avatar editor, name change with 30-day limit and old-name redirects, seven social links, privacy toggles, alerts (dethroned, price drop, season start); no weekly digest
-- [ ] Tests: e2e sign in and claim, profile edit; unit tests for validation and image processing
+- [x] Supabase Auth: Google and X (`x`, OAuth 2.0) through `/auth/sign-in/[provider]` (PKCE, server side; bounces back with a notice when a provider is off), magic link (15 min) through `POST /api/auth/magic-link` (same answer for every address); `/auth/callback` calls `ensure_profile_for_user` (claims the guest profile with that email or creates one named after the provider handle); X accounts without an email are signed out with a notice; `POST /auth/sign-out`
+- [x] Session refresh in `proxy.ts`; `GET /api/me` for cached pages (top bar, payment modal)
+- [x] Sign-in sheet (mobile) / 440 px modal (desktop): interactive, after payment (kicker, avatar, email ready, "Not now"), link sent (resend after 30 s), busy dots, invalid email, provider errors
+- [x] Top bar: Sign in opens the sheet; signed in, the player's portrait links to their profile
+- [x] Session-aware payment modal (M4 leftover): signed-in buyers keep their name, rank and avatar, no email field, no sign-in prompt after paying; guests get Google / X / magic link after paying
+- [x] Migration `0011`: `update_profile` (whole form or nothing: name rules, showcase only earned and at most 3, uploads only under the owner's folder, price alert between the floor and $999), public `avatars` bucket (service role writes only), `public_chronicle` and `public_rivalries` views
+- [x] Public profile `/u/[name]` (lowercased; former names redirect; 404 otherwise): header with rank progress, socials, link, share (copy link); own view adds edit link, "come back" block with live price, "Within reach" goals (new players), showcase hints; showcase, deeds, main rival, achievements with holder %, chronicle (latest 6, expand), season collectibles (frame per season, next season as "?"); privacy toggles hide rival and chronicle from visitors
+- [x] Edit profile `/settings/profile` (sign-in required): per-layer avatar editor, shuffle, reset; photo/logo upload shown pixelated or as is; name with live availability and the 30-day lock; country with "no country"; product link with moderation; seven social links (handle or pasted link); showcase; privacy; alerts (dethroned, price drop with estimate, season start); language (switches the site); save bar states (clean, dirty count, saving, saved, failed with retry, invalid list with jump to field, link rejected); discard; sign out
+- [x] `PATCH /api/profile` (zod, shared validation, moderation, errors mapped to fields) and `POST /api/profile/avatar` (real type check with sharp, 5 MB, original ≤ 512 px WebP, 32×32 nearest neighbor quantized to the core palette, stored under `<profile>/<upload>`)
+- [x] Uploaded avatars everywhere a portrait is drawn (throne, lists, profile, coronation), with the season crown on top
+- [x] Tests: db (`update_profile`, bucket, chronicle, rivalries, privileges), unit (social links, form validation, image processing), e2e (magic-link sign-in and guest claim, provider off, callback errors, open redirects, settings redirect, sign out, signed-in and guest payments, profile views and redirects, privacy, every edit profile state, upload, language), screenshots at 390 and 1440 in en and es
+- [ ] Google and X OAuth apps: waiting for the product owner (redirect URLs and scopes in the M5 report); everything else runs on magic links locally
 
 ## Milestone 6 — Achievements UI, kingdom, hall of fame, season end
 
