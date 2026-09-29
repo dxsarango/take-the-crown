@@ -14,6 +14,7 @@ const SEED_SEASONS = `
     exclusive_frame = excluded.exclusive_frame, king_profile_id = null, closed_at = null`;
 
 const GAME_TABLES = [
+  "rate_limit_hits",
   "notifications",
   "reports",
   "events",
