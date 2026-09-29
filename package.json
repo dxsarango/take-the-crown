@@ -16,13 +16,16 @@
     "test:unit": "vitest run --project unit",
     "test:db": "vitest run --project db",
     "test:watch": "vitest",
-    "e2e": "playwright test"
+    "e2e": "playwright test",
+    "db:types": "supabase gen types typescript --local > lib/supabase/database.types.ts"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.117.2",
     "next": "16.3.6",
     "next-intl": "^4.14.7",
     "react": "19.2.8",
-    "react-dom": "19.2.8"
+    "react-dom": "19.2.8",
+    "zod": "^4.6.5"
   },
   "devDependencies": {
     "@playwright/test": "^1.63.0",
