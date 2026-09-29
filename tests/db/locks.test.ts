@@ -102,10 +102,10 @@ describe("create_price_lock", () => {
     await expect(createLock({ message: "x".repeat(11) })).rejects.toThrow("message_too_long");
   });
 
-  it("rejects the current king by email", async () => {
+  it("asks a guest using the king's email to verify it first", async () => {
     const king = new Player("king");
     await king.takeover();
-    await expect(createLock({ email: king.email.toUpperCase() })).rejects.toThrow("already_king");
+    await expect(createLock({ email: king.email.toUpperCase() })).rejects.toThrow("email_verification_required");
   });
 
   it("rejects the current king by profile id", async () => {
@@ -119,7 +119,7 @@ describe("create_price_lock", () => {
     await player.takeover();
     await takeover();
     await q("update profiles set is_banned = true where id = $1", [await player.id()]);
-    await expect(createLock({ email: player.email })).rejects.toThrow("banned");
+    await expect(createLock({ email: player.email, profileId: await player.id() })).rejects.toThrow("banned");
   });
 
   it("rejects locks before the season starts", async () => {
