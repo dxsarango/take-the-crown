@@ -193,3 +193,17 @@ export function Seal({ season, scale }: { season: number; scale: number }) {
     />
   );
 }
+
+// Edit profile's 5×7 arrow (Editar Perfil.dc.html), pointing left or right.
+const ARROW_ROWS = ["...##", "..##.", ".##..", "##...", ".##..", "..##.", "...##"];
+const ARROWS = {
+  left: pixelMap(ARROW_ROWS, { "#": "#F3EDE2" }),
+  right: pixelMap(
+    ARROW_ROWS.map((r) => [...r].reverse().join("")),
+    { "#": "#F3EDE2" },
+  ),
+};
+
+export function Arrow({ direction, scale }: { direction: keyof typeof ARROWS; scale: number }) {
+  return <PixelSVG svg={ARROWS[direction]} width={5} height={7} scale={scale} />;
+}

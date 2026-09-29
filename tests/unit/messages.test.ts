@@ -60,6 +60,9 @@ const CHANGED_FROM_DESIGN = new Set([
   "season.nextDesc.2",
   "payment.nameHelp",
   "profile.allReigns",
+  "editProfile.alHelp",
+  "editProfile.priceErr",
+  "editProfile.avAlt",
 ]);
 
 describe("messages", () => {
