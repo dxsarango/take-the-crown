@@ -1,4 +1,6 @@
 import "server-only";
+import { sendMagicLink } from "@/lib/auth/magic-link";
+import { currentViewer } from "@/lib/auth/viewer";
 import { serverEnv } from "@/lib/env.server";
 import { moderate } from "@/lib/moderation";
 import { paymentProvider } from "@/lib/payments";
@@ -6,7 +8,6 @@ import { verifyHuman } from "@/lib/security/human";
 import { hashIp } from "@/lib/security/request";
 import type { Database } from "@/lib/supabase/database.types";
 import { serviceClient } from "@/lib/supabase/service";
-import { sessionClient } from "@/lib/supabase/session";
 import { type LockField, type LockOutcome, lockErrorFromDb } from "./outcome";
 import { type LockRequest, localHour, lockRequestSchema } from "./input";
 
@@ -18,34 +19,9 @@ type Buyer = { profileId: string; email: string } | { profileId: null; email: st
 
 /** Signed-in buyers use their verified email and profile; guests use the email they typed. */
 async function resolveBuyer(guestEmail: string | undefined): Promise<Buyer | null> {
-  const session = await sessionClient();
-  const { data } = await session.auth.getUser();
-  const user = data.user;
-  if (user?.email) {
-    const db = serviceClient();
-    const { data: profileId, error } = await db.rpc("ensure_profile_for_user", {
-      p_user_id: user.id,
-      p_email: user.email,
-      p_name_hint: (user.user_metadata?.full_name as string | undefined) ?? "",
-    });
-    if (error || !profileId) throw new Error(`Could not resolve profile: ${error?.message}`);
-    return { profileId, email: user.email };
-  }
+  const viewer = await currentViewer();
+  if (viewer) return { profileId: viewer.profileId, email: viewer.email };
   return guestEmail ? { profileId: null, email: guestEmail } : null;
-}
-
-async function sendSignInLink(email: string, locale: string): Promise<void> {
-  const session = await sessionClient();
-  const next = `/${locale}?resume=1`;
-  const { error } = await session.auth.signInWithOtp({
-    email,
-    options: {
-      shouldCreateUser: true,
-      emailRedirectTo: `${serverEnv().NEXT_PUBLIC_SITE_URL}/auth/callback?next=${encodeURIComponent(next)}`,
-    },
-  });
-  // Deliberately not surfaced: the answer must not depend on what happens to the email.
-  if (error) console.error("sign-in link failed", error.message);
 }
 
 /**
@@ -90,7 +66,7 @@ export async function createLock(body: unknown, ip: string): Promise<LockOutcome
   if (error || !lock) {
     const mapped = lockErrorFromDb(error?.message ?? "");
     if (mapped === "email_verification_required") {
-      await sendSignInLink(buyer.email, input.locale);
+      await sendMagicLink(buyer.email, `/${input.locale}?resume=1`);
       return { ok: true, verifyEmail: true };
     }
     if (mapped === "invalid_link") return { ok: false, error: "invalid_input", fields: ["link"] };

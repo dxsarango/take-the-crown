@@ -204,7 +204,8 @@
         "why": "The crown wasn't reserved.",
         "fix": "Try again. You haven't been charged."
       }
-    }
+    },
+    "nameSignedIn": "Your public name. Change it in your profile."
   },
   "coronation": {
     "reigning": "Reigning for"
@@ -480,7 +481,12 @@
     "sentHelp": "Open it on this device to sign in. The link works for 15 minutes. Check spam if you can’t find it.",
     "wrong": "Use a different email",
     "resendIn": "Resend in 0:{ss}",
-    "resendNow": "Resend link"
+    "resendNow": "Resend link",
+    "errFailed": "We couldn't sign you in. Try again or use another option.",
+    "errNoEmail": "Your X account has no email address, so it can't keep a profile. Use Google or a magic link.",
+    "errUnavailable": "That sign-in option isn't available right now. Use a magic link instead.",
+    "signOut": "Sign out",
+    "yourProfile": "Your profile"
   },
   "share": {
     "knight": "Knight",

@@ -6,6 +6,7 @@ import type { AvatarSource } from "@/lib/art/avatar";
 import { pixelsToSVG } from "@/lib/art/avatar";
 import { RANK_STYLE } from "@/lib/art/frames";
 import { type PortraitOptions, portraitSVG } from "@/lib/art/portrait";
+import { seasonArt } from "@/lib/art/seasons";
 import type { Rank } from "@/lib/game/rank";
 
 /** Inline pixel-art SVG scaled to an integer multiple of its art size. */
@@ -24,16 +25,30 @@ export function Portrait({
   avatar,
   rank,
   scale,
-  className,
+  className = "",
   ...options
 }: PortraitOptions & { avatar: AvatarSource; rank: Rank; scale: number; className?: string }) {
   const traitsKey = JSON.stringify(avatar.traits ?? null);
+  const image = avatar.pixels ? null : avatar.image;
   const svg = useMemo(
     () => portraitSVG(avatar, rank, options),
     // eslint-disable-next-line react-hooks/exhaustive-deps -- keyed by value, not identity
-    [avatar.seed, traitsKey, rank, options.season, options.crown, options.crownShift],
+    [avatar.seed, traitsKey, image?.pixelUrl, avatar.pixels, rank, options.season, options.crown, options.crownShift],
   );
-  return <PixelSVG svg={svg} width={44} height={44} scale={scale} className={className} />;
+  if (!image) return <PixelSVG svg={svg} width={44} height={44} scale={scale} className={className} />;
+  // Uploads sit in the frame's 32×32 window at (6, 6); the frame and crown are drawn over them.
+  return (
+    <span className={`relative block flex-none ${className}`} style={{ width: 44 * scale, height: 44 * scale }}>
+      {/* eslint-disable-next-line @next/next/no-img-element -- pixel art must not be resampled by next/image */}
+      <img
+        src={image.pixelated ? image.pixelUrl : image.originalUrl}
+        alt=""
+        className={`absolute object-cover ${image.pixelated ? "[image-rendering:pixelated]" : ""}`}
+        style={{ left: 6 * scale, top: 6 * scale, width: 32 * scale, height: 32 * scale }}
+      />
+      <PixelSVG svg={svg} width={44} height={44} scale={scale} className="absolute inset-0" />
+    </span>
+  );
 }
 
 const OWN_FLAGS = new Set<string>(FLAGS);
@@ -115,5 +130,66 @@ export function RankTag({ rank, label }: { rank: Rank; label: string }) {
       <span className="size-2.5" style={{ background: RANK_STYLE[rank].swatch }} />
       <span className="font-pixel text-14 font-medium">{label}</span>
     </span>
+  );
+}
+
+function pixelMap(rows: string[], colors: Record<string, string>): string {
+  const cells = rows.flatMap((row) => [...row].map((c) => colors[c] ?? null));
+  return pixelsToSVG(cells, rows[0].length, rows.length);
+}
+
+// Login icons drawn in the sign-in prototype (Inicio de Sesion.dc.html), not exported as assets.
+const PROVIDER_ICONS = {
+  google: pixelMap(
+    ["..........", "...####...", "..#....#..", ".#........", ".#...####.", ".#......#.", ".#......#.", "..#....#..", "...####...", ".........."],
+    { "#": "#F3EDE2" },
+  ),
+  x: pixelMap(
+    ["..........", ".##....##.", "..##..##..", "...####...", "....##....", "....##....", "...####...", "..##..##..", ".##....##.", ".........."],
+    { "#": "#F3EDE2" },
+  ),
+};
+
+const MAIL = pixelMap(
+  [
+    "oooooooooooooooooooo",
+    "obbbbbbbbbbbbbbbbbbo",
+    "owbbbbbbbbbbbbbbbbwo",
+    "obwbbbbbbbbbbbbbbwbo",
+    "obbwbbbbbbbbbbbbwbbo",
+    "obbbwbbbbbbbbbbwbbbo",
+    "obbbbwwbbbbbbwwbbbbo",
+    "obbbbbbwwggwwbbbbbbo",
+    "obbbbbbbggggbbbbbbbo",
+    "obbbbbbbbggbbbbbbbbo",
+    "obbbbbbbbbbbbbbbbbbo",
+    "obbbbbbbbbbbbbbbbbbo",
+    "osssssssssssssssssso",
+    "oooooooooooooooooooo",
+    "....................",
+    "....................",
+  ],
+  { o: "#4E4034", b: "#F3EDE2", w: "#BFB29C", s: "#BFB29C", g: "#3DD68C" },
+);
+
+export function ProviderIcon({ provider }: { provider: keyof typeof PROVIDER_ICONS }) {
+  return <PixelSVG svg={PROVIDER_ICONS[provider]} width={10} height={10} scale={2} />;
+}
+
+export function MailIcon() {
+  return <PixelSVG svg={MAIL} width={20} height={16} scale={2} />;
+}
+
+/** The season's kingdom seal (20×20). */
+export function Seal({ season, scale }: { season: number; scale: number }) {
+  return (
+    // eslint-disable-next-line @next/next/no-img-element -- pixel art must not be resampled by next/image
+    <img
+      src={`/art/seal/seal-t${seasonArt(season).asset}.svg`}
+      width={20 * scale}
+      height={20 * scale}
+      alt=""
+      className="block flex-none [image-rendering:pixelated]"
+    />
   );
 }
