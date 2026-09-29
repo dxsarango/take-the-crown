@@ -1,7 +1,7 @@
 "use client";
 
 import { useLocale, useTranslations } from "next-intl";
-import type { ReactNode } from "react";
+import { type ReactNode, useState } from "react";
 import { DropArrow, Flag, Icon, RankTag } from "@/components/art";
 import type { Locale } from "@/i18n/routing";
 import { clockParts, displayLink, formatCountdown, formatPercent, formatPrice } from "@/lib/format";
@@ -127,9 +127,48 @@ function Reserved({ secondsLeft, lockSeconds, align }: { secondsLeft: number; lo
   );
 }
 
-export function KingMessage({ king, size }: { king: King; size: "mobile" | "desktop" }) {
+/** Reports the king's message (one per IP per reign); the admin reviews it. */
+function ReportButton({ reignId }: { reignId: number }) {
   const home = useTranslations("home");
   const common = useTranslations("common");
+  const [state, setState] = useState<"idle" | "sending" | "done" | "failed">("idle");
+  if (state === "done") {
+    return (
+      <span role="status" className="text-12 text-crown-muted">
+        {home("reported")}
+      </span>
+    );
+  }
+  return (
+    <span className="flex items-center gap-2">
+      {state === "failed" && (
+        <span role="alert" className="text-12 text-crown-muted">
+          {home("reportFailed")}
+        </span>
+      )}
+      <button
+        type="button"
+        aria-label={home("reportMessage")}
+        disabled={state === "sending"}
+        onClick={async () => {
+          setState("sending");
+          const response = await fetch("/api/reports", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ reignId }),
+          }).catch(() => null);
+          setState(response?.ok ? "done" : "failed");
+        }}
+        className="hit-area h-8 px-2 text-12 font-medium text-crown-muted hover:bg-crown-velvet hover:text-crown-text"
+      >
+        {common("report")}
+      </button>
+    </span>
+  );
+}
+
+export function KingMessage({ king, size }: { king: King; size: "mobile" | "desktop" }) {
+  const home = useTranslations("home");
   if (!king.message && !king.link) return null;
   return (
     <>
@@ -151,13 +190,7 @@ export function KingMessage({ king, size }: { king: King; size: "mobile" | "desk
         ) : (
           <span />
         )}
-        {/* Reporting ships in M7. */}
-        <button
-          type="button"
-          className="hit-area h-8 px-2 text-12 font-medium text-crown-muted hover:bg-crown-velvet hover:text-crown-text"
-        >
-          {common("report")}
-        </button>
+        {king.message && <ReportButton reignId={king.reignId} />}
       </div>
     </>
   );
