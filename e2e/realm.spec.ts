@@ -49,6 +49,8 @@ test.describe("kingdom history", () => {
     await page.goto("/en/kingdom");
     const entries = page.getByTestId("history-entry");
     await expect(entries).toHaveCount(30);
+    // The button is server-rendered: a click before hydration has no handler yet.
+    await page.waitForLoadState("networkidle");
     await page.getByRole("button", { name: en.realm.earlier }).filter({ visible: true }).click();
     await expect(entries).toHaveCount(35);
     await expect(page.getByRole("button", { name: en.realm.earlier })).toHaveCount(0);

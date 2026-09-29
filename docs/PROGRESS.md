@@ -47,6 +47,8 @@ Conflicts between the design handoff (`/design`), the spec and the migrations, a
 ## Test notes
 
 - **Sign-in emails in e2e.** The first full run in M6 had two intermittent failures after signing in by magic link through Mailpit; the wait went from 5 s to 15 s (`e2e/fixtures/mail.ts`). If these waits become flaky again, find the root cause (Auth's email sending, Mailpit's API, or the query by recipient) instead of raising the timeout, and record it here.
+- **Clicks before hydration (M7).** "Loads earlier reigns" failed in a full run: Playwright clicked the server-rendered button before React attached its handler, so no request left the page. Tests that click right after navigating now wait for `networkidle` first.
+- **Dev-only 500s on `/art/[...path]`.** On a cold `next dev`, a burst of first requests to the static-params art route sometimes answers 500 with "Unexpected end of JSON input" (Next reading its route manifest while it is still being written). Production builds prerender these files, so it does not affect them; it only leaves a flag or icon missing in a dev screenshot.
 
 ## Deployment checklist
 
