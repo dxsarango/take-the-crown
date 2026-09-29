@@ -35,10 +35,27 @@ async function existingTables(client: pg.ClientBase, names: string[]): Promise<s
   return names.filter((name) => rows.some((row) => row.name === name));
 }
 
+const DEADLOCK = "40P01";
+
+/**
+ * Realtime's change poller reads these tables whenever a client has subscribed, and a truncate that
+ * locks them one by one can deadlock with it. Postgres cancels one side; retrying the truncate is safe.
+ */
+async function truncate(client: pg.ClientBase, tables: string[]): Promise<void> {
+  for (let attempt = 1; ; attempt++) {
+    try {
+      await client.query(`truncate ${tables.join(", ")} restart identity cascade`);
+      return;
+    } catch (error) {
+      if ((error as { code?: string }).code !== DEADLOCK || attempt >= 5) throw error;
+    }
+  }
+}
+
 /** Empties all game data and restores config, seasons and the crown to the migration seed. */
 export async function resetToSeed(client: pg.ClientBase, extraTables: string[] = []): Promise<void> {
   const tables = await existingTables(client, [...extraTables, ...GAME_TABLES]);
-  await client.query(`truncate ${tables.join(", ")} restart identity cascade`);
+  await truncate(client, tables);
   await client.query("delete from auth.users where email like '%@test.local'");
   await client.query("delete from app_config");
   await client.query("insert into app_config default values");
