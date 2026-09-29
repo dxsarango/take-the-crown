@@ -39,6 +39,22 @@ describe("price_at", () => {
     expect(mismatches).toEqual([]);
   });
 
+  it("matches the TypeScript display formula every 37 s across a 120 h reign", async () => {
+    const setAt = new Date("2026-10-01T00:00:00.000Z");
+    for (const base of [500, 600, 3400, 12_345, 250_000]) {
+      const rows = await q<{ at: Date; price: number }>(
+        `select at, price_at($1, $2, at) as price
+         from generate_series($2::timestamptz, $2::timestamptz + interval '120 hours', interval '37 seconds') as at`,
+        [base, setAt],
+      );
+      const mismatches = rows.filter(
+        (row) => row.price !== priceAt(base, setAt, row.at, { floorCents: 500, decayBpsPerHour: 200 }),
+      );
+      expect(rows.length).toBeGreaterThan(11_000);
+      expect(mismatches.map((m) => `${base} @ ${m.at.toISOString()}: sql ${m.price}`)).toEqual([]);
+    }
+  });
+
   it("reports the live price in public_crown_state", async () => {
     await q("update crown_state set base_price_cents = 1000, base_set_at = now() - interval '1 hour'");
     const state = await one<{ price_cents: number }>("select price_cents from public_crown_state");
