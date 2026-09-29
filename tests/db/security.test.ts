@@ -19,8 +19,10 @@ const PUBLIC_READ = [
   "profile_name_history",
   "profile_stats",
   "profiles",
+  "public_chronicle",
   "public_crown_state",
   "public_reigns",
+  "public_rivalries",
   "season_leaderboard",
   "seasons",
 ];
