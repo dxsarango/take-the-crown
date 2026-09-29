@@ -42,6 +42,31 @@ isOneToOne: false
       referencedColumns: ["id"]
     }
                   ]
+                },"admin_actions": {
+                  Row: {
+                    "action": string,"admin_profile_id": string,"created_at": string,"details": NonNullable<Json>,"id": number,"target": string | null
+                  }
+                  Insert: {
+                    "action": string,"admin_profile_id": string,"created_at"?: string,"details"?: NonNullable<Json>,"id"?: never,"target"?: string | null
+                  }
+                  Update: {
+                    "action"?: string,"admin_profile_id"?: string,"created_at"?: string,"details"?: NonNullable<Json>,"id"?: never,"target"?: string | null
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "admin_actions_admin_profile_id_fkey"
+      columns: ["admin_profile_id"]
+isOneToOne: false
+      referencedRelation: "profile_stats"
+      referencedColumns: ["profile_id"]
+    },{
+      foreignKeyName: "admin_actions_admin_profile_id_fkey"
+      columns: ["admin_profile_id"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    }
+                  ]
                 },"app_config": {
                   Row: {
                     "decay_bps_per_hour": number,"floor_cents": number,"id": boolean,"late_payment_grace_seconds": number,"lock_seconds": number,"max_locks_per_ip_per_hour": number,"max_message_length": number,"name_change_days": number,"step_bps": number,"updated_at": string
@@ -757,11 +782,17 @@ isOneToOne: false
 "current_price_cents":
 { Args: Record<PropertyKey, never>; Returns: number
                            },
+"dismiss_report":
+{ Args: { "p_admin_profile_id": string,"p_report_id": number }; Returns: undefined
+                           },
 "ensure_profile_for_user":
 { Args: { "p_email": string,"p_name_hint": string,"p_user_id": string }; Returns: string
                            },
 "generate_profile_name":
 { Args: Record<PropertyKey, never>; Returns: string
+                           },
+"hide_reign_message":
+{ Args: { "p_admin_profile_id": string,"p_reign_id": number }; Returns: undefined
                            },
 "is_profile_name_available":
 { Args: { "p_name": string,"p_profile_id"?: string }; Returns: boolean
@@ -799,6 +830,28 @@ isOneToOne: false
 "release_profile_name":
 { Args: { "p_name": string }; Returns: boolean
                            },
+"report_reign":
+{ Args: { "p_ip_hash": string,"p_reason": string,"p_reign_id": number }; Returns: string
+                           },
+"request_manual_refund":
+{ Args: { "p_admin_profile_id": string,"p_payment_id": string }; Returns: {
+              "amount_cents": number,
+"created_at": string,
+"currency": string,
+"email": string,
+"id": string,
+"lock_id": string,
+"provider": string,
+"provider_payment_id": string,
+"status": Database["public"]['Enums']["payment_status"],
+"updated_at": string
+            }
+                          SetofOptions: {
+        from: "*"
+        to: "payments"
+        isOneToOne: true
+        isSetofReturn: false
+      } },
 "resolve_buyer_profile":
 { Args: { "p_lock": Database["public"]['Tables']["price_locks"]['Row'] }; Returns: string
                            },
@@ -807,6 +860,9 @@ isOneToOne: false
                            },
 "set_lock_checkout":
 { Args: { "p_checkout_id": string,"p_lock_id": string }; Returns: undefined
+                           },
+"set_profile_banned":
+{ Args: { "p_admin_profile_id": string,"p_banned": boolean,"p_profile_id": string }; Returns: undefined
                            },
 "update_profile":
 { Args: { "p_alerts_dethroned": boolean,"p_alerts_price_below_cents": number,"p_alerts_season_start": boolean,"p_avatar_mode": string,"p_avatar_path": string,"p_avatar_pixelated": boolean,"p_avatar_traits": Json,"p_country_code": string,"p_link_github": string,"p_link_instagram": string,"p_link_linkedin": string,"p_link_tiktok": string,"p_link_website": string,"p_link_x": string,"p_link_youtube": string,"p_locale": string,"p_main_link": string,"p_name": string,"p_profile_id": string,"p_show_chronicle": boolean,"p_show_rival": boolean,"p_showcase": (string)[] }; Returns: {
