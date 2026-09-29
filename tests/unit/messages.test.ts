@@ -63,6 +63,18 @@ const CHANGED_FROM_DESIGN = new Set([
   "editProfile.alHelp",
   "editProfile.priceErr",
   "editProfile.avAlt",
+  "realm.began",
+  "realm.today",
+  "realm.scopes.0",
+  "realm.allNote",
+  "realm.endedShort",
+  "realm.endedLong",
+  "realm.ended",
+  "realm.dates",
+  "realm.kosLine",
+  "realm.podiumSub",
+  "realm.seasonStats",
+  "realm.keep",
 ]);
 
 describe("messages", () => {

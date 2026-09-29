@@ -78,7 +78,8 @@
       "fellTo": "cayó ante",
       "earned": "ganó",
       "firstReign": "ocupó el trono vacío",
-      "patriot": "primer rey de su país"
+      "patriot": "primer rey de su país",
+      "rose": "ascendió a"
     },
     "copyright": "© {year} {brand}"
   },
@@ -246,8 +247,42 @@
       "remembered": [
         "Recordado",
         "Reinaste en la Temporada 1: Día de Muertos."
+      ],
+      "oneMin": [
+        "Rey de un minuto",
+        "Te destronaron en menos de 60 s."
+      ],
+      "bag": [
+        "Cazador de gangas",
+        "Tomaste la corona al precio mínimo."
+      ],
+      "revenge": [
+        "Venganza",
+        "Recuperaste la corona de quien te la quitó."
+      ],
+      "g1": [
+        "Guardián I",
+        "Reinaste 12 h seguidas."
+      ],
+      "g2": [
+        "Guardián II",
+        "Reinaste 24 h seguidas."
+      ],
+      "patriot": [
+        "Patriota",
+        "Primer rey de tu país."
+      ],
+      "collector": [
+        "Coleccionista",
+        "Tomaste 10 coronas."
+      ],
+      "rivalry": [
+        "Rivalidad",
+        "Te quitaste la corona 5 veces con la misma persona."
       ]
-    }
+    },
+    "rankUp": "Nuevo rango",
+    "rankDesc": "{time} en el trono en total."
   },
   "profile": {
     "shareProfile": "Compartir perfil",
@@ -442,7 +477,7 @@
     ],
     "histTitle": "Historia del reino",
     "earlier": "Ver reinados anteriores",
-    "began": "La Temporada 0 empezó el 15 sep 2026.",
+    "began": "La {season} empezó el {date}.",
     "legend": "Tamaño = duración del reinado",
     "lg": [
       "10 h o más",
@@ -458,12 +493,12 @@
     "longestL": "Más largo por ahora",
     "now": "Reinando ahora",
     "by": "Destronado por {name}",
-    "today": "Hoy · 27 sep",
+    "today": "Hoy · {date}",
     "d26": "26 sep",
     "d25": "25 sep",
     "hofTitle": "Salón de la fama",
     "scopes": [
-      "Temporada 0",
+      "Temporada {n}",
       "Todos los tiempos"
     ],
     "tabs": [
@@ -478,16 +513,16 @@
       "Reinado individual más corto de la temporada",
       "Tiempo total reinando por país"
     ],
-    "allNote": "La Temporada 0 es la primera, así que los récords de todos los tiempos coinciden con ella hasta que empiece la Temporada 1 el 1 nov.",
+    "allNote": "La Temporada {n} es la primera, así que los récords de todos los tiempos coinciden con ella hasta que empiece la Temporada {next} el {date}.",
     "kingsN": "{count} reyes",
     "crownsU": "",
-    "endedShort": "La Temporada 0 terminó",
-    "endedLong": "La Temporada 0: Génesis terminó",
-    "ended": "Terminó la Temporada 0: Génesis",
-    "dates": "15 sep – 31 oct 2026",
+    "endedShort": "La Temporada {n} terminó",
+    "endedLong": "La {season} terminó",
+    "ended": "Terminó la {season}",
+    "dates": "{from} – {to}",
     "kos": "Rey de la temporada",
     "kosSub": "en el trono esta temporada",
-    "kosLine": "Llegó a Emperador el 12 de octubre y resistió a kenji en la última semana. Su retrato se queda en el salón para siempre.",
+    "kosLine": "{name} pasó más tiempo que nadie en el trono esta temporada. Su retrato se queda en el salón para siempre.",
     "kosStats": [
       "Coronas tomadas",
       "Reinado más largo",
@@ -495,8 +530,8 @@
     ],
     "emperor": "Emperador",
     "podiumT": "Podio de la temporada",
-    "podiumSub": "Más tiempo reinando en la Temporada 0",
-    "seasonStats": "La Temporada 0 en cifras",
+    "podiumSub": "Más tiempo reinando en la Temporada {n}",
+    "seasonStats": "La Temporada {n} en cifras",
     "st": [
       "Reinados",
       "Reyes",
@@ -507,9 +542,29 @@
     ],
     "next": "Próxima temporada",
     "startsIn": "Empieza en",
-    "keep": "Los 214 reyes de la Temporada 0 conservan para siempre la medalla Fundador y el marco Genesis.",
+    "keep": "{count, plural, one {El # rey de la Temporada {n} conserva} other {Los # reyes de la Temporada {n} conservan}} para siempre la medalla {medal} y el {frame}.",
     "remind": "Avísame cuando empiece",
-    "shareSeason": "Compartir la temporada"
+    "shareSeason": "Compartir la temporada",
+    "allNoteMany": "Todos los tiempos suma todas las temporadas hasta ahora.",
+    "seasonN": "Temporada {n}",
+    "nowTag": "Ahora",
+    "endedTag": "Terminó",
+    "leading": "Lidera la temporada",
+    "leadingSub": "en el trono por ahora",
+    "inProgress": "La {season} está en marcha",
+    "soFar": "La Temporada {n} hasta ahora",
+    "paidBy": "Pagado por {name} el {date}",
+    "nextStarted": "Empezó el {date}",
+    "goThrone": "Ir al trono",
+    "reminded": "Listo. Te avisaremos por correo cuando empiece.",
+    "noMore": "Esos son todos los reinados de la temporada.",
+    "tabsLabel": "Récords",
+    "scopeLabel": "Alcance",
+    "frameNames": {
+      "genesis": "marco Genesis",
+      "marigold": "marco Cempasúchil"
+    },
+    "season": "Temporada"
   },
   "login": {
     "head": "Inicia sesión para guardar tus reinados, logros y alertas.",
