@@ -1,4 +1,8 @@
+import { existsSync } from "node:fs";
 import { defineConfig, devices } from "@playwright/test";
+
+// Tests sign webhooks with the same secret as the local server.
+if (existsSync(".env.local")) process.loadEnvFile(".env.local");
 
 const port = Number(process.env.PORT ?? 3000);
 const baseURL = `http://localhost:${port}`;
