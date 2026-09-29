@@ -41,6 +41,25 @@ function icuArgs(message: string): string[] {
 
 const locales = { en: flatten(en), es: flatten(es) };
 
+/**
+ * Design strings replaced on purpose: values from app_config or the database become placeholders,
+ * the brand becomes {brand}, and share.chaLabel uses neutral copy (see docs/PROGRESS.md decisions).
+ */
+const CHANGED_FROM_DESIGN = new Set([
+  "common.dropping",
+  "common.floor",
+  "homeStates.takeFirst",
+  "homeStates.empty2",
+  "homeStates.exp2",
+  "editProfile.bRejWhy",
+  "editProfile.priceNote",
+  "share.mFoot",
+  "share.chaLabel",
+  "share.mNote",
+  "season.nextDesc.1",
+  "season.nextDesc.2",
+]);
+
 describe("messages", () => {
   it("has the same keys in every locale", () => {
     expect([...locales.es.keys()].sort()).toEqual([...locales.en.keys()].sort());
@@ -52,13 +71,28 @@ describe("messages", () => {
     }
   });
 
-  it("contains every string from the design handoff unchanged", () => {
+  it("contains every string from the design handoff, changed only where decided", () => {
     for (const [locale, design] of [
       ["en", designEn],
       ["es", designEs],
     ] as const) {
       for (const [key, value] of flatten(design)) {
-        expect(locales[locale].get(key), `${locale}: ${key}`).toBe(value);
+        const current = locales[locale].get(key);
+        if (CHANGED_FROM_DESIGN.has(key)) {
+          expect(current, `${locale}: ${key} should differ from the design`).not.toBe(value);
+        } else {
+          expect(current, `${locale}: ${key}`).toBe(value);
+        }
+      }
+    }
+  });
+
+  it("never hardcodes the brand name", () => {
+    for (const [locale, messages] of Object.entries(locales)) {
+      for (const [key, value] of messages) {
+        // "cr" is the avatar crown layer, not the brand.
+        if (key === "editProfile.parts.cr") continue;
+        expect(value, `${locale}: ${key}`).not.toMatch(/\bCrown\b/);
       }
     }
   });

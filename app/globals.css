@@ -5,6 +5,17 @@
 
 @source not "../design";
 
+@theme {
+  /* MOTION §3: the "dropping" arrow steps 0 → 2 → 4 → 0 px over 2.4 s. */
+  --animate-crown-drop: crown-drop 2.4s steps(1, end) infinite;
+  @keyframes crown-drop {
+    0% { transform: translateY(0); }
+    33% { transform: translateY(2px); }
+    66% { transform: translateY(4px); }
+    100% { transform: translateY(0); }
+  }
+}
+
 /* next/font serves hashed family names; point the token stacks at them. */
 :root {
   --crown-font-ui: var(--font-manrope), system-ui, sans-serif;

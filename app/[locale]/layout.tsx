@@ -4,6 +4,8 @@ import { notFound } from "next/navigation";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { routing } from "@/i18n/routing";
+import { BRAND_NAME } from "@/lib/config/brand";
+import { publicClient } from "@/lib/supabase/public";
 import "../globals.css";
 
 const manrope = Manrope({
@@ -26,7 +28,7 @@ export async function generateMetadata({ params }: LayoutProps<"/[locale]">): Pr
   const { locale } = await params;
   if (!hasLocale(routing.locales, locale)) return {};
   const t = await getTranslations({ locale, namespace: "app" });
-  return { title: t("name"), description: t("description") };
+  return { title: BRAND_NAME, description: t("description") };
 }
 
 export default async function LocaleLayout({ children, params }: LayoutProps<"/[locale]">) {
@@ -34,8 +36,11 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
   if (!hasLocale(routing.locales, locale)) notFound();
   setRequestLocale(locale);
 
+  // The active season recolors --crown-season through <html data-season>.
+  const { data: crown } = await publicClient().from("crown_state").select("season_id").single();
+
   return (
-    <html lang={locale} className={`${manrope.variable} ${pixelify.variable}`}>
+    <html lang={locale} data-season={crown?.season_id ?? 0} className={`${manrope.variable} ${pixelify.variable}`}>
       <body className="min-h-dvh">
         <NextIntlClientProvider>{children}</NextIntlClientProvider>
       </body>
