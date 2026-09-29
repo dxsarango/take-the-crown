@@ -23,7 +23,9 @@ const PUBLIC_READ = [
   "public_crown_state",
   "public_reigns",
   "public_rivalries",
+  "rank_ups",
   "season_leaderboard",
+  "season_stats",
   "seasons",
 ];
 

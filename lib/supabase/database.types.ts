@@ -346,6 +346,31 @@ isOneToOne: true
                   Relationships: [
                     
                   ]
+                },"rank_ups": {
+                  Row: {
+                    "profile_id": string,"rank": string,"reached_at": string
+                  }
+                  Insert: {
+                    "profile_id": string,"rank": string,"reached_at"?: string
+                  }
+                  Update: {
+                    "profile_id"?: string,"rank"?: string,"reached_at"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "rank_ups_profile_id_fkey"
+      columns: ["profile_id"]
+isOneToOne: false
+      referencedRelation: "profile_stats"
+      referencedColumns: ["profile_id"]
+    },{
+      foreignKeyName: "rank_ups_profile_id_fkey"
+      columns: ["profile_id"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    }
+                  ]
                 },"reigns": {
                   Row: {
                     "country_code": string | null,"dethroned_by": string | null,"duration_seconds": number | null,"end_reason": Database["public"]['Enums']["reign_end_reason"] | null,"ended_at": string | null,"id": number,"link": string | null,"local_hour": number | null,"message": string | null,"message_hidden": boolean,"name": string,"payment_id": string | null,"price_paid_cents": number,"profile_id": string,"season_id": number,"started_at": string
@@ -464,7 +489,7 @@ isOneToOne: false
                   ]
                 },"country_leaderboard": {
                   Row: {
-                    "country_code": string | null,"crowns": number | null,"reign_seconds": number | null,"season_id": number | null
+                    "country_code": string | null,"crowns": number | null,"kings": number | null,"reign_seconds": number | null,"season_id": number | null
                   }
                   Relationships: [
                     {
@@ -489,7 +514,7 @@ isOneToOne: false
                   Relationships: [
                     {
       foreignKeyName: "reigns_profile_id_fkey"
-      columns: ["profile_id"]
+      columns: ["from_profile_id"]
 isOneToOne: false
       referencedRelation: "profile_stats"
       referencedColumns: ["profile_id"]
@@ -501,13 +526,13 @@ isOneToOne: false
       referencedColumns: ["profile_id"]
     },{
       foreignKeyName: "reigns_profile_id_fkey"
-      columns: ["from_profile_id"]
+      columns: ["profile_id"]
 isOneToOne: false
       referencedRelation: "profile_stats"
       referencedColumns: ["profile_id"]
     },{
       foreignKeyName: "reigns_profile_id_fkey"
-      columns: ["profile_id"]
+      columns: ["from_profile_id"]
 isOneToOne: false
       referencedRelation: "profiles"
       referencedColumns: ["id"]
@@ -519,7 +544,7 @@ isOneToOne: false
       referencedColumns: ["id"]
     },{
       foreignKeyName: "reigns_profile_id_fkey"
-      columns: ["from_profile_id"]
+      columns: ["profile_id"]
 isOneToOne: false
       referencedRelation: "profiles"
       referencedColumns: ["id"]
@@ -630,6 +655,19 @@ isOneToOne: false
       referencedRelation: "profiles"
       referencedColumns: ["id"]
     },{
+      foreignKeyName: "reigns_season_id_fkey"
+      columns: ["season_id"]
+isOneToOne: false
+      referencedRelation: "seasons"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"season_stats": {
+                  Row: {
+                    "countries": number | null,"kings": number | null,"longest_seconds": number | null,"peak_price_cents": number | null,"reigns": number | null,"season_id": number | null,"shortest_seconds": number | null
+                  }
+                  Relationships: [
+                    {
       foreignKeyName: "reigns_season_id_fkey"
       columns: ["season_id"]
 isOneToOne: false
@@ -752,6 +790,9 @@ isOneToOne: false
 "record_paid_payment":
 { Args: { "p_amount_cents": number,"p_currency": string,"p_email": string,"p_event_id": string,"p_lock_id": string,"p_provider": string,"p_provider_payment_id": string }; Returns: string
                            },
+"record_rank_ups":
+{ Args: { "p_profile_id": string }; Returns: number
+                           },
 "release_price_lock":
 { Args: { "p_lock_id": string }; Returns: undefined
                            },
@@ -803,7 +844,7 @@ isOneToOne: false
       } }
           }
           Enums: {
-            "event_kind": "crown_taken"|"achievement_unlocked"|"season_started"|"season_ended","lock_status": "active"|"consumed"|"expired","payment_status": "paid"|"applied"|"refund_pending"|"refunded"|"failed","rarity": "common"|"rare"|"epic"|"legendary"|"seasonal","reign_end_reason": "dethroned"|"season_end"|"admin"
+            "event_kind": "crown_taken"|"achievement_unlocked"|"season_started"|"season_ended"|"rank_up","lock_status": "active"|"consumed"|"expired","payment_status": "paid"|"applied"|"refund_pending"|"refunded"|"failed","rarity": "common"|"rare"|"epic"|"legendary"|"seasonal","reign_end_reason": "dethroned"|"season_end"|"admin"
           }
           CompositeTypes: {
             [_ in never]: never
@@ -923,7 +964,7 @@ export const Constants = {
           }
         },"public": {
           Enums: {
-            "event_kind": ["crown_taken", "achievement_unlocked", "season_started", "season_ended"],"lock_status": ["active", "consumed", "expired"],"payment_status": ["paid", "applied", "refund_pending", "refunded", "failed"],"rarity": ["common", "rare", "epic", "legendary", "seasonal"],"reign_end_reason": ["dethroned", "season_end", "admin"]
+            "event_kind": ["crown_taken", "achievement_unlocked", "season_started", "season_ended", "rank_up"],"lock_status": ["active", "consumed", "expired"],"payment_status": ["paid", "applied", "refund_pending", "refunded", "failed"],"rarity": ["common", "rare", "epic", "legendary", "seasonal"],"reign_end_reason": ["dethroned", "season_end", "admin"]
           }
         }
 } as const
