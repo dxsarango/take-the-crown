@@ -27,6 +27,11 @@ Conflicts between the design handoff (`/design`), the spec and the migrations, a
 19. **Rank-up events.** A `rank_up` event, emitted once per profile per rank (unique in the database, since the live check runs every minute). Shown in the feed, as a toast like an achievement unlock, and as a share card. Built in M6; the card in M8.
 20. **Mobile top bar.** The brand keeps the design's 20 px on mobile; "Sign in" becomes an icon button there (accessible label, 44 px touch area). The design has no user icon, so an 8×8 pixel bust in the style of its 8×8 icons is used. If a longer brand stops fitting, ask the design for a compact mobile lockup.
 21. **Avatar route.** `GET /avatar/[name].svg` moves to M8 with share cards and email; pages render portraits inline.
+22. **Email in the payment modal.** The design's modal has no email field, but guests need one (receipt, profile, known-email check). Added under the name, with the design's field style and login copy.
+
+## Open questions
+
+1. **Knowing an email has a profile.** A signed-out buyer who types an email that already has a profile gets "check your email" instead of a checkout, so the form reveals that the email has bought before (not whose profile it is). Hiding it would mean sending every signed-out buyer through email verification before paying. Interim: keep the decided flow.
 
 ## Deployment checklist
 
@@ -34,6 +39,8 @@ Steps for every hosted environment (staging and production).
 
 - [ ] Set the real season dates in `seasons` (T0 launch date first) with a migration or the admin seasons list; the seed dates in `0001_init.sql` are placeholders
 - [ ] Push migrations with `supabase db push` and never `--include-seed`: `supabase/seed.sql` is local-only
+- [ ] Set `PAYMENT_PROVIDER` to the real provider; the test provider refuses to run in production
+- [ ] Supabase Auth: site URL and redirect URLs for `/auth/callback`, SMTP through Resend, magic link expiry 15 min
 - [ ] Confirm pg_cron jobs (`rollover-season`, `live-achievements`, `price-alerts`) are scheduled and active
 
 ## Pre-production
@@ -111,17 +118,18 @@ Steps for every hosted environment (staging and production).
 
 ## Milestone 4 — Lock, test payment provider, webhook, coronation
 
-- [ ] Payment provider interface + `test` provider (simulated checkout page and signed webhook)
-- [ ] `POST /api/locks`: zod validation, IP hash, map DB errors to UI states, `set_lock_checkout`
-- [ ] `POST /api/locks/[id]/release`
-- [ ] `POST /api/webhooks/[provider]`: signature verification, normalize, `record_paid_payment`, refund on `refund_pending`, `mark_payment_refunded`
-- [ ] Known emails: a signed-out buyer whose email already has a profile (claimed or not) gets a magic link instead of a lock, with one neutral message that never reveals the profile's name or whether the typed name differs; only emails without a profile buy as guests. Enforce it in a migration (`create_price_lock` rejects guest locks for known emails; `apply_payment` refunds a guest payment whose email gained a profile after the lock) and in `POST /api/locks`
-- [ ] Impersonation tests (db + API + e2e): paying with someone else's email never creates a reign under their profile, and responses for claimed, unclaimed and unknown emails don't reveal which is which
-- [ ] Payment modal (bottom sheet mobile / modal desktop): form with public name + live availability check, country detection (`cf-ipcountry`) or no country, avatar seed generated on open for the live preview, countdown only after the lock is created on submit, moderation rejection before any lock, processing, completed, errors
-- [ ] Home states: payment error, lock expired
-- [ ] Coronation animation (canvas, 1.8 s, reduced 400 ms fade) triggered by realtime
-- [ ] Revalidate home/profile after `applied`
-- [ ] Tests: API route unit tests, e2e take the crown as guest, locked state
+- [x] `PaymentProvider` interface (SPEC §10) + `test` provider: overlay checkout inside the modal, HMAC-signed webhooks to our own route, refunds confirmed by webhook; refuses to run when `VERCEL_ENV=production`
+- [x] `POST /api/locks`: zod validation, IP hash, human-check seam (Turnstile in M9), moderation seam (placeholder rules from the design: shorteners, links in the message; AI verdict in M7) before any lock, `create_price_lock`, checkout, `set_lock_checkout`; every DB error mapped to a UI state
+- [x] `GET /api/locks/[id]` (status while checkout is open) and `POST /api/locks/[id]/release`
+- [x] `POST /api/webhooks/[provider]`: signature, `record_paid_payment`, provider refund on `refund_pending`, `mark_payment_refunded`, revalidate the home on `applied`
+- [x] Known emails: migration `0010` (`create_price_lock` raises `email_verification_required` for guest locks on known emails; `apply_payment` refunds a guest payment whose email gained a profile after the lock); the API sends a magic link and answers with one neutral message; `/auth/callback` starts the session, claims or creates the profile and reopens the form
+- [x] Impersonation tests: db (claimed and unclaimed, case-insensitive, late profile creation), API (identical answers for claimed and unclaimed), e2e (someone else's email never crowns their profile; the real owner verifies and is crowned as themselves)
+- [x] Payment modal (bottom sheet / 920 px modal): name with live availability, email, link, message with counter, country (detected from `cf-ipcountry`, editable, or no country), avatar seed generated on open for the preview, countdown and 20-segment bar once the lock exists, moderation rejection, one notice per error, processing, success with sign-in prompt (providers wired in M5), email verification
+- [x] Home states: payment error, lock expired (with the current price)
+- [x] Coronation: canvas port of the prototype (1.8 s; name, clock and price change at landing), reduced-motion 400 ms fade, for every open client via realtime; "Watch your coronation" replays it
+- [x] Tests: unit (input, errors, moderation placeholder, webhook signatures), db (0010), e2e (guest takeover, two browsers competing, moderation, decline, expiry, impersonation, owner verification, webhooks, refunds, reduced motion, screenshots)
+- [ ] Session-aware modal (prefill the signed-in player's name, hide the email field): M5, with sign-in
+- [ ] Redirect-mode checkout return (`/{locale}?lock=…`): M10, with the real provider (the test provider uses the overlay)
 
 ## Milestone 5 — Auth and profiles
 
