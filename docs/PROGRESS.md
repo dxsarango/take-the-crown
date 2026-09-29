@@ -25,6 +25,11 @@ Conflicts between the design handoff (`/design`), the spec and the migrations, a
 17. **Segmented switch relief.** Approved: follow the prototype (2 px insets).
 18. **Payment modal avatar upload.** Approved: upload only in edit profile.
 
+## Open questions
+
+1. **Rank-up proclamations.** The design's feed shows "priya_ships rose to Duke", but the database emits no rank-change events (ranks are derived from total reign time, which grows while reigning). Supporting it needs a migration: a `rank_up` event kind, emitted by `apply_payment` (when a reign ends) and by the per-minute live check. Until decided, the feed shows takeovers, first reigns and achievements.
+2. **Brand size on mobile.** The design was drawn with the 5-letter "Crown"; "Take the Crown" at the design's 20 px does not fit the 390 px top bar next to "Iniciar sesión". Interim: 16 px on mobile, 28 px on desktop as designed.
+
 ## Deployment checklist
 
 Steps for every hosted environment (staging and production).
@@ -86,23 +91,24 @@ Steps for every hosted environment (staging and production).
 
 ## Milestone 3 — Read-only home
 
-- [ ] Supabase clients: server (service role, server-only) and browser (anon)
-- [ ] Generated database types
-- [ ] Season resolution server-side; `data-season` on `<html>`; season asset lookup with T0 fallback
-- [ ] Top bar: brand, season pill with days left, EN/ES segmented switch, Sign in
-- [ ] Hero scene (98×72 ×4 mobile, 240×84 ×6 desktop) with throne, rank frame, avatar, crown
-- [ ] Avatar route `GET /avatar/[name].svg?season=&crown=`, seeded by `avatar_seed` + `avatar_traits`, using `design/lib/avatar-lib.js`, long cache per season; regression test against `assets/avatar/samples`
-- [ ] King block: name, flag / country pill, rank tag, message, link (`rel="sponsored ugc noopener"`), Report button (disabled until M7)
-- [ ] Reign clock (server timestamps, clock offset from `Date` header)
-- [ ] Live price from `public_crown_state` with shared price formula; dropping arrow animation; floor state
-- [ ] Home states: locked by someone else (countdown, 20-segment bar, crown shake), empty throne, floor price
-- [ ] Line of succession, hall of fame preview, "Proclamations" feed (last 24 h)
-- [ ] Footer: stone band + seal, legal links
-- [ ] Realtime: `crown_state` updates and `events` inserts → refetch
-- [ ] ISR with short revalidate
-- [ ] Parameterize copy that hardcodes config values and sample data (decision 8); brand name via a single config constant (decision 10); season dates from `seasons` (decision 1); neutral `share.chaLabel` (decision 11)
-- [ ] Reduced-motion variants
-- [ ] Unit tests (price formula, clock offset, formatting) + e2e smoke; screenshots at 390 / 1440 compared with `Portada*.dc.html`
+- [x] Supabase anon client for public reads (server and browser); service-role client moves to M4, where the first write happens
+- [x] Generated database types (`pnpm db:types`)
+- [x] Season from `crown_state`; `data-season` on `<html>` (kept in step on live rollover); T2 art falls back to T0
+- [x] Top bar: brand constant, season pill with days left (dates from `seasons`), EN/ES switch, Sign in (wired in M5)
+- [x] Throne scene: ported `sceneT0`/`scene1` generators, one static SVG per season/size (`/art/throne/…`), wider than any screen and centered so it grows sideways; portrait (rank frame + avatar + season crown) laid over the seat at the same integer scale (×4 mobile, ×6 desktop)
+- [x] Pixel regression tests: scenes, rank frames and avatar samples match the design exports pixel for pixel
+- [x] King block: name, flag or country pill, rank tag, message, link (`rel="sponsored ugc noopener"`, `target="_blank"`), Report button (wired in M7)
+- [x] Reign clock from server timestamps with a clock offset from `/api/time`
+- [x] Live price with the shared formula (parity test: 400 random samples + ~58,000 timestamps every 37 s against `price_at`); dropping arrow animation; floor state
+- [x] Home states: someone else's lock (frozen price, countdown, 20-segment bar, crown shake), empty throne (spotlight scene), floor price
+- [x] Line of succession, hall of fame preview (this season), Proclamations feed (last 24 h)
+- [x] Footer: season stone band + seal, legal links (pages in M9)
+- [x] Realtime: `crown_state` updates and `events` inserts → refetch; lock expiry handled client-side
+- [x] ISR (`revalidate = 10`)
+- [x] Parameterized copy: config values (`{percent}`, `{price}`), `{brand}`, season number; neutral `share.chaLabel`; season names and dates from `seasons`
+- [x] Reduced motion: no arrow step animation, no crown shake
+- [x] Unit tests (price, hero state, clock offset, formatting, messages, art) and e2e (content, states, locale switch, live update); screenshots at 390/1440 in T0 and T1, en and es, compared with `Portada.dc.html` and `Portada Estados.dc.html`
+- [ ] Avatar route `GET /avatar/[name].svg?season=&crown=`: moved to M5 (profile) / M8 (share cards); the home renders portraits inline from `avatar_seed` + `avatar_traits`
 
 ## Milestone 4 — Lock, test payment provider, webhook, coronation
 
