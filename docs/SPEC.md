@@ -227,7 +227,7 @@ All UI strings in `messages/en.json` and `messages/es.json`. Locale from path, t
 
 ## 13. Admin
 
-Minimal, server-rendered: current crown and lock, recent payments with status and a manual refund action, reports queue with hide message and ban user, release a reserved former name (`release_profile_name`), seasons list, `app_config` editor.
+Minimal, server-rendered: current crown and lock, recent payments with status and a manual refund action, reports queue with hide message and ban user, content in review (held or rejected by moderation: approve, including rejected items to fix false positives, or reject held items with a reason), release a reserved former name (`release_profile_name`), seasons list, `app_config` editor.
 
 ## 14. Legal pages
 

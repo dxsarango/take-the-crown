@@ -42,6 +42,7 @@ Conflicts between the design handoff (`/design`), the spec and the migrations, a
 31. **Moderation outage: quarantine.** With no verdict after two attempts, the takeover goes ahead but its message and link are stored hidden (`moderation_status = 'pending'`); the buyer sees "Your message will appear after a short review." A cron retries every minute; approved content becomes visible, rejected content stays hidden. Public names skip quarantine and are checked against a word blocklist in the rules layer (`lib/moderation/name-blocklist.ts`). Profile saves without a verdict are still refused.
 32. **Reports.** The "Report" button opens a dialog built like the sign-in dialog, with three reasons (offensive, scam, spam). Report counts never hide anything. At 3 reports `report_reign` queues a `reports_threshold` notification for every admin; M8's outbox sender turns it into the email.
 33. **Model calls only after the gates.** Moderation runs after the human check and the hourly limits (per IP hash on takeovers, per profile on saves; both in `app_config`), and on profile saves only when the name or product link changed, so the model can't be called in bulk.
+34. **Admin review of moderated content.** `/admin` lists held and rejected reigns (message, link, status, reason, checks). Held items can be approved or rejected with a model reason; rejected items can be approved to fix false positives, after a confirmation. Approved items leave the list (an approved message can still be hidden from the reports queue). Every decision goes through `review_reign_moderation` (migration `0015`) and is logged in `admin_actions` with the previous status and reason.
 
 ## Open questions
 
@@ -64,7 +65,7 @@ Steps for every hosted environment (staging and production).
 - [ ] Google provider: OAuth client (web) with the Supabase callback `https://<project-ref>.supabase.co/auth/v1/callback` as redirect URI and scopes `openid`, `email`, `profile`; client id and secret in Supabase Auth → Providers → Google
 - [ ] X provider (`x`, OAuth 2.0): app with "Request email from users" on, callback `https://<project-ref>.supabase.co/auth/v1/callback`, scopes `users.read`, `tweet.read`, `users.email`; client id and secret in Supabase Auth → Providers → X
 - [ ] Moderation: `MODERATION_PROVIDER=anthropic` and `ANTHROPIC_API_KEY` set; run `pnpm test:moderation` against the key before launch
-- [ ] `CRON_SECRET` set (16+ chars); `vercel.json` schedules `/api/cron/moderation` every minute, which needs the Vercel Pro plan (Hobby only runs daily crons)
+- [ ] `CRON_SECRET` set (16+ chars); `vercel.json` schedules `/api/cron/moderation` every minute, which needs the Vercel Pro plan (Hobby only runs daily crons); Pro approved, also required for a commercial site
 - [ ] First admin: `update profile_private set is_admin = true where email = '<owner email>'` (SQL editor)
 - [ ] Storage: the `avatars` bucket comes from migration `0011`; check it is public with the 1 MB / PNG + WebP limits
 - [ ] Confirm pg_cron jobs (`rollover-season`, `live-achievements`, `price-alerts`) are scheduled and active
@@ -193,11 +194,12 @@ Steps for every hosted environment (staging and production).
 - [x] Migration `0013`: report reasons, `report_reign` (one per IP per reign), `hide_reign_message`, `set_profile_banned`, `dismiss_report`, `request_manual_refund`, `admin_actions` log
 - [x] `POST /api/reports` and the king's "Report" button
 - [x] `/admin` (404 unless `profile_private.is_admin`): crown and lock, payments with manual refund (through the provider; the reign stays), reports queue (hide message, ban/unban, dismiss), release a reserved former name, seasons (dates editable before a season starts, no overlaps), `app_config` editor with ranges, admin log; every action re-checks the admin
+- [x] Admin "In review" section (migration `0015`, `review_reign_moderation`): approve held or rejected content, reject held content with a reason, every decision logged
 - [x] Quarantine on outage (migration `0014`): `moderation_status` on locks and reigns, `public_reigns` hides pending and rejected content, `settle_reign_moderation`, `note_moderation_attempt`; buyer notice in the modal; `GET /api/cron/moderation` (bearer `CRON_SECRET`, 20 per run) with a per-minute Vercel cron
 - [x] Name blocklist in the rules layer; hourly limits (`take_rate_limit`) checked before any model call on takeovers and profile saves; profile saves only moderate a changed name or link
 - [x] Report dialog with a reason (offensive, scam, spam), required by the API; admin alert queued at 3 reports (email sent by M8's outbox)
 - [x] Production build check for the dev-only `/art` 500s (see test notes)
-- [x] Tests: unit (link rules, message rules, prompt wrapping and escaping with adversarial messages, strict verdict schema, fail-closed classifier, test stand-in), live suite against the model (`pnpm test:moderation`, 15 adversarial / harmful / benign cases, skipped without `ANTHROPIC_API_KEY`), db (report dedupe, admin functions, privileges, quarantine, rate limits, report threshold alert), e2e (model rejection, rule rejection, manipulation, outage with delayed approval, delayed rejection and repeated outage, cron secret, takeover and profile rate limits, blocked name, report dialog with reason, admin guard, hide/ban, refund, names, config, seasons)
+- [x] Tests: unit (link rules, message rules, prompt wrapping and escaping with adversarial messages, strict verdict schema, fail-closed classifier, test stand-in), live suite against the model (`pnpm test:moderation`, 15 adversarial / harmful / benign cases, skipped without `ANTHROPIC_API_KEY`), db (report dedupe, admin functions, privileges, quarantine, admin review, rate limits, report threshold alert), e2e (model rejection, rule rejection, manipulation, outage with delayed approval, delayed rejection and repeated outage, cron secret, takeover and profile rate limits, blocked name, report dialog with reason, admin guard, hide/ban, content review with false-positive approval, refund, names, config, seasons)
 
 ## Milestone 8 — Share cards, email outbox, dethroned alert
 
