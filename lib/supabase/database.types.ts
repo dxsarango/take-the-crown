@@ -552,13 +552,13 @@ isOneToOne: false
                   Relationships: [
                     {
       foreignKeyName: "reigns_profile_id_fkey"
-      columns: ["to_profile_id"]
+      columns: ["from_profile_id"]
 isOneToOne: false
       referencedRelation: "profile_stats"
       referencedColumns: ["profile_id"]
     },{
       foreignKeyName: "reigns_profile_id_fkey"
-      columns: ["from_profile_id"]
+      columns: ["to_profile_id"]
 isOneToOne: false
       referencedRelation: "profile_stats"
       referencedColumns: ["profile_id"]
@@ -570,13 +570,13 @@ isOneToOne: false
       referencedColumns: ["profile_id"]
     },{
       foreignKeyName: "reigns_profile_id_fkey"
-      columns: ["to_profile_id"]
+      columns: ["from_profile_id"]
 isOneToOne: false
       referencedRelation: "profiles"
       referencedColumns: ["id"]
     },{
       foreignKeyName: "reigns_profile_id_fkey"
-      columns: ["from_profile_id"]
+      columns: ["to_profile_id"]
 isOneToOne: false
       referencedRelation: "profiles"
       referencedColumns: ["id"]
@@ -871,6 +871,9 @@ isOneToOne: false
       } },
 "resolve_buyer_profile":
 { Args: { "p_lock": Database["public"]['Tables']["price_locks"]['Row'] }; Returns: string
+                           },
+"review_reign_moderation":
+{ Args: { "p_admin_profile_id": string,"p_approved": boolean,"p_reason": string,"p_reign_id": number }; Returns: undefined
                            },
 "rollover_season":
 { Args: Record<PropertyKey, never>; Returns: undefined
