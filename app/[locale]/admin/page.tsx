@@ -11,7 +11,8 @@ import { fetchAdminOverview } from "@/lib/admin/data";
 import { currentAdmin } from "@/lib/admin/guard";
 import { BRAND_NAME } from "@/lib/config/brand";
 import { displayLink, formatPrice } from "@/lib/format";
-import { dismissReport, hideMessage, refundPayment, releaseName, saveConfig, saveSeasonDates, setBanned } from "./actions";
+import { MODEL_REASONS } from "@/lib/moderation/model";
+import { dismissReport, hideMessage, refundPayment, releaseName, reviewContent, saveConfig, saveSeasonDates, setBanned } from "./actions";
 
 export const dynamic = "force-dynamic";
 
@@ -22,7 +23,7 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/admin">)
   return { title: `${t("title")} · ${BRAND_NAME}`, robots: { index: false, follow: false } };
 }
 
-const SECTIONS = ["crown", "payments", "reports", "names", "seasons", "config", "log"] as const;
+const SECTIONS = ["crown", "payments", "reports", "review", "names", "seasons", "config", "log"] as const;
 
 const secondary =
   "hit-area m-1 h-10 bg-crown-hall px-3.5 text-14 font-bold whitespace-nowrap shadow-relief-card hover:bg-crown-stone focus-visible:outline-offset-[6px] active:bg-crown-ink";
@@ -56,6 +57,9 @@ export default async function AdminPage({ params, searchParams }: PageProps<"/[l
 
   const t = await getTranslations({ locale, namespace: "admin" });
   const home = await getTranslations({ locale, namespace: "home" });
+  const payment = await getTranslations({ locale, namespace: "payment" });
+  const reasonText = (reason: string) =>
+    payment.has(`rejWhy.${reason}` as "rejWhy.hate") ? payment(`rejWhy.${reason}` as "rejWhy.hate") : reason;
   const data = await fetchAdminOverview();
   const query = await searchParams;
   const status = query.status;
@@ -223,6 +227,80 @@ export default async function AdminPage({ params, searchParams }: PageProps<"/[l
                         {t("reports.dismiss")}
                       </button>
                     </form>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </Section>
+
+        <Section id="review" title={t("nav.review")}>
+          <p className="text-14 text-crown-muted">{t("review.help")}</p>
+          {data.held.length === 0 ? (
+            <p className="text-14 text-crown-muted">{t("review.empty")}</p>
+          ) : (
+            <ul className="flex flex-col gap-2">
+              {data.held.map((h) => (
+                <li
+                  key={h.reignId}
+                  data-testid="admin-held"
+                  className={`flex flex-col gap-3 bg-crown-velvet p-4 ${h.status === "pending" ? "shadow-[inset_4px_0_0_var(--crown-text)]" : "shadow-flag-danger"}`}
+                >
+                  <div className="flex flex-wrap items-baseline justify-between gap-2">
+                    <span className="text-14 font-bold">{t("review.reign", { id: h.reignId, name: h.name })}</span>
+                    <span className="text-12 text-crown-muted">
+                      {utc(h.startedAt)} · {t("review.attempts", { count: h.attempts })}
+                    </span>
+                  </div>
+                  {h.message && <p className="text-16 leading-snug [overflow-wrap:anywhere]">{home("quote", { message: h.message })}</p>}
+                  {h.link && <p className="text-14 text-crown-muted [overflow-wrap:anywhere]">{h.link}</p>}
+                  <p className="text-14">
+                    <span className="font-bold">{h.status === "pending" ? t("review.pending") : t("review.rejected")}</span>
+                    {h.reason && (
+                      <span className="text-crown-muted">
+                        {" · "}
+                        {t("review.reason")}: {h.reason} ({reasonText(h.reason)})
+                      </span>
+                    )}
+                  </p>
+                  <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-end">
+                    <form action={reviewContent}>
+                      <Back locale={locale} section="review" />
+                      <input type="hidden" name="reignId" value={h.reignId} />
+                      <input type="hidden" name="decision" value="approve" />
+                      {h.status === "pending" ? (
+                        <button type="submit" className={secondary}>
+                          {t("review.approve")}
+                        </button>
+                      ) : (
+                        <ConfirmButton question={t("review.confirmApprove", { id: h.reignId })} className={secondary}>
+                          {t("review.approve")}
+                        </ConfirmButton>
+                      )}
+                    </form>
+                    {h.status === "pending" && (
+                      <form action={reviewContent} className="flex flex-col gap-2 sm:flex-row sm:items-end">
+                        <Back locale={locale} section="review" />
+                        <input type="hidden" name="reignId" value={h.reignId} />
+                        <input type="hidden" name="decision" value="reject" />
+                        <label className="flex flex-col gap-2 text-12 font-bold">
+                          {t("review.reason")}
+                          <select name="reason" required defaultValue="" className={`${field} sm:w-56`}>
+                            <option value="" disabled>
+                              {t("review.pickReason")}
+                            </option>
+                            {MODEL_REASONS.map((reason) => (
+                              <option key={reason} value={reason}>
+                                {reason}
+                              </option>
+                            ))}
+                          </select>
+                        </label>
+                        <button type="submit" className={secondary}>
+                          {t("review.reject")}
+                        </button>
+                      </form>
+                    )}
                   </div>
                 </li>
               ))}

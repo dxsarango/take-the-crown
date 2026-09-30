@@ -795,7 +795,8 @@
       "names": "Names",
       "seasons": "Seasons",
       "config": "Config",
-      "log": "Log"
+      "log": "Log",
+      "review": "In review"
     },
     "crown": {
       "king": "King",
@@ -872,7 +873,20 @@
       "admin": "Admin"
     },
     "done": "Done.",
-    "failed": "That didn't work. Nothing changed."
+    "failed": "That didn't work. Nothing changed.",
+    "review": {
+      "help": "Messages and links held because the moderator gave no verdict, and content it rejected. Approving a rejected item fixes a false positive and makes it public.",
+      "empty": "Nothing is held for review.",
+      "reign": "Reign {id} · {name}",
+      "attempts": "{count, plural, one {# check} other {# checks}}",
+      "pending": "Waiting for review",
+      "rejected": "Rejected",
+      "reason": "Reason",
+      "pickReason": "Pick a reason",
+      "approve": "Approve",
+      "reject": "Reject",
+      "confirmApprove": "Make the rejected content of reign {id} public?"
+    }
   },
   "report": {
     "title": "Report this message",

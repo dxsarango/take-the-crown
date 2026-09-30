@@ -225,6 +225,51 @@ test.describe("admin", () => {
       .toBe("refunded");
   });
 
+  test("reviews held content: approve, reject with a reason, and undo a false positive", async ({ page }) => {
+    const reigns = await sql<{ id: number }>("select id from reigns where season_id = 0 order by id desc limit 2");
+    const [first, second] = reigns;
+    await sql(
+      "update reigns set message = 'Held for review', moderation_status = 'pending', moderation_attempts = 3 where id = any($1)",
+      [reigns.map((r) => r.id)],
+    );
+    const status = async (id: number) =>
+      (await sql<{ moderation_status: string; moderation_reason: string | null }>(
+        "select moderation_status, moderation_reason from reigns where id = $1",
+        [id],
+      ))[0];
+
+    await asAdmin(page);
+    const held = (id: number) => page.getByTestId("admin-held").filter({ hasText: `Reign ${id} ·` });
+    await expect(held(first.id)).toContainText(en.admin.review.pending);
+    await expect(held(first.id)).toContainText("3 checks");
+
+    await held(first.id).getByRole("button", { name: en.admin.review.approve }).click();
+    await expect(shown(page, en.admin.done)).toBeVisible();
+    await expect.poll(() => status(first.id)).toEqual({ moderation_status: "approved", moderation_reason: null });
+    await expect(held(first.id)).toHaveCount(0);
+
+    await held(second.id).getByLabel(en.admin.review.reason).selectOption("spam");
+    await held(second.id).getByRole("button", { name: en.admin.review.reject }).click();
+    await expect.poll(() => status(second.id)).toEqual({ moderation_status: "rejected", moderation_reason: "spam" });
+    await expect(held(second.id)).toContainText(en.admin.review.rejected);
+    await expect(held(second.id)).toContainText(en.payment.rejWhy.spam);
+    await expect(held(second.id).getByRole("button", { name: en.admin.review.reject })).toHaveCount(0);
+
+    // A false positive: the rejected item can still be approved, after a confirmation.
+    page.once("dialog", (d) => void d.accept());
+    await held(second.id).getByRole("button", { name: en.admin.review.approve }).click();
+    await expect.poll(() => status(second.id)).toEqual({ moderation_status: "approved", moderation_reason: null });
+
+    const log = await sql<{ action: string; target: string }>(
+      "select action, target from admin_actions where action like '%_content' order by id",
+    );
+    expect(log).toEqual([
+      { action: "approve_content", target: String(first.id) },
+      { action: "reject_content", target: String(second.id) },
+      { action: "approve_content", target: String(second.id) },
+    ]);
+  });
+
   test("releases a reserved name and edits the rules and future seasons", async ({ page }) => {
     await sql("insert into profile_name_history (name, profile_id) select 'old_kenji', id from profiles where name = 'kenji'");
     await asAdmin(page);
@@ -258,6 +303,7 @@ test.describe("admin", () => {
   test("screenshot admin", async ({ page }, info) => {
     const [reign] = await sql<{ id: number }>("select current_reign_id as id from crown_state");
     await sql("insert into reports (reign_id, reporter_ip_hash, reason) values ($1, 'a', 'spam')", [reign.id]);
+    await sql("update reigns set moderation_status = 'pending' where id = $1", [reign.id]);
     await asAdmin(page);
     await page.waitForLoadState("networkidle");
     await page.screenshot({ path: `test-results/screens/admin-${info.project.name}.png`, fullPage: true });
