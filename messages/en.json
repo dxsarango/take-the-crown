@@ -653,7 +653,17 @@
     "btn": "Take back the crown",
     "mNote": "The price drops {percent} every hour. Floor price {price}.",
     "mFoot": "You're getting this because you reigned on {brand}.",
-    "unsub": "Turn off dethrone alerts"
+    "unsub": "Turn off dethrone alerts",
+    "pctOf": "{pct} of players have it",
+    "dthSeconds": "{n, plural, one {second.} other {seconds.}}",
+    "dthMinutes": "{n, plural, one {minute.} other {minutes.}}",
+    "newKingOf": "{name} · new king",
+    "mSubject": "You were dethroned by {name}",
+    "mPreheader": "Take it back for {price} before the price goes up.",
+    "mAlt": "Your portrait next to {name}, the new king",
+    "metaProfile": "{name}'s reigns, medals and rivals on {brand}.",
+    "metaSeason": "How {season} went on {brand}: its king, records and hall of fame.",
+    "cardAlt": "{name} on the throne"
   },
   "medals": {
     "oneMin": {
@@ -864,7 +874,8 @@
       "late_payment_grace_seconds": "Late payment grace (seconds)",
       "max_message_length": "Max message length",
       "max_locks_per_ip_per_hour": "Max locks per IP per hour",
-      "name_change_days": "Days between name changes"
+      "name_change_days": "Days between name changes",
+      "max_email_attempts": "Email attempts before giving up"
     },
     "log": {
       "empty": "No admin actions yet.",
@@ -903,5 +914,34 @@
     },
     "send": "Send report",
     "failed": "The report didn't go through. Try again."
+  },
+  "email": {
+    "priceSubject": "The crown is down to {price}",
+    "pricePreheader": "It dropped below your {threshold} alert.",
+    "priceTitle": "The crown is down to {price}",
+    "priceBody": "The price fell below the {threshold} you set. Whoever pays next becomes king.",
+    "priceFoot": "You're getting this because you set a price alert on {brand}.",
+    "priceUnsub": "Turn off price alerts",
+    "seasonSubject": "{season} has started",
+    "seasonPreheader": "The throne is empty. Be its first king.",
+    "seasonTitle": "{season} has started",
+    "seasonBody": "A new season means an empty throne and a new hall of fame. The first to take the crown opens it.",
+    "seasonBtn": "Go to the throne",
+    "seasonFoot": "You're getting this because you asked to hear when a season starts on {brand}.",
+    "seasonUnsub": "Turn off season alerts",
+    "reportsSubject": "A message reached {count} reports",
+    "reportsPreheader": "Reign {id} by {name} needs a look.",
+    "reportsTitle": "A message reached {count} reports",
+    "reportsBody": "The message of reign {id} by {name} reached {count} reports. Reports never hide it on their own; review it in the admin area.",
+    "reportsBtn": "Open reports",
+    "reportsFoot": "You're getting this because you're an admin of {brand}.",
+    "off": {
+      "title": "{kind, select, dethroned {Turn off dethrone alerts?} price_drop {Turn off price alerts?} other {Turn off season alerts?}}",
+      "body": "You can turn them back on anytime in your profile settings.",
+      "confirm": "Turn off",
+      "done": "Done. You won't get these emails anymore.",
+      "invalid": "This link isn't valid anymore. You can change your alerts in your profile settings.",
+      "settings": "Profile settings"
+    }
   }
 }
