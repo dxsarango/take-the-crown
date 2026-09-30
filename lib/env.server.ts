@@ -12,6 +12,13 @@ const schema = z.object({
   MODERATION_PROVIDER: z.enum(["anthropic", "test"]).default("anthropic"),
   ANTHROPIC_API_KEY: z.string().optional(),
   CRON_SECRET: z.string().min(16).optional(),
+  // "test" delivers to the local Mailpit (local development and e2e); production uses "resend".
+  EMAIL_PROVIDER: z.enum(["resend", "test"]).default("resend"),
+  RESEND_API_KEY: z.string().optional(),
+  EMAIL_FROM: z.string().optional(),
+  MAILPIT_URL: z.url().default("http://127.0.0.1:54324"),
+  // Signs the "turn off alerts" links in emails.
+  EMAIL_LINK_SECRET: z.string().min(32).optional(),
 });
 
 export type ServerEnv = z.infer<typeof schema>;

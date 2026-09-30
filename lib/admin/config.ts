@@ -10,6 +10,7 @@ export const configSchema = z.object({
   max_message_length: z.coerce.number().int().min(10).max(280),
   max_locks_per_ip_per_hour: z.coerce.number().int().min(1).max(1_000),
   name_change_days: z.coerce.number().int().min(0).max(365),
+  max_email_attempts: z.coerce.number().int().min(1).max(20),
 });
 
 export const CONFIG_FIELDS = Object.keys(configSchema.shape) as (keyof z.infer<typeof configSchema>)[];
