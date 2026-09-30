@@ -86,7 +86,9 @@ function Toast({ unlock, viewer, season, onDone }: { unlock: Unlock; viewer: Vie
   const size = 24 * f.scale;
 
   const share = () => {
-    const url = `${window.location.origin}/${locale}/u/${viewer.name.toLowerCase()}`;
+    // An achievement link previews its share card (see the profile page's generateMetadata).
+    const card = unlock.kind === "achievement" ? `?card=${unlock.code}` : "";
+    const url = `${window.location.origin}/${locale}/u/${viewer.name.toLowerCase()}${card}`;
     void navigator.clipboard?.writeText(url).then(() => {
       setCopied(true);
       setTimeout(() => setCopied(false), 1600);
