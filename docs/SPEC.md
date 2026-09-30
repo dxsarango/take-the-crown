@@ -126,6 +126,7 @@ Pages (all under `/[locale]`):
 | `/seasons/[slug]` | Season end / summary |
 | `/rules`, `/faq`, `/terms`, `/privacy` | Static |
 | `/admin` | Admin (profile_private.is_admin) |
+| `/alerts/off?token=` | Turn off an email alert (signed link) |
 
 API and assets:
 
@@ -151,7 +152,10 @@ API and assets:
 | `GET /art/throne/[file]` | Throne room scene per season and size (static) |
 | `GET /art/[...path]` | Design handoff pixel assets: flags, icons, seals… (static) |
 | `GET /api/time` | Server clock for the client clock offset |
-| `GET /og/[template]/[id]` | Share cards (victory, challenge, achievement, dethroned) |
+| `GET /og/[template]/[id]` | Share cards (victory, challenge, achievement, dethroned); `?size=story` for 1080×1920, `?locale=` |
+| `GET /og/mail/[id]` | Dethroned email header image |
+| `GET /og/flag/[code].png` | Pixel flag as PNG for emails |
+| `POST /api/alerts/off?token=` | One-click unsubscribe from an alert email |
 | `GET /api/cron/notifications` | Email outbox (Vercel cron, secret-protected) |
 | `GET /api/cron/moderation` | Retries quarantined moderations (Vercel cron every minute, secret-protected) |
 
@@ -195,7 +199,10 @@ Before creating a lock:
 ## 9. Email
 
 - Supabase Auth magic links through Resend SMTP.
-- Transactional templates (en/es, user locale): dethroned, price drop and season started. Built with react-email using the design handoff's template.
+- Transactional templates (en/es, user locale): dethroned, price drop, season started, and the 3-report alert for admins. Built with react-email using the design handoff's template.
+- Outbox: `claim_notifications` hands each sender a batch (a claim is an attempt); `mark_notification_sent` / `mark_notification_failed`; after `app_config.max_email_attempts` a notification is given up. Alerts are re-checked at send time; a price drop whose price is back above the threshold is skipped.
+- Every alert email carries a signed "turn off" link (`/[locale]/alerts/off`, asks before changing anything) and one-click `List-Unsubscribe` headers (`POST /api/alerts/off`).
+- Images in emails are PNG: the dethroned header (`/og/mail/[id]`, ×12 for exact downscales to 440 and 330 px) and pixel flags (`/og/flag/[code].png`).
 
 ## 10. Payments
 
@@ -243,7 +250,7 @@ Operator: Dario Sarango (natural person, Ecuador). Governing law: Ecuador. Priva
 
 ## 16. Environment variables
 
-`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `PAYMENT_PROVIDER`, provider keys and webhook secret, `RESEND_API_KEY`, `ANTHROPIC_API_KEY`, `TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET_KEY`, `IP_HASH_SALT`, `CRON_SECRET`, `NEXT_PUBLIC_SITE_URL`.
+`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `PAYMENT_PROVIDER`, provider keys and webhook secret, `EMAIL_PROVIDER`, `RESEND_API_KEY`, `EMAIL_FROM`, `EMAIL_LINK_SECRET`, `ANTHROPIC_API_KEY`, `TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET_KEY`, `IP_HASH_SALT`, `CRON_SECRET`, `NEXT_PUBLIC_SITE_URL`.
 
 ## 17. Build order
 
