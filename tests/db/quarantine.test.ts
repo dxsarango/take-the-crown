@@ -93,3 +93,54 @@ describe("report threshold", () => {
     expect(await one("select message from public_reigns where id = $1", [reign.id])).toEqual({ message: "Look at me" });
   });
 });
+
+describe("admin review", () => {
+  async function adminId(): Promise<string> {
+    const player = new Player("reviewer");
+    await player.takeover();
+    return player.id();
+  }
+
+  it("approves held content and logs it", async () => {
+    const admin = await adminId();
+    const reignId = await quarantinedTakeover();
+    await svc("select review_reign_moderation($1, true, null, $2)", [reignId, admin]);
+    expect(await one("select message from public_reigns where id = $1", [reignId])).toEqual({ message: "Launching today" });
+    expect(await one("select action, target, details from admin_actions order by id desc limit 1")).toEqual({
+      action: "approve_content",
+      target: String(reignId),
+      details: { from: "pending", reason: null },
+    });
+  });
+
+  it("rejects held content with a reason, and approves it later to fix a false positive", async () => {
+    const admin = await adminId();
+    const reignId = await quarantinedTakeover("Our launch party");
+    await expect(svc("select review_reign_moderation($1, false, null, $2)", [reignId, admin])).rejects.toThrow(/reason_required/);
+    await svc("select review_reign_moderation($1, false, 'spam', $2)", [reignId, admin]);
+    expect(await one("select moderation_status, moderation_reason from reigns where id = $1", [reignId])).toEqual({
+      moderation_status: "rejected",
+      moderation_reason: "spam",
+    });
+    // Rejected content cannot be rejected again, but can be approved.
+    await expect(svc("select review_reign_moderation($1, false, 'scam', $2)", [reignId, admin])).rejects.toThrow(/not_reviewable/);
+    await svc("select review_reign_moderation($1, true, null, $2)", [reignId, admin]);
+    expect(await one("select moderation_status, moderation_reason from reigns where id = $1", [reignId])).toEqual({
+      moderation_status: "approved",
+      moderation_reason: null,
+    });
+    expect(await one("select message from public_reigns where id = $1", [reignId])).toEqual({ message: "Our launch party" });
+    const log = await q<{ action: string; details: unknown }>("select action, details from admin_actions order by id");
+    expect(log.map((l) => [l.action, l.details])).toEqual([
+      ["reject_content", { from: "pending", reason: "spam" }],
+      ["approve_content", { from: "rejected", reason: null }],
+    ]);
+  });
+
+  it("refuses approved content and missing reigns", async () => {
+    const admin = await adminId();
+    const reign = await new Player("clear").takeover({ message: "Hello" });
+    await expect(svc("select review_reign_moderation($1, true, null, $2)", [reign.id, admin])).rejects.toThrow(/not_reviewable/);
+    await expect(svc("select review_reign_moderation(999999, true, null, $1)", [admin])).rejects.toThrow(/reign_not_found/);
+  });
+});
