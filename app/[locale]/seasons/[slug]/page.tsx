@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import { hasLocale } from "next-intl";
-import { setRequestLocale } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { SeasonView } from "@/components/realm/season-view";
 import { TimeZoneProvider } from "@/components/time-zone";
 import { routing } from "@/i18n/routing";
 import { BRAND_NAME } from "@/lib/config/brand";
+import { seasonCard, shareMetadata } from "@/lib/og/metadata";
 import { fetchSeasonEnd, fetchSeasons } from "@/lib/realm/data";
 import { publicClient } from "@/lib/supabase/public";
 import { readerTimeZone } from "@/lib/time-zone.server";
@@ -15,7 +16,15 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/seasons/
   const { seasons } = await fetchSeasons(publicClient());
   const season = seasons.find((s) => s.slug === slug);
   if (!season || !hasLocale(routing.locales, locale)) return {};
-  return { title: `${season.name[locale]} · ${BRAND_NAME}` };
+  const share = await getTranslations({ locale, namespace: "share" });
+  return shareMetadata({
+    title: `${season.name[locale]} · ${BRAND_NAME}`,
+    description: share("metaSeason", { season: season.name[locale], brand: BRAND_NAME }),
+    path: `/${locale}/seasons/${slug}`,
+    locale,
+    card: await seasonCard(publicClient(), season.id, season.kingProfileId),
+    alt: share("cardAlt", { name: season.name[locale] }),
+  });
 }
 
 export default async function SeasonPage({ params }: PageProps<"/[locale]/seasons/[slug]">) {

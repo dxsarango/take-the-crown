@@ -6,6 +6,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { AuthProvider } from "@/components/auth/auth-provider";
 import { TimeZoneCookie } from "@/components/time-zone";
 import { routing } from "@/i18n/routing";
+import { serverEnv } from "@/lib/env.server";
 import { BRAND_NAME } from "@/lib/config/brand";
 import { publicClient } from "@/lib/supabase/public";
 import "../globals.css";
@@ -30,7 +31,7 @@ export async function generateMetadata({ params }: LayoutProps<"/[locale]">): Pr
   const { locale } = await params;
   if (!hasLocale(routing.locales, locale)) return {};
   const t = await getTranslations({ locale, namespace: "app" });
-  return { title: BRAND_NAME, description: t("description") };
+  return { metadataBase: new URL(serverEnv().NEXT_PUBLIC_SITE_URL), title: BRAND_NAME, description: t("description") };
 }
 
 export default async function LocaleLayout({ children, params }: LayoutProps<"/[locale]">) {
