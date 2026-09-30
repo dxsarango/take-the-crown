@@ -48,6 +48,9 @@ Conflicts between the design handoff (`/design`), the spec and the migrations, a
 33. **Model calls only after the gates.** Moderation runs after the human check and the hourly limits (per IP hash on takeovers, per profile on saves; both in `app_config`), and on profile saves only when the name or product link changed, so the model can't be called in bulk.
 34. **Admin review of moderated content.** `/admin` lists held and rejected reigns (message, link, status, reason, checks). Held items can be approved or rejected with a model reason; rejected items can be approved to fix false positives, after a confirmation. Approved items leave the list (an approved message can still be hidden from the reports queue). Every decision goes through `review_reign_moderation` (migration `0015`) and is logged in `admin_actions` with the previous status and reason.
 
+35. **Share cards.** The four cards in the design (victory, challenge, achievement, dethroned); the rank-up card has no design and is not built. Ids: a reign for victory and dethroned (dethroned only when someone took the crown), the current reign for challenge (its price is live), `<profile id>_<code>` for achievements. The brand name replaces the prototype's placeholder "Crown", so on 1200×630 the season wraps under it when it does not fit. Flags use the nearest integer scale below the design's size (30×20 → 24×16, 54×36 → 48×32) to keep pixels square. Fonts are Manrope and Pixelify Sans (OFL) vendored as WOFF in `assets/fonts`, which next/og reads. Link previews: home → challenge; profile → `?card=<code>` achievement if earned (the unlock toast's Share link adds it), else the latest reign; season → the King of the Season's longest reign.
+36. **Email.** `EMAIL_PROVIDER=resend` in production; `test` delivers through the local Mailpit so e2e reads real emails (refused in production). Only the small react-email packages are used (render, html, head, body, preview, container, section, img, text, link); the components bundle pulls Tailwind and prismjs. The dethroned header image is drawn at ×12 so 440 px and 330 px are exact downscales; flags are PNG (email clients drop SVG). Alerts are checked again at send time (turned off since → skipped) and a price drop is skipped if the price is back above the threshold. The price drop, season start and 3-report admin emails reuse the dethroned frame without the portrait image. Every alert email has a signed "turn off" link (confirmation page, because link scanners open URLs) and one-click List-Unsubscribe headers.
+
 ## Open questions
 
 1. **Knowing an email has a profile.** A signed-out buyer who types an email that already has a profile gets "check your email" instead of a checkout, so the form reveals that the email has bought before (not whose profile it is). Hiding it would mean sending every signed-out buyer through email verification before paying. Interim: keep the decided flow.
@@ -57,6 +60,8 @@ Conflicts between the design handoff (`/design`), the spec and the migrations, a
 - **Sign-in emails in e2e.** The first full run in M6 had two intermittent failures after signing in by magic link through Mailpit; the wait went from 5 s to 15 s (`e2e/fixtures/mail.ts`). If these waits become flaky again, find the root cause (Auth's email sending, Mailpit's API, or the query by recipient) instead of raising the timeout, and record it here.
 - **Clicks before hydration (M7).** "Loads earlier reigns" failed in a full run: Playwright clicked the server-rendered button before React attached its handler, so no request left the page. Tests that click right after navigating now wait for `networkidle` first.
 - **Dev-only 500s on `/art/[...path]`.** On a cold `next dev`, a burst of first requests to the static-params art route sometimes answers 500 with "Unexpected end of JSON input" (Next reading its route manifest while it is still being written). Checked on a production build (2026-09-29, `pnpm build && next start`): the art routes are prerendered (`.next/server/app/art/**`), and 10 rounds of 22 concurrent requests (flags, thrones, `/en`, `/es`) gave 200 on every existing file, 404 only for flags outside the set (NG, ZA), no 5xx and no errors in the server log. It only affects dev screenshots.
+
+- **Stopping a background `next start` (M8).** Stopping the task that ran `pnpm exec next start` ends the pnpm wrapper but can leave the Node server listening; the M7 production check left one on port 3001 and a later run tested against the old build. Check the port is free before trusting a production run.
 
 ## Deployment checklist
 
@@ -75,6 +80,9 @@ Steps for every hosted environment (staging and production).
 - [ ] `CRON_SECRET` set (16+ chars); `vercel.json` schedules `/api/cron/moderation` every minute, which needs the Vercel Pro plan (Hobby only runs daily crons); Pro approved, also required for a commercial site
 - [ ] First admin: `update profile_private set is_admin = true where email = '<owner email>'` (SQL editor)
 - [ ] Storage: the `avatars` bucket comes from migration `0011`; check it is public with the 1 MB / PNG + WebP limits
+- [ ] Resend: verify the sending domain (SPF, DKIM, DMARC), then set `EMAIL_PROVIDER=resend`, `RESEND_API_KEY` and `EMAIL_FROM` ("Take the Crown <alerts@your-domain>")
+- [ ] `EMAIL_LINK_SECRET` set (32+ random characters); changing it invalidates the "turn off alerts" links in emails already sent
+- [ ] `vercel.json` also schedules `/api/cron/notifications` every minute (same `CRON_SECRET`)
 - [ ] Confirm pg_cron jobs (`rollover-season`, `live-achievements`, `price-alerts`) are scheduled and active
 
 ## Pre-production
@@ -210,14 +218,17 @@ Steps for every hosted environment (staging and production).
 
 ## Milestone 8 — Share cards, email outbox, dethroned alert
 
-- [ ] `GET /og/[template]/[id]` for victory, challenge, achievement, rank-up, dethroned at 1200×630 and 1080×1920 (fonts embedded, pixel art as PNG at integer scale); rank-up card needs a design
-- [ ] Avatar route `GET /avatar/[name].svg?season=&crown=`, seeded by `avatar_seed` + `avatar_traits`, long cache per season (used by share cards and email)
-- [ ] OG/Twitter metadata on home, profile, season pages
-- [ ] Resend setup; Supabase Auth SMTP through Resend
-- [ ] react-email dethroned template (en/es) from the design
-- [ ] Price-drop and season-start alert emails (en/es)
-- [ ] Outbox sender after webhook + `GET /api/cron/notifications` (secret, max 5 attempts)
-- [ ] Tests: outbox retries, template rendering, e2e dethroned flow
+- [x] `GET /og/[template]/[id]` (next/og): victory, challenge, achievement and dethroned at 1200×630 and 1080×1920 (`?size=story`), in the sharer's language (`?locale=`); scenes, portraits, flags and medals rasterized to PNG at integer scale (`lib/og`); sparkles, reticle and the fallen crown with the surprised face ported from the prototype; long cache for finished reigns, short for live ones
+- [x] Visual check against the design at full size and at X thumbnail size (506 px), en and es (`e2e/share.spec.ts` saves the cards and a thumbnail sheet)
+- [x] `GET /avatar/[name].svg?season=&crown=` (seed + trait overrides, uploads from their pixel version, former names resolve)
+- [x] OG/Twitter metadata on home, profile and season pages (`metadataBase` from `NEXT_PUBLIC_SITE_URL`); achievement share links carry `?card=`
+- [x] Migration `0016`: `claim_notifications` (skip locked, a claim is an attempt, 2-minute hold), `mark_notification_sent`, `mark_notification_failed` (final, or after `app_config.max_email_attempts`, default 5, editable in admin), `turn_off_alert`
+- [x] Outbox sender (`lib/email/outbox.ts`) after the webhook (`after()`) and `GET /api/cron/notifications` (bearer `CRON_SECRET`, per-minute Vercel cron)
+- [x] Email provider: Resend (idempotency key per notification) or the local Mailpit
+- [x] react-email templates in en/es: dethroned (from the design, 600 and 375 px), price drop, season started, reports threshold (admins); header image `/og/mail/[id]` and PNG flags `/og/flag/[code].png`
+- [x] "Turn off alerts": signed links, `/[locale]/alerts/off` confirmation page, one-click `POST /api/alerts/off`
+- [ ] Supabase Auth SMTP through Resend: configured in the hosted project (deployment checklist); local auth email stays on Mailpit
+- [x] Tests: unit (signed links, templates, sender retries and skips with a fake database and provider, card and email art), db (claims under concurrency, expired claims, retries up to the limit, final failures, alert switches), e2e (all cards at both sizes and 404s, cache headers, thumbnail sheet, link preview tags, dethroned email end to end in en and es with its images, turn off from the page and with one click, cron with every alert kind and skips, flags and avatars)
 
 ## Milestone 9 — Security hardening and legal
 
