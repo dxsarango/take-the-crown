@@ -1,4 +1,6 @@
 import { revalidatePath } from "next/cache";
+import { after } from "next/server";
+import { processOutbox } from "@/lib/email/outbox";
 import { providerByName } from "@/lib/payments";
 import { serviceClient } from "@/lib/supabase/service";
 
@@ -37,8 +39,9 @@ export async function POST(request: Request, { params }: RouteContext<"/api/webh
         });
       }
       if (result === "applied") {
-        // Notifications outbox is processed here from M8 on.
         revalidatePath("/[locale]", "page");
+        // The dethroned alert goes out right after the takeover; the cron retries what fails.
+        after(() => processOutbox().catch((e: unknown) => console.error("outbox after webhook failed", e)));
       }
       return Response.json({ result });
     }
