@@ -69,13 +69,13 @@ isOneToOne: false
                   ]
                 },"app_config": {
                   Row: {
-                    "decay_bps_per_hour": number,"floor_cents": number,"id": boolean,"late_payment_grace_seconds": number,"lock_seconds": number,"max_locks_per_ip_per_hour": number,"max_message_length": number,"max_moderations_per_ip_per_hour": number,"max_profile_saves_per_hour": number,"name_change_days": number,"step_bps": number,"updated_at": string
+                    "decay_bps_per_hour": number,"floor_cents": number,"id": boolean,"late_payment_grace_seconds": number,"lock_seconds": number,"max_email_attempts": number,"max_locks_per_ip_per_hour": number,"max_message_length": number,"max_moderations_per_ip_per_hour": number,"max_profile_saves_per_hour": number,"name_change_days": number,"step_bps": number,"updated_at": string
                   }
                   Insert: {
-                    "decay_bps_per_hour"?: number,"floor_cents"?: number,"id"?: boolean,"late_payment_grace_seconds"?: number,"lock_seconds"?: number,"max_locks_per_ip_per_hour"?: number,"max_message_length"?: number,"max_moderations_per_ip_per_hour"?: number,"max_profile_saves_per_hour"?: number,"name_change_days"?: number,"step_bps"?: number,"updated_at"?: string
+                    "decay_bps_per_hour"?: number,"floor_cents"?: number,"id"?: boolean,"late_payment_grace_seconds"?: number,"lock_seconds"?: number,"max_email_attempts"?: number,"max_locks_per_ip_per_hour"?: number,"max_message_length"?: number,"max_moderations_per_ip_per_hour"?: number,"max_profile_saves_per_hour"?: number,"name_change_days"?: number,"step_bps"?: number,"updated_at"?: string
                   }
                   Update: {
-                    "decay_bps_per_hour"?: number,"floor_cents"?: number,"id"?: boolean,"late_payment_grace_seconds"?: number,"lock_seconds"?: number,"max_locks_per_ip_per_hour"?: number,"max_message_length"?: number,"max_moderations_per_ip_per_hour"?: number,"max_profile_saves_per_hour"?: number,"name_change_days"?: number,"step_bps"?: number,"updated_at"?: string
+                    "decay_bps_per_hour"?: number,"floor_cents"?: number,"id"?: boolean,"late_payment_grace_seconds"?: number,"lock_seconds"?: number,"max_email_attempts"?: number,"max_locks_per_ip_per_hour"?: number,"max_message_length"?: number,"max_moderations_per_ip_per_hour"?: number,"max_profile_saves_per_hour"?: number,"name_change_days"?: number,"step_bps"?: number,"updated_at"?: string
                   }
                   Relationships: [
                     
@@ -174,13 +174,13 @@ isOneToOne: false
                   ]
                 },"notifications": {
                   Row: {
-                    "attempts": number,"created_at": string,"id": number,"kind": string,"payload": NonNullable<Json>,"profile_id": string,"sent_at": string | null
+                    "attempts": number,"claimed_until": string | null,"created_at": string,"failed_at": string | null,"id": number,"kind": string,"last_error": string | null,"payload": NonNullable<Json>,"profile_id": string,"sent_at": string | null
                   }
                   Insert: {
-                    "attempts"?: number,"created_at"?: string,"id"?: never,"kind": string,"payload"?: NonNullable<Json>,"profile_id": string,"sent_at"?: string | null
+                    "attempts"?: number,"claimed_until"?: string | null,"created_at"?: string,"failed_at"?: string | null,"id"?: never,"kind": string,"last_error"?: string | null,"payload"?: NonNullable<Json>,"profile_id": string,"sent_at"?: string | null
                   }
                   Update: {
-                    "attempts"?: number,"created_at"?: string,"id"?: never,"kind"?: string,"payload"?: NonNullable<Json>,"profile_id"?: string,"sent_at"?: string | null
+                    "attempts"?: number,"claimed_until"?: string | null,"created_at"?: string,"failed_at"?: string | null,"id"?: never,"kind"?: string,"last_error"?: string | null,"payload"?: NonNullable<Json>,"profile_id"?: string,"sent_at"?: string | null
                   }
                   Relationships: [
                     {
@@ -765,6 +765,25 @@ isOneToOne: false
 "check_live_achievements":
 { Args: Record<PropertyKey, never>; Returns: undefined
                            },
+"claim_notifications":
+{ Args: { "p_limit": number }; Returns: {
+              "attempts": number,
+"claimed_until": string | null,
+"created_at": string,
+"failed_at": string | null,
+"id": number,
+"kind": string,
+"last_error": string | null,
+"payload": NonNullable<Json>,
+"profile_id": string,
+"sent_at": string | null
+            }[]
+                          SetofOptions: {
+        from: "*"
+        to: "notifications"
+        isOneToOne: false
+        isSetofReturn: true
+      } },
 "create_price_lock":
 { Args: { "p_avatar_seed"?: string,"p_country_code": string,"p_email": string,"p_ip_hash": string,"p_link": string,"p_local_hour": number,"p_locale": string,"p_message": string,"p_name": string,"p_profile_id": string }; Returns: {
               "avatar_seed": string | null,
@@ -816,6 +835,12 @@ isOneToOne: false
                            },
 "is_valid_profile_name":
 { Args: { "p_name": string }; Returns: boolean
+                           },
+"mark_notification_failed":
+{ Args: { "p_error": string,"p_final": boolean,"p_id": number }; Returns: undefined
+                           },
+"mark_notification_sent":
+{ Args: { "p_id": number }; Returns: undefined
                            },
 "mark_payment_refunded":
 { Args: { "p_provider": string,"p_provider_payment_id": string }; Returns: undefined
@@ -889,6 +914,9 @@ isOneToOne: false
                            },
 "take_rate_limit":
 { Args: { "p_key": string,"p_limit": number,"p_window_seconds": number }; Returns: boolean
+                           },
+"turn_off_alert":
+{ Args: { "p_kind": string,"p_profile_id": string }; Returns: undefined
                            },
 "update_profile":
 { Args: { "p_alerts_dethroned": boolean,"p_alerts_price_below_cents": number,"p_alerts_season_start": boolean,"p_avatar_mode": string,"p_avatar_path": string,"p_avatar_pixelated": boolean,"p_avatar_traits": Json,"p_country_code": string,"p_link_github": string,"p_link_instagram": string,"p_link_linkedin": string,"p_link_tiktok": string,"p_link_website": string,"p_link_x": string,"p_link_youtube": string,"p_locale": string,"p_main_link": string,"p_name": string,"p_profile_id": string,"p_show_chronicle": boolean,"p_show_rival": boolean,"p_showcase": (string)[] }; Returns: {
