@@ -3,11 +3,10 @@
 import { useMemo } from "react";
 import { type AvatarSource, avatarPixels, pixelsToSVG } from "@/lib/art/avatar";
 import { MEDAL_KEY, type AchievementCode } from "@/lib/game/achievements";
+import { SEASON_RING_HEX } from "@/lib/game/rarity";
 import type { Rarity } from "@/lib/profile/public";
 import { PLATFORMS, type SocialKey } from "@/lib/profile/socials";
 
-/** Seasonal rings take the color of the season the medal comes from, not the current one. */
-const SEASON_COLOR: Record<number, string> = { 0: "#4FA39B", 1: "#F28C28" };
 const RARITY_COLOR: Record<Exclude<Rarity, "seasonal">, string> = {
   common: "var(--crown-rarity-common)",
   rare: "var(--crown-rarity-rare)",
@@ -16,7 +15,7 @@ const RARITY_COLOR: Record<Exclude<Rarity, "seasonal">, string> = {
 };
 
 export function rarityColor(rarity: Rarity, seasonId: number | null): string {
-  return rarity === "seasonal" ? (SEASON_COLOR[seasonId ?? 0] ?? SEASON_COLOR[0]) : RARITY_COLOR[rarity];
+  return rarity === "seasonal" ? (SEASON_RING_HEX[seasonId ?? 0] ?? SEASON_RING_HEX[0]) : RARITY_COLOR[rarity];
 }
 
 /** 24×24 medal at an integer scale, lit or unearned. */

@@ -24,7 +24,8 @@ export function avatarTraits({ seed, traits }: AvatarSource): AvatarTraits {
   return { ...traitsFromUsername(seed), ...(traits ?? {}) };
 }
 
-function crownLayer(source: AvatarSource, season: number): Pixels {
+/** Only the season crown the avatar wears, 32×32. */
+export function crownPixels(source: AvatarSource, season: number): Pixels {
   return renderAvatar(avatarTraits(source), { season, layer: "crown" });
 }
 
@@ -35,11 +36,11 @@ function crownLayer(source: AvatarSource, season: number): Pixels {
 export function avatarPixels(source: AvatarSource, options: { season: number; crown: boolean }): Pixels {
   if (source.pixels) {
     if (!options.crown) return source.pixels;
-    const crown = crownLayer(source, options.season);
+    const crown = crownPixels(source, options.season);
     return source.pixels.map((c, i) => crown[i] ?? c);
   }
   if (source.image) {
-    return options.crown ? crownLayer(source, options.season) : new Array<string | null>(AVATAR_SIZE * AVATAR_SIZE).fill(null);
+    return options.crown ? crownPixels(source, options.season) : new Array<string | null>(AVATAR_SIZE * AVATAR_SIZE).fill(null);
   }
   return renderAvatar(avatarTraits(source), { season: options.season, crown: options.crown });
 }

@@ -653,7 +653,17 @@
     "btn": "Recupera la corona",
     "mNote": "El precio baja {percent} cada hora. Precio mínimo {price}.",
     "mFoot": "Recibes este correo porque reinaste en {brand}.",
-    "unsub": "Desactivar alertas de destronamiento"
+    "unsub": "Desactivar alertas de destronamiento",
+    "pctOf": "Lo tiene el {pct} de los jugadores",
+    "dthSeconds": "{n, plural, one {segundo.} other {segundos.}}",
+    "dthMinutes": "{n, plural, one {minuto.} other {minutos.}}",
+    "newKingOf": "{name} · nuevo rey",
+    "mSubject": "{name} te quitó la corona",
+    "mPreheader": "Recupérala por {price} antes de que suba el precio.",
+    "mAlt": "Tu retrato junto al de {name}, el nuevo rey",
+    "metaProfile": "Los reinados, medallas y rivales de {name} en {brand}.",
+    "metaSeason": "Así fue {season} en {brand}: su rey, sus récords y su salón de la fama.",
+    "cardAlt": "{name} en el trono"
   },
   "medals": {
     "oneMin": {
@@ -864,7 +874,8 @@
       "late_payment_grace_seconds": "Margen para pagos tardíos (segundos)",
       "max_message_length": "Longitud máxima del mensaje",
       "max_locks_per_ip_per_hour": "Reservas máximas por IP y hora",
-      "name_change_days": "Días entre cambios de nombre"
+      "name_change_days": "Días entre cambios de nombre",
+      "max_email_attempts": "Intentos de envío de un email antes de desistir"
     },
     "log": {
       "empty": "Aún no hay acciones de administración.",
@@ -903,5 +914,34 @@
     },
     "send": "Enviar denuncia",
     "failed": "La denuncia no se envió. Vuelve a intentarlo."
+  },
+  "email": {
+    "priceSubject": "La corona bajó a {price}",
+    "pricePreheader": "Bajó de tu alerta de {threshold}.",
+    "priceTitle": "La corona bajó a {price}",
+    "priceBody": "El precio bajó de los {threshold} que elegiste. Quien pague primero se convierte en rey.",
+    "priceFoot": "Recibes este correo porque creaste una alerta de precio en {brand}.",
+    "priceUnsub": "Desactivar alertas de precio",
+    "seasonSubject": "Empezó {season}",
+    "seasonPreheader": "El trono está vacío. Sé su primer rey.",
+    "seasonTitle": "Empezó {season}",
+    "seasonBody": "Una temporada nueva trae un trono vacío y un nuevo salón de la fama. Quien tome la corona primero la inaugura.",
+    "seasonBtn": "Ir al trono",
+    "seasonFoot": "Recibes este correo porque pediste un aviso cuando empiece una temporada en {brand}.",
+    "seasonUnsub": "Desactivar avisos de temporada",
+    "reportsSubject": "Un mensaje llegó a {count} denuncias",
+    "reportsPreheader": "El reinado {id} de {name} necesita revisión.",
+    "reportsTitle": "Un mensaje llegó a {count} denuncias",
+    "reportsBody": "El mensaje del reinado {id} de {name} llegó a {count} denuncias. Las denuncias nunca lo ocultan por sí solas; revísalo en el panel de admin.",
+    "reportsBtn": "Abrir denuncias",
+    "reportsFoot": "Recibes este correo porque eres admin de {brand}.",
+    "off": {
+      "title": "{kind, select, dethroned {¿Desactivar alertas de destronamiento?} price_drop {¿Desactivar alertas de precio?} other {¿Desactivar avisos de temporada?}}",
+      "body": "Puedes volver a activarlas cuando quieras en los ajustes de tu perfil.",
+      "confirm": "Desactivar",
+      "done": "Listo. Ya no recibirás estos correos.",
+      "invalid": "Este enlace ya no es válido. Puedes cambiar tus alertas en los ajustes de tu perfil.",
+      "settings": "Ajustes del perfil"
+    }
   }
 }
