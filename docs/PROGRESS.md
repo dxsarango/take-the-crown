@@ -2,6 +2,10 @@
 
 Checklist for the build order in `docs/SPEC.md` §17. A milestone is done when its tasks are checked, tests pass, and lint and typecheck are clean.
 
+## Pending verification
+
+- [ ] **Live moderation suite (`pnpm test:moderation`) has never run against the real model.** It stays skipped until the Anthropic account has credits; all cases, especially the manipulation ones, must pass before launch (see the deployment checklist).
+
 ## Decisions
 
 Conflicts between the design handoff (`/design`), the spec and the migrations, as resolved by the product owner. Schema changes go in new M2 migrations and `docs/SPEC.md` is updated to match.
@@ -64,7 +68,10 @@ Steps for every hosted environment (staging and production).
 - [ ] Supabase Auth: site URL and redirect URLs for `/auth/callback`, SMTP through Resend, magic link expiry 15 min
 - [ ] Google provider: OAuth client (web) with the Supabase callback `https://<project-ref>.supabase.co/auth/v1/callback` as redirect URI and scopes `openid`, `email`, `profile`; client id and secret in Supabase Auth → Providers → Google
 - [ ] X provider (`x`, OAuth 2.0): app with "Request email from users" on, callback `https://<project-ref>.supabase.co/auth/v1/callback`, scopes `users.read`, `tweet.read`, `users.email`; client id and secret in Supabase Auth → Providers → X
-- [ ] Moderation: `MODERATION_PROVIDER=anthropic` and `ANTHROPIC_API_KEY` set; run `pnpm test:moderation` against the key before launch
+- [ ] Moderation: `MODERATION_PROVIDER=anthropic` and the production `ANTHROPIC_API_KEY` set
+- [ ] Before launch: add credits to the Anthropic account and run `pnpm test:moderation` against the real model; every case must pass, especially the manipulation ones
+- [ ] Before launch: create a separate production API key in the take-the-crown workspace, with a monthly spending limit
+- [ ] Before launch: enable auto-reload with a low threshold for production, so moderation never stops for lack of balance
 - [ ] `CRON_SECRET` set (16+ chars); `vercel.json` schedules `/api/cron/moderation` every minute, which needs the Vercel Pro plan (Hobby only runs daily crons); Pro approved, also required for a commercial site
 - [ ] First admin: `update profile_private set is_admin = true where email = '<owner email>'` (SQL editor)
 - [ ] Storage: the `avatars` bucket comes from migration `0011`; check it is public with the 1 MB / PNG + WebP limits
