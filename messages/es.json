@@ -795,7 +795,8 @@
       "names": "Nombres",
       "seasons": "Temporadas",
       "config": "Configuración",
-      "log": "Registro"
+      "log": "Registro",
+      "review": "En revisión"
     },
     "crown": {
       "king": "Rey",
@@ -872,7 +873,20 @@
       "admin": "Admin"
     },
     "done": "Hecho.",
-    "failed": "No funcionó. No cambió nada."
+    "failed": "No funcionó. No cambió nada.",
+    "review": {
+      "help": "Mensajes y enlaces retenidos porque el moderador no dio veredicto, y contenido que rechazó. Aprobar un elemento rechazado corrige un falso positivo y lo hace público.",
+      "empty": "No hay nada retenido para revisar.",
+      "reign": "Reinado {id} · {name}",
+      "attempts": "{count, plural, one {# revisión} other {# revisiones}}",
+      "pending": "Esperando revisión",
+      "rejected": "Rechazado",
+      "reason": "Motivo",
+      "pickReason": "Elige un motivo",
+      "approve": "Aprobar",
+      "reject": "Rechazar",
+      "confirmApprove": "¿Hacer público el contenido rechazado del reinado {id}?"
+    }
   },
   "report": {
     "title": "Denunciar este mensaje",

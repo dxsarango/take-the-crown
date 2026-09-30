@@ -6,6 +6,7 @@ import { redirect } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
 import { CONFIG_FIELDS, configSchema } from "@/lib/admin/config";
 import { currentAdmin } from "@/lib/admin/guard";
+import { MODEL_REASONS } from "@/lib/moderation/model";
 import { paymentProvider } from "@/lib/payments";
 import { serviceClient } from "@/lib/supabase/service";
 
@@ -60,6 +61,23 @@ export async function hideMessage(form: FormData) {
   const reignId = id.safeParse(form.get("reignId"));
   if (!reignId.success) return done(form, "failed");
   const { error } = await serviceClient().rpc("hide_reign_message", { p_reign_id: reignId.data, p_admin_profile_id: me.profileId });
+  return done(form, error ? "failed" : "ok");
+}
+
+/** Approves held or rejected content (false positives included), or rejects held content with a reason. */
+export async function reviewContent(form: FormData) {
+  const me = await admin();
+  const reignId = id.safeParse(form.get("reignId"));
+  const approved = form.get("decision") === "approve";
+  const reason = z.enum(MODEL_REASONS).safeParse(form.get("reason"));
+  if (!reignId.success || (!approved && !reason.success)) return done(form, "failed");
+  const { error } = await serviceClient().rpc("review_reign_moderation", {
+    p_reign_id: reignId.data,
+    p_approved: approved,
+    p_reason: approved ? (null as unknown as string) : reason.data!,
+    p_admin_profile_id: me.profileId,
+  });
+  if (error) console.error("review_reign_moderation failed", error.message);
   return done(form, error ? "failed" : "ok");
 }
 
