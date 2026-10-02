@@ -68,7 +68,7 @@ export function usePayment({ locale, now, onDone }: Options) {
   const finish = useEffectEvent((result: PaymentResult) => onDone(result));
 
   const submit = useCallback(
-    async (draft: Draft) => {
+    async (draft: Draft, consent: { acceptWithdrawal: boolean; turnstileToken: string | null }) => {
       setPhase({ kind: "submitting" });
       let outcome: LockOutcome;
       try {
@@ -81,6 +81,8 @@ export function usePayment({ locale, now, onDone }: Options) {
           avatarSeed: draft.avatarSeed,
           timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
           locale,
+          acceptWithdrawal: consent.acceptWithdrawal,
+          turnstileToken: consent.turnstileToken ?? undefined,
         });
         outcome = (await response.json()) as LockOutcome;
       } catch {

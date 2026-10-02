@@ -1,7 +1,12 @@
 import "server-only";
 import { serviceClient } from "@/lib/supabase/service";
 
-type LimitSetting = "max_moderations_per_ip_per_hour" | "max_profile_saves_per_hour";
+export type LimitSetting =
+  | "max_moderations_per_ip_per_hour"
+  | "max_profile_saves_per_hour"
+  | "max_magic_links_per_hour"
+  | "max_avatar_uploads_per_hour"
+  | "max_reports_per_ip_per_hour";
 
 /**
  * Counts one hit for `key` against an hourly limit from app_config and says whether it may go on.

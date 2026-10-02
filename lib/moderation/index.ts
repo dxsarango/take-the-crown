@@ -5,6 +5,7 @@ import { type Classifier, ModerationUnavailable, anthropicClassifier, testClassi
 import type { ModeratedField, ModerationSubmission } from "./model";
 import type { ModerationReason } from "./reasons";
 import { linkProblem, messageProblem, nameProblem } from "./rules";
+import { isDeployed } from "@/lib/config/deployment";
 
 /**
  * Moderation before any lock or charge (SPEC §7): the fixed link and message rules first, then
@@ -26,7 +27,7 @@ function configuredClassifier(): Classifier {
   if (classifier) return classifier;
   const env = serverEnv();
   if (env.MODERATION_PROVIDER === "test") {
-    if (process.env.VERCEL_ENV === "production") throw new Error("The test moderation provider is disabled in production");
+    if (isDeployed()) throw new Error("The test moderation provider only runs locally");
     classifier = testClassifier;
   } else {
     classifier = env.ANTHROPIC_API_KEY

@@ -4,6 +4,7 @@ import { useLocale, useMessages, useTranslations } from "next-intl";
 import { type ReactNode, useEffect, useId, useMemo, useRef, useState } from "react";
 import { Flag, Icon, RankTag } from "@/components/art";
 import { signInHref } from "@/components/auth/login-dialog";
+import { useHumanCheck } from "@/components/security/human-check";
 import type { Locale } from "@/i18n/routing";
 import { type AvatarSource, pixelsToSVG } from "@/lib/art/avatar";
 import { portraitPixels } from "@/lib/art/portrait";
@@ -227,6 +228,9 @@ export function PaymentModal({ season, priceCents, lockSeconds, messageMax, now,
   const [countryTouched, setCountryTouched] = useState(false);
   const { phase, submit, payTest, decline, close, clearFailure } = usePayment({ locale, now, onDone });
   const nameCheck = useNameCheck(viewer ? "" : draft.name);
+  const human = useHumanCheck("lock");
+  // Terms §5: the buyer accepts immediate delivery and the loss of withdrawal before every checkout.
+  const [ack, setAck] = useState(false);
   const titleId = useId();
 
   useEffect(() => {
@@ -251,9 +255,10 @@ export function PaymentModal({ season, priceCents, lockSeconds, messageMax, now,
 
   const emailOk = EMAIL.test(draft.email.trim());
   const nameOk = nameCheck === "available" || nameCheck === "checking";
-  const canPay = phase.kind === "form" && (viewer !== null || (nameOk && emailOk));
+  const detailsOk = viewer !== null || (nameOk && emailOk);
+  const canPay = phase.kind === "form" && detailsOk && ack && human.ready;
   const busy = phase.kind === "submitting" || (locked && phase.paying);
-  const payOff = busy || locked ? t("processing") : t("needName");
+  const payOff = busy || locked ? t("processing") : !detailsOk ? t("needName") : !ack ? t("needAck") : t("needHuman");
   // Signed-in buyers keep their public name (SPEC §4).
   const name = viewer ? viewer.name : draft.name;
   const shownName = name.trim() || t("youName");
@@ -554,6 +559,37 @@ export function PaymentModal({ season, priceCents, lockSeconds, messageMax, now,
     </>
   );
 
+  const ackBox = (size: "mobile" | "desktop") => (
+    <div className={`flex items-start ${size === "mobile" ? "gap-2.5 text-14" : "gap-3 text-16 font-medium"} leading-snug`}>
+      <span className="relative mt-px flex size-6 flex-none">
+        <input
+          id={`${titleId}-ack-${size}`}
+          type="checkbox"
+          required
+          checked={ack}
+          disabled={phase.kind !== "form"}
+          onChange={(e) => setAck(e.target.checked)}
+          className="peer hit-area size-6 cursor-pointer appearance-none bg-crown-ink shadow-[inset_0_0_0_2px_var(--crown-stone-hi)] checked:bg-crown-gold checked:shadow-none focus-visible:outline-offset-2 disabled:cursor-default"
+        />
+        <span aria-hidden className="pointer-events-none absolute inset-0 hidden items-center justify-center text-crown-ink peer-checked:flex">
+          <Icon name="check" size={16} height={12} />
+        </span>
+      </span>
+      <span className="flex flex-col gap-1">
+        <label htmlFor={`${titleId}-ack-${size}`} className="cursor-pointer text-pretty">
+          {t.rich("ack", {
+            terms: (chunks) => (
+              <a href={`/${locale}/terms#s5`} target="_blank" rel="noopener" className="underline decoration-crown-stone-hi underline-offset-4 hover:decoration-crown-text">
+                {chunks}
+              </a>
+            ),
+          })}
+        </label>
+        <span className={`${size === "mobile" ? "text-12" : "text-14 font-normal"} text-crown-muted`}>{common("final")}</span>
+      </span>
+    </div>
+  );
+
   const payButton = (className: string) =>
     canPay ? (
       <button
@@ -586,7 +622,9 @@ export function PaymentModal({ season, priceCents, lockSeconds, messageMax, now,
         id="payment-form"
         onSubmit={(e) => {
           e.preventDefault();
-          if (canPay) void submit(viewer ? { ...draft, name: viewer.name } : draft);
+          if (!canPay) return;
+          void submit(viewer ? { ...draft, name: viewer.name } : draft, { acceptWithdrawal: ack, turnstileToken: human.token });
+          human.reset();
         }}
         className="flex h-full flex-col lg:max-h-[calc(100dvh-48px)]"
       >
@@ -615,10 +653,8 @@ export function PaymentModal({ season, priceCents, lockSeconds, messageMax, now,
           </div>
           {showForm && (
             <div className="flex flex-none flex-col gap-2.5 bg-crown-ink px-4 pt-3.5 pb-4 shadow-[var(--crown-bar-top)]">
-              <div className="flex items-start gap-2 text-14 leading-snug">
-                <span className="mt-[7px] size-1.5 flex-none bg-crown-text" />
-                {common("final")}
-              </div>
+              {ackBox("mobile")}
+              {human.widget}
               {payButton("")}
               {!viewer && <div className="text-center text-12 text-crown-muted">{t("noAcct")}</div>}
             </div>
@@ -675,14 +711,14 @@ export function PaymentModal({ season, priceCents, lockSeconds, messageMax, now,
           </div>
           {showForm && (
             <div className="flex items-center justify-between gap-8 px-7 pt-5 pb-6 shadow-[var(--crown-bar-top)]">
-              <div className="flex max-w-[400px] flex-col gap-1.5">
-                <div className="flex items-start gap-2.5 text-16 leading-snug font-medium">
-                  <span className="mt-[7px] size-2 flex-none bg-crown-text" />
-                  {common("final")}
-                </div>
-                {!viewer && <div className="pl-[18px] text-12 text-crown-muted">{t("noAcct")}</div>}
+              <div className="flex max-w-[440px] flex-col gap-1.5">
+                {ackBox("desktop")}
+                {!viewer && <div className="pl-9 text-12 text-crown-muted">{t("noAcct")}</div>}
               </div>
-              {payButton("min-w-[380px] px-7")}
+              <div className="flex flex-col items-end gap-2">
+                {human.widget}
+                {payButton("min-w-[380px] px-7")}
+              </div>
             </div>
           )}
           {isSuccess && (

@@ -11,6 +11,8 @@ import { formatClock, formatDuration } from "@/lib/format";
 import { type HistoryEntry, type SeasonInfo, type SeasonSummary, HISTORY_PAGE, fetchHistoryPage } from "@/lib/realm/data";
 import { publicClient } from "@/lib/supabase/public";
 import { segmentClass, useDates } from "./common";
+import { usePlayerName } from "@/components/player-name";
+import { isFormerName } from "@/lib/game/former";
 
 const HOUR = 3600;
 type Tier = "L" | "M" | "S";
@@ -36,6 +38,7 @@ type Props = {
 };
 
 function Entry({ entry, now, season }: { entry: HistoryEntry; now: number; season: number }) {
+  const nameOf = usePlayerName();
   const t = useTranslations("realm");
   const home = useTranslations("home");
   const rank = useTranslations("rank");
@@ -48,15 +51,19 @@ function Entry({ entry, now, season }: { entry: HistoryEntry; now: number; seaso
   const node = entry.open ? 16 : tier.node;
   const nodeColor = entry.open ? "var(--crown-gold)" : size === "L" ? "var(--crown-text)" : "var(--crown-stone)";
   const duration = entry.open ? formatClock(seconds, u) : formatDuration(seconds, u);
-  const end = entry.open ? t("now") : entry.dethronedBy ? t("by", { name: entry.dethronedBy }) : t("endedTag");
+  const end = entry.open ? t("now") : entry.dethronedBy ? t("by", { name: nameOf(entry.dethronedBy) }) : t("endedTag");
   const portrait = (scale: number) => (
     <Portrait avatar={entry.avatar} rank={entry.rank} season={season} crown={entry.open} scale={scale} />
   );
   const nameRow = (
     <div className="flex flex-wrap items-center gap-2 lg:gap-2.5">
-      <Link href={`/u/${entry.name.toLowerCase()}`} className={`font-bold hover:underline ${tier.nameM} ${tier.nameD}`}>
-        {entry.name}
-      </Link>
+      {isFormerName(entry.name) ? (
+        <span className={`font-bold ${tier.nameM} ${tier.nameD}`}>{nameOf(entry.name)}</span>
+      ) : (
+        <Link href={`/u/${entry.name.toLowerCase()}`} className={`font-bold hover:underline ${tier.nameM} ${tier.nameD}`}>
+          {entry.name}
+        </Link>
+      )}
       <Flag code={entry.countryCode} />
       <span className={size === "S" ? "hidden lg:block" : ""}>
         <RankTag rank={entry.rank} label={rank(entry.rank)} small />

@@ -6,13 +6,13 @@ import type { ReactNode } from "react";
 import { ConfirmButton } from "@/components/admin/confirm-button";
 import { Link } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
-import { CONFIG_FIELDS } from "@/lib/admin/config";
+import { CONFIG_FIELDS, LEGAL_FIELDS } from "@/lib/admin/config";
 import { fetchAdminOverview } from "@/lib/admin/data";
 import { currentAdmin } from "@/lib/admin/guard";
 import { BRAND_NAME } from "@/lib/config/brand";
 import { displayLink, formatPrice } from "@/lib/format";
 import { MODEL_REASONS } from "@/lib/moderation/model";
-import { dismissReport, hideMessage, refundPayment, releaseName, reviewContent, saveConfig, saveSeasonDates, setBanned } from "./actions";
+import { dismissReport, hideMessage, refundPayment, releaseName, reviewContent, saveConfig, saveLegal, saveSeasonDates, setBanned } from "./actions";
 
 export const dynamic = "force-dynamic";
 
@@ -80,6 +80,8 @@ export default async function AdminPage({ params, searchParams }: PageProps<"/[l
           ? t("seasons.invalid")
           : query.reason === "config"
             ? t("config.invalid")
+            : query.reason === "legal"
+              ? t("legal.invalid")
             : t("failed")
         : null;
 
@@ -377,6 +379,27 @@ export default async function AdminPage({ params, searchParams }: PageProps<"/[l
             <div className="sm:col-span-2">
               <button type="submit" className={secondary}>
                 {t("config.save")}
+              </button>
+            </div>
+          </form>
+          <h3 className="pt-4 text-16 font-bold">{t("legal.title")}</h3>
+          <p className="text-14 text-crown-muted">{t("legal.help")}</p>
+          <form action={saveLegal} className="grid gap-4 sm:grid-cols-2">
+            <Back locale={locale} section="config" />
+            {LEGAL_FIELDS.map((key) => (
+              <label key={key} className="flex flex-col gap-2 text-14 font-bold">
+                {t(`legal.${key}`)}
+                <input
+                  type={key === "legal_effective_date" ? "date" : key === "legal_contact_email" ? "email" : "text"}
+                  name={key}
+                  defaultValue={data.config[key] ?? ""}
+                  className={field}
+                />
+              </label>
+            ))}
+            <div className="sm:col-span-2">
+              <button type="submit" className={secondary}>
+                {t("legal.save")}
               </button>
             </div>
           </form>

@@ -2,6 +2,8 @@ import { randomUUID } from "node:crypto";
 import { currentViewer } from "@/lib/auth/viewer";
 import { AVATAR_BUCKET, AVATAR_FILES, avatarFileUrl } from "@/lib/profile/avatar";
 import { MAX_UPLOAD_BYTES, processAvatar } from "@/lib/profile/avatar-image";
+import { withinHourlyLimit } from "@/lib/security/rate-limit";
+import { sameOrigin } from "@/lib/security/request";
 import { serviceClient } from "@/lib/supabase/service";
 
 /**
@@ -9,8 +11,12 @@ import { serviceClient } from "@/lib/supabase/service";
  * edit profile is saved (update_profile checks the folder belongs to the profile).
  */
 export async function POST(request: Request) {
+  if (!sameOrigin(request)) return Response.json({ ok: false, error: "failed" }, { status: 403 });
   const viewer = await currentViewer();
   if (!viewer) return Response.json({ ok: false, error: "failed" }, { status: 401 });
+  if (!(await withinHourlyLimit(`avatar_upload:${viewer.profileId}`, "max_avatar_uploads_per_hour"))) {
+    return Response.json({ ok: false, error: "rate_limited" }, { status: 429 });
+  }
 
   const form = await request.formData().catch(() => null);
   const file = form?.get("file");

@@ -6,6 +6,10 @@
 @source not "../design";
 
 @theme {
+  /* Extends the relief family for the one destructive action (delete account): Rubí lit and shaded. */
+  --shadow-relief-danger: 0 -4px 0 #F07A7E, -4px 0 0 #F07A7E, 0 4px 0 #A8292D, 4px 0 0 #A8292D;
+  --shadow-relief-danger-pressed: 0 -4px 0 #A8292D, -4px 0 0 #A8292D, 0 4px 0 #F07A7E, 4px 0 0 #F07A7E;
+
   /* MOTION §3: the "dropping" arrow steps 0 → 2 → 4 → 0 px over 2.4 s. */
   --animate-crown-drop: crown-drop 2.4s steps(1, end) infinite;
   @keyframes crown-drop {

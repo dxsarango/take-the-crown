@@ -64,6 +64,8 @@ export const lockRequestSchema = z.object({
     .optional(),
   locale: z.enum(["en", "es"]),
   turnstileToken: z.string().max(4096).optional(),
+  // Terms §5: immediate delivery and no withdrawal once delivered, accepted before every checkout.
+  acceptWithdrawal: z.literal(true),
 });
 
 export type LockRequest = z.infer<typeof lockRequestSchema>;

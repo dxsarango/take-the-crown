@@ -1,5 +1,5 @@
 import { createLock } from "@/lib/locks/create";
-import { clientIp } from "@/lib/security/request";
+import { clientIp, sameOrigin } from "@/lib/security/request";
 
 const STATUS: Record<string, number> = {
   invalid_input: 400,
@@ -16,6 +16,7 @@ const STATUS: Record<string, number> = {
 };
 
 export async function POST(request: Request) {
+  if (!sameOrigin(request)) return Response.json({ ok: false, error: "invalid_input" }, { status: 403 });
   const body: unknown = await request.json().catch(() => null);
   const outcome = await createLock(body, clientIp(request.headers));
   const status = outcome.ok ? 200 : (STATUS[outcome.error] ?? 400);
