@@ -34,6 +34,7 @@ describe("lock request", () => {
     [{ link: "localhost" }, "link"],
     [{ country: "ecuador" }, "country"],
     [{ avatarSeed: "xyz" }, "avatarSeed"],
+    [{ avatarSeed: "0".repeat(32) }, "avatarSeed"],
     [{ locale: "fr" }, "locale"],
     [{ acceptWithdrawal: false }, "acceptWithdrawal"],
     [{ acceptWithdrawal: undefined }, "acceptWithdrawal"],
