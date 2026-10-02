@@ -107,6 +107,14 @@ describe("delete_profile", () => {
     expect(await one("select user_id from profiles where id = $1", [profileId])).toEqual({ user_id: null });
   });
 
+  it("keeps the silhouette's all-zero avatar seed for deleted profiles only", async () => {
+    const player = new Player("seedy");
+    await player.takeover();
+    const profileId = await player.id();
+    await expect(q("update profiles set avatar_seed = $2 where id = $1", [profileId, "0".repeat(32)])).rejects.toThrow(/profiles_avatar_seed_reserved/);
+    await expect(createLock({ avatarSeed: "0".repeat(32) })).rejects.toThrow(/price_locks_avatar_seed_reserved/);
+  });
+
   it("keeps the reserved name for deleted profiles only", async () => {
     const player = new Player("typist");
     await player.takeover();
