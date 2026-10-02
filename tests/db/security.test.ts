@@ -18,7 +18,6 @@ const PUBLIC_READ = [
   "profile_achievements",
   "profile_name_history",
   "profile_stats",
-  "profiles",
   "public_chronicle",
   "public_crown_state",
   "public_reigns",
@@ -83,9 +82,17 @@ describe("privileges", () => {
         ]);
         if (row.ok) readable.push(relation.name);
       }
-      // Signed-in players read their own profile_private row through the own_read policy.
-      const expected = role === "authenticated" ? [...PUBLIC_READ, "profile_private"].sort() : PUBLIC_READ;
-      expect(readable).toEqual(expected);
+      expect(readable).toEqual(PUBLIC_READ);
+    });
+
+    it(`lets ${role} read every profile column but the sign-in user id`, async () => {
+      const columns = await q<{ name: string; ok: boolean }>(
+        `select column_name as name, has_column_privilege($1, 'public.profiles', column_name, 'SELECT') as ok
+         from information_schema.columns where table_schema = 'public' and table_name = 'profiles'`,
+        [role],
+      );
+      expect(columns.filter((c) => !c.ok).map((c) => c.name)).toEqual(["user_id"]);
+      await expect(asRole(role, (client) => client.query("select user_id from profiles"))).rejects.toThrow(/permission denied/);
     });
 
     it(`gives ${role} no execute privilege on security definer functions`, async () => {
@@ -175,7 +182,7 @@ describe("row level security", () => {
     });
   }
 
-  it("shows a signed-in player only their own private row", async () => {
+  it("never shows private rows to a signed-in player, not even their own", async () => {
     const [owner] = await q<{ profile_id: string }>("select profile_id from profile_private limit 1");
     const userId = randomUUID();
     await q("insert into auth.users (id, email, aud, role) values ($1, $2, 'authenticated', 'authenticated')", [
@@ -184,11 +191,9 @@ describe("row level security", () => {
     ]);
     await q("update profiles set user_id = $2 where id = $1", [owner.profile_id, userId]);
 
-    const own = await asRole("authenticated", (client) => client.query("select profile_id from profile_private"), {
-      sub: userId,
-      role: "authenticated",
-    });
-    expect(own.rows).toEqual([{ profile_id: owner.profile_id }]);
+    await expect(
+      asRole("authenticated", (client) => client.query("select profile_id from profile_private"), { sub: userId, role: "authenticated" }),
+    ).rejects.toThrow(/permission denied/);
   });
 
   it("hides moderated messages and links in public_reigns", async () => {
