@@ -663,7 +663,9 @@
     "mAlt": "Tu retrato junto al de {name}, el nuevo rey",
     "metaProfile": "Los reinados, medallas y rivales de {name} en {brand}.",
     "metaSeason": "Así fue {season} en {brand}: su rey, sus récords y su salón de la fama.",
-    "cardAlt": "{name} en el trono"
+    "cardAlt": "{name} en el trono",
+    "rankLabel": "Nuevo rango",
+    "rankTotal": "{time} en el trono en total"
   },
   "medals": {
     "oneMin": {

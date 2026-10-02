@@ -663,7 +663,9 @@
     "mAlt": "Your portrait next to {name}, the new king",
     "metaProfile": "{name}'s reigns, medals and rivals on {brand}.",
     "metaSeason": "How {season} went on {brand}: its king, records and hall of fame.",
-    "cardAlt": "{name} on the throne"
+    "cardAlt": "{name} on the throne",
+    "rankLabel": "New rank",
+    "rankTotal": "{time} on the throne in total"
   },
   "medals": {
     "oneMin": {

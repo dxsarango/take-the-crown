@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import type { Locale } from "@/i18n/routing";
 import { BRAND_NAME } from "@/lib/config/brand";
 import { isAchievementCode } from "@/lib/game/achievements";
+import { isRank } from "@/lib/game/rank";
 import type { PublicClient } from "@/lib/supabase/public";
 import { CARD_SIZES, type CardTemplate } from "./data";
 
@@ -35,7 +36,7 @@ export function shareMetadata(input: { title: string; description: string; path:
 }
 
 /**
- * The card a profile link previews: a shared achievement (`?card=<code>`) if the player has it,
+ * The card a profile link previews: a shared achievement or rank (`?card=<code or rank>`) if the player has it,
  * else their current reign, else their last reign (dethroned or not).
  */
 export async function profileCard(db: PublicClient, profileId: string, requested: string | undefined): Promise<CardRef | null> {
@@ -47,6 +48,10 @@ export async function profileCard(db: PublicClient, profileId: string, requested
       .eq("achievement_code", requested)
       .maybeSingle();
     if (data) return { template: "achievement", id: `${profileId}_${requested}` };
+  }
+  if (requested && isRank(requested)) {
+    const { data } = await db.from("rank_ups").select("rank").eq("profile_id", profileId).eq("rank", requested).maybeSingle();
+    if (data) return { template: "rank", id: `${profileId}_${requested}` };
   }
   const { data: last } = await db
     .from("public_reigns")

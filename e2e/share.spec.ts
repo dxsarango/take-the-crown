@@ -8,7 +8,7 @@ test.describe.configure({ mode: "serial" });
 
 const SCREENS = "test-results/screens";
 
-type Ids = { victory: string; challenge: string; achievement: string; dethroned: string; dethronedLong: string };
+type Ids = { victory: string; challenge: string; achievement: string; dethroned: string; rank: string; dethronedLong: string };
 let ids: Ids;
 
 test.beforeAll(async ({}, info) => {
@@ -34,11 +34,14 @@ test.beforeAll(async ({}, info) => {
     "insert into profile_achievements (profile_id, achievement_code, season_id) values ($1, 'regicide', 0) on conflict do nothing",
     [kenji.profile_id],
   );
+  await sql("insert into rank_ups (profile_id, rank) values ($1, 'duke') on conflict do nothing", [kenji.profile_id]);
+  await sql("insert into events (kind, season_id, profile_id, payload) values ('rank_up', 0, $1, '{\"rank\": \"duke\"}')", [kenji.profile_id]);
   ids = {
     victory: String(king.id),
     challenge: String(king.id),
     achievement: `${kenji.profile_id}_regicide`,
     dethroned: String(lucas.id),
+    rank: `${kenji.profile_id}_duke`,
     dethronedLong: String(kenji.id),
   };
 });
@@ -48,9 +51,9 @@ test.afterAll(async ({}, info) => {
 
 const SIZES = { og: [1200, 630], story: [1080, 1920] } as const;
 
-test("renders the four cards at both sizes", async ({ request }) => {
+test("renders the five cards at both sizes", async ({ request }) => {
   test.setTimeout(120_000);
-  for (const template of ["victory", "challenge", "achievement", "dethroned"] as const) {
+  for (const template of ["victory", "challenge", "achievement", "dethroned", "rank"] as const) {
     for (const size of ["og", "story"] as const) {
       for (const locale of ["en", "es"] as const) {
         const response = await request.get(`/og/${template}/${ids[template]}?size=${size}&locale=${locale}`);
@@ -76,6 +79,9 @@ test("answers 404 for cards that do not exist", async ({ request }) => {
     `/og/challenge/${ids.dethroned}`,
     `/og/dethroned/${ids.victory}`,
     "/og/achievement/00000000-0000-0000-0000-000000000000_regicide",
+    "/og/rank/00000000-0000-0000-0000-000000000000_duke",
+    `/og/rank/${ids.rank.replace("duke", "emperor")}`,
+    `/og/rank/${ids.rank.replace("duke", "peasant")}`,
     `/og/victory/${ids.victory}?size=square`,
   ]) {
     expect((await request.get(url)).status(), url).toBe(404);
@@ -85,13 +91,15 @@ test("answers 404 for cards that do not exist", async ({ request }) => {
 test("caches finished reigns for long and live ones briefly", async ({ request }) => {
   expect((await request.get(`/og/dethroned/${ids.dethroned}`)).headers()["cache-control"]).toContain("s-maxage=604800");
   expect((await request.get(`/og/challenge/${ids.challenge}`)).headers()["cache-control"]).toContain("s-maxage=300");
+  // A rank-up card shows the total reign time, which still grows.
+  expect((await request.get(`/og/rank/${ids.rank}`)).headers()["cache-control"]).toContain("s-maxage=300");
 });
 
 test("screenshot cards at X feed thumbnail size", async ({ page }) => {
   // X shows the large card at about 506 px wide (scale 0.42): who, how long or how much, and the
   // crown must still read.
-  const cards = ["victory", "challenge", "achievement", "dethroned"].map((t) => `/og/${t}/${ids[t as keyof Ids]}`);
-  await page.setViewportSize({ width: 1100, height: 620 });
+  const cards = ["victory", "challenge", "achievement", "dethroned", "rank"].map((t) => `/og/${t}/${ids[t as keyof Ids]}`);
+  await page.setViewportSize({ width: 1100, height: 900 });
   await page.setContent(
     `<body style="margin:0;padding:24px;background:#0E0C14;display:flex;flex-wrap:wrap;gap:24px">${cards
       .map((src) => `<img src="${new URL(src, test.info().project.use.baseURL).href}" width="506" height="266">`)
@@ -122,7 +130,8 @@ test("link previews use the matching share card", async ({ page }) => {
 
   const kenjiId = ids.achievement.split("_")[0];
   expect((await meta("/en/u/kenji?card=regicide")).image).toBe(`http://localhost:3000/og/achievement/${kenjiId}_regicide?locale=en`);
-  // A medal the player does not have falls back to their latest reign, here a dethroning.
+  expect((await meta("/en/u/kenji?card=duke")).image).toBe(`http://localhost:3000/og/rank/${kenjiId}_duke?locale=en`);
+  // A medal or rank the player does not have falls back to their latest reign, here a dethroning.
   expect((await meta("/en/u/kenji?card=founder")).image).toBe(`http://localhost:3000/og/dethroned/${ids.dethronedLong}?locale=en`);
   expect((await meta("/en/u/valeruiz")).image).toBe(`http://localhost:3000/og/victory/${ids.victory}?locale=en`);
 
