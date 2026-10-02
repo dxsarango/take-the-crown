@@ -78,28 +78,47 @@ export async function renderCard(model: CardModel, size: CardSize, locale: Local
   );
 
   let body: ReactNode;
-  if (model.template === "achievement") {
-    const ring = rarityHex(model.rarity, model.achievementSeasonId);
-    const medal = await art(await medalPixels(model.code), 24, 24, story ? 24 : 16);
-    const portrait = await art(portraitPixels(person.avatar, person.rank, { season: model.seasonId, crown: false }), 44, 44, story ? 3 : 2);
-    const medals = await getTranslations({ locale, namespace: "medals" });
-    const rarityT = await getTranslations({ locale, namespace: "rarity" });
-    const name = medals(`${MEDAL_KEY[model.code]}.name` as "regicide.name");
-    const pct = t("pctOf", { pct: `${new Intl.NumberFormat(locale === "es" ? "es-ES" : "en-US", { maximumFractionDigits: 1 }).format(model.holderPct)}%` });
-    const rarityPill = (
-      <Pill
-        label={rarityT(model.rarity)}
-        color={ring}
-        border={ring}
-        height={story ? 52 : 40}
-        pad={story ? 18 : 14}
-        swatch={story ? 18 : 14}
-        font={story ? 28 : 20}
-      />
-    );
+  if (model.template === "achievement" || model.template === "rank") {
+    // A rank-up is the achievement card with the player's portrait, in the new rank's frame, as its medal.
+    let ring: string;
+    let hero: Art;
+    let label: string;
+    let name: string;
+    let detail: ReactNode;
+    let portrait: Art | null = null;
+    if (model.template === "achievement") {
+      ring = rarityHex(model.rarity, model.achievementSeasonId);
+      hero = await art(await medalPixels(model.code), 24, 24, story ? 24 : 16);
+      portrait = await art(portraitPixels(person.avatar, person.rank, { season: model.seasonId, crown: false }), 44, 44, story ? 3 : 2);
+      const medals = await getTranslations({ locale, namespace: "medals" });
+      const rarityT = await getTranslations({ locale, namespace: "rarity" });
+      label = t("achLabel");
+      name = medals(`${MEDAL_KEY[model.code]}.name` as "regicide.name");
+      const pct = t("pctOf", { pct: `${new Intl.NumberFormat(locale === "es" ? "es-ES" : "en-US", { maximumFractionDigits: 1 }).format(model.holderPct)}%` });
+      detail = (
+        <div style={{ display: "flex", alignItems: "center", gap: story ? 20 : 16, flexWrap: "wrap" }}>
+          <Pill
+            label={rarityT(model.rarity)}
+            color={ring}
+            border={ring}
+            height={story ? 52 : 40}
+            pad={story ? 18 : 14}
+            swatch={story ? 18 : 14}
+            font={story ? 28 : 20}
+          />
+          <div style={{ fontSize: story ? 36 : 28, fontWeight: 500 }}>{pct}</div>
+        </div>
+      );
+    } else {
+      ring = RANK_STYLE[model.rank].swatch;
+      hero = await art(portraitPixels(person.avatar, model.rank, { season: model.seasonId, crown: false }), 44, 44, story ? 12 : 8);
+      label = t("rankLabel");
+      name = rankT(model.rank);
+      detail = <div style={{ fontSize: story ? 36 : 28, fontWeight: 500 }}>{t("rankTotal", { time: texts.duration(model.totalSeconds) })}</div>;
+    }
     const owner = (
       <div style={{ display: "flex", alignItems: "center", gap: story ? 20 : 16, marginTop: story ? 12 : 0 }}>
-        <Img art={portrait} />
+        {portrait && <Img art={portrait} />}
         <div style={{ fontSize: story ? 44 : 28, fontWeight: 700 }}>{person.name}</div>
         {flag && <Img art={flag} />}
       </div>
@@ -107,30 +126,24 @@ export async function renderCard(model: CardModel, size: CardSize, locale: Local
     body = story ? (
       <div style={{ position: "absolute", left: 0, top: 360, width: 1080, display: "flex", flexDirection: "column", alignItems: "center", gap: 36 }}>
         <div style={{ width: 1080, padding: "64px 0", background: C.velvet, borderTop: `12px solid ${ring}`, display: "flex", justifyContent: "center" }}>
-          <Img art={medal} />
+          <Img art={hero} />
         </div>
-        <div style={{ fontSize: 36, color: C.muted }}>{t("achLabel")}</div>
+        <div style={{ fontSize: 36, color: C.muted }}>{label}</div>
         <div style={{ fontSize: fit(name, 112, 920), fontWeight: 700, lineHeight: 1, letterSpacing: "-0.02em" }}>{name}</div>
-        <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
-          {rarityPill}
-          <div style={{ fontSize: 36, fontWeight: 500 }}>{pct}</div>
-        </div>
+        {detail}
         {owner}
       </div>
     ) : (
       <div style={{ display: "flex", width: 1200, height: 630 }}>
         <div style={{ width: 560, height: 630, background: C.velvet, borderTop: `12px solid ${ring}`, display: "flex", alignItems: "center", justifyContent: "center" }}>
-          <Img art={medal} style={{ marginTop: -12 }} />
+          <Img art={hero} style={{ marginTop: -12 }} />
         </div>
         <div style={{ flex: 1, padding: "56px 56px 52px 56px", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
           {header}
           <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
-            <div style={{ fontSize: 24, color: C.muted }}>{t("achLabel")}</div>
+            <div style={{ fontSize: 24, color: C.muted }}>{label}</div>
             <div style={{ fontSize: fit(name, 80, 528), fontWeight: 700, lineHeight: 1, letterSpacing: "-0.02em" }}>{name}</div>
-            <div style={{ display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap" }}>
-              {rarityPill}
-              <div style={{ fontSize: 28, fontWeight: 500 }}>{pct}</div>
-            </div>
+            {detail}
           </div>
           {owner}
         </div>
@@ -291,7 +304,7 @@ export async function renderCard(model: CardModel, size: CardSize, locale: Local
   }
 
   const { width, height } = CARD_SIZES[size];
-  const isStoryAchievement = story && model.template === "achievement";
+  const isStoryAchievement = story && (model.template === "achievement" || model.template === "rank");
   return new ImageResponse(
     (
       <div style={{ width, height, display: "flex", position: "relative", background: C.ink, color: C.text, fontFamily: "Manrope" }}>

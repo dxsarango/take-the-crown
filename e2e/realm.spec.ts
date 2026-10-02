@@ -201,6 +201,11 @@ test.describe("unlocks", () => {
     await toast.getByRole("button", { name: en.common.close }).click();
     await expect(toast).toContainText(en.achievement.rankUp, { timeout: 5_000 });
     await expect(toast).toContainText("Duke");
+    // Share copies a profile link that previews the rank-up card.
+    await page.context().grantPermissions(["clipboard-read", "clipboard-write"]);
+    await toast.getByRole("button", { name: en.common.share }).click();
+    await expect(toast).toContainText(en.achievement.copied);
+    expect(await page.evaluate(() => navigator.clipboard.readText())).toMatch(/\/en\/u\/kenji\?card=duke$/);
     await toast.getByRole("button", { name: en.common.close }).click();
     await expect(toast).toHaveCount(0, { timeout: 3_000 });
     // valeruiz's unlock never showed up here.

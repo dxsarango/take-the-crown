@@ -1,11 +1,12 @@
 import "server-only";
 import { type AchievementCode, isAchievementCode } from "@/lib/game/achievements";
+import { type Rank, isRank } from "@/lib/game/rank";
 import type { Person } from "@/lib/home/data";
 import type { Rarity } from "@/lib/profile/public";
 import { fetchPeople } from "@/lib/realm/data";
 import type { PublicClient } from "@/lib/supabase/public";
 
-export const CARD_TEMPLATES = ["victory", "challenge", "achievement", "dethroned"] as const;
+export const CARD_TEMPLATES = ["victory", "challenge", "achievement", "dethroned", "rank"] as const;
 export type CardTemplate = (typeof CARD_TEMPLATES)[number];
 
 export const CARD_SIZES = {
@@ -20,7 +21,8 @@ export type CardModel =
   | (Base & { template: "victory"; seconds: number; ended: boolean })
   | (Base & { template: "challenge"; priceCents: number })
   | (Base & { template: "achievement"; code: AchievementCode; rarity: Rarity; achievementSeasonId: number | null; holderPct: number })
-  | (Base & { template: "dethroned"; seconds: number; by: Person });
+  | (Base & { template: "dethroned"; seconds: number; by: Person })
+  | (Base & { template: "rank"; rank: Rank; totalSeconds: number });
 
 async function reign(db: PublicClient, id: number) {
   const { data } = await db
@@ -38,7 +40,7 @@ async function person(db: PublicClient, profileId: string): Promise<Person | nul
 /**
  * The data a card shows, or null when it does not exist: a victory is any reign, a challenge only
  * the current one (its price is live), a dethroning a reign someone ended by taking the crown.
- * Achievement ids are `<profile id>_<achievement code>`.
+ * Achievement ids are `<profile id>_<achievement code>`, rank-up ids `<profile id>_<rank>`.
  */
 export async function cardModel(db: PublicClient, template: CardTemplate, id: string, now = new Date()): Promise<CardModel | null> {
   if (template === "achievement") {
@@ -60,6 +62,22 @@ export async function cardModel(db: PublicClient, template: CardTemplate, id: st
       achievementSeasonId: achievementRes.data.season_id,
       holderPct: Number(statsRes.data?.holder_pct ?? 0),
     };
+  }
+
+  if (template === "rank") {
+    const [profileId, rank] = id.split("_");
+    if (!profileId || !/^[0-9a-f-]{36}$/.test(profileId) || !isRank(rank)) return null;
+    const [reachedRes, eventRes, crownRes, statsRes] = await Promise.all([
+      db.from("rank_ups").select("rank").eq("profile_id", profileId).eq("rank", rank).maybeSingle(),
+      // The frame is that of the season the rank was reached in; ranks backfilled without an event use the current one.
+      db.from("events").select("season_id").eq("kind", "rank_up").eq("profile_id", profileId).eq("payload->>rank", rank).limit(1).maybeSingle(),
+      db.from("public_crown_state").select("season_id").single(),
+      db.from("profile_stats").select("total_reign_seconds").eq("profile_id", profileId).maybeSingle(),
+    ]);
+    const player = reachedRes.data ? await person(db, profileId) : null;
+    const seasonId = eventRes.data?.season_id ?? crownRes.data?.season_id;
+    if (!player || seasonId === null || seasonId === undefined) return null;
+    return { template, seasonId, person: player, rank, totalSeconds: Number(statsRes.data?.total_reign_seconds ?? 0) };
   }
 
   if (!/^\d{1,18}$/.test(id)) return null;
