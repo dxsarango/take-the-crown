@@ -4,11 +4,12 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { redirect } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
-import { CONFIG_FIELDS, configSchema } from "@/lib/admin/config";
+import { CONFIG_FIELDS, LEGAL_FIELDS, configSchema, legalSchema } from "@/lib/admin/config";
 import { currentAdmin } from "@/lib/admin/guard";
 import { MODEL_REASONS } from "@/lib/moderation/model";
 import { paymentProvider } from "@/lib/payments";
 import { serviceClient } from "@/lib/supabase/service";
+import { revalidateHome } from "@/lib/home/cache";
 
 /**
  * Admin actions (SPEC §13). Each one checks is_admin again: server actions are public endpoints.
@@ -22,7 +23,7 @@ function localeOf(form: FormData): "en" | "es" {
 
 async function done(form: FormData, status: "ok" | "failed", extra: Record<string, string> = {}): Promise<never> {
   revalidatePath("/[locale]/admin", "page");
-  revalidatePath("/[locale]", "page");
+  revalidateHome();
   const params = new URLSearchParams({ status, ...extra });
   const section = form.get("section");
   return redirect({ href: `/admin?${params}${typeof section === "string" ? `#${section}` : ""}`, locale: localeOf(form) });
@@ -165,5 +166,19 @@ export async function saveConfig(form: FormData) {
     .eq("id", true);
   if (error) return done(form, "failed", { reason: "config" });
   await db.from("admin_actions").insert({ admin_profile_id: me.profileId, action: "config", details: parsed.data });
+  return done(form, "ok");
+}
+
+export async function saveLegal(form: FormData) {
+  const me = await admin();
+  const parsed = legalSchema.safeParse(Object.fromEntries(LEGAL_FIELDS.map((k) => [k, form.get(k)])));
+  if (!parsed.success) return done(form, "failed", { reason: "legal" });
+  const db = serviceClient();
+  const { error } = await db
+    .from("app_config")
+    .update({ ...parsed.data, updated_at: new Date().toISOString() })
+    .eq("id", true);
+  if (error) return done(form, "failed", { reason: "legal" });
+  await db.from("admin_actions").insert({ admin_profile_id: me.profileId, action: "legal", details: parsed.data });
   return done(form, "ok");
 }

@@ -66,6 +66,7 @@ export function LoginDialog({ season, request, onClose }: Props) {
   const [emailBad, setEmailBad] = useState(false);
   const [busy, setBusy] = useState<Busy>(null);
   const [sent, setSent] = useState<{ email: string; at: number } | null>(null);
+  const [limited, setLimited] = useState(false);
   const [now, setNow] = useState(() => Date.now());
   const afterPayment = request.variant === "afterPayment";
   const next = request.next ?? "/";
@@ -95,6 +96,11 @@ export function LoginDialog({ season, request, onClose }: Props) {
       body: JSON.stringify({ email: address.trim(), next }),
     }).catch(() => null);
     setBusy(null);
+    setLimited(response?.status === 429);
+    if (response?.status === 429) {
+      setSent(null);
+      return;
+    }
     if (!response?.ok) {
       setEmailBad(true);
       return;
@@ -105,8 +111,9 @@ export function LoginDialog({ season, request, onClose }: Props) {
   };
 
   const left = sent ? Math.max(0, RESEND_SECONDS - Math.floor((now - sent.at) / 1000)) : 0;
-  const errorText =
-    request.error === "no_email" ? t("errNoEmail") : request.error === "unavailable" ? t("errUnavailable") : request.error ? t("errFailed") : null;
+  const errorText = limited
+    ? t("errLimited")
+    : request.error === "no_email" ? t("errNoEmail") : request.error === "unavailable" ? t("errUnavailable") : request.error ? t("errFailed") : null;
 
   const header = (
     <div className="flex items-start gap-3 pt-2 pr-1 pl-4 lg:gap-3.5 lg:pt-6 lg:pr-2 lg:pl-7">

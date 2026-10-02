@@ -5,7 +5,7 @@ import { LOCK_DB_ERRORS, lockErrorFromDb } from "@/lib/locks/outcome";
 vi.mock("server-only", () => ({}));
 const { TestProvider, signTestPayload, TEST_SIGNATURE_HEADER } = await import("@/lib/payments/test-provider");
 
-const valid = { name: "nadia.builds", email: "nadia@example.com", locale: "en" as const };
+const valid = { name: "nadia.builds", email: "nadia@example.com", locale: "en" as const, acceptWithdrawal: true };
 
 describe("lock request", () => {
   it("normalizes links to https", () => {
@@ -35,6 +35,8 @@ describe("lock request", () => {
     [{ country: "ecuador" }, "country"],
     [{ avatarSeed: "xyz" }, "avatarSeed"],
     [{ locale: "fr" }, "locale"],
+    [{ acceptWithdrawal: false }, "acceptWithdrawal"],
+    [{ acceptWithdrawal: undefined }, "acceptWithdrawal"],
   ])("rejects %j", (patch, field) => {
     const result = lockRequestSchema.safeParse({ ...valid, ...patch });
     expect(result.success).toBe(false);

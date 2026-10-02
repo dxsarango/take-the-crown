@@ -16,6 +16,7 @@ import { clockParts, daysLeft, displayLink, formatDuration, formatPercent, forma
 import type { ChronicleEntry, Collectible, ProfilePage } from "@/lib/profile/public";
 import { socialLabel } from "@/lib/profile/socials";
 import { Medal, SeasonFrame, Segments, SocialIcon, figureParts, rarityColor, roman } from "./parts";
+import { PlayerName, usePlayerName } from "@/components/player-name";
 
 const CHRONICLE_PREVIEW = 6;
 const RANK_SEGMENTS = 20;
@@ -233,6 +234,7 @@ function Header({ data, own }: { data: ProfilePage; own: boolean }) {
 
 /** Own profile after losing the crown: who reigns now, the live price and the gold button. */
 function ComeBack({ data, now }: { data: ProfilePage; now: number }) {
+  const nameOf = usePlayerName();
   const t = useTranslations("profile");
   const common = useTranslations("common");
   const { locale, duration } = useFormats();
@@ -249,7 +251,7 @@ function ComeBack({ data, now }: { data: ProfilePage; now: number }) {
       <span className="flex size-5 flex-none items-center justify-center bg-crown-danger text-crown-ink">
         <Icon name="close" size={8} />
       </span>
-      <div className="text-14 font-bold">{t("hookStatus", { name: last.to.name, duration: duration(last.durationSeconds ?? 0) })}</div>
+      <div className="text-14 font-bold">{t("hookStatus", { name: nameOf(last.to.name), duration: duration(last.durationSeconds ?? 0) })}</div>
     </div>
   );
   const kingRow = (
@@ -257,7 +259,7 @@ function ComeBack({ data, now }: { data: ProfilePage; now: number }) {
       <Portrait avatar={king.avatar} rank={king.rank} season={data.season.id} crown scale={1} />
       <div className="flex min-w-0 flex-1 flex-col gap-0.5">
         <div className="flex items-center gap-1.5">
-          <div className="text-14 font-bold">{king.name}</div>
+          <div className="text-14 font-bold"><PlayerName name={king.name} /></div>
           <Flag code={king.countryCode} />
         </div>
         <div className="text-12 text-crown-muted lg:text-14">
@@ -310,6 +312,7 @@ function ComeBack({ data, now }: { data: ProfilePage; now: number }) {
 type Goal = { key: string; art: ReactNode; name: string; desc: string; value: string; lit: number; color: string };
 
 function useGoals(data: ProfilePage, now: number): Goal[] {
+  const nameOf = usePlayerName();
   const t = useTranslations("profile");
   const medals = useTranslations("medals");
   const rank = useTranslations("rank");
@@ -323,7 +326,7 @@ function useGoals(data: ProfilePage, now: number): Goal[] {
       key: "revenge",
       art: <Medal code="revenge" on={false} scale={2} />,
       name: medals("revenge.name"),
-      desc: t("reachRevenge", { name: last.to.name }),
+      desc: t("reachRevenge", { name: nameOf(last.to.name) }),
       value: "0 / 1",
       lit: 0,
       color: rarityColor("rare", null),
@@ -545,7 +548,7 @@ function Person({ person }: { person: { name: string; countryCode: string | null
   if (!person) return <span className="font-bold">{t("fromEmpty")}</span>;
   return (
     <span className="flex items-center gap-1.5 whitespace-nowrap">
-      <span className="font-bold">{person.name}</span>
+      <span className="font-bold"><PlayerName name={person.name} /></span>
       <Flag code={person.countryCode} />
     </span>
   );
@@ -674,7 +677,7 @@ function Rival({ data, own }: { data: ProfilePage; own: boolean }) {
           <div className="flex w-22 flex-col items-center gap-2">
             <Portrait avatar={rival.avatar} rank={rival.rank} season={data.season.id} crown={false} scale={2} />
             <div className="flex items-center gap-1">
-              <div className="max-w-16 truncate text-12 font-bold">{rival.name}</div>
+              <div className="max-w-16 truncate text-12 font-bold"><PlayerName name={rival.name} /></div>
               <Flag code={rival.countryCode} />
             </div>
           </div>

@@ -6,6 +6,7 @@ import es from "../messages/es.json";
 import { sql } from "./fixtures/db";
 import { resetKingdom, seedKingdom } from "./fixtures/kingdom";
 import { clearMail } from "./fixtures/mail";
+import { acceptDelivery } from "./fixtures/payment";
 
 const MAILPIT = "http://127.0.0.1:54324/api/v1";
 const SCREENS = "test-results/screens";
@@ -46,6 +47,7 @@ async function takeTheCrown(page: Page, name: string) {
   await dialog.getByLabel(en.common.nameL, { exact: true }).filter({ visible: true }).fill(name);
   await dialog.getByLabel(en.login.emailL, { exact: true }).filter({ visible: true }).fill(`${name}@test.local`);
   await expect(page.getByText(en.payment.nameAvailable).filter({ visible: true }).first()).toBeVisible();
+  await acceptDelivery(dialog);
   await dialog.getByRole("button", { name: /^Pay \$/ }).filter({ visible: true }).click();
   await expect(page.getByTestId("test-checkout").filter({ visible: true })).toBeVisible();
   await page.getByRole("button", { name: /^Pay \$/ }).filter({ visible: true }).click();

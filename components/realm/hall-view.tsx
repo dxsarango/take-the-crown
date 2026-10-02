@@ -12,6 +12,8 @@ import { formatDuration, formatDurationPrecise } from "@/lib/format";
 import { HALL_TABS, type HallRow, type HallScope, type HallTab, type SeasonInfo } from "@/lib/realm/data";
 import { segmentClass, useDates } from "./common";
 import { Podium, type PodiumSpot } from "./podium";
+import { usePlayerName } from "@/components/player-name";
+import { isFormerName, profileHref } from "@/lib/game/former";
 
 type Props = {
   current: SeasonInfo;
@@ -23,6 +25,7 @@ type Props = {
 };
 
 export function HallView({ current, next, manySeasons, hall, readAt }: Props) {
+  const nameOf = usePlayerName();
   const t = useTranslations("realm");
   const home = useTranslations("home");
   const rank = useTranslations("rank");
@@ -42,12 +45,12 @@ export function HallView({ current, next, manySeasons, hall, readAt }: Props) {
     if (tab === "countries") return `${Math.floor(row.value / 3600)}${u.h}`;
     return formatDuration(row.value, u);
   };
-  const label = (row: HallRow) => (row.kind === "person" ? row.person.name : countryName(row.countryCode, locale, messages.country));
+  const label = (row: HallRow) => (row.kind === "person" ? nameOf(row.person.name) : countryName(row.countryCode, locale, messages.country));
   const sub = (row: HallRow) => (row.kind === "person" ? rank(row.person.rank) : t("kingsN", { count: row.kings }));
 
   const spots: PodiumSpot[] = rows.slice(0, 3).map((row) =>
     row.kind === "person"
-      ? { key: row.person.profileId, value: value(row), name: row.person.name, href: `/u/${row.person.name.toLowerCase()}`, person: row.person }
+      ? { key: row.person.profileId, value: value(row), name: label(row), href: profileHref(row.person.name), person: row.person }
       : { key: row.countryCode, value: value(row), name: label(row), countryCode: row.countryCode },
   );
   const note =
@@ -103,7 +106,7 @@ export function HallView({ current, next, manySeasons, hall, readAt }: Props) {
           )}
           <div className="flex min-w-0 flex-1 flex-col gap-0.5 lg:flex-row lg:items-center lg:gap-2.5">
             <div className="flex min-w-0 items-center gap-1.5">
-              {row.kind === "person" ? (
+              {row.kind === "person" && !isFormerName(row.person.name) ? (
                 <Link href={`/u/${row.person.name.toLowerCase()}`} className="truncate text-14 font-bold hover:underline lg:text-16">
                   {label(row)}
                 </Link>

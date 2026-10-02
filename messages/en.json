@@ -24,7 +24,9 @@
       "h": "h",
       "m": "m",
       "s": "s"
-    }
+    },
+    "formerKing": "Former king",
+    "cancel": "Cancel"
   },
   "season": {
     "name": {
@@ -83,7 +85,9 @@
     },
     "copyright": "© {year} {brand}",
     "reportMessage": "Report message",
-    "reported": "Reported. Thanks for telling us."
+    "reported": "Reported. Thanks for telling us.",
+    "privacy": "Privacy",
+    "legal": "Rules and legal"
   },
   "homeStates": {
     "signin": "Sign in",
@@ -235,7 +239,10 @@
       "manipulation": "It tries to give instructions to our content check.",
       "blocked_name": "That name uses a word we don't allow in public names."
     },
-    "pendingReview": "Your message will appear after a short review."
+    "pendingReview": "Your message will appear after a short review.",
+    "ack": "The crown is delivered right away. I accept that I lose my right of withdrawal once it is delivered, as the <terms>terms</terms> explain.",
+    "needAck": "Accept the delivery terms to continue",
+    "needHuman": "Checking your browser…"
   },
   "coronation": {
     "reigning": "Reigning for"
@@ -503,7 +510,20 @@
     "bModTitle": "We couldn't review your changes",
     "bModWhy": "Our content check didn't answer. Nothing was saved. Try again in a minute.",
     "bLimitTitle": "Too many saves for now",
-    "bLimitWhy": "You've saved a lot in the last hour. Nothing was saved. Try again later."
+    "bLimitWhy": "You've saved a lot in the last hour. Nothing was saved. Try again later.",
+    "upErrLimited": "You've uploaded a lot of images in the last hour. Try again later.",
+    "secDelete": "Delete account",
+    "delHelp": "You can delete your account at any time. This can't be undone.",
+    "delWhat1": "Your profile becomes “Former king” with a plain avatar, and its page goes away.",
+    "delWhat2": "Your reigns stay in the history, without your name, avatar, message or link.",
+    "delWhat3": "Your email, settings and alerts are deleted. Payment records are kept as tax law requires.",
+    "delButton": "Delete account",
+    "delTitle": "Delete your account?",
+    "delBody": "Your achievements and statistics stay with “Former king”. You can't sign back in to this profile or get your name back.",
+    "delConfirmL": "Type {name} to confirm",
+    "delConfirm": "Delete forever",
+    "delDeleting": "Deleting…",
+    "delFailed": "Your account wasn't deleted. Try again."
   },
   "realm": {
     "nav": [
@@ -622,6 +642,7 @@
     "errFailed": "We couldn't sign you in. Try again or use another option.",
     "errNoEmail": "Your X account has no email address, so it can't keep a profile. Use Google or a magic link.",
     "errUnavailable": "That sign-in option isn't available right now. Use a magic link instead.",
+    "errLimited": "Too many sign-in links were requested. Try again in an hour.",
     "signOut": "Sign out",
     "yourProfile": "Your profile"
   },
@@ -877,7 +898,12 @@
       "max_message_length": "Max message length",
       "max_locks_per_ip_per_hour": "Max locks per IP per hour",
       "name_change_days": "Days between name changes",
-      "max_email_attempts": "Email attempts before giving up"
+      "max_email_attempts": "Email attempts before giving up",
+      "max_moderations_per_ip_per_hour": "Moderation checks per IP per hour",
+      "max_profile_saves_per_hour": "Profile saves per player per hour",
+      "max_magic_links_per_hour": "Sign-in links per IP and per email per hour",
+      "max_avatar_uploads_per_hour": "Avatar uploads per player per hour",
+      "max_reports_per_ip_per_hour": "Reports per IP per hour"
     },
     "log": {
       "empty": "No admin actions yet.",
@@ -899,6 +925,16 @@
       "approve": "Approve",
       "reject": "Reject",
       "confirmApprove": "Make the rejected content of reign {id} public?"
+    },
+    "legal": {
+      "title": "Legal pages",
+      "help": "Shown on the terms, privacy and FAQ pages. Empty fields show their placeholder until filled in.",
+      "save": "Save legal details",
+      "invalid": "A legal detail is not valid. Nothing was saved.",
+      "legal_contact_email": "Contact email",
+      "legal_city": "City for jurisdiction",
+      "legal_payment_provider": "Payment provider (merchant of record)",
+      "legal_effective_date": "Effective date"
     }
   },
   "report": {

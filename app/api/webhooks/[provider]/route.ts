@@ -1,8 +1,8 @@
-import { revalidatePath } from "next/cache";
 import { after } from "next/server";
 import { processOutbox } from "@/lib/email/outbox";
 import { providerByName } from "@/lib/payments";
 import { serviceClient } from "@/lib/supabase/service";
+import { revalidateHome } from "@/lib/home/cache";
 
 /**
  * Payment webhooks. The signature is always verified; the database decides whether a payment
@@ -39,7 +39,7 @@ export async function POST(request: Request, { params }: RouteContext<"/api/webh
         });
       }
       if (result === "applied") {
-        revalidatePath("/[locale]", "page");
+        revalidateHome();
         // The dethroned alert goes out right after the takeover; the cron retries what fails.
         after(() => processOutbox().catch((e: unknown) => console.error("outbox after webhook failed", e)));
       }
