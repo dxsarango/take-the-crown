@@ -3,7 +3,8 @@ import type { User } from "@supabase/supabase-js";
 import { serviceClient } from "@/lib/supabase/service";
 import { sessionClient } from "@/lib/supabase/session";
 
-export type Viewer = { userId: string; email: string; profileId: string };
+/** `lastSignInAt` comes from the auth server: when this user last signed in, not refreshed sessions. */
+export type Viewer = { userId: string; email: string; profileId: string; lastSignInAt: string | null };
 
 /**
  * A public-name suggestion from the provider profile: the X handle, else the display name with
@@ -40,5 +41,5 @@ export async function currentViewer(): Promise<Viewer | null> {
   const user = data.user;
   if (!user?.email) return null;
   const profileId = await ensureProfile(user);
-  return profileId ? { userId: user.id, email: user.email, profileId } : null;
+  return profileId ? { userId: user.id, email: user.email, profileId, lastSignInAt: user.last_sign_in_at ?? null } : null;
 }

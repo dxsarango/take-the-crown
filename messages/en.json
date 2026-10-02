@@ -523,7 +523,8 @@
     "delConfirmL": "Type {name} to confirm",
     "delConfirm": "Delete forever",
     "delDeleting": "Deleting…",
-    "delFailed": "Your account wasn't deleted. Try again."
+    "delFailed": "Your account wasn't deleted. Try again.",
+    "delReauth": "For your safety, confirm it's you: we emailed a sign-in link to {email}. Open it on this device to come back here and delete your account."
   },
   "realm": {
     "nav": [
