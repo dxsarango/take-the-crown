@@ -61,6 +61,8 @@ export const lockRequestSchema = z.object({
   avatarSeed: z
     .string()
     .regex(/^[0-9a-f]{32}$/)
+    // The all-zero seed is the deleted accounts' silhouette.
+    .refine((v) => /[1-9a-f]/.test(v))
     .optional(),
   locale: z.enum(["en", "es"]),
   turnstileToken: z.string().max(4096).optional(),
