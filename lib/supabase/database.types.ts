@@ -69,13 +69,13 @@ isOneToOne: false
                   ]
                 },"app_config": {
                   Row: {
-                    "decay_bps_per_hour": number,"floor_cents": number,"id": boolean,"late_payment_grace_seconds": number,"legal_city": string | null,"legal_contact_email": string | null,"legal_effective_date": string | null,"legal_payment_provider": string | null,"lock_seconds": number,"max_avatar_uploads_per_hour": number,"max_email_attempts": number,"max_locks_per_ip_per_hour": number,"max_magic_links_per_hour": number,"max_message_length": number,"max_moderations_per_ip_per_hour": number,"max_profile_saves_per_hour": number,"max_reports_per_ip_per_hour": number,"name_change_days": number,"step_bps": number,"updated_at": string
+                    "decay_bps_per_hour": number,"delete_reauth_seconds": number,"floor_cents": number,"id": boolean,"late_payment_grace_seconds": number,"legal_city": string | null,"legal_contact_email": string | null,"legal_effective_date": string | null,"legal_payment_provider": string | null,"lock_seconds": number,"max_avatar_uploads_per_hour": number,"max_email_attempts": number,"max_locks_per_ip_per_hour": number,"max_magic_links_per_hour": number,"max_message_length": number,"max_moderations_per_ip_per_hour": number,"max_profile_saves_per_hour": number,"max_reports_per_ip_per_hour": number,"name_change_days": number,"step_bps": number,"updated_at": string
                   }
                   Insert: {
-                    "decay_bps_per_hour"?: number,"floor_cents"?: number,"id"?: boolean,"late_payment_grace_seconds"?: number,"legal_city"?: string | null,"legal_contact_email"?: string | null,"legal_effective_date"?: string | null,"legal_payment_provider"?: string | null,"lock_seconds"?: number,"max_avatar_uploads_per_hour"?: number,"max_email_attempts"?: number,"max_locks_per_ip_per_hour"?: number,"max_magic_links_per_hour"?: number,"max_message_length"?: number,"max_moderations_per_ip_per_hour"?: number,"max_profile_saves_per_hour"?: number,"max_reports_per_ip_per_hour"?: number,"name_change_days"?: number,"step_bps"?: number,"updated_at"?: string
+                    "decay_bps_per_hour"?: number,"delete_reauth_seconds"?: number,"floor_cents"?: number,"id"?: boolean,"late_payment_grace_seconds"?: number,"legal_city"?: string | null,"legal_contact_email"?: string | null,"legal_effective_date"?: string | null,"legal_payment_provider"?: string | null,"lock_seconds"?: number,"max_avatar_uploads_per_hour"?: number,"max_email_attempts"?: number,"max_locks_per_ip_per_hour"?: number,"max_magic_links_per_hour"?: number,"max_message_length"?: number,"max_moderations_per_ip_per_hour"?: number,"max_profile_saves_per_hour"?: number,"max_reports_per_ip_per_hour"?: number,"name_change_days"?: number,"step_bps"?: number,"updated_at"?: string
                   }
                   Update: {
-                    "decay_bps_per_hour"?: number,"floor_cents"?: number,"id"?: boolean,"late_payment_grace_seconds"?: number,"legal_city"?: string | null,"legal_contact_email"?: string | null,"legal_effective_date"?: string | null,"legal_payment_provider"?: string | null,"lock_seconds"?: number,"max_avatar_uploads_per_hour"?: number,"max_email_attempts"?: number,"max_locks_per_ip_per_hour"?: number,"max_magic_links_per_hour"?: number,"max_message_length"?: number,"max_moderations_per_ip_per_hour"?: number,"max_profile_saves_per_hour"?: number,"max_reports_per_ip_per_hour"?: number,"name_change_days"?: number,"step_bps"?: number,"updated_at"?: string
+                    "decay_bps_per_hour"?: number,"delete_reauth_seconds"?: number,"floor_cents"?: number,"id"?: boolean,"late_payment_grace_seconds"?: number,"legal_city"?: string | null,"legal_contact_email"?: string | null,"legal_effective_date"?: string | null,"legal_payment_provider"?: string | null,"lock_seconds"?: number,"max_avatar_uploads_per_hour"?: number,"max_email_attempts"?: number,"max_locks_per_ip_per_hour"?: number,"max_magic_links_per_hour"?: number,"max_message_length"?: number,"max_moderations_per_ip_per_hour"?: number,"max_profile_saves_per_hour"?: number,"max_reports_per_ip_per_hour"?: number,"name_change_days"?: number,"step_bps"?: number,"updated_at"?: string
                   }
                   Relationships: [
                     
@@ -552,7 +552,7 @@ isOneToOne: false
                   Relationships: [
                     {
       foreignKeyName: "reigns_profile_id_fkey"
-      columns: ["profile_id"]
+      columns: ["to_profile_id"]
 isOneToOne: false
       referencedRelation: "profile_stats"
       referencedColumns: ["profile_id"]
@@ -564,13 +564,13 @@ isOneToOne: false
       referencedColumns: ["profile_id"]
     },{
       foreignKeyName: "reigns_profile_id_fkey"
-      columns: ["to_profile_id"]
+      columns: ["profile_id"]
 isOneToOne: false
       referencedRelation: "profile_stats"
       referencedColumns: ["profile_id"]
     },{
       foreignKeyName: "reigns_profile_id_fkey"
-      columns: ["profile_id"]
+      columns: ["to_profile_id"]
 isOneToOne: false
       referencedRelation: "profiles"
       referencedColumns: ["id"]
@@ -582,7 +582,7 @@ isOneToOne: false
       referencedColumns: ["id"]
     },{
       foreignKeyName: "reigns_profile_id_fkey"
-      columns: ["to_profile_id"]
+      columns: ["profile_id"]
 isOneToOne: false
       referencedRelation: "profiles"
       referencedColumns: ["id"]
