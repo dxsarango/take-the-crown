@@ -1,7 +1,7 @@
-import { revalidatePath } from "next/cache";
 import { cronAuthorized } from "@/lib/security/cron";
 import { moderate } from "@/lib/moderation";
 import { serviceClient } from "@/lib/supabase/service";
+import { revalidateHome } from "@/lib/home/cache";
 
 /** Pending reigns checked per run; the cron runs every minute. */
 const BATCH = 20;
@@ -46,6 +46,6 @@ export async function GET(request: Request) {
     counts[approved ? "approved" : "rejected"] += 1;
   }
 
-  if (counts.approved > 0) revalidatePath("/[locale]", "page");
+  if (counts.approved > 0) revalidateHome();
   return Response.json({ ok: true, ...counts });
 }

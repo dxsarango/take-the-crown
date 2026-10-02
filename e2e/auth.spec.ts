@@ -4,6 +4,7 @@ import es from "../messages/es.json";
 import { sql } from "./fixtures/db";
 import { resetKingdom, seedKingdom } from "./fixtures/kingdom";
 import { clearMail, latestSignInLink, signInByEmail } from "./fixtures/mail";
+import { acceptDelivery } from "./fixtures/payment";
 
 test.describe.configure({ mode: "serial" });
 test.beforeAll(() => seedKingdom());
@@ -113,6 +114,7 @@ test("a signed-in buyer keeps their name and skips the email field", async ({ pa
   await expect(modal.getByLabel(en.login.emailL, { exact: true }).filter({ visible: true })).toHaveCount(0);
   await expect(visible(page, en.payment.nameSignedIn)).toBeVisible();
 
+  await acceptDelivery(modal);
   await modal.getByRole("button", { name: /^Pay \$/ }).filter({ visible: true }).click();
   await modal.getByRole("button", { name: /^Pay \$/ }).filter({ visible: true }).click();
   await expect(visible(page, en.payment.headOk)).toBeVisible({ timeout: 10_000 });
@@ -131,6 +133,7 @@ test("asks a guest to sign in after paying, with their email ready", async ({ pa
   await modal.getByLabel(en.common.nameL, { exact: true }).filter({ visible: true }).fill("fresh_guest");
   await modal.getByLabel(en.login.emailL, { exact: true }).filter({ visible: true }).fill("fresh.guest@test.local");
   await expect(visible(page, en.payment.nameAvailable)).toBeVisible();
+  await acceptDelivery(modal);
   await modal.getByRole("button", { name: /^Pay \$/ }).filter({ visible: true }).click();
   await modal.getByRole("button", { name: /^Pay \$/ }).filter({ visible: true }).click();
   await expect(visible(page, en.payment.headOk)).toBeVisible({ timeout: 10_000 });

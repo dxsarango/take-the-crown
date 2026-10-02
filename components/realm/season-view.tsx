@@ -13,6 +13,8 @@ import { MEDAL_KEY, isAchievementCode } from "@/lib/game/achievements";
 import type { SeasonEnd, SeasonInfo, SeasonRecord } from "@/lib/realm/data";
 import { useDates } from "./common";
 import { Banner, Podium } from "./podium";
+import { usePlayerName } from "@/components/player-name";
+import { isFormerName, profileHref } from "@/lib/game/former";
 
 /** Next-season announcement art: the real scene when it exists, the provisional one otherwise. */
 const NEXT_SCENE: Record<number, string> = { 1: "t1", 2: "t2-provisional" };
@@ -20,6 +22,7 @@ const NEXT_SCENE: Record<number, string> = { 1: "t1", 2: "t2-provisional" };
 type Props = { data: SeasonEnd; current: SeasonInfo; readAt: string };
 
 export function SeasonView({ data, current, readAt }: Props) {
+  const nameOf = usePlayerName();
   const t = useTranslations("realm");
   const seasonT = useTranslations("season");
   const rank = useTranslations("rank");
@@ -59,7 +62,7 @@ export function SeasonView({ data, current, readAt }: Props) {
         { l: t("kosStats.2"), v: rank(king.rank) },
       ]
     : [];
-  const who = (r: SeasonRecord | null) => r?.who?.name ?? null;
+  const who = (r: SeasonRecord | null) => (r?.who ? nameOf(r.who.name) : null);
   const stats: { l: string; v: string; who?: string | null; gold?: boolean }[] = [
     { l: t("st.0"), v: String(summary.reigns) },
     { l: t("st.1"), v: String(summary.kings) },
@@ -69,7 +72,7 @@ export function SeasonView({ data, current, readAt }: Props) {
     {
       l: t("st.5"),
       v: data.peak ? formatPrice(data.peak.value, locale) : "—",
-      who: data.peak?.who && data.peak.at ? t("paidBy", { name: data.peak.who.name, date: day(data.peak.at) }) : null,
+      who: data.peak?.who && data.peak.at ? t("paidBy", { name: nameOf(data.peak.who.name), date: day(data.peak.at) }) : null,
       gold: true,
     },
   ];
@@ -161,9 +164,13 @@ export function SeasonView({ data, current, readAt }: Props) {
                   <div className="lg:hidden">{kosTag("mobile")}</div>
                   <div className="hidden lg:block">{kosTag("desktop")}</div>
                   <div className="flex items-center gap-2.5 lg:gap-3.5">
-                    <Link href={`/u/${king.name.toLowerCase()}`} className="text-28 font-bold hover:underline lg:text-64 lg:leading-none lg:tracking-[-0.02em]">
-                      {king.name}
-                    </Link>
+                    {isFormerName(king.name) ? (
+                      <span className="text-28 font-bold lg:text-64 lg:leading-none lg:tracking-[-0.02em]">{nameOf(king.name)}</span>
+                    ) : (
+                      <Link href={`/u/${king.name.toLowerCase()}`} className="text-28 font-bold hover:underline lg:text-64 lg:leading-none lg:tracking-[-0.02em]">
+                        {king.name}
+                      </Link>
+                    )}
                     <Flag code={king.countryCode} className="lg:hidden" />
                     <Flag code={king.countryCode} scale={3} className="hidden lg:block" />
                   </div>
@@ -197,7 +204,7 @@ export function SeasonView({ data, current, readAt }: Props) {
             </div>
             <Podium
               season={n}
-              spots={data.podium.map((p) => ({ key: p.profileId, value: hours(p.seconds), name: p.name, href: `/u/${p.name.toLowerCase()}`, person: p }))}
+              spots={data.podium.map((p) => ({ key: p.profileId, value: hours(p.seconds), name: nameOf(p.name), href: profileHref(p.name), person: p }))}
             />
           </section>
           <section className="flex flex-col gap-3.5 px-4 py-7 lg:gap-5 lg:p-0">

@@ -14,6 +14,7 @@ import { Hero, type HomeNotice, KingMessage } from "./hero";
 import { Feed, Footer, HallOfFamePreview, Succession } from "./sections";
 import { ThroneScene } from "./throne-scene";
 import { useLiveHome, useServerNow } from "./use-live-home";
+import { PlayerName } from "@/components/player-name";
 
 type Crowning = {
   key: string;
@@ -143,7 +144,7 @@ export function HomeView({ initial }: { initial: HomeData }) {
           <ThroneScene season={season} king={data.king} locked={state.mode === "locked"} />
         )}
         <div aria-live="polite" className="sr-only">
-          {data.king?.name}
+          {data.king && <PlayerName name={data.king.name} />}
         </div>
         <Hero king={data.king} crown={data.crown} state={state} season={season} notice={notice} onTake={openPayment} />
         {data.king && (data.king.message || data.king.link) && (

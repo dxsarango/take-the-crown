@@ -17,7 +17,7 @@ export const LOCK_DB_ERRORS = [
 
 export type LockDbError = (typeof LOCK_DB_ERRORS)[number];
 
-export type LockField = "name" | "email" | "link" | "message" | "country";
+export type LockField = "name" | "email" | "link" | "message" | "country" | "acceptWithdrawal";
 
 export type LockFailure =
   | { ok: false; error: LockDbError }

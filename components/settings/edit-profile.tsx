@@ -4,6 +4,8 @@ import { useLocale, useTranslations } from "next-intl";
 import { type ReactNode, useEffect, useId, useRef, useState } from "react";
 import { traitsFromUsername } from "@/design/lib/avatar-lib.js";
 import { Arrow, Flag, Icon, Portrait, RankTag } from "@/components/art";
+import { useHumanCheck } from "@/components/security/human-check";
+import { DeleteAccount } from "@/components/settings/delete-account";
 import { useAuth } from "@/components/auth/auth-provider";
 import { useServerNow } from "@/components/home/use-live-home";
 import { Medal, SocialIcon, rarityColor } from "@/components/profile/parts";
@@ -42,6 +44,7 @@ const SECTIONS = [
   { id: "privacy", label: "secPriv", fields: [] },
   { id: "alerts", label: "secAl", fields: ["price"] },
   { id: "language", label: "secLang", fields: [] },
+  { id: "delete", label: "secDelete", fields: [] },
 ] as const;
 
 const UPLOAD_TYPES = ["image/png", "image/jpeg", "image/webp"];
@@ -244,10 +247,11 @@ export function EditProfile({ settings, season, readAt, countries }: Props) {
   const [uploads, setUploads] = useState<Record<string, Upload>>(() =>
     settings.upload ? { [settings.upload.path]: { ...settings.upload, name: t("modeUp") } } : {},
   );
-  const [upError, setUpError] = useState<"type" | "size" | "failed" | null>(null);
+  const [upError, setUpError] = useState<"type" | "size" | "failed" | "rate_limited" | null>(null);
   const [uploading, setUploading] = useState(false);
   const [nameTaken, setNameTaken] = useState(false);
   const fileInput = useRef<HTMLInputElement>(null);
+  const human = useHumanCheck("profile");
 
   const floorDollars = Math.ceil(settings.floorCents / 100);
   const cooldownDate = settings.nameChangeAt
@@ -326,8 +330,9 @@ export function EditProfile({ settings, season, readAt, countries }: Props) {
     const response = await fetch("/api/profile", {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(form),
+      body: JSON.stringify({ ...form, turnstileToken: human.token }),
     }).catch(() => null);
+    human.reset();
     const outcome = (await response?.json().catch(() => null)) as SaveOutcome | null;
     if (!outcome) return setPhase("failed");
     if (outcome.ok) {
@@ -397,7 +402,7 @@ export function EditProfile({ settings, season, readAt, countries }: Props) {
     const response = await fetch("/api/profile/avatar", { method: "POST", body }).catch(() => null);
     const result = (await response?.json().catch(() => null)) as
       | { ok: true; path: string; pixelUrl: string; originalUrl: string }
-      | { ok: false; error: "type" | "size" | "failed" }
+      | { ok: false; error: "type" | "size" | "failed" | "rate_limited" }
       | null;
     setUploading(false);
     if (!result || !result.ok) return setUpError(result && !result.ok ? result.error : "failed");
@@ -413,7 +418,7 @@ export function EditProfile({ settings, season, readAt, countries }: Props) {
   };
 
   const upErrorText =
-    upError === "type" ? t("upErrType") : upError === "size" ? t("upErrSize") : upError === "failed" ? t("upErrFailed") : visible("up") ? t("upErrNone") : null;
+    upError === "type" ? t("upErrType") : upError === "size" ? t("upErrSize") : upError === "failed" ? t("upErrFailed") : upError === "rate_limited" ? t("upErrLimited") : visible("up") ? t("upErrNone") : null;
 
   // ---- Alerts ----
   const livePrice = priceAt(settings.basePriceCents, new Date(settings.baseSetAt), new Date(now), {
@@ -444,7 +449,7 @@ export function EditProfile({ settings, season, readAt, countries }: Props) {
     statusText = t("stSaved");
     statusTone = "good";
   } else statusText = dirty ? t("stDirty", { n: dirty }) : t("stClean");
-  const canSave = phase !== "saving" && (dirty > 0 || phase === "failed");
+  const canSave = phase !== "saving" && human.ready && (dirty > 0 || phase === "failed");
   const canDiscard = dirty > 0 && phase !== "saving";
 
   const statusLine = (size: "mobile" | "desktop") => (
@@ -1013,6 +1018,16 @@ export function EditProfile({ settings, season, readAt, countries }: Props) {
     "gap-3.5",
   );
 
+  const deleteSection = section(
+    "delete",
+    false,
+    <>
+      {heading(t("secDelete"), t("delHelp"))}
+      <DeleteAccount name={saved.name} />
+    </>,
+    "gap-3.5",
+  );
+
   // ---- Preview (desktop) ----
   const previewLink = form.link.trim() && !problems.some((p) => p.field === "link") ? displayLink(mainLinkUrl(form.link) ?? "") : "";
   const previewSocials = SOCIAL_KEYS.flatMap((k) => {
@@ -1119,6 +1134,8 @@ export function EditProfile({ settings, season, readAt, countries }: Props) {
             {privacySection}
             {alertsSection}
             {languageSection}
+            {deleteSection}
+            {human.widget && <div className="pb-7">{human.widget}</div>}
           </div>
         </main>
 

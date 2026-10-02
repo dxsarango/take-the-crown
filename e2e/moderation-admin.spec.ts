@@ -3,6 +3,7 @@ import en from "../messages/en.json";
 import { sql } from "./fixtures/db";
 import { resetKingdom, seedKingdom } from "./fixtures/kingdom";
 import { signInByEmail } from "./fixtures/mail";
+import { acceptDelivery } from "./fixtures/payment";
 
 // The dev server runs with MODERATION_PROVIDER=test: "[moderation:<reason>]" in a field makes the
 // model stand-in reject it, so every rejection state is reachable without calling the API.
@@ -23,6 +24,7 @@ async function tryToTake(page: Page, input: { message?: string; link?: string })
   if (input.link) await dialog.getByLabel(en.payment.linkL, { exact: true }).filter({ visible: true }).fill(input.link);
   if (input.message) await dialog.getByLabel(en.payment.msgL, { exact: true }).filter({ visible: true }).fill(input.message);
   await expect(shown(page, en.payment.nameAvailable)).toBeVisible();
+  await acceptDelivery(dialog);
   await dialog.getByRole("button", { name: /^Pay \$/ }).filter({ visible: true }).click();
 }
 

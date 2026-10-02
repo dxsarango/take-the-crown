@@ -1,7 +1,17 @@
-/** Where to go after signing in: same-site paths only, never "//evil.example" or "/\evil.example". */
+/**
+ * Where to go after signing in: same-site paths only. URL parsing drops tabs and newlines and reads
+ * "\" as "/", so "/\t/evil.example" would become "//evil.example"; resolving the path against a
+ * fixed origin and checking it stayed there catches every such form.
+ */
 export function safeNext(value: string | null | undefined, fallback = "/"): string {
-  if (!value || !value.startsWith("/") || value.startsWith("//") || value.startsWith("/\\")) return fallback;
-  return value;
+  if (!value || !value.startsWith("/") || /[\u0000-\u001f\\]/.test(value)) return fallback;
+  try {
+    const url = new URL(value, "http://local");
+    if (url.origin !== "http://local") return fallback;
+    return `${url.pathname}${url.search}${url.hash}`;
+  } catch {
+    return fallback;
+  }
 }
 
 /** Adds a query parameter to a same-site path. */

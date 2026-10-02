@@ -10,6 +10,7 @@ import { seasonArt } from "@/lib/art/seasons";
 import { MEDAL_KEY } from "@/lib/game/achievements";
 import { formatAgo, formatDuration } from "@/lib/format";
 import type { FeedItem, HallOfFame, PastReign, Person } from "@/lib/home/data";
+import { PlayerName } from "@/components/player-name";
 
 function useUnits() {
   const t = useTranslations("common.units");
@@ -46,7 +47,7 @@ export function Succession({ reigns, season }: { reigns: PastReign[]; season: nu
           {reigns.map((reign) => (
             <li key={reign.reignId} className="flex w-22 flex-none flex-col gap-1.5 lg:w-auto lg:min-w-0 lg:gap-2">
               <Portrait avatar={reign.avatar} rank={reign.rank} season={season} crown={false} scale={2} />
-              <div className="truncate text-14 font-bold">{reign.name}</div>
+              <div className="truncate text-14 font-bold"><PlayerName name={reign.name} /></div>
               <div className="flex items-center gap-1.5">
                 <Flag code={reign.countryCode} />
                 <span className="font-pixel text-14 font-medium whitespace-nowrap text-crown-muted">
@@ -92,7 +93,7 @@ export function HallOfFamePreview({ hall, season }: { hall: HallOfFame; season: 
                 <div className="flex min-w-0 flex-1 flex-col gap-0.5">
                   <div className="text-12 text-crown-muted">{label}</div>
                   <div className="flex items-center gap-1.5">
-                    <span className="truncate text-14 font-bold">{person.name}</span>
+                    <span className="truncate text-14 font-bold"><PlayerName name={person.name} /></span>
                     <Flag code={person.countryCode} />
                   </div>
                 </div>
@@ -111,7 +112,7 @@ export function HallOfFamePreview({ hall, season }: { hall: HallOfFame; season: 
                 <div className="flex items-center gap-2.5">
                   <Portrait avatar={person.avatar} rank={person.rank} season={season} crown={false} scale={1} />
                   <div className="flex min-w-0 flex-col gap-1">
-                    <span className="truncate text-14 font-bold">{person.name}</span>
+                    <span className="truncate text-14 font-bold"><PlayerName name={person.name} /></span>
                     <Flag code={person.countryCode} />
                   </div>
                 </div>
@@ -132,7 +133,7 @@ function FeedLine({ item }: { item: FeedItem }) {
     case "dethroned":
       return (
         <>
-          {t("fellTo")} <span className="font-bold text-crown-text">{item.by.name}</span>
+          {t("fellTo")} <span className="font-bold text-crown-text"><PlayerName name={item.by.name} /></span>
         </>
       );
     case "first_reign":
@@ -177,7 +178,7 @@ export function Feed({ items, now }: { items: FeedItem[]; now: number }) {
             >
               <div className="flex min-w-0 items-center gap-1.5">
                 <Flag code={item.who.countryCode} />
-                <span className="truncate text-14 font-bold">{item.who.name}</span>
+                <span className="truncate text-14 font-bold"><PlayerName name={item.who.name} /></span>
               </div>
               <div className="truncate text-14 text-crown-muted">
                 <FeedLine item={item} />
@@ -202,7 +203,7 @@ export function Footer({ season, now }: { season: number; now: number }) {
   const art = seasonArt(season);
   const links = (
     <>
-      {(["rules", "faq", "terms"] as const).map((key) => (
+      {(["rules", "faq", "terms", "privacy"] as const).map((key) => (
         <Link
           key={key}
           href={`/${key}`}

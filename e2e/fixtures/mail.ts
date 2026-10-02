@@ -1,4 +1,5 @@
 import { type Page, expect } from "@playwright/test";
+import { sql } from "./db";
 
 // Local Supabase sends auth email to Mailpit.
 const MAILPIT = "http://127.0.0.1:54324/api/v1";
@@ -29,6 +30,8 @@ export async function clearMail(): Promise<void> {
 /** Signs in with a magic link, as a player would, and lands on `next`. */
 export async function signInByEmail(page: Page, email: string, next = "/en"): Promise<void> {
   await clearMail();
+  // Every test signs in from the same address; the per-hour sign-in link limit is tested on its own.
+  await sql("delete from rate_limit_hits where key like 'magic_link%'");
   const response = await page.request.post("/api/auth/magic-link", { data: { email, next } });
   expect(response.ok()).toBe(true);
   await page.goto(await latestSignInLink(email));

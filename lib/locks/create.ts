@@ -34,13 +34,13 @@ export async function createLock(body: unknown, ip: string): Promise<LockOutcome
   const parsed = lockRequestSchema.safeParse(body);
   if (!parsed.success) {
     const fields = [...new Set(parsed.error.issues.map((i) => i.path[0]))].filter(
-      (f): f is LockField => typeof f === "string" && ["name", "email", "link", "message", "country"].includes(f),
+      (f): f is LockField => typeof f === "string" && ["name", "email", "link", "message", "country", "acceptWithdrawal"].includes(f),
     );
     return { ok: false, error: "invalid_input", fields };
   }
   const input: LockRequest = parsed.data;
 
-  if (!(await verifyHuman(input.turnstileToken, ip))) return { ok: false, error: "human_check_failed" };
+  if (!(await verifyHuman(input.turnstileToken, ip, "lock"))) return { ok: false, error: "human_check_failed" };
   const ipHash = hashIp(ip);
   if (!(await withinHourlyLimit(`moderation:${ipHash}`, "max_moderations_per_ip_per_hour"))) {
     return { ok: false, error: "rate_limited" };
@@ -70,11 +70,15 @@ export async function createLock(body: unknown, ip: string): Promise<LockOutcome
     p_avatar_seed: input.avatarSeed ?? null,
   };
   const { data: lock, error } = await db.rpc("create_price_lock", args as LockArgs);
-  if (lock && moderationPending) {
-    const { error: holdError } = await db.from("price_locks").update({ moderation_status: "pending" }).eq("id", lock.id);
-    if (holdError) {
+  if (lock) {
+    // The acknowledgment is kept with the lock, next to the payment it leads to.
+    const { error: markError } = await db
+      .from("price_locks")
+      .update({ withdrawal_ack_at: new Date().toISOString(), ...(moderationPending ? { moderation_status: "pending" } : {}) })
+      .eq("id", lock.id);
+    if (markError) {
       await db.rpc("release_price_lock", { p_lock_id: lock.id });
-      console.error("could not hold the lock for review", holdError.message);
+      console.error("could not record the lock's acknowledgment", markError.message);
       return { ok: false, error: "unknown" };
     }
   }
@@ -82,7 +86,11 @@ export async function createLock(body: unknown, ip: string): Promise<LockOutcome
   if (error || !lock) {
     const mapped = lockErrorFromDb(error?.message ?? "");
     if (mapped === "email_verification_required") {
-      await sendMagicLink(buyer.email, `/${input.locale}?resume=1`);
+      // Shares the sign-in link limit per address, so nobody can flood someone else's inbox from here.
+      if (await withinHourlyLimit(`magic_link_email:${hashIp(buyer.email.toLowerCase())}`, "max_magic_links_per_hour")) {
+        await sendMagicLink(buyer.email, `/${input.locale}?resume=1`);
+      }
+      // The same answer either way: it must not reveal whether the address has a profile.
       return { ok: true, verifyEmail: true };
     }
     if (mapped === "invalid_link") return { ok: false, error: "invalid_input", fields: ["link"] };

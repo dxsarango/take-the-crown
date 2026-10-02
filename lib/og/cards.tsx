@@ -10,6 +10,7 @@ import { formatDuration, formatPrice } from "@/lib/format";
 import { MEDAL_KEY } from "@/lib/game/achievements";
 import { rarityHex } from "@/lib/game/rarity";
 import type { Person } from "@/lib/home/data";
+import { playerName } from "@/lib/game/former";
 import { cardScene, flagPixels, medalPixels } from "./art";
 import { CARD_SIZES, type CardModel, type CardSize } from "./data";
 import { cardFonts } from "./fonts";
@@ -66,7 +67,8 @@ export async function renderCard(model: CardModel, size: CardSize, locale: Local
     duration: (seconds) => formatDuration(seconds, units),
   };
   const story = size === "story";
-  const person = { ...model.person, avatar: await withUploadPixels(model.person.avatar) };
+  const former = (await getTranslations({ locale, namespace: "common" }))("formerKing");
+  const person = { ...model.person, name: playerName(model.person.name, former), avatar: await withUploadPixels(model.person.avatar) };
   const flagScale = story ? 4 : 3;
   const flag = person.countryCode ? await art(await flagPixels(person.countryCode), 12, 8, flagScale) : null;
 
@@ -266,7 +268,7 @@ export async function renderCard(model: CardModel, size: CardSize, locale: Local
           </div>
         );
       } else {
-        const by = model.template === "dethroned" ? model.by : null;
+        const by = model.template === "dethroned" ? { ...model.by, name: playerName(model.by.name, former) } : null;
         const byFlag = by?.countryCode ? await art(await flagPixels(by.countryCode), 12, 8, 2) : null;
         middle = (
           <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>

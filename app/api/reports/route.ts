@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { REPORT_REASONS } from "@/lib/reports";
-import { clientIp, hashIp } from "@/lib/security/request";
+import { withinHourlyLimit } from "@/lib/security/rate-limit";
+import { clientIp, hashIp, sameOrigin } from "@/lib/security/request";
 import { serviceClient } from "@/lib/supabase/service";
 
 const schema = z.object({
@@ -13,11 +14,16 @@ const schema = z.object({
  * never hide anything by themselves; the third one alerts the admins (decision 32).
  */
 export async function POST(request: Request) {
+  if (!sameOrigin(request)) return Response.json({ ok: false }, { status: 403 });
   const parsed = schema.safeParse(await request.json().catch(() => null));
   if (!parsed.success) return Response.json({ ok: false }, { status: 400 });
+  const ipHash = hashIp(clientIp(request.headers));
+  if (!(await withinHourlyLimit(`report:${ipHash}`, "max_reports_per_ip_per_hour"))) {
+    return Response.json({ ok: false, error: "rate_limited" }, { status: 429 });
+  }
   const { data, error } = await serviceClient().rpc("report_reign", {
     p_reign_id: parsed.data.reignId,
-    p_ip_hash: hashIp(clientIp(request.headers)),
+    p_ip_hash: ipHash,
     p_reason: parsed.data.reason,
   });
   if (error) {

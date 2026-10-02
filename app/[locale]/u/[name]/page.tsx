@@ -12,6 +12,7 @@ import { profileCard, shareMetadata } from "@/lib/og/metadata";
 import { fetchProfilePage, profileIdForName } from "@/lib/profile/public";
 import { publicClient } from "@/lib/supabase/public";
 import { readerTimeZone } from "@/lib/time-zone.server";
+import { isFormerName } from "@/lib/game/former";
 
 // Rendered per request: the owner sees extra blocks (come back, goals, empty slots).
 export const dynamic = "force-dynamic";
@@ -48,7 +49,8 @@ export default async function ProfilePage({ params }: PageProps<"/[locale]/u/[na
   if (!profileId) notFound();
 
   const [data, viewer, timeZone] = await Promise.all([fetchProfilePage(db, profileId), currentViewer(), readerTimeZone()]);
-  if (!data) notFound();
+  // A deleted account keeps its reigns in the record but has no profile page.
+  if (!data || isFormerName(data.name)) notFound();
 
   // Former names and other capitalizations land on the current, lowercased URL.
   const canonical = data.name.toLowerCase();

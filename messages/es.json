@@ -24,7 +24,9 @@
       "h": "h",
       "m": "m",
       "s": "s"
-    }
+    },
+    "formerKing": "Antiguo rey",
+    "cancel": "Cancelar"
   },
   "season": {
     "name": {
@@ -83,7 +85,9 @@
     },
     "copyright": "© {year} {brand}",
     "reportMessage": "Reportar mensaje",
-    "reported": "Reportado. Gracias por avisarnos."
+    "reported": "Reportado. Gracias por avisarnos.",
+    "privacy": "Privacidad",
+    "legal": "Reglas y legal"
   },
   "homeStates": {
     "signin": "Iniciar sesión",
@@ -235,7 +239,10 @@
       "manipulation": "Intenta dar instrucciones a nuestra revisión de contenido.",
       "blocked_name": "Ese nombre usa una palabra que no permitimos en nombres públicos."
     },
-    "pendingReview": "Tu mensaje aparecerá tras una breve revisión."
+    "pendingReview": "Tu mensaje aparecerá tras una breve revisión.",
+    "ack": "La corona se entrega de inmediato. Acepto que pierdo mi derecho de desistimiento una vez entregada, como explican los <terms>términos</terms>.",
+    "needAck": "Acepta las condiciones de entrega para continuar",
+    "needHuman": "Comprobando tu navegador…"
   },
   "coronation": {
     "reigning": "Reina desde hace"
@@ -503,7 +510,20 @@
     "bModTitle": "No pudimos revisar tus cambios",
     "bModWhy": "Nuestra revisión de contenido no respondió. No se guardó nada. Inténtalo de nuevo en un minuto.",
     "bLimitTitle": "Demasiados guardados por ahora",
-    "bLimitWhy": "Has guardado muchas veces en la última hora. No se guardó nada. Inténtalo más tarde."
+    "bLimitWhy": "Has guardado muchas veces en la última hora. No se guardó nada. Inténtalo más tarde.",
+    "upErrLimited": "Subiste muchas imágenes en la última hora. Vuelve a intentarlo más tarde.",
+    "secDelete": "Eliminar cuenta",
+    "delHelp": "Puedes eliminar tu cuenta cuando quieras. No se puede deshacer.",
+    "delWhat1": "Tu perfil pasa a ser “Antiguo rey” con un avatar genérico, y su página desaparece.",
+    "delWhat2": "Tus reinados siguen en el historial, sin tu nombre, avatar, mensaje ni enlace.",
+    "delWhat3": "Se eliminan tu correo, tus ajustes y tus alertas. Los registros de pago se conservan según exige la ley tributaria.",
+    "delButton": "Eliminar cuenta",
+    "delTitle": "¿Eliminar tu cuenta?",
+    "delBody": "Tus logros y estadísticas quedan con “Antiguo rey”. No podrás volver a entrar en este perfil ni recuperar tu nombre.",
+    "delConfirmL": "Escribe {name} para confirmar",
+    "delConfirm": "Eliminar para siempre",
+    "delDeleting": "Eliminando…",
+    "delFailed": "Tu cuenta no se eliminó. Inténtalo de nuevo."
   },
   "realm": {
     "nav": [
@@ -622,6 +642,7 @@
     "errFailed": "No pudimos iniciar tu sesión. Inténtalo de nuevo o usa otra opción.",
     "errNoEmail": "Tu cuenta de X no tiene correo, así que no puede guardar un perfil. Usa Google o un enlace mágico.",
     "errUnavailable": "Esa opción de acceso no está disponible ahora. Usa un enlace mágico.",
+    "errLimited": "Se pidieron demasiados enlaces de inicio de sesión. Vuelve a intentarlo en una hora.",
     "signOut": "Cerrar sesión",
     "yourProfile": "Tu perfil"
   },
@@ -877,7 +898,12 @@
       "max_message_length": "Longitud máxima del mensaje",
       "max_locks_per_ip_per_hour": "Reservas máximas por IP y hora",
       "name_change_days": "Días entre cambios de nombre",
-      "max_email_attempts": "Intentos de envío de un email antes de desistir"
+      "max_email_attempts": "Intentos de envío de un email antes de desistir",
+      "max_moderations_per_ip_per_hour": "Revisiones de moderación por IP por hora",
+      "max_profile_saves_per_hour": "Guardados de perfil por jugador por hora",
+      "max_magic_links_per_hour": "Enlaces de inicio de sesión por IP y por correo por hora",
+      "max_avatar_uploads_per_hour": "Subidas de avatar por jugador por hora",
+      "max_reports_per_ip_per_hour": "Denuncias por IP por hora"
     },
     "log": {
       "empty": "Aún no hay acciones de administración.",
@@ -899,6 +925,16 @@
       "approve": "Aprobar",
       "reject": "Rechazar",
       "confirmApprove": "¿Hacer público el contenido rechazado del reinado {id}?"
+    },
+    "legal": {
+      "title": "Páginas legales",
+      "help": "Se muestran en los términos, la privacidad y las preguntas frecuentes. Los campos vacíos muestran su marcador hasta que se completen.",
+      "save": "Guardar datos legales",
+      "invalid": "Un dato legal no es válido. No se guardó nada.",
+      "legal_contact_email": "Correo de contacto",
+      "legal_city": "Ciudad de jurisdicción",
+      "legal_payment_provider": "Proveedor de pagos (comerciante registrado)",
+      "legal_effective_date": "Fecha de vigencia"
     }
   },
   "report": {
