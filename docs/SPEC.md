@@ -230,7 +230,7 @@ Checkout terms shown before paying: payments are final; buyers pay for visibilit
 - The test stand-ins for payments, email and moderation refuse to run on any Vercel deployment.
 - Retention (privacy policy §8): a daily job clears IP hashes on locks and reports after 90 days, limit hits after a day, and sent or failed emails after 90 days.
 - IPs are stored only as salted SHA-256 hashes (`IP_HASH_SALT`).
-- Service role key only in server code. RLS on every table. New tables, views and functions start with no client access; each migration grants what it needs explicitly.
+- Service role key only in server code. RLS on every table. Clients read public tables only; `profiles.user_id` and `profile_private` are not readable by them. New tables, views and functions start with no client access; each migration grants what it needs explicitly.
 - Webhook signature verification is mandatory; never trust client payment status.
 - Strict CSP; no third-party scripts beyond the payment provider and Turnstile. Pages get a per-request nonce with `'strict-dynamic'` (set in `proxy.ts`; pages render per request, the home page's data is cached), `object-src` and `base-uri` none, `frame-ancestors 'none'`. Every response also sends HSTS, `nosniff`, `X-Frame-Options: DENY`, a strict referrer policy and a permissions policy.
 
@@ -248,7 +248,7 @@ Operator: Dario Sarango (natural person, Ecuador). Governing law: Ecuador. Priva
 
 - `/rules`, `/faq`, `/terms`, `/privacy` render `docs/legal/<page>.<locale>.md`, filling in the brand, the domain, the game rules from `app_config` (floor, step, decay, lock and grace minutes, message length) and the legal details from `app_config` (contact email, city, payment provider, effective date; editable in admin, shown as placeholders until set).
 - Checkout requires ticking "the crown is delivered right away and I lose the right of withdrawal once it is delivered", linked to terms §5; the server refuses a lock without it and records the time on the lock.
-- Account deletion in edit profile (type the public name to confirm): the profile becomes "Former king" (reserved name `former~<hex>`, plain avatar, no profile page), its reigns stay without name, message, link or country, private data and alerts are deleted, the sign-in user and uploaded avatars are removed. Payments and their locks stay for tax law. A checkout in progress is cancelled and its late payment refunded.
+- Account deletion in edit profile (type the public name to confirm; needs a sign-in within the last 10 minutes, otherwise a sign-in link is emailed first): the profile becomes "Former king" (reserved name `former~<hex>`, the silhouette avatar, no profile page), its reigns stay without name, message, link or country, private data and alerts are deleted, the sign-in user and uploaded avatars are removed. Payments and their locks stay for tax law. A checkout in progress is cancelled and its late payment refunded.
 
 ## 15. Testing
 
