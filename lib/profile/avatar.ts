@@ -1,4 +1,5 @@
 import type { AvatarSource, AvatarTraits } from "@/lib/art/avatar";
+import { FORMER_KING_PIXELS } from "@/lib/art/former-king";
 import { publicEnv } from "@/lib/env";
 
 export const AVATAR_BUCKET = "avatars";
@@ -22,7 +23,11 @@ export function avatarFileUrl(path: string, file: keyof typeof AVATAR_FILES): st
   return `${publicEnv.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/${AVATAR_BUCKET}/${path}/${AVATAR_FILES[file]}`;
 }
 
+/** Reserved for deleted accounts (migration 0018): no one else can have it. */
+export const FORMER_KING_SEED = "0".repeat(32);
+
 export function avatarSource(row: AvatarColumns): AvatarSource {
+  if (row.avatar_seed === FORMER_KING_SEED) return { seed: row.avatar_seed, traits: null, image: null, pixels: FORMER_KING_PIXELS };
   const image =
     row.avatar_mode === "upload" && row.avatar_path
       ? {

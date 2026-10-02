@@ -1,10 +1,14 @@
 import { readdirSync } from "node:fs";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { renderAvatar, traitsFromUsername } from "@/design/lib/avatar-lib.js";
+import { FORMER_KING_PIXELS } from "@/lib/art/former-king";
 import { framePixels } from "@/lib/art/frames";
+import { FORMER_KING_SEED, avatarSource } from "@/lib/profile/avatar";
 import { seasonScene } from "@/lib/art/scenes";
 import { RANKS } from "@/lib/game/rank";
 import { pixelDiff, readPixelSVG } from "../helpers/svg-pixels";
+
+vi.mock("@/lib/env", () => ({ publicEnv: { NEXT_PUBLIC_SUPABASE_URL: "https://supabase.test", NEXT_PUBLIC_SUPABASE_ANON_KEY: "anon" } }));
 
 const ASSETS = "design/assets";
 const upper = (pixels: (string | null)[]) => pixels.map((c) => (c ? c.toUpperCase() : null));
@@ -19,6 +23,20 @@ describe("avatars", () => {
     const asset = readPixelSVG(`${ASSETS}/avatar/samples/${file}`);
     const pixels = renderAvatar(traitsFromUsername(name), { season: Number(season), crown: !nocrown });
     expect(pixelDiff(upper(pixels), asset.pixels)).toBe(0);
+  });
+});
+
+describe("former king", () => {
+  it("matches the design's silhouette", () => {
+    const asset = readPixelSVG(`${ASSETS}/avatar/former-king.svg`);
+    expect([asset.width, asset.height]).toEqual([32, 32]);
+    expect(pixelDiff(upper(FORMER_KING_PIXELS), asset.pixels)).toBe(0);
+  });
+
+  it("replaces a deleted account's avatar, uploads included", () => {
+    const deleted = avatarSource({ avatar_seed: FORMER_KING_SEED, avatar_traits: { hair: 3 }, avatar_mode: "upload", avatar_path: "x/y", avatar_pixelated: true });
+    expect(deleted).toMatchObject({ image: null, traits: null, pixels: FORMER_KING_PIXELS });
+    expect(avatarSource({ avatar_seed: "1".repeat(32), avatar_traits: null, avatar_mode: "generated", avatar_path: null, avatar_pixelated: true }).pixels).toBeUndefined();
   });
 });
 
