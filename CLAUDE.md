@@ -24,6 +24,7 @@ Next.js App Router, TypeScript strict, Tailwind, Supabase (Postgres, Auth, Realt
 - Schema changes go in a new migration. Never edit an applied migration.
 - Keep dependencies minimal; ask before adding a heavy one.
 - Server-only secrets never reach client bundles.
+- Never print, echo, log or display secret values from .env files or environment variables, including partially. To check a variable, test whether it is set or print its length.
 
 ## Commands
 
