@@ -146,6 +146,7 @@ API and assets:
 | `GET /api/me` | Signed-in player's summary for cached pages |
 | `POST /api/test-provider/pay` | Test provider only: simulate a completed checkout |
 | `PATCH /api/profile` | Update own profile |
+| `DELETE /api/profile` | Delete own account (body: the public name, to confirm) |
 | `POST /api/profile/remind` | "Remind me": turn on the season-start alert |
 | `POST /api/profile/avatar` | Upload avatar |
 | `GET /avatar/[name].svg?season=&crown=` | Generated avatar |
@@ -222,11 +223,16 @@ Checkout terms shown before paying: payments are final; buyers pay for visibilit
 
 ## 11. Security and abuse
 
-- Cloudflare proxy with WAF, bot protection and rate limiting on `/api/*`. Turnstile on lock creation.
+- Cloudflare proxy with WAF, bot protection and rate limiting on `/api/*`. Turnstile (invisible unless Cloudflare asks for an interaction) on lock creation and profile saves; tokens are checked server-side for the same action.
+- App-level hourly limits from `app_config`: locks and moderation calls per IP, profile saves and avatar uploads per player, sign-in links per IP and per email, reports per IP.
+- Client IPs come from Vercel's headers; Cloudflare's `cf-connecting-ip` and `cf-ipcountry` count only with the `x-origin-secret` header a Cloudflare Transform Rule adds (`CLOUDFLARE_ORIGIN_SECRET`).
+- Cookie-authenticated API routes refuse requests whose `Origin` is another site. Sign-in redirects (`next`) only go to same-site paths.
+- The test stand-ins for payments, email and moderation refuse to run on any Vercel deployment.
+- Retention (privacy policy §8): a daily job clears IP hashes on locks and reports after 90 days, limit hits after a day, and sent or failed emails after 90 days.
 - IPs are stored only as salted SHA-256 hashes (`IP_HASH_SALT`).
 - Service role key only in server code. RLS on every table. New tables, views and functions start with no client access; each migration grants what it needs explicitly.
 - Webhook signature verification is mandatory; never trust client payment status.
-- Strict CSP; no third-party scripts beyond the payment provider and Turnstile.
+- Strict CSP; no third-party scripts beyond the payment provider and Turnstile. Pages get a per-request nonce with `'strict-dynamic'` (set in `proxy.ts`; pages render per request, the home page's data is cached), `object-src` and `base-uri` none, `frame-ancestors 'none'`. Every response also sends HSTS, `nosniff`, `X-Frame-Options: DENY`, a strict referrer policy and a permissions policy.
 
 ## 12. i18n
 
@@ -238,7 +244,11 @@ Minimal, server-rendered: current crown and lock, recent payments with status an
 
 ## 14. Legal pages
 
-Operator: Dario Sarango (natural person, Ecuador). Governing law: Ecuador. Privacy policy covering Ecuador's personal data protection law (LOPDP) and GDPR basics. Drafts will be provided separately and should be reviewed by a lawyer.
+Operator: Dario Sarango (natural person, Ecuador). Governing law: Ecuador. Privacy policy covering Ecuador's personal data protection law (LOPDP) and GDPR basics. The drafts in `docs/legal` (en/es) must be reviewed by a lawyer.
+
+- `/rules`, `/faq`, `/terms`, `/privacy` render `docs/legal/<page>.<locale>.md`, filling in the brand, the domain, the game rules from `app_config` (floor, step, decay, lock and grace minutes, message length) and the legal details from `app_config` (contact email, city, payment provider, effective date; editable in admin, shown as placeholders until set).
+- Checkout requires ticking "the crown is delivered right away and I lose the right of withdrawal once it is delivered", linked to terms §5; the server refuses a lock without it and records the time on the lock.
+- Account deletion in edit profile (type the public name to confirm): the profile becomes "Former king" (reserved name `former~<hex>`, plain avatar, no profile page), its reigns stay without name, message, link or country, private data and alerts are deleted, the sign-in user and uploaded avatars are removed. Payments and their locks stay for tax law. A checkout in progress is cancelled and its late payment refunded.
 
 ## 15. Testing
 
@@ -250,7 +260,7 @@ Operator: Dario Sarango (natural person, Ecuador). Governing law: Ecuador. Priva
 
 ## 16. Environment variables
 
-`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `PAYMENT_PROVIDER`, provider keys and webhook secret, `EMAIL_PROVIDER`, `RESEND_API_KEY`, `EMAIL_FROM`, `EMAIL_LINK_SECRET`, `ANTHROPIC_API_KEY`, `TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET_KEY`, `IP_HASH_SALT`, `CRON_SECRET`, `NEXT_PUBLIC_SITE_URL`.
+`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `PAYMENT_PROVIDER`, provider keys and webhook secret, `EMAIL_PROVIDER`, `RESEND_API_KEY`, `EMAIL_FROM`, `EMAIL_LINK_SECRET`, `ANTHROPIC_API_KEY`, `NEXT_PUBLIC_TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET_KEY`, `CLOUDFLARE_ORIGIN_SECRET`, `IP_HASH_SALT`, `CRON_SECRET`, `NEXT_PUBLIC_SITE_URL`.
 
 ## 17. Build order
 

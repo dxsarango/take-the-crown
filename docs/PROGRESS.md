@@ -51,6 +51,9 @@ Conflicts between the design handoff (`/design`), the spec and the migrations, a
 35. **Share cards.** Five cards: the four in the design (victory, challenge, achievement, dethroned) and the rank-up card (decision 19), which extends the achievement card with the player's portrait in the new rank's frame (season the rank was reached in), the rank name and the total reign time. Ids: a reign for victory and dethroned (dethroned only when someone took the crown), the current reign for challenge (its price is live), `<profile id>_<code>` for achievements, `<profile id>_<rank>` for rank-ups (short cache: the total still grows). The brand name replaces the prototype's placeholder "Crown", so on 1200×630 the season wraps under it when it does not fit. Flags use the nearest integer scale below the design's size (30×20 → 24×16, 54×36 → 48×32) to keep pixels square. Fonts are Manrope and Pixelify Sans (OFL) vendored as WOFF in `assets/fonts`, which next/og reads. Link previews: home → challenge; profile → `?card=<code or rank>` achievement or rank-up if earned (the unlock toast's Share link adds it), else the latest reign; season → the King of the Season's longest reign.
 36. **Email.** `EMAIL_PROVIDER=resend` in production; `test` delivers through the local Mailpit so e2e reads real emails (refused in production). Only the small react-email packages are used (render, html, head, body, preview, container, section, img, text, link); the components bundle pulls Tailwind and prismjs. Packages and vendored fonts approved. The dethroned header image is drawn at ×12 so 440 px and 330 px are exact downscales; flags are PNG (email clients drop SVG). Alerts are checked again at send time (turned off since → skipped) and a price drop is skipped if the price is back above the threshold. The price drop, season start and 3-report admin emails reuse the dethroned frame without the portrait image. Every alert email has a signed "turn off" link (confirmation page, because link scanners open URLs) and one-click List-Unsubscribe headers.
 
+37. **Security hardening (M9).** CSP with a per-request nonce and `'strict-dynamic'` rather than `'unsafe-inline'`: Next puts inline scripts in every page, so a strict policy needs nonces, and nonces need per-request rendering. Only the home page was static (ISR); it now renders per request and caches its data for 10 s (`unstable_cache`, tag `home`, cleared after a takeover), so database load is unchanged. Styles keep `'unsafe-inline'` (React renders `style` props as attributes). Turnstile also guards profile saves (they can call the moderation model). Cookie-authenticated API routes check `Origin`. Cloudflare's IP headers are trusted only with a secret header from a Cloudflare Transform Rule, since anyone can send them straight to Vercel.
+38. **Legal pages and account deletion.** Pages render `docs/legal` with a small Markdown subset parser (no dependency, no HTML injected); unset legal details show their `{{PLACEHOLDER}}`. The four pages link to each other and from the footer (Privacy added next to the design's Rules, FAQ and Terms). The withdrawal box replaces the payment footer's "payments are final" bullet, which stays as the line under it. Deleted profiles keep their id (reigns, statistics, achievements, hall of fame) under a reserved name the UI shows as "Former king" / "Antiguo rey", with the all-zero avatar seed as the plain avatar; links to them are not rendered and `/u/<name>` is 404. The danger button extends the relief family in Rubí (`shadow-relief-danger`).
+
 ## Open questions
 
 1. **Knowing an email has a profile.** A signed-out buyer who types an email that already has a profile gets "check your email" instead of a checkout, so the form reveals that the email has bought before (not whose profile it is). Hiding it would mean sending every signed-out buyer through email verification before paying. Interim: keep the decided flow.
@@ -83,7 +86,12 @@ Steps for every hosted environment (staging and production).
 - [ ] Resend (pending until the domain is bought): verify the sending domain (SPF, DKIM, DMARC), then set `EMAIL_PROVIDER=resend`, `RESEND_API_KEY` and `EMAIL_FROM` ("Take the Crown <alerts@your-domain>")
 - [ ] `EMAIL_LINK_SECRET` set (32+ random characters); changing it invalidates the "turn off alerts" links in emails already sent
 - [ ] `vercel.json` also schedules `/api/cron/notifications` every minute (same `CRON_SECRET`)
-- [ ] Confirm pg_cron jobs (`rollover-season`, `live-achievements`, `price-alerts`) are scheduled and active
+- [ ] Confirm pg_cron jobs (`rollover-season`, `live-achievements`, `price-alerts`, `purge-expired-records`) are scheduled and active
+- [ ] Turnstile: create a widget (managed, hostname = the domain), set `NEXT_PUBLIC_TURNSTILE_SITE_KEY` and `TURNSTILE_SECRET_KEY`; without the secret, production refuses every lock and profile save
+- [ ] Cloudflare: proxy the domain, SSL Full (strict), WAF managed rules and Bot Fight Mode on; rate limiting rules (per IP): `/api/locks` 10/min, `/api/auth/magic-link` 5/min, `/api/names/availability` 120/min, `/api/reports` 10/min, `/api/*` 300/min; cache rule: bypass cache for HTML (pages carry a per-request CSP nonce); never cache `/api/*` or `/auth/*`
+- [ ] Cloudflare Transform Rule (modify request header): set `x-origin-secret` to `CLOUDFLARE_ORIGIN_SECRET` on every request, and set the same value in Vercel
+- [ ] Legal: fill in contact email, city, payment provider and effective date in `/admin` → Config → Legal pages; lawyer review of `docs/legal` before launch
+- [ ] HSTS is sent with `includeSubDomains`: every subdomain of the production domain must serve HTTPS
 
 ## Pre-production
 
@@ -232,12 +240,17 @@ Steps for every hosted environment (staging and production).
 
 ## Milestone 9 — Security hardening and legal
 
-- [ ] Turnstile on lock creation
-- [ ] Rate limits on `/api/*` (app level) and Cloudflare rules documented
-- [ ] Strict CSP (payment provider + Turnstile only), security headers
-- [ ] Audit: service role only server-side, no secrets in client bundles
-- [ ] `/rules`, `/faq`, `/terms`, `/privacy` (drafts provided separately)
-- [ ] Tests: CSP headers, rate-limit behaviour, locale switch e2e
+- [x] Turnstile on lock creation and profile saves (invisible widget, server check per action, fails closed in production without a secret)
+- [x] Rate limits (`app_config`, editable in admin): locks and moderation per IP, profile saves and avatar uploads per player, sign-in links per IP and per email (also from the known-email path of the payment form), reports per IP; Cloudflare rules documented in the deployment checklist
+- [x] Strict CSP with a per-request nonce and `'strict-dynamic'` (Turnstile the only third party until the payment provider), security headers on every response; home renders per request with cached data
+- [x] Route review: `Origin` checks on cookie-authenticated routes, open redirect in `safeNext` fixed, Cloudflare IP headers trusted only via a secret header, test providers refused on every Vercel deployment
+- [x] Audit: service role and secrets only in `server-only` modules; no secrets in client bundles (checked on a production build)
+- [x] Migration `0017`: limits and legal details in `app_config`, `price_locks.withdrawal_ack_at`, `delete_profile`, `apply_payment` refunds a deleted profile's late payment, `purge_expired_records` (daily, 90-day retention)
+- [x] `/rules`, `/faq`, `/terms`, `/privacy` from `docs/legal` with app_config values and the brand; legal details editable in admin; footer links
+- [x] Withdrawal acknowledgment in the payment modal (required, linked to terms §5, enforced and recorded server-side)
+- [x] Account deletion in edit profile ("Former king", reigns kept anonymously, private data deleted, payments kept)
+- [x] Requirements 3 and 4 checked: price-drop and season-start alerts default off, dethroned on; cookies are session, language, time zone and Cloudflare's bot protection only, no analytics
+- [x] Tests: unit (CSP, redirects, origin, IP trust, Turnstile, legal parsing and placeholders, rank table vs game, admin legal form), db (deletion, late payment refund, reserved names, retention), e2e (CSP nonce and no violations, headers, limits, cross-origin refusals, redirects, checkout box, legal pages en/es, deletion), screenshots at 390 and 1440
 
 ## Milestone 10 — Real payment provider and staging
 
