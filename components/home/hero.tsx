@@ -8,6 +8,7 @@ import { clockParts, displayLink, formatCountdown, formatPercent, formatPrice } 
 import type { CrownState, King } from "@/lib/home/data";
 import { type HeroState, lockSegments } from "@/lib/home/hero";
 import { ReportDialog } from "./report-dialog";
+import { PlayerName } from "@/components/player-name";
 
 /** Shown after the buyer's own payment attempt fails or their lock runs out (design states 4 and 5). */
 export type HomeNotice = "payment_failed" | "lock_expired";
@@ -44,7 +45,7 @@ function KingName({ king, size }: { king: King; size: "mobile" | "desktop" }) {
   const rank = useTranslations("rank");
   return (
     <div className={`flex flex-wrap items-center ${size === "mobile" ? "gap-2.5" : "gap-3"}`}>
-      <h1 className={size === "mobile" ? "text-20 font-bold" : "text-28 leading-tight font-bold"}>{king.name}</h1>
+      <h1 className={size === "mobile" ? "text-20 font-bold" : "text-28 leading-tight font-bold"}><PlayerName name={king.name} /></h1>
       <Flag code={king.countryCode} className="shadow-[0_0_0_2px_var(--crown-velvet)]" />
       <RankTag rank={king.rank} label={rank(king.rank)} />
     </div>

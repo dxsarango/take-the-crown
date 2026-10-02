@@ -4,6 +4,7 @@ import en from "../messages/en.json";
 import { sql } from "./fixtures/db";
 import { latestSignInLink } from "./fixtures/mail";
 import { resetKingdom, seedKingdom } from "./fixtures/kingdom";
+import { acceptDelivery } from "./fixtures/payment";
 
 test.afterAll(resetKingdom);
 
@@ -32,6 +33,7 @@ async function fillForm(page: Page, input: { name: string; email: string; link?:
 }
 
 async function submit(page: Page) {
+  await acceptDelivery(dialog(page));
   await dialog(page).getByRole("button", { name: /^Pay \$[\d.,]+ and take the crown$/ }).filter({ visible: true }).click();
 }
 
@@ -210,7 +212,7 @@ test("screenshot of the coronation", async ({ page }, testInfo) => {
   await seedKingdom();
   await page.goto("/en");
   await expect(page.getByRole("heading", { level: 1, name: "valeruiz" }).filter({ visible: true })).toBeVisible();
-  const lock = await (await page.request.post("/api/locks", { data: { name: "nadia.builds", email: "nadia@test.local", locale: "en" } })).json();
+  const lock = await (await page.request.post("/api/locks", { data: { name: "nadia.builds", email: "nadia@test.local", locale: "en", acceptWithdrawal: true } })).json();
   await page.request.post("/api/test-provider/pay", { data: { lockId: lock.lockId } });
   const canvas = page.locator("canvas").filter({ visible: true });
   await expect(canvas).toBeVisible({ timeout: 10_000 });
@@ -225,7 +227,7 @@ test("reduced motion swaps the king with a short fade", async ({ browser }) => {
   const page = await context.newPage();
   await page.goto("/en");
   await expect(page.getByRole("heading", { level: 1, name: "valeruiz" }).filter({ visible: true })).toBeVisible();
-  const lock = await (await page.request.post("/api/locks", { data: { name: "calm.king", email: "calm@test.local", locale: "en" } })).json();
+  const lock = await (await page.request.post("/api/locks", { data: { name: "calm.king", email: "calm@test.local", locale: "en", acceptWithdrawal: true } })).json();
   await page.request.post("/api/test-provider/pay", { data: { lockId: lock.lockId } });
   await expect(page.getByRole("heading", { level: 1, name: "calm.king" }).filter({ visible: true })).toBeVisible({ timeout: 10_000 });
   // The fade lasts 400 ms, then the regular scene is back.
@@ -234,7 +236,7 @@ test("reduced motion swaps the king with a short fade", async ({ browser }) => {
 });
 
 test.describe("API", () => {
-  const lockBody = (name: string, email: string) => ({ name, email, locale: "en" });
+  const lockBody = (name: string, email: string) => ({ name, email, locale: "en", acceptWithdrawal: true });
 
   test("answers claimed and unclaimed profiles the same way", async ({ request }) => {
     await seedKingdom();
@@ -260,7 +262,7 @@ test.describe("API", () => {
 
   test("maps invalid input and database errors to UI states", async ({ request }) => {
     await seedKingdom();
-    const bad = await request.post("/api/locks", { data: { name: "x", locale: "en" } });
+    const bad = await request.post("/api/locks", { data: { name: "x", locale: "en", acceptWithdrawal: true } });
     expect(bad.status()).toBe(400);
     expect(await bad.json()).toMatchObject({ ok: false, error: "invalid_input", fields: ["name"] });
 

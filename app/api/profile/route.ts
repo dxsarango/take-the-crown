@@ -1,17 +1,22 @@
 import { revalidatePath } from "next/cache";
+import { z } from "zod";
 import { currentViewer } from "@/lib/auth/viewer";
 import { moderate } from "@/lib/moderation";
-import { clientIp } from "@/lib/security/request";
+import { clientIp, sameOrigin } from "@/lib/security/request";
 import { verifyHuman } from "@/lib/security/human";
 import { withinHourlyLimit } from "@/lib/security/rate-limit";
 import { type FieldKey, type SaveOutcome, fieldForDbError, mainLinkUrl, settingsSchema, toUpdateArgs } from "@/lib/profile/settings";
 import type { Database } from "@/lib/supabase/database.types";
 import { serviceClient } from "@/lib/supabase/service";
+import { sessionClient } from "@/lib/supabase/session";
+import { deleteAccount } from "@/lib/profile/delete";
+import { revalidateHome } from "@/lib/home/cache";
 
 type UpdateArgs = Database["public"]["Functions"]["update_profile"]["Args"];
 
 /** Saves the whole edit profile form for the signed-in player. */
 export async function PATCH(request: Request) {
+  if (!sameOrigin(request)) return Response.json({ ok: false, error: "failed" } satisfies SaveOutcome, { status: 403 });
   const viewer = await currentViewer();
   if (!viewer) return Response.json({ ok: false, error: "failed" } satisfies SaveOutcome, { status: 401 });
 
@@ -21,7 +26,7 @@ export async function PATCH(request: Request) {
 
   // Human check and rate limit first, so moderation (a paid model call) can never run in bulk.
   const ip = clientIp(request.headers);
-  if (!(await verifyHuman(form.turnstileToken, ip))) {
+  if (!(await verifyHuman(form.turnstileToken, ip, "profile"))) {
     return Response.json({ ok: false, error: "failed" } satisfies SaveOutcome, { status: 403 });
   }
   if (!(await withinHourlyLimit(`profile_save:${viewer.profileId}`, "max_profile_saves_per_hour"))) {
@@ -67,6 +72,33 @@ export async function PATCH(request: Request) {
 
   const name = (saved as { name?: string } | null)?.name?.toLowerCase();
   if (name) revalidatePath(`/[locale]/u/${name}`, "page");
-  revalidatePath("/[locale]", "page");
+  revalidateHome();
   return Response.json({ ok: true } satisfies SaveOutcome);
+}
+
+const deleteSchema = z.object({ confirmName: z.string().max(64) });
+
+/**
+ * Deletes the signed-in player's account. The player types their public name to confirm, so a
+ * stray click or a forged request cannot do it.
+ */
+export async function DELETE(request: Request) {
+  if (!sameOrigin(request)) return Response.json({ ok: false }, { status: 403 });
+  const viewer = await currentViewer();
+  if (!viewer) return Response.json({ ok: false }, { status: 401 });
+  const parsed = deleteSchema.safeParse(await request.json().catch(() => null));
+  if (!parsed.success) return Response.json({ ok: false, error: "confirm" }, { status: 400 });
+
+  const db = serviceClient();
+  const { data: profile } = await db.from("profiles").select("name").eq("id", viewer.profileId).single();
+  if (!profile || profile.name.toLowerCase() !== parsed.data.confirmName.trim().toLowerCase()) {
+    return Response.json({ ok: false, error: "confirm" }, { status: 400 });
+  }
+  if (!(await deleteAccount(viewer.profileId))) return Response.json({ ok: false }, { status: 500 });
+
+  // The session belongs to a user that no longer exists; clear its cookies.
+  await (await sessionClient()).auth.signOut({ scope: "local" }).catch(() => undefined);
+  revalidatePath(`/[locale]/u/${profile.name.toLowerCase()}`, "page");
+  revalidateHome();
+  return Response.json({ ok: true });
 }

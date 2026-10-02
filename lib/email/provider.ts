@@ -1,6 +1,7 @@
 import "server-only";
 import { z } from "zod";
 import { serverEnv } from "@/lib/env.server";
+import { isDeployed } from "@/lib/config/deployment";
 
 export type Email = {
   to: string;
@@ -50,7 +51,7 @@ async function viaResend(email: Email): Promise<void> {
 /** Local stand-in: Mailpit's send API, where the e2e suite reads emails. */
 async function viaMailpit(email: Email): Promise<void> {
   const env = serverEnv();
-  if (process.env.VERCEL_ENV === "production") throw new EmailError("The test email provider is disabled in production", false);
+  if (isDeployed()) throw new EmailError("The test email provider only runs locally", false);
   const from = /^(.*)<(.+)>$/.exec(env.EMAIL_FROM ?? "") ?? [null, "", "alerts@test.local"];
   const response = await fetch(`${env.MAILPIT_URL}/api/v1/send`, {
     method: "POST",

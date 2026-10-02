@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { testProvider } from "@/lib/payments";
+import { sameOrigin } from "@/lib/security/request";
 import { serviceClient } from "@/lib/supabase/service";
 
 const bodySchema = z.object({ lockId: z.uuid() });
@@ -8,6 +9,7 @@ const bodySchema = z.object({ lockId: z.uuid() });
 export async function POST(request: Request) {
   const provider = testProvider();
   if (!provider) return new Response(null, { status: 404 });
+  if (!sameOrigin(request)) return new Response(null, { status: 403 });
 
   const body = bodySchema.safeParse(await request.json().catch(() => null));
   if (!body.success) return new Response(null, { status: 400 });

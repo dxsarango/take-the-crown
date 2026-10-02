@@ -2,6 +2,7 @@ import "server-only";
 import { getTranslations } from "next-intl/server";
 import { z } from "zod";
 import { type Locale, routing } from "@/i18n/routing";
+import { playerName } from "@/lib/game/former";
 import { BRAND_NAME } from "@/lib/config/brand";
 import { serverEnv } from "@/lib/env.server";
 import { formatDuration, formatPercent, formatPrice } from "@/lib/format";
@@ -97,8 +98,10 @@ async function build(db: Db, n: Notification): Promise<Omit<Email, "idempotencyK
         liveCrown(db),
         db.from("public_reigns").select("season_id").eq("id", p.data.reign_id).maybeSingle(),
       ]);
-      const king = people.get(p.data.by_profile_id);
-      if (!king) throw new Skip("no_new_king");
+      const newKing = people.get(p.data.by_profile_id);
+      if (!newKing) throw new Skip("no_new_king");
+      const common = await getTranslations({ locale: to.locale, namespace: "common" });
+      const king = { ...newKing, name: playerName(newKing.name, common("formerKing")) };
       const price = formatPrice(crown.priceCents, to.locale);
       const kind: AlertKind = "dethroned";
       const unsub = t("unsub");
