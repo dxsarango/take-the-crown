@@ -1,6 +1,6 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useId, useRef, useState } from "react";
 import { Icon } from "@/components/art";
 import { useAuth } from "@/components/auth/auth-provider";
@@ -8,25 +8,35 @@ import { useRouter } from "@/i18n/navigation";
 
 /**
  * Account deletion (terms §13, privacy §8). The player types their public name to confirm; the
- * server checks it again. Afterwards the player lands on the home page, signed out.
+ * server checks it again and needs a recent sign-in. Without one it emails a sign-in link that
+ * reopens this dialog (`?delete=1`). Afterwards the player lands on the home page, signed out.
  */
-export function DeleteAccount({ name }: { name: string }) {
+export function DeleteAccount({ name, maskedEmail, openOnLoad }: { name: string; maskedEmail: string; openOnLoad: boolean }) {
   const t = useTranslations("editProfile");
   const common = useTranslations("common");
+  const locale = useLocale();
   const router = useRouter();
   const { refresh } = useAuth();
   const dialog = useRef<HTMLDialogElement>(null);
   const titleId = useId();
   const inputId = useId();
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(openOnLoad);
   const [typed, setTyped] = useState("");
-  const [state, setState] = useState<"idle" | "deleting" | "failed">("idle");
+  const [state, setState] = useState<"idle" | "deleting" | "failed" | "reauth">("idle");
   const matches = typed.trim().toLowerCase() === name.toLowerCase();
 
   useEffect(() => {
     const el = dialog.current;
     if (open && el && !el.open) el.showModal();
   }, [open]);
+
+  // Opened from the sign-in link: drop the flag so a reload does not open it again.
+  useEffect(() => {
+    const url = new URL(window.location.href);
+    if (!url.searchParams.has("delete")) return;
+    url.searchParams.delete("delete");
+    window.history.replaceState(null, "", url);
+  }, []);
 
   const close = () => {
     if (state === "deleting") return;
@@ -42,8 +52,11 @@ export function DeleteAccount({ name }: { name: string }) {
     const response = await fetch("/api/profile", {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ confirmName: typed }),
+      body: JSON.stringify({ confirmName: typed, locale }),
     }).catch(() => null);
+    if (response?.status === 403 && ((await response.json().catch(() => null)) as { error?: string } | null)?.error === "reauth") {
+      return setState("reauth");
+    }
     if (!response?.ok) return setState("failed");
     refresh();
     router.replace("/");
@@ -127,13 +140,21 @@ export function DeleteAccount({ name }: { name: string }) {
                 {t("delFailed")}
               </div>
             )}
+            {state === "reauth" && (
+              <div role="status" className="flex items-start gap-2 bg-crown-velvet p-3 text-14 leading-snug font-bold shadow-[inset_4px_0_0_var(--crown-text)]">
+                <span className="flex size-4 flex-none items-center justify-center bg-crown-text text-crown-ink">
+                  <Icon name="check" size={8} height={6} />
+                </span>
+                {t("delReauth", { email: maskedEmail })}
+              </div>
+            )}
             <div className="flex flex-col-reverse gap-2 lg:flex-row lg:items-center lg:justify-end lg:gap-4">
               <button type="button" onClick={close} className="hit-area h-11 px-3 text-14 font-bold underline decoration-crown-stone decoration-2 underline-offset-[6px] hover:bg-crown-velvet">
                 {common("cancel")}
               </button>
               <button
                 type="submit"
-                disabled={!matches}
+                disabled={!matches || state === "reauth"}
                 aria-busy={state === "deleting"}
                 className="hit-area m-1 h-13 bg-crown-danger px-5 text-16 font-bold text-crown-ink shadow-relief-danger focus-visible:outline-offset-[6px] active:pt-1 active:shadow-relief-danger-pressed disabled:cursor-not-allowed disabled:bg-crown-hall disabled:text-crown-muted disabled:shadow-none"
               >

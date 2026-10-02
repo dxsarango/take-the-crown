@@ -20,8 +20,10 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/settings
   return { title: `${t("title")} · ${BRAND_NAME}`, robots: { index: false } };
 }
 
-export default async function EditProfilePage({ params }: PageProps<"/[locale]/settings/profile">) {
+export default async function EditProfilePage({ params, searchParams }: PageProps<"/[locale]/settings/profile">) {
   const { locale } = await params;
+  // Back from the sign-in link that confirms an account deletion.
+  const openDelete = (await searchParams).delete === "1";
   if (!hasLocale(routing.locales, locale)) notFound();
   setRequestLocale(locale);
 
@@ -47,5 +49,5 @@ export default async function EditProfilePage({ params }: PageProps<"/[locale]/s
   const countries = COUNTRY_CODES.map((code) => ({ code, name: countryName(code, locale, designNames) })).sort((a, b) =>
     a.name.localeCompare(b.name, locale),
   );
-  return <EditProfile settings={settings} season={season} readAt={settings.readAt} countries={countries} />;
+  return <EditProfile settings={settings} season={season} readAt={settings.readAt} countries={countries} openDelete={openDelete} />;
 }

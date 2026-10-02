@@ -4,7 +4,7 @@ import en from "../messages/en.json";
 import es from "../messages/es.json";
 import { sql } from "./fixtures/db";
 import { resetKingdom, seedKingdom } from "./fixtures/kingdom";
-import { signInByEmail } from "./fixtures/mail";
+import { clearMail, latestSignInLink, signInByEmail } from "./fixtures/mail";
 import { acceptDelivery } from "./fixtures/payment";
 
 const SCREENS = "test-results/screens";
@@ -226,6 +226,34 @@ test.describe("account deletion", () => {
     await page.goto("/en/kingdom");
     await expect(shown(page, en.common.formerKing)).toBeVisible();
     await expect(page.getByRole("link", { name: "kenji", exact: true })).toHaveCount(0);
+    await page.waitForLoadState("networkidle");
+    await page.screenshot({ path: `${SCREENS}/former-king-kingdom-${project()}.png` });
+  });
+
+  test("asks for a fresh sign-in first, then comes back to the dialog", async ({ page }) => {
+    await signInByEmail(page, "kenji@test.local", "/en/settings/profile");
+    await sql("update auth.users set last_sign_in_at = now() - interval '1 hour' where email = 'kenji@test.local'");
+    await page.waitForLoadState("networkidle");
+    await clearMail();
+
+    const open = async () => {
+      const dialog = page.getByRole("dialog", { name: en.editProfile.delTitle });
+      await dialog.getByLabel(en.editProfile.delConfirmL.replace("{name}", "kenji")).fill("kenji");
+      await dialog.getByRole("button", { name: en.editProfile.delConfirm }).click();
+      return dialog;
+    };
+    await page.getByRole("main").getByRole("button", { name: en.editProfile.delButton }).click();
+    const dialog = await open();
+    await expect(dialog.getByRole("status")).toContainText("we emailed a sign-in link to k");
+    expect(await sql("select 1 from profiles where name = 'kenji' and deleted_at is null")).toHaveLength(1);
+
+    // The link signs in again and reopens the dialog.
+    await page.goto(await latestSignInLink("kenji@test.local"));
+    await page.waitForURL((url) => url.pathname === "/en/settings/profile");
+    await expect(page.getByRole("dialog", { name: en.editProfile.delTitle })).toBeVisible();
+    await open();
+    await page.waitForURL((url) => url.pathname === "/en");
+    expect(await sql("select 1 from profiles where name = 'kenji'")).toEqual([]);
   });
 
   test("asks for the exact name before deleting", async ({ page }) => {
