@@ -211,9 +211,10 @@ type Props = {
   readAt: string;
   /** Sorted on the server: browsers and Node name some regions differently, which breaks hydration. */
   countries: { code: string; name: string }[];
+  openDelete?: boolean;
 };
 
-export function EditProfile({ settings, season, readAt, countries }: Props) {
+export function EditProfile({ settings, season, readAt, countries, openDelete = false }: Props) {
   const now = useServerNow(readAt);
   const t = useTranslations("editProfile");
   const common = useTranslations("common");
@@ -1023,7 +1024,7 @@ export function EditProfile({ settings, season, readAt, countries }: Props) {
     false,
     <>
       {heading(t("secDelete"), t("delHelp"))}
-      <DeleteAccount name={saved.name} />
+      <DeleteAccount name={saved.name} maskedEmail={maskEmail(settings.email)} openOnLoad={openDelete} />
     </>,
     "gap-3.5",
   );

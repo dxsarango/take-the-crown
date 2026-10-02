@@ -2,7 +2,9 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { currentViewer } from "@/lib/auth/viewer";
 import { moderate } from "@/lib/moderation";
-import { clientIp, sameOrigin } from "@/lib/security/request";
+import { clientIp, hashIp, sameOrigin } from "@/lib/security/request";
+import { sendMagicLink } from "@/lib/auth/magic-link";
+import { routing } from "@/i18n/routing";
 import { verifyHuman } from "@/lib/security/human";
 import { withinHourlyLimit } from "@/lib/security/rate-limit";
 import { type FieldKey, type SaveOutcome, fieldForDbError, mainLinkUrl, settingsSchema, toUpdateArgs } from "@/lib/profile/settings";
@@ -76,7 +78,7 @@ export async function PATCH(request: Request) {
   return Response.json({ ok: true } satisfies SaveOutcome);
 }
 
-const deleteSchema = z.object({ confirmName: z.string().max(64) });
+const deleteSchema = z.object({ confirmName: z.string().max(64), locale: z.enum(routing.locales).default(routing.defaultLocale) });
 
 /**
  * Deletes the signed-in player's account. The player types their public name to confirm, so a
@@ -93,6 +95,18 @@ export async function DELETE(request: Request) {
   const { data: profile } = await db.from("profiles").select("name").eq("id", viewer.profileId).single();
   if (!profile || profile.name.toLowerCase() !== parsed.data.confirmName.trim().toLowerCase()) {
     return Response.json({ ok: false, error: "confirm" }, { status: 400 });
+  }
+
+  // A recent sign-in proves the player is at the keyboard; otherwise email a sign-in link that
+  // brings them back to this dialog.
+  const { data: config } = await db.from("app_config").select("delete_reauth_seconds").single();
+  const reauthMs = (config?.delete_reauth_seconds ?? 600) * 1000;
+  const signedInAt = viewer.lastSignInAt ? Date.parse(viewer.lastSignInAt) : 0;
+  if (!(Date.now() - signedInAt < reauthMs)) {
+    if (await withinHourlyLimit(`magic_link_email:${hashIp(viewer.email.toLowerCase())}`, "max_magic_links_per_hour")) {
+      await sendMagicLink(viewer.email, `/${parsed.data.locale}/settings/profile?delete=1`);
+    }
+    return Response.json({ ok: false, error: "reauth" }, { status: 403 });
   }
   if (!(await deleteAccount(viewer.profileId))) return Response.json({ ok: false }, { status: 500 });
 

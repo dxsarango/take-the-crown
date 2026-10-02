@@ -523,7 +523,8 @@
     "delConfirmL": "Escribe {name} para confirmar",
     "delConfirm": "Eliminar para siempre",
     "delDeleting": "Eliminando…",
-    "delFailed": "Tu cuenta no se eliminó. Inténtalo de nuevo."
+    "delFailed": "Tu cuenta no se eliminó. Inténtalo de nuevo.",
+    "delReauth": "Por seguridad, confirma que eres tú: enviamos un enlace de inicio de sesión a {email}. Ábrelo en este dispositivo para volver aquí y eliminar tu cuenta."
   },
   "realm": {
     "nav": [
