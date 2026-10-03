@@ -15,8 +15,9 @@ import { useDates } from "./common";
 import { Banner, Podium } from "./podium";
 import { usePlayerName } from "@/components/player-name";
 import { isFormerName, profileHref } from "@/lib/game/former";
+import { artSet } from "@/lib/art/seasons";
 
-/** Next-season announcement art: the real scene when it exists, the provisional one otherwise. */
+/** Next-season announcement art by art set: the real scene when it exists, the provisional one otherwise. */
 const NEXT_SCENE: Record<number, string> = { 1: "t1", 2: "t2-provisional" };
 
 type Props = { data: SeasonEnd; current: SeasonInfo; readAt: string };
@@ -222,13 +223,13 @@ export function SeasonView({ data, current, readAt }: Props) {
         </div>
 
         {/* Next season */}
-        {next && NEXT_SCENE[next.id] && (
+        {next && NEXT_SCENE[artSet(next.id)] && (
           <section className="shadow-[var(--crown-bar-top)]">
             <div className="flex justify-center overflow-hidden bg-crown-abyss">
               {/* eslint-disable-next-line @next/next/no-img-element -- pixel art must not be resampled by next/image */}
-              <img src={`/art/scenes/${NEXT_SCENE[next.id]}/98x72-empty.svg`} width={392} height={288} alt="" className="block max-w-none [image-rendering:pixelated] lg:hidden" />
+              <img src={`/art/scenes/${NEXT_SCENE[artSet(next.id)]}/98x72-empty.svg`} width={392} height={288} alt="" className="block max-w-none [image-rendering:pixelated] lg:hidden" />
               {/* eslint-disable-next-line @next/next/no-img-element -- pixel art must not be resampled by next/image */}
-              <img src={`/art/scenes/${NEXT_SCENE[next.id]}/240x84-empty.svg`} width={1440} height={504} alt="" className="hidden max-w-none [image-rendering:pixelated] lg:block" />
+              <img src={`/art/scenes/${NEXT_SCENE[artSet(next.id)]}/240x84-empty.svg`} width={1440} height={504} alt="" className="hidden max-w-none [image-rendering:pixelated] lg:block" />
             </div>
             <div className="flex flex-col gap-3.5 px-4 pt-5 pb-8 lg:grid lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end lg:gap-16 lg:px-18 lg:pt-10 lg:pb-14">
               <div className="flex max-w-180 flex-col gap-3.5 lg:gap-3">

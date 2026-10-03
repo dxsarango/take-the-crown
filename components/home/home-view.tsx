@@ -15,6 +15,7 @@ import { Feed, Footer, HallOfFamePreview, Succession } from "./sections";
 import { ThroneScene } from "./throne-scene";
 import { useLiveHome, useServerNow } from "./use-live-home";
 import { PlayerName } from "@/components/player-name";
+import { artSet } from "@/lib/art/seasons";
 
 type Crowning = {
   key: string;
@@ -88,7 +89,7 @@ export function HomeView({ initial }: { initial: HomeData }) {
 
   // The server sets data-season on <html>; keep it in step when a season rolls over live.
   useEffect(() => {
-    document.documentElement.dataset.season = String(season);
+    document.documentElement.dataset.season = String(artSet(season));
   }, [season]);
 
   useEffect(() => {

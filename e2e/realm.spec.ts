@@ -60,7 +60,7 @@ test.describe("kingdom history", () => {
     await page.goto("/en/kingdom");
     const next = page.locator('[aria-disabled="true"]').filter({ hasText: "Season 1" }).filter({ visible: true });
     await expect(next).toBeVisible();
-    const response = await page.goto("/en/kingdom?season=day-of-the-dead");
+    const response = await page.goto("/en/kingdom?season=frost");
     expect(response?.status()).toBe(404);
   });
 
@@ -146,18 +146,18 @@ test.describe("season end", () => {
     if (test.info().project.name === "desktop") {
       await expect(shown(page, /^theo_builds held the throne for 170h 00m across 1 reign this season\. Their portrait stays in the hall forever\.$/)).toBeVisible();
     }
-    await expect(shown(page, "Season 1: Day of the Dead")).toBeVisible();
+    await expect(shown(page, "Season 1: Frost")).toBeVisible();
     // Season 1 is already under way, so there is nothing to be reminded of.
     await expect(page.getByRole("link", { name: en.realm.goThrone }).filter({ visible: true })).toBeVisible();
   });
 
   test("reminds a signed-in player when the next season starts", async ({ page }) => {
-    await page.goto("/en/seasons/day-of-the-dead");
+    await page.goto("/en/seasons/frost");
     await expect(shown(page, en.realm.leading)).toBeVisible();
     await page.getByRole("button", { name: en.realm.remind }).filter({ visible: true }).click();
     await expect(page.getByRole("dialog").getByRole("heading", { name: en.login.head })).toBeVisible();
 
-    await signInByEmail(page, "kenji@test.local", "/en/seasons/day-of-the-dead");
+    await signInByEmail(page, "kenji@test.local", "/en/seasons/frost");
     await expect(page.getByRole("link", { name: en.login.yourProfile })).toBeVisible();
     await page.getByRole("button", { name: en.realm.remind }).filter({ visible: true }).click();
     await expect(shown(page, en.realm.reminded)).toBeVisible();
@@ -166,7 +166,7 @@ test.describe("season end", () => {
   });
 
   test("has no page for seasons that have not started", async ({ page }) => {
-    expect((await page.goto("/en/seasons/frost"))?.status()).toBe(404);
+    expect((await page.goto("/en/seasons/day-of-the-dead"))?.status()).toBe(404);
     expect((await page.goto("/en/seasons/nope"))?.status()).toBe(404);
   });
 

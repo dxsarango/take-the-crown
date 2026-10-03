@@ -1,4 +1,16 @@
-/** Per-season art the UI needs; seasons without their own art (T2 until it ships) use Genesis. */
+/**
+ * The design numbers its season art T0 Genesis, T1 Day of the Dead, T2 Frost. The game's season
+ * order differs (migration 0020: Genesis, Frost, Day of the Dead), so every art lookup goes through
+ * the season's art set. Art sets without their own art yet (T2 Frost) fall back to Genesis.
+ */
+const ART_SET: Record<number, number> = { 0: 0, 1: 2, 2: 1 };
+
+/** The design art set (T number) a season id is drawn with. */
+export function artSet(season: number): number {
+  return ART_SET[season] ?? 0;
+}
+
+/** Per-season art the UI needs. */
 type SeasonArt = {
   /** Folder suffix of seal-t{n}.svg and stone-band-t{n}.svg. */
   asset: number;
@@ -12,5 +24,5 @@ const ART: Record<number, SeasonArt> = {
 };
 
 export function seasonArt(season: number): SeasonArt {
-  return ART[season] ?? ART[0];
+  return ART[artSet(season)] ?? ART[0];
 }

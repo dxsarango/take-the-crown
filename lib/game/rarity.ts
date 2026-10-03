@@ -1,4 +1,5 @@
 import type { Rarity } from "@/lib/profile/public";
+import { artSet } from "@/lib/art/seasons";
 
 /** Rarity colors from design/tokens. */
 export const RARITY_HEX: Record<Exclude<Rarity, "seasonal">, string> = {
@@ -12,5 +13,5 @@ export const RARITY_HEX: Record<Exclude<Rarity, "seasonal">, string> = {
 export const SEASON_RING_HEX: Record<number, string> = { 0: "#4FA39B", 1: "#F28C28" };
 
 export function rarityHex(rarity: Rarity, seasonId: number | null): string {
-  return rarity === "seasonal" ? (SEASON_RING_HEX[seasonId ?? 0] ?? SEASON_RING_HEX[0]) : RARITY_HEX[rarity];
+  return rarity === "seasonal" ? (SEASON_RING_HEX[artSet(seasonId ?? 0)] ?? SEASON_RING_HEX[0]) : RARITY_HEX[rarity];
 }

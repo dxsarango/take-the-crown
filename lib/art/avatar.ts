@@ -1,4 +1,5 @@
 import { renderAvatar, toSVG, traitsFromUsername } from "@/design/lib/avatar-lib.js";
+import { artSet } from "./seasons";
 
 /** One art pixel per cell, row by row: "#RRGGBB" or null (transparent). */
 export type Pixels = (string | null)[];
@@ -26,7 +27,7 @@ export function avatarTraits({ seed, traits }: AvatarSource): AvatarTraits {
 
 /** Only the season crown the avatar wears, 32×32. */
 export function crownPixels(source: AvatarSource, season: number): Pixels {
-  return renderAvatar(avatarTraits(source), { season, layer: "crown" });
+  return renderAvatar(avatarTraits(source), { season: artSet(season), layer: "crown" });
 }
 
 /**
@@ -42,7 +43,7 @@ export function avatarPixels(source: AvatarSource, options: { season: number; cr
   if (source.image) {
     return options.crown ? crownPixels(source, options.season) : new Array<string | null>(AVATAR_SIZE * AVATAR_SIZE).fill(null);
   }
-  return renderAvatar(avatarTraits(source), { season: options.season, crown: options.crown });
+  return renderAvatar(avatarTraits(source), { season: artSet(options.season), crown: options.crown });
 }
 
 export function pixelsToSVG(pixels: Pixels, width: number, height: number): string {

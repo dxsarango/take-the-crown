@@ -1,4 +1,5 @@
 import type { Pixels } from "./avatar";
+import { artSet } from "./seasons";
 
 // Ports of ped() and portrait() from design/prototypes/Reino.dc.html: stone pedestals with a
 // gold/silver/bronze trim and the place number, and the King of the Season banner.
@@ -22,7 +23,7 @@ const SEASON_STYLE: Record<number, { stone: Stone; banner: Ramp }> = {
   },
 };
 
-const style = (season: number) => SEASON_STYLE[season] ?? SEASON_STYLE[0];
+const style = (season: number) => SEASON_STYLE[artSet(season)] ?? SEASON_STYLE[0];
 
 export type Place = 1 | 2 | 3;
 export const PEDESTAL_WIDTH = 50;
