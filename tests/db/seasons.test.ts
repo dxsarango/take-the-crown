@@ -112,7 +112,7 @@ describe("rollover_season", () => {
     );
     expect(events).toMatchObject([
       { kind: "season_ended", season_id: 0, profile_id: await king.id(), payload: { slug: "genesis" } },
-      { kind: "season_started", season_id: 1, payload: { slug: "day-of-the-dead" } },
+      { kind: "season_started", season_id: 1, payload: { slug: "frost" } },
     ]);
   });
 

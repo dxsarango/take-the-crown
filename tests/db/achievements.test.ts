@@ -263,20 +263,28 @@ describe("award_takeover_achievements", () => {
       const king = new Player("king");
       await king.takeover();
       expect(await has(king, "founder")).toBe(true);
-      expect(await has(king, "remembered")).toBe(false);
+      expect(await has(king, "frostbound")).toBe(false);
     });
 
-    it("awards remembered for reigning in Day of the Dead", async () => {
+    it("awards frostbound for reigning in Frost, the next season", async () => {
       await closeSeason(0);
       await svc("select rollover_season()");
       const king = new Player("king");
       await king.takeover();
-      expect(await has(king, "remembered")).toBe(true);
+      expect(await has(king, "frostbound")).toBe(true);
       expect(await has(king, "founder")).toBe(false);
     });
 
-    it("skips seasons without an exclusive achievement", async () => {
+    it("awards remembered for reigning in Day of the Dead (season 2)", async () => {
       await q("update seasons set starts_at = now() - interval '1 day' where id = 2");
+      await q("update crown_state set season_id = 2");
+      const king = new Player("king");
+      await king.takeover();
+      expect(await has(king, "remembered")).toBe(true);
+    });
+
+    it("skips seasons without an exclusive achievement", async () => {
+      await q("update seasons set starts_at = now() - interval '1 day', exclusive_achievement = null where id = 2");
       await q("update crown_state set season_id = 2");
       const king = new Player("king");
       await king.takeover();
@@ -296,7 +304,7 @@ describe("award_takeover_achievements", () => {
         [await king.id()],
       );
       expect(rows.find((row) => row.achievement_code === "founder")?.season_id).toBe(0);
-      expect(rows.find((row) => row.achievement_code === "remembered")?.season_id).toBe(1);
+      expect(rows.find((row) => row.achievement_code === "frostbound")?.season_id).toBe(1);
     });
 
     it("publishes an achievement_unlocked event per award", async () => {
