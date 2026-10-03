@@ -57,11 +57,15 @@ describe("scenes", () => {
   } as const;
   const sizes = ["98x72", "240x84", "100x90", "120x84"];
 
-  for (const season of [0, 1]) {
+  // The design's art sets: T0 is Genesis (season 0), T1 is Day of the Dead (season 2).
+  for (const [art, season] of [
+    [0, 0],
+    [1, 2],
+  ]) {
     for (const size of sizes) {
       for (const [variant, options] of Object.entries(variants)) {
-        const path = `${ASSETS}/scenes/t${season}/${size}-${variant}.svg`;
-        it(`t${season} ${size} ${variant}`, ({ skip }) => {
+        const path = `${ASSETS}/scenes/t${art}/${size}-${variant}.svg`;
+        it(`t${art} ${size} ${variant}`, ({ skip }) => {
           let asset;
           try {
             asset = readPixelSVG(path);
@@ -75,4 +79,8 @@ describe("scenes", () => {
       }
     }
   }
+
+  it("draws Frost (season 1) with the Genesis scene until its art ships", () => {
+    expect(seasonScene(1, 98, 72)).toEqual(seasonScene(0, 98, 72));
+  });
 });

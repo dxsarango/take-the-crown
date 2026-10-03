@@ -135,7 +135,7 @@ describe("email templates", () => {
 });
 
 describe("the outbox sender", () => {
-  const seasonAlert = { id: 41, kind: "season_started", profile_id: PROFILE, payload: { season_id: 1, slug: "day-of-the-dead" } };
+  const seasonAlert = { id: 41, kind: "season_started", profile_id: PROFILE, payload: { season_id: 1, slug: "frost" } };
   const recipient = (overrides: Record<string, unknown> = {}) => ({
     email: "kenji@test.local",
     locale: "en",
@@ -157,7 +157,7 @@ describe("the outbox sender", () => {
   it("sends once per notification and marks it sent", async () => {
     expect(await processOutbox()).toEqual({ sent: 1, failed: 0, skipped: 0 });
     const email = sendEmail.mock.calls[0][0];
-    expect(email).toMatchObject({ to: "kenji@test.local", subject: "Season 1: Day of the Dead has started", idempotencyKey: "notification-41" });
+    expect(email).toMatchObject({ to: "kenji@test.local", subject: "Season 1: Frost has started", idempotencyKey: "notification-41" });
     expect(email.headers["List-Unsubscribe"]).toMatch(/^<https:\/\/crown\.test\/api\/alerts\/off\?token=.+>$/);
     expect(email.headers["List-Unsubscribe-Post"]).toBe("List-Unsubscribe=One-Click");
     expect(marks()).toEqual([{ name: "mark_notification_sent", args: { p_id: 41 } }]);
@@ -166,7 +166,7 @@ describe("the outbox sender", () => {
   it("writes in the player's language", async () => {
     recipientRow = recipient({ locale: "es" });
     await processOutbox();
-    expect(sendEmail.mock.calls[0][0].subject).toBe("Empezó Temporada 1: Día de Muertos");
+    expect(sendEmail.mock.calls[0][0].subject).toBe("Empezó Temporada 1: Escarcha");
   });
 
   it("leaves a failed send for the next run when retrying can help", async () => {

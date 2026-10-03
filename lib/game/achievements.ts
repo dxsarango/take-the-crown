@@ -13,6 +13,7 @@ export const MEDAL_KEY = {
   rivalry: "rivalry",
   patriot: "patriot",
   founder: "founder",
+  frostbound: "frostbound",
   remembered: "remembered",
 } as const;
 

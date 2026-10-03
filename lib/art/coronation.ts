@@ -3,6 +3,7 @@ import type { Rank } from "@/lib/game/rank";
 import { type AvatarSource, avatarPixels, avatarTraits } from "./avatar";
 import { framePixels } from "./frames";
 import { portraitOrigin, seasonScene } from "./scenes";
+import { artSet } from "./seasons";
 
 // Port of the coronation in design/prototypes/Coronacion.dc.html (MOTION §1). The crown leaves the
 // old king, arcs over and lands on the new one; everything moves on the scene's pixel grid.
@@ -72,7 +73,7 @@ export function coronationStage(
   // The crown that flies is the old king's (the new king has none yet). From an empty throne it
   // rises from the cushion.
   const wearer = from ?? to;
-  const crownLayer = renderAvatar(avatarTraits(wearer.avatar), { season, layer: "crown" });
+  const crownLayer = renderAvatar(avatarTraits(wearer.avatar), { season: artSet(season), layer: "crown" });
   let x0 = 99;
   let y0 = 99;
   let x1 = -1;

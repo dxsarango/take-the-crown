@@ -10,6 +10,7 @@ import { serverEnv } from "@/lib/env.server";
 import { BRAND_NAME } from "@/lib/config/brand";
 import { publicClient } from "@/lib/supabase/public";
 import "../globals.css";
+import { artSet } from "@/lib/art/seasons";
 
 const manrope = Manrope({
   subsets: ["latin"],
@@ -43,7 +44,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
   const { data: crown } = await publicClient().from("crown_state").select("season_id").single();
 
   return (
-    <html lang={locale} data-season={crown?.season_id ?? 0} className={`${manrope.variable} ${pixelify.variable}`}>
+    <html lang={locale} data-season={artSet(crown?.season_id ?? 0)} className={`${manrope.variable} ${pixelify.variable}`}>
       <body className="min-h-dvh">
         <NextIntlClientProvider>
           <AuthProvider season={crown?.season_id ?? 0}>{children}</AuthProvider>

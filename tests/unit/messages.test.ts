@@ -75,6 +75,16 @@ const CHANGED_FROM_DESIGN = new Set([
   "realm.podiumSub",
   "realm.seasonStats",
   "realm.keep",
+  // Production season order (migration 0020): Frost is season 1, Day of the Dead season 2.
+  "season.name.1",
+  "season.name.2",
+  "season.dates.0",
+  "season.dates.1",
+  "season.dates.2",
+  "season.frame.1",
+  "season.crown.1",
+  "achievement.items.remembered.1",
+  "medals.remembered.condition",
 ]);
 
 describe("messages", () => {
