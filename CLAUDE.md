@@ -7,6 +7,7 @@ Pay-to-take-the-crown web game. One crown, rising price with decay, glory measur
 - Game logic and data: `supabase/migrations`. Never duplicate takeover, pricing or achievement logic in TypeScript; call the SQL functions.
 - UI: the design handoff in `/design`. Match it exactly. Exclude the review-only season selector and `review-audit.js`.
 - Build order: `docs/SPEC.md` §17. Work one milestone at a time.
+- Future ideas and their constraints: docs/IDEAS.md. Never build them without an explicit milestone.
 
 ## Stack
 
