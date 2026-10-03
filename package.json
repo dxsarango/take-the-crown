@@ -18,7 +18,9 @@
     "test:watch": "vitest",
     "e2e": "playwright test",
     "db:types": "supabase gen types typescript --local > lib/supabase/database.types.ts",
-    "test:moderation": "vitest run --project live"
+    "test:moderation": "vitest run --project live",
+    "secrets:generate": "node scripts/generate-secrets.mjs",
+    "check:deploy": "node scripts/check-deployment.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.129.0",

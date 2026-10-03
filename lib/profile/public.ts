@@ -120,7 +120,7 @@ export async function fetchProfilePage(db: PublicClient, profileId: string, now 
         .order("last_at", { ascending: false }),
       db.from("seasons").select("id, slug, name_en, name_es, starts_at, ends_at, exclusive_achievement, exclusive_frame").order("id"),
       db.from("public_crown_state").select("*").single(),
-      db.from("app_config").select("lock_seconds, max_message_length").single(),
+      db.from("app_config").select("lock_seconds, max_message_length, prelaunch").single(),
     ]);
 
   const profile = profileRes.data;
@@ -271,6 +271,7 @@ export async function fetchProfilePage(db: PublicClient, profileId: string, now 
       decayBpsPerHour: crownRow.decay_bps_per_hour!,
       lockSeconds: config.lock_seconds,
       maxMessageLength: config.max_message_length,
+      prelaunch: config.prelaunch,
     },
     king,
   };

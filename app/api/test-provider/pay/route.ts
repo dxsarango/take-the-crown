@@ -7,7 +7,7 @@ const bodySchema = z.object({ lockId: z.uuid() });
 
 /** Test checkout "Pay" button: the test provider charges the locked price and calls our webhook. */
 export async function POST(request: Request) {
-  const provider = testProvider();
+  const provider = await testProvider();
   if (!provider) return new Response(null, { status: 404 });
   if (!sameOrigin(request)) return new Response(null, { status: 403 });
 

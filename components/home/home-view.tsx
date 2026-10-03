@@ -82,6 +82,7 @@ export function HomeView({ initial }: { initial: HomeData }) {
   const [modal, setModal] = useState<{ draft: Draft; detected: boolean } | null>(null);
   const [notice, setNotice] = useState<HomeNotice | null>(null);
   const geo = useRef<string | null>(null);
+  const prelaunchAtLoad = useRef(initial.crown.prelaunch);
   const { viewer, openLogin } = useAuth();
   const locale = useLocale();
 
@@ -103,7 +104,8 @@ export function HomeView({ initial }: { initial: HomeData }) {
         // Back from the magic link sent to a known email: reopen the form where the buyer left it.
         const draft = resume ? takeDraft() : null;
         if (draft) setModal({ draft, detected: false });
-        else if (take) setModal({ draft: emptyDraft(r.country), detected: r.country !== null });
+        // In prelaunch the button says "launching soon"; a link from another page opens nothing.
+        else if (take && !prelaunchAtLoad.current) setModal({ draft: emptyDraft(r.country), detected: r.country !== null });
       })
       .catch(() => undefined);
   }, []);

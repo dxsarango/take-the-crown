@@ -27,6 +27,8 @@ export type CrownState = {
   decayBpsPerHour: number;
   lockSeconds: number;
   maxMessageLength: number;
+  /** Prelaunch (M10a): only admins can take the crown. */
+  prelaunch: boolean;
 };
 
 export type Season = {
@@ -87,7 +89,7 @@ export async function fetchHomeData(db: PublicClient, now = new Date()): Promise
 
   const [crownRes, configRes, seasonsRes, reignsRes, eventsRes] = await Promise.all([
     db.from("public_crown_state").select("*").single(),
-    db.from("app_config").select("lock_seconds, max_message_length").single(),
+    db.from("app_config").select("lock_seconds, max_message_length, prelaunch").single(),
     db.from("seasons").select("id, slug, name_en, name_es, starts_at, ends_at"),
     db
       .from("public_reigns")
@@ -235,6 +237,7 @@ export async function fetchHomeData(db: PublicClient, now = new Date()): Promise
       decayBpsPerHour: crownRow.decay_bps_per_hour ?? 0,
       lockSeconds: config.lock_seconds,
       maxMessageLength: config.max_message_length,
+      prelaunch: config.prelaunch,
     },
     season: {
       id: seasonRow.id,

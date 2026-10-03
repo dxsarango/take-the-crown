@@ -9,6 +9,7 @@ import { currentAdmin } from "@/lib/admin/guard";
 import { MODEL_REASONS } from "@/lib/moderation/model";
 import { paymentProvider } from "@/lib/payments";
 import { serviceClient } from "@/lib/supabase/service";
+import { serverEnv } from "@/lib/env.server";
 import { revalidateHome } from "@/lib/home/cache";
 
 /**
@@ -49,7 +50,7 @@ export async function refundPayment(form: FormData) {
   if (error || !payment) return done(form, "failed");
   try {
     // The provider confirms with a refund webhook, which marks the payment refunded.
-    await paymentProvider().refund(payment.provider_payment_id);
+    await (await paymentProvider()).refund(payment.provider_payment_id);
   } catch (e) {
     console.error("manual refund failed", e);
     return done(form, "failed");
@@ -166,6 +167,22 @@ export async function saveConfig(form: FormData) {
     .eq("id", true);
   if (error) return done(form, "failed", { reason: "config" });
   await db.from("admin_actions").insert({ admin_profile_id: me.profileId, action: "config", details: parsed.data });
+  return done(form, "ok");
+}
+
+/**
+ * Ends prelaunch (launch_game): clears the admins' test reigns and payments, starts season 0 at the
+ * given time (UTC) and opens the crown to everyone. Only with the real payment provider.
+ */
+export async function launchGame(form: FormData) {
+  const me = await admin();
+  const startsAt = z.iso.datetime({ local: true }).safeParse(form.get("startsAt"));
+  if (!startsAt.success || serverEnv().PAYMENT_PROVIDER === "test") return done(form, "failed", { reason: "launch" });
+  const at = new Date(`${startsAt.data}Z`).toISOString();
+  const db = serviceClient();
+  const { error } = await db.rpc("launch_game", { p_starts_at: at });
+  if (error) return done(form, "failed", { reason: "launch" });
+  await db.from("admin_actions").insert({ admin_profile_id: me.profileId, action: "launch", details: { starts_at: at } });
   return done(form, "ok");
 }
 

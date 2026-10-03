@@ -87,7 +87,10 @@
     "reportMessage": "Reportar mensaje",
     "reported": "Reportado. Gracias por avisarnos.",
     "privacy": "Privacidad",
-    "legal": "Reglas y legal"
+    "legal": "Reglas y legal",
+    "soon": "Muy pronto",
+    "soonNote": "Tomar la corona se abre el día del lanzamiento. Todo lo demás ya está abierto.",
+    "adminTest": "Prelanzamiento · solo los admins pueden tomar la corona, con pagos de prueba."
   },
   "homeStates": {
     "signin": "Iniciar sesión",
@@ -210,6 +213,11 @@
         "title": "Algo salió mal.",
         "why": "La corona no se reservó.",
         "fix": "Vuelve a intentarlo. No se te ha cobrado."
+      },
+      "prelaunch": {
+        "title": "La corona aún no está en juego.",
+        "why": "Take the Crown se lanza pronto. Hasta entonces solo el equipo puede probar a tomar la corona.",
+        "fix": "Vuelve el día del lanzamiento. No se te ha cobrado nada."
       }
     },
     "nameSignedIn": "Tu nombre público. Cámbialo en tu perfil.",
@@ -830,7 +838,8 @@
       "seasons": "Temporadas",
       "config": "Configuración",
       "log": "Registro",
-      "review": "En revisión"
+      "review": "En revisión",
+      "launch": "Lanzamiento"
     },
     "crown": {
       "king": "Rey",
@@ -936,6 +945,15 @@
       "legal_city": "Ciudad de jurisdicción",
       "legal_payment_provider": "Proveedor de pagos (comerciante registrado)",
       "legal_effective_date": "Fecha de vigencia"
+    },
+    "launch": {
+      "prelaunch": "Prelanzamiento: el sitio es público, pero solo los admins pueden tomar la corona, con el proveedor de pagos de prueba. Lanzar borra todos los reinados, pagos y logros de prueba, empieza la temporada 0 a la hora que elijas y abre la corona a todos.",
+      "needProvider": "Lanzar necesita el proveedor de pagos real. Mientras PAYMENT_PROVIDER sea test, el juego sigue en prelanzamiento.",
+      "startsAt": "Empieza la temporada 0 (UTC)",
+      "go": "Lanzar el juego",
+      "confirm": "¿Lanzar ahora? Se borran todos los reinados, pagos y logros de prueba, y la corona se abre a todos. No se puede deshacer.",
+      "live": "El juego está en marcha: cualquiera puede tomar la corona.",
+      "invalid": "El juego no se lanzó. Revisa la hora de inicio (no en el pasado) y el proveedor de pagos."
     }
   },
   "report": {

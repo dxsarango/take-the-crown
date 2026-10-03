@@ -10,9 +10,11 @@ export type ViewerSummary = {
   countryCode: string | null;
   rank: Rank;
   avatar: AvatarSource;
+  /** Admins can take the crown during prelaunch. */
+  isAdmin: boolean;
 };
 
-export async function viewerSummary(db: PublicClient, profileId: string): Promise<ViewerSummary | null> {
+export async function viewerSummary(db: PublicClient, profileId: string, isAdmin: boolean): Promise<ViewerSummary | null> {
   const [profileRes, statsRes] = await Promise.all([
     db
       .from("profiles")
@@ -29,5 +31,6 @@ export async function viewerSummary(db: PublicClient, profileId: string): Promis
     countryCode: profile.country_code,
     rank: rankForSeconds(statsRes.data?.total_reign_seconds ?? 0),
     avatar: avatarSource(profile),
+    isAdmin,
   };
 }

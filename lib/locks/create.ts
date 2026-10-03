@@ -100,7 +100,7 @@ export async function createLock(body: unknown, ip: string): Promise<LockOutcome
   }
 
   try {
-    const checkout = await paymentProvider().createCheckout({
+    const checkout = await (await paymentProvider()).createCheckout({
       lockId: lock.id,
       priceCents: lock.price_cents,
       email: buyer.email,

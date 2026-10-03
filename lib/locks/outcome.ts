@@ -13,6 +13,7 @@ export const LOCK_DB_ERRORS = [
   "name_invalid",
   "name_taken",
   "avatar_seed_invalid",
+  "prelaunch",
 ] as const;
 
 export type LockDbError = (typeof LOCK_DB_ERRORS)[number];
