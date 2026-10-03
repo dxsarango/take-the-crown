@@ -238,6 +238,16 @@ otp_expiry = 900
 # admin_email = "admin@email.com"
 # sender_name = "Admin"
 
+# Sign-in links and new accounts share one bilingual template (production: paste it into the
+# dashboard, see docs/DEPLOY.md).
+[auth.email.template.magic_link]
+subject = "Your sign-in link · Tu enlace para entrar"
+content_path = "./supabase/templates/sign-in.html"
+
+[auth.email.template.confirmation]
+subject = "Your sign-in link · Tu enlace para entrar"
+content_path = "./supabase/templates/sign-in.html"
+
 # Uncomment to customize email template
 # [auth.email.template.invite]
 # subject = "You have been invited"
