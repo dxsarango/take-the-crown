@@ -7,3 +7,6 @@ update seasons
 set starts_at = now() - interval '1 day'
 where id = (select season_id from crown_state)
   and starts_at > now() - interval '1 day';
+
+-- Local development and tests play the launched game; prelaunch is tested on its own.
+update app_config set prelaunch = false;
