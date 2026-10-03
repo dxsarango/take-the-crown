@@ -186,6 +186,14 @@ export async function launchGame(form: FormData) {
   return done(form, "ok");
 }
 
+/** Shows the season dates a launch at this time would give, before anything changes. */
+export async function previewLaunch(form: FormData) {
+  await admin();
+  const startsAt = z.iso.datetime({ local: true }).safeParse(form.get("startsAt"));
+  if (!startsAt.success) return done(form, "failed", { reason: "launch" });
+  return redirect({ href: `/admin?launchAt=${encodeURIComponent(`${startsAt.data}Z`)}#launch`, locale: localeOf(form) });
+}
+
 export async function saveLegal(form: FormData) {
   const me = await admin();
   const parsed = legalSchema.safeParse(Object.fromEntries(LEGAL_FIELDS.map((k) => [k, form.get(k)])));
