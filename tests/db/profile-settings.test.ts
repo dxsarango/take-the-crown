@@ -187,7 +187,7 @@ describe("season-start alerts", () => {
     const rows = await q<{ profile_id: string; payload: Record<string, unknown> }>(
       "select profile_id, payload from notifications where kind = 'season_started'",
     );
-    expect(rows).toEqual([{ profile_id: await reminded.id(), payload: { season_id: 1, slug: "day-of-the-dead" } }]);
+    expect(rows).toEqual([{ profile_id: await reminded.id(), payload: { season_id: 1, slug: "frost" } }]);
   });
 
   it("is off by default", async () => {

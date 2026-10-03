@@ -2,12 +2,12 @@ import { readFileSync } from "node:fs";
 import path from "node:path";
 import type pg from "pg";
 
-// Mirrors the seed in supabase/migrations/0001_init.sql.
+// Mirrors the seasons after supabase/migrations/0020_season_order_and_launch_plan.sql.
 const SEED_SEASONS = `
   insert into seasons (id, slug, name_en, name_es, skin, starts_at, ends_at, exclusive_achievement, exclusive_frame) values
-    (0, 'genesis', 'Genesis', 'Génesis', 'genesis', '2026-10-01 00:00+00', '2026-11-01 00:00+00', 'founder', 'genesis'),
-    (1, 'day-of-the-dead', 'Day of the Dead', 'Día de Muertos', 'day-of-the-dead', '2026-11-01 00:00+00', '2026-12-01 00:00+00', 'remembered', 'day-of-the-dead'),
-    (2, 'frost', 'Frost', 'Escarcha', 'frost', '2026-12-01 00:00+00', '2027-01-01 00:00+00', null, null)
+    (0, 'genesis', 'Genesis', 'Génesis', 'genesis', '2026-10-01 00:00+00', '2026-12-01 00:00+00', 'founder', 'genesis'),
+    (1, 'frost', 'Frost', 'Escarcha', 'frost', '2026-12-01 00:00+00', '2027-01-01 00:00+00', 'frostbound', 'frost'),
+    (2, 'day-of-the-dead', 'Day of the Dead', 'Día de Muertos', 'day-of-the-dead', '2027-11-01 00:00+00', '2027-12-01 00:00+00', 'remembered', 'day-of-the-dead')
   on conflict (id) do update set
     slug = excluded.slug, name_en = excluded.name_en, name_es = excluded.name_es, skin = excluded.skin,
     starts_at = excluded.starts_at, ends_at = excluded.ends_at, exclusive_achievement = excluded.exclusive_achievement,

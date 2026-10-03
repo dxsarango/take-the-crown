@@ -42,7 +42,7 @@ describe("launch_game", () => {
     await new Player("tester").takeover();
     await q("insert into notifications (kind, profile_id) values ('season_started', $1)", [profileId]);
     await prelaunch(true);
-    const before = await q<{ id: number; length: string }>("select id, (ends_at - starts_at)::text as length from seasons order by id");
+    const before = await q<{ id: number; starts_at: Date; ends_at: Date }>("select id, starts_at, ends_at from seasons order by id");
     const launch = new Date(Date.now() + 3_600_000);
 
     await svc("select launch_game($1)", [launch.toISOString()]);
@@ -58,11 +58,20 @@ describe("launch_game", () => {
     expect(crown).toMatchObject({ season_id: 0, current_reign_id: null, base_price_cents: floor.floor_cents });
     expect(crown.base_set_at.getTime()).toBe(launch.getTime());
 
-    const seasons = await q<{ id: number; starts_at: Date; length: string; closed_at: Date | null; king_profile_id: string | null }>(
-      "select id, starts_at, (ends_at - starts_at)::text as length, closed_at, king_profile_id from seasons order by id",
+    const seasons = await q<{ id: number; starts_at: Date; ends_at: Date; closed_at: Date | null; king_profile_id: string | null }>(
+      "select id, starts_at, ends_at, closed_at, king_profile_id from seasons order by id",
     );
+    // Genesis starts at launch and lasts at least 14 days; later seasons move by the extension.
+    const DAY = 86_400_000;
+    const genesisEnd = Math.max(before[0].ends_at.getTime(), launch.getTime() + 14 * DAY);
+    const shift = genesisEnd - before[0].ends_at.getTime();
     expect(seasons[0].starts_at.getTime()).toBe(launch.getTime());
-    expect(seasons.map((s) => s.length)).toEqual(before.map((s) => s.length));
+    expect(seasons[0].ends_at.getTime()).toBe(genesisEnd);
+    expect(shift).toBeGreaterThan(0);
+    for (const [i, season] of seasons.slice(1).entries()) {
+      expect(season.starts_at.getTime()).toBe(before[i + 1].starts_at.getTime() + shift);
+      expect(season.ends_at.getTime()).toBe(before[i + 1].ends_at.getTime() + shift);
+    }
     expect(seasons.every((s) => s.closed_at === null && s.king_profile_id === null)).toBe(true);
     // Profiles and the admin's rights stay.
     expect(await one("select is_admin from profile_private where profile_id = $1", [profileId])).toEqual({ is_admin: true });
@@ -72,5 +81,20 @@ describe("launch_game", () => {
     await expect(svc("select launch_game(now())")).rejects.toThrow(/not_prelaunch/);
     await prelaunch(true);
     await expect(svc("select launch_game(now() - interval '1 hour')")).rejects.toThrow(/starts_in_past/);
+  });
+});
+
+describe("launch_plan", () => {
+  it("keeps the schedule when Genesis still has 14 days left", async () => {
+    await q("update seasons set ends_at = now() + interval '30 days' where id = 0");
+    const before = await q<{ id: number; ends_at: Date }>("select id, ends_at from seasons order by id");
+    const plan = await svc<{ season_id: number; starts_at: Date; ends_at: Date }>("select * from launch_plan(now() + interval '1 day')");
+    expect(plan.map((p) => p.ends_at.getTime())).toEqual(before.map((s) => s.ends_at.getTime()));
+  });
+
+  it("follows min_first_season_days from app_config", async () => {
+    await q("update app_config set min_first_season_days = 20");
+    const [genesis] = await svc<{ starts_at: Date; ends_at: Date }>("select * from launch_plan(now() + interval '60 days') where season_id = 0");
+    expect(genesis.ends_at.getTime() - genesis.starts_at.getTime()).toBe(20 * 86_400_000);
   });
 });
