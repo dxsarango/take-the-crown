@@ -7,13 +7,13 @@ import { ConfirmButton } from "@/components/admin/confirm-button";
 import { Link } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
 import { CONFIG_FIELDS, LEGAL_FIELDS } from "@/lib/admin/config";
-import { fetchAdminOverview } from "@/lib/admin/data";
+import { fetchAdminOverview, fetchLaunchPlan } from "@/lib/admin/data";
 import { currentAdmin } from "@/lib/admin/guard";
 import { BRAND_NAME } from "@/lib/config/brand";
 import { serverEnv } from "@/lib/env.server";
 import { displayLink, formatPrice } from "@/lib/format";
 import { MODEL_REASONS } from "@/lib/moderation/model";
-import { dismissReport, hideMessage, refundPayment, releaseName, reviewContent, launchGame, saveConfig, saveLegal, saveSeasonDates, setBanned } from "./actions";
+import { dismissReport, hideMessage, refundPayment, releaseName, reviewContent, launchGame, previewLaunch, saveConfig, saveLegal, saveSeasonDates, setBanned } from "./actions";
 
 export const dynamic = "force-dynamic";
 
@@ -68,6 +68,7 @@ export default async function AdminPage({ params, searchParams }: PageProps<"/[l
     `${new Intl.DateTimeFormat(locale === "es" ? "es-419" : "en-US", { dateStyle: "medium", timeStyle: "short", timeZone: "UTC" }).format(new Date(iso))} UTC`;
   const localInput = (iso: string) => iso.slice(0, 16);
   const testPayments = serverEnv().PAYMENT_PROVIDER === "test";
+  const launchPlan = data.config.prelaunch ? await fetchLaunchPlan(query.launchAt) : null;
   const now = new Date();
 
   const notice =
@@ -142,20 +143,52 @@ export default async function AdminPage({ params, searchParams }: PageProps<"/[l
         <Section id="launch" title={t("nav.launch")}>
           {data.config.prelaunch ? (
             <>
-              <p className="text-14 leading-body text-crown-muted">{t("launch.prelaunch")}</p>
-              {testPayments ? (
-                <p className="bg-crown-velvet p-4 text-14 leading-body font-bold shadow-[inset_4px_0_0_var(--crown-text)]">{t("launch.needProvider")}</p>
-              ) : (
-                <form action={launchGame} className="flex flex-col gap-3 sm:flex-row sm:items-end">
-                  <Back locale={locale} section="launch" />
-                  <label className="flex flex-col gap-2 text-12 font-bold">
-                    {t("launch.startsAt")}
-                    <input type="datetime-local" name="startsAt" defaultValue={localInput(now.toISOString())} required className={field} />
-                  </label>
-                  <ConfirmButton question={t("launch.confirm")} className={secondary}>
-                    {t("launch.go")}
-                  </ConfirmButton>
-                </form>
+              <p className="text-14 leading-body text-crown-muted">{t("launch.prelaunch", { days: data.config.min_first_season_days })}</p>
+              {/* Step 1: pick the start and see the resulting season dates. */}
+              <form action={previewLaunch} className="flex flex-col gap-3 sm:flex-row sm:items-end">
+                <Back locale={locale} section="launch" />
+                <label className="flex flex-col gap-2 text-12 font-bold">
+                  {t("launch.startsAt")}
+                  <input type="datetime-local" name="startsAt" defaultValue={localInput(launchPlan?.startsAt ?? now.toISOString())} required className={field} />
+                </label>
+                <button type="submit" className={secondary}>
+                  {t("launch.preview")}
+                </button>
+              </form>
+              {launchPlan && (
+                <div className="flex flex-col gap-3">
+                  <table className="w-full max-w-160 text-left text-14">
+                    <thead>
+                      <tr className="text-12 text-crown-muted">
+                        <th className="py-2 pr-4 font-bold">{t("launch.season")}</th>
+                        <th className="py-2 pr-4 font-bold">{t("seasons.starts")}</th>
+                        <th className="py-2 font-bold">{t("seasons.ends")}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {launchPlan.rows.map((row) => (
+                        <tr key={row.season_id} className="shadow-[inset_0_-2px_0_var(--crown-velvet)]">
+                          <td className="py-2 pr-4 font-bold">{data.seasons.find((s) => s.id === row.season_id)?.slug ?? row.season_id}</td>
+                          <td className="py-2 pr-4">{utc(row.starts_at)}</td>
+                          <td className="py-2">{utc(row.ends_at)}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                  {launchPlan.extended && <p className="text-14 font-bold">{t("launch.extended", { days: data.config.min_first_season_days })}</p>}
+                  {/* Step 2: launch with exactly these dates. */}
+                  {testPayments ? (
+                    <p className="bg-crown-velvet p-4 text-14 leading-body font-bold shadow-[inset_4px_0_0_var(--crown-text)]">{t("launch.needProvider")}</p>
+                  ) : (
+                    <form action={launchGame}>
+                      <Back locale={locale} section="launch" />
+                      <input type="hidden" name="startsAt" value={localInput(launchPlan.startsAt)} />
+                      <ConfirmButton question={t("launch.confirm")} className={secondary}>
+                        {t("launch.go")}
+                      </ConfirmButton>
+                    </form>
+                  )}
+                </div>
               )}
             </>
           ) : (

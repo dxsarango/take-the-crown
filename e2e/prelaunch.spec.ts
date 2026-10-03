@@ -76,7 +76,18 @@ test("an admin takes the crown with the test provider", async ({ page }) => {
   const [king] = await sql<{ name: string }>("select p.name from crown_state c join reigns r on r.id = c.current_reign_id join profiles p on p.id = r.profile_id");
   expect(king.name).toBe("mbali");
 
-  // Launching needs the real payment provider.
+  // Launching shows the resulting season dates first: a late launch stretches Genesis to 14 days
+  // and moves Frost and Day of the Dead by the same amount.
   await page.goto("/en/admin#launch");
-  await expect(shown(page, en.admin.launch.needProvider)).toBeVisible();
+  const launch = page.locator("#launch");
+  await launch.getByLabel(en.admin.launch.startsAt).fill("2026-11-25T00:00");
+  await launch.getByRole("button", { name: en.admin.launch.preview }).click();
+  await expect(launch.getByRole("row", { name: /genesis.*Nov 25, 2026.*Dec 9, 2026/ })).toBeVisible();
+  await expect(launch.getByRole("row", { name: /frost.*Dec 9, 2026.*Jan 9, 2027/ })).toBeVisible();
+  await expect(launch.getByRole("row", { name: /day-of-the-dead.*Nov 9, 2027.*Dec 9, 2027/ })).toBeVisible();
+  await expect(launch.getByText(en.admin.launch.extended.replace("{days}", "14"))).toBeVisible();
+  await page.screenshot({ path: `${SCREENS}/admin-launch-plan-${test.info().project.name}.png`, fullPage: false });
+  // The confirm step needs the real payment provider.
+  await expect(launch.getByText(en.admin.launch.needProvider)).toBeVisible();
+  expect(await sql("select prelaunch from app_config")).toEqual([{ prelaunch: true }]);
 });

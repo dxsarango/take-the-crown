@@ -126,3 +126,27 @@ export async function fetchAdminOverview() {
 }
 
 export type AdminOverview = Awaited<ReturnType<typeof fetchAdminOverview>>;
+
+export type LaunchPlan = {
+  startsAt: string;
+  /** Genesis had to be made longer to last the minimum number of days. */
+  extended: boolean;
+  rows: { season_id: number; starts_at: string; ends_at: string }[];
+};
+
+/** The season dates launch_game would set for a launch at `startsAt` (an ISO time), or null. */
+export async function fetchLaunchPlan(startsAt: unknown): Promise<LaunchPlan | null> {
+  if (typeof startsAt !== "string" || Number.isNaN(Date.parse(startsAt))) return null;
+  const db = serviceClient();
+  const [planRes, genesisRes] = await Promise.all([
+    db.rpc("launch_plan", { p_starts_at: new Date(startsAt).toISOString() }),
+    db.from("seasons").select("ends_at").eq("id", 0).single(),
+  ]);
+  if (planRes.error || !planRes.data?.length || !genesisRes.data) return null;
+  const rows = planRes.data;
+  return {
+    startsAt: new Date(startsAt).toISOString(),
+    extended: Date.parse(rows[0].ends_at) > Date.parse(genesisRes.data.ends_at),
+    rows,
+  };
+}
