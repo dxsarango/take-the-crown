@@ -60,6 +60,8 @@ export async function resetToSeed(client: pg.ClientBase, extraTables: string[] =
   await client.query("delete from auth.users where email like '%@test.local'");
   await client.query("delete from app_config");
   await client.query("insert into app_config default values");
+  // A new database starts in prelaunch (migration 0019); the game tests play the launched game.
+  await client.query("update app_config set prelaunch = false");
   await client.query("delete from seasons where id > 2");
   await client.query("update achievements set active = true");
   await client.query(SEED_SEASONS);

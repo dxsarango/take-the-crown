@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark" />
+    <title>Take the Crown</title>
+  </head>
+  <!-- Supabase Auth email for sign-in links and new accounts (paste into both the "Magic link" and
+       "Confirm signup" templates). Players get it before the app knows their language, so it is in
+       English and Spanish. Colors and relief follow lib/email/templates.tsx. -->
+  <body style="margin:0;padding:0;background:#0E0C14;color:#F3EDE2;font-family:Manrope,Helvetica,Arial,sans-serif">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#0E0C14">
+      <tr>
+        <td align="center" style="padding:40px 12px">
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:600px;background:#14111C">
+            <tr>
+              <td style="background:#1E1A29;padding:20px 40px;font-size:20px;font-weight:700;color:#F3EDE2">Take the Crown</td>
+            </tr>
+            <tr>
+              <td style="padding:32px 40px 8px">
+                <h1 style="margin:0 0 12px;font-size:24px;line-height:1.25;font-weight:700;color:#F3EDE2">Sign in to Take the Crown</h1>
+                <p style="margin:0 0 4px;font-size:16px;line-height:1.5;color:#A89FB8">The link works for 15 minutes, on the device where you asked for it.</p>
+                <h2 lang="es" style="margin:20px 0 8px;font-size:18px;line-height:1.3;font-weight:700;color:#F3EDE2">Entra en Take the Crown</h2>
+                <p lang="es" style="margin:0;font-size:16px;line-height:1.5;color:#A89FB8">El enlace sirve durante 15 minutos, en el dispositivo donde lo pediste.</p>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:16px 40px 8px">
+                <a
+                  href="{{ .ConfirmationURL }}"
+                  style="display:inline-block;margin:4px;padding:0 28px;line-height:44px;background:#F3EDE2;color:#14111C;font-size:16px;font-weight:700;text-decoration:none;border-top:4px solid #FFFBF2;border-left:4px solid #FFFBF2;border-bottom:4px solid #BFB29C;border-right:4px solid #BFB29C"
+                  >Sign in · Entrar</a
+                >
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:16px 40px 32px;font-size:12px;line-height:1.5;color:#A89FB8">
+                If the button doesn't work, open this link · Si el botón no funciona, abre este enlace:<br />
+                <span style="color:#F3EDE2;word-break:break-all">{{ .ConfirmationURL }}</span>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:20px 40px 28px;border-top:2px solid #1E1A29;font-size:12px;line-height:1.5;color:#A89FB8">
+                You didn't ask for this? Ignore this email; nothing changes. · ¿No lo pediste? Ignora este correo; no cambia nada.
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>
