@@ -87,7 +87,10 @@
     "reportMessage": "Report message",
     "reported": "Reported. Thanks for telling us.",
     "privacy": "Privacy",
-    "legal": "Rules and legal"
+    "legal": "Rules and legal",
+    "soon": "Launching soon",
+    "soonNote": "Taking the crown opens on launch day. Everything else is already open.",
+    "adminTest": "Prelaunch · only admins can take the crown, with test payments."
   },
   "homeStates": {
     "signin": "Sign in",
@@ -210,6 +213,11 @@
         "title": "Something went wrong.",
         "why": "The crown wasn't reserved.",
         "fix": "Try again. You haven't been charged."
+      },
+      "prelaunch": {
+        "title": "The crown isn't up for grabs yet.",
+        "why": "Take the Crown is launching soon. Until then only the team can test taking the crown.",
+        "fix": "Come back on launch day. You haven't been charged."
       }
     },
     "nameSignedIn": "Your public name. Change it in your profile.",
@@ -830,7 +838,8 @@
       "seasons": "Seasons",
       "config": "Config",
       "log": "Log",
-      "review": "In review"
+      "review": "In review",
+      "launch": "Launch"
     },
     "crown": {
       "king": "King",
@@ -936,6 +945,15 @@
       "legal_city": "City for jurisdiction",
       "legal_payment_provider": "Payment provider (merchant of record)",
       "legal_effective_date": "Effective date"
+    },
+    "launch": {
+      "prelaunch": "Prelaunch: the site is public, but only admins can take the crown, with the test payment provider. Launching deletes every test reign, payment and achievement, starts season 0 at the time you choose and opens the crown to everyone.",
+      "needProvider": "Launch needs the real payment provider. While PAYMENT_PROVIDER is test, the game stays in prelaunch.",
+      "startsAt": "Season 0 starts (UTC)",
+      "go": "Launch the game",
+      "confirm": "Launch now? Every test reign, payment and achievement is deleted, and the crown opens to everyone. This can't be undone.",
+      "live": "The game is live: anyone can take the crown.",
+      "invalid": "The game didn't launch. Check the start time (not in the past) and the payment provider."
     }
   },
   "report": {

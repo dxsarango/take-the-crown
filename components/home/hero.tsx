@@ -9,6 +9,7 @@ import type { CrownState, King } from "@/lib/home/data";
 import { type HeroState, lockSegments } from "@/lib/home/hero";
 import { ReportDialog } from "./report-dialog";
 import { PlayerName } from "@/components/player-name";
+import { useAuth } from "@/components/auth/auth-provider";
 
 /** Shown after the buyer's own payment attempt fails or their lock runs out (design states 4 and 5). */
 export type HomeNotice = "payment_failed" | "lock_expired";
@@ -106,6 +107,29 @@ function TakeButton({ label, onClick, className = "" }: { label: string; onClick
       {label}
     </button>
   );
+}
+
+/**
+ * Prelaunch (M10a): where the take button goes, a quiet stone block that says the crown opens on
+ * launch day. Not a button: there is nothing to press yet.
+ */
+function LaunchingSoon({ align, className = "" }: { align: "left" | "right"; className?: string }) {
+  const home = useTranslations("home");
+  return (
+    <div className="flex flex-col gap-2" role="status">
+      <div className={`m-1 flex h-14 items-center justify-center gap-3 bg-crown-hall px-6 text-18 font-bold shadow-relief ${className}`}>
+        {/* eslint-disable-next-line @next/next/no-img-element -- pixel art must not be resampled by next/image */}
+        <img src="/art/crowns/icon-16.svg" width={32} height={32} alt="" className="block flex-none [image-rendering:pixelated]" />
+        {home("soon")}
+      </div>
+      <p className={`mx-1 text-12 leading-snug text-pretty text-crown-muted ${align === "right" ? "max-w-[400px] self-end text-right" : ""}`}>{home("soonNote")}</p>
+    </div>
+  );
+}
+
+function AdminTestNote({ align }: { align: "left" | "right" }) {
+  const home = useTranslations("home");
+  return <p className={`mx-1 font-pixel text-12 font-medium text-crown-gold ${align === "right" ? "text-right" : ""}`}>{home("adminTest")}</p>;
 }
 
 function Reserved({ secondsLeft, lockSeconds, align }: { secondsLeft: number; lockSeconds: number; align: "left" | "right" }) {
@@ -207,6 +231,8 @@ function Notice({ notice, priceCents, locale }: { notice: HomeNotice; priceCents
 
 export function Hero({ king, crown, state, season, notice, onTake }: Props) {
   const locale = useLocale() as Locale;
+  const { viewer } = useAuth();
+  const closed = crown.prelaunch && !viewer?.isAdmin;
   const common = useTranslations("common");
   const home = useTranslations("home");
   const states = useTranslations("homeStates");
@@ -246,8 +272,13 @@ export function Hero({ king, crown, state, season, notice, onTake }: Props) {
         )}
         {locked ? (
           <Reserved secondsLeft={state.lockSecondsLeft} lockSeconds={crown.lockSeconds} align="left" />
+        ) : closed ? (
+          <LaunchingSoon align="left" />
         ) : (
-          <TakeButton label={buttonLabel} onClick={onTake} />
+          <>
+            <TakeButton label={buttonLabel} onClick={onTake} />
+            {crown.prelaunch && <AdminTestNote align="left" />}
+          </>
         )}
       </div>
 
@@ -284,8 +315,13 @@ export function Hero({ king, crown, state, season, notice, onTake }: Props) {
             <div className="w-[400px]">
               <Reserved secondsLeft={state.lockSecondsLeft} lockSeconds={crown.lockSeconds} align="right" />
             </div>
+          ) : closed ? (
+            <LaunchingSoon align="right" className={king ? "min-w-[340px]" : "min-w-[400px]"} />
           ) : (
-            <TakeButton label={buttonLabel} onClick={onTake} className={king ? "min-w-[340px] px-7" : "min-w-[400px] px-7"} />
+            <>
+              <TakeButton label={buttonLabel} onClick={onTake} className={king ? "min-w-[340px] px-7" : "min-w-[400px] px-7"} />
+              {crown.prelaunch && <AdminTestNote align="right" />}
+            </>
           )}
         </div>
       </div>
