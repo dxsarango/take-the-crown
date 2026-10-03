@@ -10,9 +10,10 @@ import { CONFIG_FIELDS, LEGAL_FIELDS } from "@/lib/admin/config";
 import { fetchAdminOverview } from "@/lib/admin/data";
 import { currentAdmin } from "@/lib/admin/guard";
 import { BRAND_NAME } from "@/lib/config/brand";
+import { serverEnv } from "@/lib/env.server";
 import { displayLink, formatPrice } from "@/lib/format";
 import { MODEL_REASONS } from "@/lib/moderation/model";
-import { dismissReport, hideMessage, refundPayment, releaseName, reviewContent, saveConfig, saveLegal, saveSeasonDates, setBanned } from "./actions";
+import { dismissReport, hideMessage, refundPayment, releaseName, reviewContent, launchGame, saveConfig, saveLegal, saveSeasonDates, setBanned } from "./actions";
 
 export const dynamic = "force-dynamic";
 
@@ -23,7 +24,7 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/admin">)
   return { title: `${t("title")} · ${BRAND_NAME}`, robots: { index: false, follow: false } };
 }
 
-const SECTIONS = ["crown", "payments", "reports", "review", "names", "seasons", "config", "log"] as const;
+const SECTIONS = ["crown", "launch", "payments", "reports", "review", "names", "seasons", "config", "log"] as const;
 
 const secondary =
   "hit-area m-1 h-10 bg-crown-hall px-3.5 text-14 font-bold whitespace-nowrap shadow-relief-card hover:bg-crown-stone focus-visible:outline-offset-[6px] active:bg-crown-ink";
@@ -66,6 +67,7 @@ export default async function AdminPage({ params, searchParams }: PageProps<"/[l
   const utc = (iso: string) =>
     `${new Intl.DateTimeFormat(locale === "es" ? "es-419" : "en-US", { dateStyle: "medium", timeStyle: "short", timeZone: "UTC" }).format(new Date(iso))} UTC`;
   const localInput = (iso: string) => iso.slice(0, 16);
+  const testPayments = serverEnv().PAYMENT_PROVIDER === "test";
   const now = new Date();
 
   const notice =
@@ -82,6 +84,8 @@ export default async function AdminPage({ params, searchParams }: PageProps<"/[l
             ? t("config.invalid")
             : query.reason === "legal"
               ? t("legal.invalid")
+            : query.reason === "launch"
+              ? t("launch.invalid")
             : t("failed")
         : null;
 
@@ -133,6 +137,30 @@ export default async function AdminPage({ params, searchParams }: PageProps<"/[l
               </div>
             ))}
           </dl>
+        </Section>
+
+        <Section id="launch" title={t("nav.launch")}>
+          {data.config.prelaunch ? (
+            <>
+              <p className="text-14 leading-body text-crown-muted">{t("launch.prelaunch")}</p>
+              {testPayments ? (
+                <p className="bg-crown-velvet p-4 text-14 leading-body font-bold shadow-[inset_4px_0_0_var(--crown-text)]">{t("launch.needProvider")}</p>
+              ) : (
+                <form action={launchGame} className="flex flex-col gap-3 sm:flex-row sm:items-end">
+                  <Back locale={locale} section="launch" />
+                  <label className="flex flex-col gap-2 text-12 font-bold">
+                    {t("launch.startsAt")}
+                    <input type="datetime-local" name="startsAt" defaultValue={localInput(now.toISOString())} required className={field} />
+                  </label>
+                  <ConfirmButton question={t("launch.confirm")} className={secondary}>
+                    {t("launch.go")}
+                  </ConfirmButton>
+                </form>
+              )}
+            </>
+          ) : (
+            <p className="text-14 leading-body text-crown-muted">{t("launch.live")}</p>
+          )}
         </Section>
 
         <Section id="payments" title={t("nav.payments")}>

@@ -9,7 +9,7 @@ import { revalidateHome } from "@/lib/home/cache";
  * crowns the buyer or must be refunded, and is idempotent per event and per payment.
  */
 export async function POST(request: Request, { params }: RouteContext<"/api/webhooks/[provider]">) {
-  const provider = providerByName((await params).provider);
+  const provider = await providerByName((await params).provider).catch(() => null);
   if (!provider) return new Response(null, { status: 404 });
 
   const event = await provider.verifyWebhook(request);
