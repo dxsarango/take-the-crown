@@ -31,28 +31,30 @@
   "season": {
     "name": {
       "0": "Temporada 0: Génesis",
-      "1": "Temporada 1: Día de Muertos",
-      "2": "Temporada 2: Escarcha"
+      "1": "Temporada 1: Escarcha",
+      "2": "Temporada 2: Día de Muertos"
     },
     "long": "{season} · {days, plural, one {queda # día} other {quedan # días}}",
     "short": "T{n} · {days, plural, one {queda # día} other {quedan # días}}",
     "firstKing": "Sé el primer rey de la Temporada {n}.",
     "dates": {
-      "0": "15 sep – 31 oct 2026",
-      "1": "1 nov – 30 nov 2026",
-      "2": "Desde el 1 dic 2026"
+      "0": "Hasta el 30 nov 2026",
+      "1": "1 dic – 31 dic 2026",
+      "2": "1 nov – 30 nov 2027"
     },
     "nextDesc": {
-      "1": "Papel picado, cempasúchil y velas, una corona de calavera de azúcar, un marco y una medalla de temporada nuevos. El trono empieza vacío a {price}.",
-      "2": "Un salón helado, corona y marco de temporada nuevos, y nuevos logros. El trono empieza vacío a {price}."
+      "1": "Un salón helado, corona y marco de temporada nuevos, y nuevos logros. El trono empieza vacío a {price}.",
+      "2": "Papel picado, cempasúchil y velas, una corona de calavera de azúcar, un marco y una medalla de temporada nuevos. El trono empieza vacío a {price}."
     },
     "frame": {
       "0": "Marco Genesis",
-      "1": "Marco Cempasúchil"
+      "1": "Marco Escarcha",
+      "2": "Marco Cempasúchil"
     },
     "crown": {
       "0": "Coronas base (3)",
-      "1": "Corona Calavera"
+      "1": "Corona Escarcha",
+      "2": "Corona Calavera"
     },
     "title": "Temporada {n}: {name}"
   },
@@ -216,7 +218,7 @@
       },
       "prelaunch": {
         "title": "La corona aún no está en juego.",
-        "why": "Take the Crown se lanza pronto. Hasta entonces solo el equipo puede probar a tomar la corona.",
+        "why": "El juego se lanza pronto. Hasta entonces solo el equipo puede probar a tomar la corona.",
         "fix": "Vuelve el día del lanzamiento. No se te ha cobrado nada."
       }
     },
@@ -290,7 +292,7 @@
       ],
       "remembered": [
         "Recordado",
-        "Reinaste en la Temporada 1: Día de Muertos."
+        "Reinaste en la Temporada 2: Día de Muertos."
       ],
       "oneMin": [
         "Rey de un minuto",
@@ -323,6 +325,10 @@
       "rivalry": [
         "Rivalidad",
         "Te quitaste la corona 5 veces con la misma persona."
+      ],
+      "frostbound": [
+        "Escarchado",
+        "Reinaste en la Temporada 1: Escarcha."
       ]
     },
     "rankUp": "Nuevo rango",
@@ -388,7 +394,8 @@
     },
     "frames": {
       "genesis": "Marco Genesis",
-      "marigold": "Marco Cempasúchil"
+      "marigold": "Marco Cempasúchil",
+      "frost": "Marco Escarcha"
     },
     "collEarned": "Temporada {n} · Reinó en la T{n}",
     "collEarnedOwn": "Tuyo para siempre. Solo lo tienen los reyes de la T{n}.",
@@ -627,7 +634,8 @@
     "scopeLabel": "Alcance",
     "frameNames": {
       "genesis": "marco Genesis",
-      "marigold": "marco Cempasúchil"
+      "marigold": "marco Cempasúchil",
+      "frost": "marco Escarcha"
     },
     "season": "Temporada"
   },
@@ -750,9 +758,13 @@
       "name": "Fundador",
       "condition": "Reinar en la Temporada 0"
     },
+    "frostbound": {
+      "name": "Escarchado",
+      "condition": "Reinar en la Temporada 1"
+    },
     "remembered": {
       "name": "Recordado",
-      "condition": "Reinar en la Temporada 1"
+      "condition": "Reinar en la Temporada 2"
     }
   },
   "rarity": {
@@ -913,7 +925,9 @@
       "max_profile_saves_per_hour": "Guardados de perfil por jugador por hora",
       "max_magic_links_per_hour": "Enlaces de inicio de sesión por IP y por correo por hora",
       "max_avatar_uploads_per_hour": "Subidas de avatar por jugador por hora",
-      "max_reports_per_ip_per_hour": "Denuncias por IP por hora"
+      "max_reports_per_ip_per_hour": "Denuncias por IP por hora",
+      "min_first_season_days": "Primera temporada más corta al lanzar (días)",
+      "delete_reauth_seconds": "Antigüedad del inicio de sesión para eliminar una cuenta (segundos)"
     },
     "log": {
       "empty": "Aún no hay acciones de administración.",
@@ -947,13 +961,16 @@
       "legal_effective_date": "Fecha de vigencia"
     },
     "launch": {
-      "prelaunch": "Prelanzamiento: el sitio es público, pero solo los admins pueden tomar la corona, con el proveedor de pagos de prueba. Lanzar borra todos los reinados, pagos y logros de prueba, empieza la temporada 0 a la hora que elijas y abre la corona a todos.",
+      "prelaunch": "Prelanzamiento: el sitio es público, pero solo los admins pueden tomar la corona, con el proveedor de pagos de prueba. Lanzar borra todos los reinados, pagos y logros de prueba, empieza la temporada 0 a la hora que elijas (dura al menos {days} días; las temporadas siguientes se mueven si tiene que alargarse) y abre la corona a todos.",
       "needProvider": "Lanzar necesita el proveedor de pagos real. Mientras PAYMENT_PROVIDER sea test, el juego sigue en prelanzamiento.",
       "startsAt": "Empieza la temporada 0 (UTC)",
       "go": "Lanzar el juego",
       "confirm": "¿Lanzar ahora? Se borran todos los reinados, pagos y logros de prueba, y la corona se abre a todos. No se puede deshacer.",
       "live": "El juego está en marcha: cualquiera puede tomar la corona.",
-      "invalid": "El juego no se lanzó. Revisa la hora de inicio (no en el pasado) y el proveedor de pagos."
+      "invalid": "El juego no se lanzó. Revisa la hora de inicio (no en el pasado) y el proveedor de pagos.",
+      "preview": "Ver las fechas de temporada",
+      "season": "Temporada",
+      "extended": "Génesis terminaría demasiado pronto, así que dura {days} días y todas las temporadas siguientes se mueven lo mismo."
     }
   },
   "report": {

@@ -153,7 +153,7 @@ test("the cron sends the other alerts and skips the ones that no longer apply", 
   await sql("update profile_private set is_admin = true where profile_id = $1", [admin.id]);
   await sql(
     `insert into notifications (kind, profile_id, payload) values
-       ('season_started', $1, '{"season_id": 1, "slug": "day-of-the-dead"}'),
+       ('season_started', $1, '{"season_id": 1, "slug": "frost"}'),
        ('price_drop', $1, jsonb_build_object('price_cents', $2::int, 'threshold_cents', $3::int, 'season_id', 0)),
        ('price_drop', $1, jsonb_build_object('price_cents', 100, 'threshold_cents', 100, 'season_id', 0)),
        ('reports_threshold', $4, jsonb_build_object('reign_id', $5::bigint, 'reports', 3)),
@@ -162,7 +162,7 @@ test("the cron sends the other alerts and skips the ones that no longer apply", 
   );
 
   expect(await runCron(page)).toEqual({ sent: 3, failed: 0, skipped: 2 });
-  expect((await mailTo("kenji@test.local", /has started/)).Subject).toBe("Season 1: Day of the Dead has started");
+  expect((await mailTo("kenji@test.local", /has started/)).Subject).toBe("Season 1: Frost has started");
   expect((await mailTo("kenji@test.local", /down to/)).HTML).toContain("Take the crown for");
   const report = await mailTo("mbali@test.local");
   expect(report.Subject).toBe("A message reached 3 reports");

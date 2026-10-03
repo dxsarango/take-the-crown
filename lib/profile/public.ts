@@ -30,7 +30,7 @@ export type ChronicleEntry = {
 
 export type Collectible = {
   seasonId: number;
-  frame: "genesis" | "marigold" | null;
+  frame: "genesis" | "marigold" | "frost" | null;
   status: "earned" | "open" | "missed" | "upcoming";
   startsAt: string;
   endsAt: string;
@@ -70,7 +70,7 @@ export type ProfilePage = {
   king: { name: string; countryCode: string | null; avatar: AvatarSource; rank: Rank; startedAt: string; profileId: string } | null;
 };
 
-const FRAME_ART: Record<string, Collectible["frame"]> = { genesis: "genesis", "day-of-the-dead": "marigold" };
+const FRAME_ART: Record<string, Collectible["frame"]> = { genesis: "genesis", "day-of-the-dead": "marigold", frost: "frost" };
 
 function must<T>(result: { data: T | null; error: { message: string } | null }, what: string): T {
   if (result.error) throw new Error(`Failed to load ${what}: ${result.error.message}`);

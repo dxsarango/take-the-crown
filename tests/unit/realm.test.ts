@@ -22,8 +22,9 @@ describe("podium art", () => {
   });
 
   it("uses each season's stone", () => {
-    expect(pedestalPixels(1, 1)[0]).toBe("#0C1E26");
-    expect(pedestalPixels(1, 2)[0]).toBe("#1F1C27");
+    // Season 2 is Day of the Dead (art set T1); Frost (season 1) uses Genesis until its art ships.
+    expect(pedestalPixels(1, 2)[0]).toBe("#0C1E26");
+    expect(pedestalPixels(1, 1)[0]).toBe("#1F1C27");
   });
 
   it("puts the portrait on the banner and can leave the avatar window open for uploads", () => {

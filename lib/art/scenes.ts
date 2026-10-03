@@ -1,4 +1,5 @@
 import type { Pixels } from "./avatar";
+import { artSet } from "./seasons";
 
 // Ports of sceneT0 (design/prototypes/throne-lib.js) and scene1 (design/prototypes/season-lib.js).
 // Pure functions (W, H, options) → pixels; the scene grows sideways with W and never stretches.
@@ -525,9 +526,9 @@ export function sceneT1(W: number, H: number, opt: SceneOptions = {}): Pixels {
   return col;
 }
 
-/** Scene of a season; seasons without their own scene use Genesis (T2 art is announcement-only). */
+/** Scene of a season id; art sets without their own scene use Genesis (T2 art is announcement-only). */
 export function seasonScene(season: number, W: number, H: number, opt: SceneOptions = {}): Pixels {
-  return season === 1 ? sceneT1(W, H, opt) : sceneT0(W, H, opt);
+  return artSet(season) === 1 ? sceneT1(W, H, opt) : sceneT0(W, H, opt);
 }
 
 /** Top-left corner of the 44×44 portrait inside a W×H scene. */

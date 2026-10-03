@@ -6,6 +6,7 @@ import { MEDAL_KEY, type AchievementCode } from "@/lib/game/achievements";
 import { SEASON_RING_HEX } from "@/lib/game/rarity";
 import type { Rarity } from "@/lib/profile/public";
 import { PLATFORMS, type SocialKey } from "@/lib/profile/socials";
+import { artSet } from "@/lib/art/seasons";
 
 const RARITY_COLOR: Record<Exclude<Rarity, "seasonal">, string> = {
   common: "var(--crown-rarity-common)",
@@ -15,7 +16,7 @@ const RARITY_COLOR: Record<Exclude<Rarity, "seasonal">, string> = {
 };
 
 export function rarityColor(rarity: Rarity, seasonId: number | null): string {
-  return rarity === "seasonal" ? (SEASON_RING_HEX[seasonId ?? 0] ?? SEASON_RING_HEX[0]) : RARITY_COLOR[rarity];
+  return rarity === "seasonal" ? (SEASON_RING_HEX[artSet(seasonId ?? 0)] ?? SEASON_RING_HEX[0]) : RARITY_COLOR[rarity];
 }
 
 /** 24×24 medal at an integer scale, lit or unearned. */
@@ -49,7 +50,8 @@ export function SocialIcon({ platform, size }: { platform: SocialKey; size: numb
   );
 }
 
-const FRAME_FILE = { genesis: "season-t0-genesis", marigold: "season-t1-marigold" } as const;
+// Frost reuses the Genesis frame until the design ships its own (placeholder).
+const FRAME_FILE = { genesis: "season-t0-genesis", marigold: "season-t1-marigold", frost: "season-t0-genesis" } as const;
 
 /** A season's collectible frame around the player's avatar (no crown); grey when not earned. */
 export function SeasonFrame({

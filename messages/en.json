@@ -31,28 +31,30 @@
   "season": {
     "name": {
       "0": "Season 0: Genesis",
-      "1": "Season 1: Day of the Dead",
-      "2": "Season 2: Frost"
+      "1": "Season 1: Frost",
+      "2": "Season 2: Day of the Dead"
     },
     "long": "{season} · {days, plural, one {# day left} other {# days left}}",
     "short": "Season {n} · {days, plural, one {# day left} other {# days left}}",
     "firstKing": "Be the first king of Season {n}.",
     "dates": {
-      "0": "Sep 15 – Oct 31, 2026",
-      "1": "Nov 1 – Nov 30, 2026",
-      "2": "From Dec 1, 2026"
+      "0": "Until Nov 30, 2026",
+      "1": "Dec 1 – Dec 31, 2026",
+      "2": "Nov 1 – Nov 30, 2027"
     },
     "nextDesc": {
-      "1": "Papel picado, marigolds and candlelight, a sugar skull crown, a new seasonal frame and medal. The throne starts empty at {price}.",
-      "2": "A frozen hall, a new seasonal crown and frame, and new achievements. The throne starts empty at {price}."
+      "1": "A frozen hall, a new seasonal crown and frame, and new achievements. The throne starts empty at {price}.",
+      "2": "Papel picado, marigolds and candlelight, a sugar skull crown, a new seasonal frame and medal. The throne starts empty at {price}."
     },
     "frame": {
       "0": "Genesis frame",
-      "1": "Marigold frame"
+      "1": "Frost frame",
+      "2": "Marigold frame"
     },
     "crown": {
       "0": "Base crowns (3)",
-      "1": "Sugar skull crown"
+      "1": "Frost crown",
+      "2": "Sugar skull crown"
     },
     "title": "Season {n}: {name}"
   },
@@ -216,7 +218,7 @@
       },
       "prelaunch": {
         "title": "The crown isn't up for grabs yet.",
-        "why": "Take the Crown is launching soon. Until then only the team can test taking the crown.",
+        "why": "The game is launching soon. Until then only the team can test taking the crown.",
         "fix": "Come back on launch day. You haven't been charged."
       }
     },
@@ -290,7 +292,7 @@
       ],
       "remembered": [
         "Remembered",
-        "Reigned during Season 1: Day of the Dead."
+        "Reigned during Season 2: Day of the Dead."
       ],
       "oneMin": [
         "One-Minute King",
@@ -323,6 +325,10 @@
       "rivalry": [
         "Rivalry",
         "Traded the crown 5 times with one person."
+      ],
+      "frostbound": [
+        "Frostbound",
+        "Reigned during Season 1: Frost."
       ]
     },
     "rankUp": "New rank",
@@ -388,7 +394,8 @@
     },
     "frames": {
       "genesis": "Genesis frame",
-      "marigold": "Marigold frame"
+      "marigold": "Marigold frame",
+      "frost": "Frost frame"
     },
     "collEarned": "Season {n} · Reigned in Season {n}",
     "collEarnedOwn": "Yours forever. Only Season {n} kings get it.",
@@ -627,7 +634,8 @@
     "scopeLabel": "Scope",
     "frameNames": {
       "genesis": "Genesis frame",
-      "marigold": "Marigold frame"
+      "marigold": "Marigold frame",
+      "frost": "Frost frame"
     },
     "season": "Season"
   },
@@ -750,9 +758,13 @@
       "name": "Founder",
       "condition": "Reign during Season 0"
     },
+    "frostbound": {
+      "name": "Frostbound",
+      "condition": "Reign during Season 1"
+    },
     "remembered": {
       "name": "Remembered",
-      "condition": "Reign during Season 1"
+      "condition": "Reign during Season 2"
     }
   },
   "rarity": {
@@ -913,7 +925,9 @@
       "max_profile_saves_per_hour": "Profile saves per player per hour",
       "max_magic_links_per_hour": "Sign-in links per IP and per email per hour",
       "max_avatar_uploads_per_hour": "Avatar uploads per player per hour",
-      "max_reports_per_ip_per_hour": "Reports per IP per hour"
+      "max_reports_per_ip_per_hour": "Reports per IP per hour",
+      "min_first_season_days": "Shortest first season at launch (days)",
+      "delete_reauth_seconds": "Sign-in age to delete an account (seconds)"
     },
     "log": {
       "empty": "No admin actions yet.",
@@ -947,13 +961,16 @@
       "legal_effective_date": "Effective date"
     },
     "launch": {
-      "prelaunch": "Prelaunch: the site is public, but only admins can take the crown, with the test payment provider. Launching deletes every test reign, payment and achievement, starts season 0 at the time you choose and opens the crown to everyone.",
+      "prelaunch": "Prelaunch: the site is public, but only admins can take the crown, with the test payment provider. Launching deletes every test reign, payment and achievement, starts season 0 at the time you choose (it lasts at least {days} days; later seasons move if it has to grow) and opens the crown to everyone.",
       "needProvider": "Launch needs the real payment provider. While PAYMENT_PROVIDER is test, the game stays in prelaunch.",
       "startsAt": "Season 0 starts (UTC)",
       "go": "Launch the game",
       "confirm": "Launch now? Every test reign, payment and achievement is deleted, and the crown opens to everyone. This can't be undone.",
       "live": "The game is live: anyone can take the crown.",
-      "invalid": "The game didn't launch. Check the start time (not in the past) and the payment provider."
+      "invalid": "The game didn't launch. Check the start time (not in the past) and the payment provider.",
+      "preview": "See the season dates",
+      "season": "Season",
+      "extended": "Genesis would end too soon, so it lasts {days} days and every later season moves by the same amount."
     }
   },
   "report": {
