@@ -44,7 +44,9 @@ All values live in `app_config` and must never be hardcoded in the app.
 
 **Self-takeover.** The current king cannot buy the crown again.
 
-**Seasons.** A season is open from `starts_at` to `ends_at` (UTC); locks and payments outside that window are rejected or refunded. `rollover_season()` closes the current reign with `season_end`, awards any Guardian tier that reign reached, stores the season king (most total reign time), notifies players with season-start alerts on, and resets the crown to the floor price with an empty throne. The next season must exist in `seasons` beforehand; if it doesn't, rollover raises `no_next_season_configured` and payments refund until it is added. Current calendar: T0 Genesis until 2026-11-01, T1 Day of the Dead (November), T2 Frost (December). Dates shown in the UI always come from `seasons`, never from copy.
+**Seasons.** A season is open from `starts_at` to `ends_at` (UTC); locks and payments outside that window are rejected or refunded. `rollover_season()` closes the current reign with `season_end`, awards any Guardian tier that reign reached, stores the season king (most total reign time), notifies players with season-start alerts on, and resets the crown to the floor price with an empty throne. The next season must exist in `seasons` beforehand; if it doesn't, rollover raises `no_next_season_configured` and payments refund until it is added. Current calendar: season 0 Genesis until 2026-12-01 (at least 14 days from launch, `app_config.min_first_season_days`), season 1 Frost (December 2026), season 2 Day of the Dead (November 2027); seasons for January–October 2027 are still to be added. The design numbers its art T0 Genesis, T1 Day of the Dead, T2 Frost, so the app maps each season id to its art set. Dates shown in the UI always come from `seasons`, never from copy.
+
+**Prelaunch.** `app_config.prelaunch` (on in a new database): the site is public, but only admins can take the crown, with the test payment provider, to test the flow before launch. Visitors see "Launching soon" in place of the take button. The admin's Launch action shows the resulting season dates, then clears the prelaunch test data, starts Genesis at the chosen time and ends prelaunch; it requires the real payment provider.
 
 **Ranks** (total reign time): Peasant 0, Knight 1 h, Baron 6 h, Count 24 h, Duke 72 h, Emperor 168 h. Reaching a rank publishes a `rank_up` event once per profile per rank (unique in the database), shown in the feed, as a toast to the player and as a share card.
 
@@ -62,8 +64,9 @@ All values live in `app_config` and must never be hardcoded in the app.
 | collector | epic | 10 crowns total |
 | rivalry | epic | 5 takeovers between the same pair (both get it) |
 | patriot | rare | First king ever from your country |
-| founder | seasonal (T0) | Reign during Genesis |
-| remembered | seasonal (T1) | Reign during Day of the Dead |
+| founder | seasonal (season 0) | Reign during Genesis |
+| frostbound | seasonal (season 1) | Reign during Frost (placeholder art) |
+| remembered | seasonal (season 2) | Reign during Day of the Dead |
 
 ## 3. Data model
 
@@ -275,10 +278,10 @@ Each milestone ends with passing tests and a short summary.
 7. Moderation, reports, admin.
 8. Share cards, email outbox, dethroned alert.
 9. Security hardening (Turnstile, rate limits, CSP), legal pages.
-10. Real payment provider, staging deploy, end-to-end run with small real payments.
+10. a) Production in prelaunch (`docs/DEPLOY.md`), b) real payment provider, staging, end-to-end run with small real payments, launch.
 
 ## 18. Open items
 
-- Domain.
-- Payment provider approval.
-- T0 start date (seed uses 2026-10-01; set it to the real launch date).
+- Payment provider approval (compliance review of the prelaunch site at takethecrown.app).
+- Launch date (set by the admin's Launch action).
+- Seasons for January–October 2027, and Frost's final art.

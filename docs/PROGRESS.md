@@ -54,6 +54,9 @@ Conflicts between the design handoff (`/design`), the spec and the migrations, a
 37. **Security hardening (M9).** CSP with a per-request nonce and `'strict-dynamic'` rather than `'unsafe-inline'`: Next puts inline scripts in every page, so a strict policy needs nonces, and nonces need per-request rendering. Only the home page was static (ISR); it now renders per request and caches its data for 10 s (`unstable_cache`, tag `home`, cleared after a takeover), so database load is unchanged. Styles keep `'unsafe-inline'` (React renders `style` props as attributes). Turnstile also guards profile saves (they can call the moderation model). Cookie-authenticated API routes check `Origin`. Cloudflare's IP headers are trusted only with a secret header from a Cloudflare Transform Rule, since anyone can send them straight to Vercel.
 38. **Legal pages and account deletion.** Pages render `docs/legal` with a small Markdown subset parser (no dependency, no HTML injected); unset legal details show their `{{PLACEHOLDER}}`. The four pages link to each other and from the footer (Privacy added next to the design's Rules, FAQ and Terms). The withdrawal box replaces the payment footer's "payments are final" bullet, which stays as the line under it. Deleted profiles keep their id (reigns, statistics, achievements, hall of fame) under a reserved name the UI shows as "Former king" / "Antiguo rey", drawn everywhere (profile, history, hall of fame, share cards, emails) with the design's silhouette `design/assets/avatar/former-king.svg` (the all-zero avatar seed, reserved for deleted profiles by migration `0018`); links to them are not rendered and `/u/<name>` is 404. Deleting needs a sign-in within `app_config.delete_reauth_seconds` (10 min); otherwise a sign-in link is emailed that reopens the dialog. `profiles.user_id` is no longer readable by clients (column grants); the unused `profile_private` own-row policy went with it, so clients read no private rows at all. The static 404 page (no CSP nonce, so no hydration in production) is accepted. The danger button extends the relief family in Rubí (`shadow-relief-danger`).
 
+39. **Prelaunch.** Production goes public before the payment provider is approved, so the provider can review a working site. `app_config.prelaunch` defaults to on, so a new database is never open by accident; `create_price_lock` refuses everyone but admins. On a deployment the test payment provider works only during prelaunch (read from the database per call), so forgetting to switch `PAYMENT_PROVIDER` after launch fails closed. `launch_game` clears everything the admins' tests created and sets the season dates; Genesis lasts at least `min_first_season_days` (14). Toggling prelaunch by SQL leaves the home page's 10-second data cache stale until it expires; the admin's launch action clears it.
+40. **Season order.** Genesis ends 2026-12-01, Frost is season 1 (December 2026) and Day of the Dead season 2 (November 2027). Season rows keep their ids and only their content moved (migration `0020`). The design numbers its art T0 Genesis, T1 Day of the Dead, T2 Frost, so art is looked up through `artSet(seasonId)` (`lib/art/seasons.ts`): scenes, crowns, podium stone, footer band, ring colors and `data-season`. Frost has no art yet and draws as Genesis; its frame and `frostbound` medal reuse the Genesis frame and the founder medal as placeholders. Seasons for January–October 2027 do not exist yet: when Frost ends, the crown moves to Day of the Dead and stays closed until it starts.
+
 ## Open questions
 
 1. **Knowing an email has a profile.** A signed-out buyer who types an email that already has a profile gets "check your email" instead of a checkout, so the form reveals that the email has bought before (not whose profile it is). Hiding it would mean sending every signed-out buyer through email verification before paying. Interim: keep the decided flow.
@@ -68,29 +71,14 @@ Conflicts between the design handoff (`/design`), the spec and the migrations, a
 
 ## Deployment checklist
 
-Steps for every hosted environment (staging and production).
+The ordered production procedure, with the exact values per dashboard and the plan for each service, is `docs/DEPLOY.md`. Open items across environments:
 
-- [ ] Set the real season dates in `seasons` (T0 launch date first) with a migration or the admin seasons list; the seed dates in `0001_init.sql` are placeholders
-- [ ] Push migrations with `supabase db push` and never `--include-seed`: `supabase/seed.sql` is local-only
-- [ ] Set `PAYMENT_PROVIDER` to the real provider; the test provider refuses to run in production
-- [ ] Supabase Auth: site URL and redirect URLs for `/auth/callback`, SMTP through Resend, magic link expiry 15 min
-- [ ] Google provider: OAuth client (web) with the Supabase callback `https://<project-ref>.supabase.co/auth/v1/callback` as redirect URI and scopes `openid`, `email`, `profile`; client id and secret in Supabase Auth → Providers → Google
-- [ ] X provider (`x`, OAuth 2.0): app with "Request email from users" on, callback `https://<project-ref>.supabase.co/auth/v1/callback`, scopes `users.read`, `tweet.read`, `users.email`; client id and secret in Supabase Auth → Providers → X
-- [ ] Moderation: `MODERATION_PROVIDER=anthropic` and the production `ANTHROPIC_API_KEY` set
-- [ ] Before launch: add credits to the Anthropic account and run `pnpm test:moderation` against the real model; every case must pass, especially the manipulation ones
-- [ ] Before launch: create a separate production API key in the take-the-crown workspace, with a monthly spending limit
-- [ ] Before launch: enable auto-reload with a low threshold for production, so moderation never stops for lack of balance
-- [ ] `CRON_SECRET` set (16+ chars); `vercel.json` schedules `/api/cron/moderation` every minute, which needs the Vercel Pro plan (Hobby only runs daily crons); Pro approved, also required for a commercial site
-- [ ] First admin: `update profile_private set is_admin = true where email = '<owner email>'` (SQL editor)
-- [ ] Storage: the `avatars` bucket comes from migration `0011`; check it is public with the 1 MB / PNG + WebP limits
-- [ ] Resend (pending until the domain is bought): verify the sending domain (SPF, DKIM, DMARC), then set `EMAIL_PROVIDER=resend`, `RESEND_API_KEY` and `EMAIL_FROM` ("Take the Crown <alerts@your-domain>")
-- [ ] `EMAIL_LINK_SECRET` set (32+ random characters); changing it invalidates the "turn off alerts" links in emails already sent
-- [ ] `vercel.json` also schedules `/api/cron/notifications` every minute (same `CRON_SECRET`)
-- [ ] Confirm pg_cron jobs (`rollover-season`, `live-achievements`, `price-alerts`, `purge-expired-records`) are scheduled and active
-- [ ] Turnstile: create a widget (managed, hostname = the domain), set `NEXT_PUBLIC_TURNSTILE_SITE_KEY` and `TURNSTILE_SECRET_KEY`; without the secret, production refuses every lock and profile save
-- [ ] Cloudflare: proxy the domain, SSL Full (strict), WAF managed rules and Bot Fight Mode on; rate limiting rules (per IP): `/api/locks` 10/min, `/api/auth/magic-link` 5/min, `/api/names/availability` 120/min, `/api/reports` 10/min, `/api/*` 300/min; cache rule: bypass cache for HTML (pages carry a per-request CSP nonce); never cache `/api/*` or `/auth/*`
-- [ ] Cloudflare Transform Rule (modify request header): set `x-origin-secret` to `CLOUDFLARE_ORIGIN_SECRET` on every request, and set the same value in Vercel
-- [ ] Legal: fill in contact email, city, payment provider and effective date in `/admin` → Config → Legal pages; lawyer review of `docs/legal` before launch
+- [ ] Production in prelaunch (`docs/DEPLOY.md` steps 1–7): Cloudflare, Resend, Supabase (migrations pushed without the seed, pg_cron, auth URLs, SMTP through Resend, bilingual sign-in template), Google and X OAuth, Vercel Pro with every variable, `pnpm check:deploy` passing
+- [ ] First admin, then the legal details in `/admin` (contact `hola@takethecrown.app` through Cloudflare Email Routing); lawyer review of `docs/legal` before launch
+- [ ] Before launch: Anthropic credits and `pnpm test:moderation` passing against the real model (all cases, especially the manipulation ones); a separate production key in the take-the-crown workspace with a monthly spending limit; auto-reload with a low threshold
+- [ ] Before launch: Supabase Pro (backups, no pausing) and Resend Pro (over 100 emails a day); Cloudflare Pro recommended
+- [ ] Before launch: `PAYMENT_PROVIDER` set to the real provider (M10b); the test provider only runs locally or in prelaunch
+- [ ] Before Frost ends (2027-01-01, later if the launch moved it): add the seasons for January–October 2027
 - [ ] HSTS is sent with `includeSubDomains`: every subdomain of the production domain must serve HTTPS
 
 ## Pre-production
@@ -253,10 +241,22 @@ Steps for every hosted environment (staging and production).
 - [x] Follow-ups (migration `0018`): `profiles.user_id` hidden from clients, re-authentication within 10 minutes before deleting, Former king silhouette for deleted accounts everywhere
 - [x] Tests: unit (CSP, redirects, origin, IP trust, Turnstile, legal parsing and placeholders, rank table vs game, admin legal form), db (deletion, late payment refund, reserved names, retention), e2e (CSP nonce and no violations, headers, limits, cross-origin refusals, redirects, checkout box, legal pages en/es, deletion), screenshots at 390 and 1440
 
-## Milestone 10 — Real payment provider and staging
+## Milestone 10a — Production in prelaunch
+
+- [x] Prelaunch mode (`app_config.prelaunch`, on in a new database, off locally): the whole site public, only admins can lock the crown (`create_price_lock`), the test payment provider runs on a deployment only while prelaunch is on; "Launching soon" in place of the take button (en/es), admins see the button and a test note
+- [x] Launch from `/admin`: preview of the season dates, then `launch_game` (clears prelaunch test data, Genesis starts at launch and lasts at least `min_first_season_days`, later seasons move with it, prelaunch off); refused while the payment provider is the test one
+- [x] Season order (migration `0020`): Genesis until 2026-12-01, Frost season 1 (December 2026, `frostbound` and the Frost frame as placeholders), Day of the Dead season 2 (November 2027, keeps its art and `remembered`); art looked up by the design's art set
+- [x] Bilingual sign-in email template for Supabase Auth (`supabase/templates/sign-in.html`), used locally too
+- [x] `robots.txt`, `sitemap.xml`, Vercel region `iad1` next to Supabase East US
+- [x] `pnpm secrets:generate` (run by the owner, values never shared) and `pnpm check:deploy <url>` (outside-in check of headers, CSP, prelaunch state, legal pages, crons, limits)
+- [x] `docs/DEPLOY.md`: ordered per-dashboard steps with exact values, and which plans suffice for prelaunch
+- [ ] Owner: create the accounts and follow `docs/DEPLOY.md`
+- [x] Tests: db (prelaunch locks, launch plan and launch, season order, seasonal achievements), unit (art sets, Frost fallback), e2e (visitors see "Launching soon" in en/es, server refuses, admin takes the crown with the test provider, launch preview with a stretched Genesis), screenshots at 390 and 1440
+
+## Milestone 10b — Real payment provider and launch
 
 - [ ] Implement the approved provider (Paddle, Lemon Squeezy or Dodo) behind the interface
-- [ ] Staging deploy on Vercel behind Cloudflare, spend limits, Vercel cron
-- [ ] Supabase project: migrations, pg_cron, realtime, Storage bucket, Auth providers (follow the deployment checklist above)
+- [ ] Staging environment (separate Supabase project, Vercel preview variables)
 - [ ] End-to-end run with small real payments, including a refund
-- [ ] Tag `v0.1.0` at launch
+- [ ] Final art for Frost (scene, crown, frame, `frostbound` medal) from the design
+- [ ] Launch from `/admin` and tag `v0.1.0`
