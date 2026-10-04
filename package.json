@@ -21,7 +21,8 @@
     "test:moderation": "vitest run --project live",
     "secrets:generate": "node scripts/generate-secrets.mjs",
     "check:deploy": "node scripts/check-deployment.mjs",
-    "e2e:dodo": "playwright test --config playwright.dodo.config.ts"
+    "e2e:dodo": "playwright test --config playwright.dodo.config.ts",
+    "check:db": "node scripts/database-checks.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.129.0",

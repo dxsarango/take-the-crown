@@ -1,6 +1,9 @@
 // Checks a deployed site from the outside: `pnpm check:deploy https://takethecrown.app`.
-// Every check prints PASS, WARN or FAIL; the exit code is 1 if anything failed. It sends no
-// credentials and changes nothing.
+// Every check prints PASS, WARN or FAIL; the exit code is 1 if anything failed. It changes
+// nothing. With CHECK_DATABASE_URL set (the hosted project's connection string), it also checks
+// row level security and what anon can read (scripts/database-checks.mjs).
+
+import { checkDatabase } from "./database-checks.mjs";
 
 const base = new URL(process.argv[2] ?? "https://takethecrown.app");
 const results = [];
@@ -85,6 +88,25 @@ await check("robots and sitemap", async () => {
   const ok = robots.includes(`Sitemap: ${base.origin}/sitemap.xml`) && sitemap.status === 200;
   report(ok ? "PASS" : "FAIL", "robots and sitemap", ok ? "" : "robots.txt or sitemap.xml wrong (NEXT_PUBLIC_SITE_URL?)");
 });
+
+await check("health", async () => {
+  const response = await get("/api/health");
+  const body = await response.json().catch(() => null);
+  const ok = response.status === 200 && body?.ok === true && response.headers.get("cache-control") === "no-store";
+  report(ok ? "PASS" : "FAIL", "GET /api/health", `${response.status} ${JSON.stringify(body)}`);
+  const cache = response.headers.get("cf-cache-status");
+  if (cache && !/^(DYNAMIC|BYPASS)$/.test(cache)) report("FAIL", "health not cached by Cloudflare", cache);
+});
+
+if (process.env.CHECK_DATABASE_URL) {
+  await check("database", async () => {
+    const problems = await checkDatabase(process.env.CHECK_DATABASE_URL);
+    if (!problems.length) report("PASS", "database access", "row level security on every table; anon reads only the allowlist");
+    for (const problem of problems) report("FAIL", "database access", problem);
+  });
+} else {
+  report("WARN", "database access", "not checked: set CHECK_DATABASE_URL to the project's connection string");
+}
 
 await check("API", async () => {
   const time = await get("/api/time");
