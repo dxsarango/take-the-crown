@@ -56,6 +56,7 @@ Conflicts between the design handoff (`/design`), the spec and the migrations, a
 
 39. **Prelaunch.** Production goes public before the payment provider is approved, so the provider can review a working site. `app_config.prelaunch` defaults to on, so a new database is never open by accident; `create_price_lock` refuses everyone but admins. On a deployment the test payment provider works only during prelaunch (read from the database per call), so forgetting to switch `PAYMENT_PROVIDER` after launch fails closed. `launch_game` clears everything the admins' tests created and sets the season dates; Genesis lasts at least `min_first_season_days` (14). Toggling prelaunch by SQL leaves the home page's 10-second data cache stale until it expires; the admin's launch action clears it.
 40. **Season order.** Genesis ends 2026-12-01, Frost is season 1 (December 2026) and Day of the Dead season 2 (November 2027). Season rows keep their ids and only their content moved (migration `0020`). The design numbers its art T0 Genesis, T1 Day of the Dead, T2 Frost, so art is looked up through `artSet(seasonId)` (`lib/art/seasons.ts`): scenes, crowns, podium stone, footer band, ring colors and `data-season`. Frost has no art yet and draws as Genesis; its frame and `frostbound` medal reuse the Genesis frame and the founder medal as placeholders. Seasons for January–October 2027 do not exist yet: when Frost ends, the crown moves to Day of the Dead and stays closed until it starts.
+41. **Season continuity.** The crown never closes for want of a season. `rollover_season()` moves to the season that starts exactly when the current one ends (not the next id); with none, the current season runs one more month and every admin gets a `season_extended` email. Months between Frost and Day of the Dead (January–October 2027) are provisional seasons 2–11 named after their month ("January 2027" / "Enero 2027", not "Season 3", which would read "Season 3: Season 3" in titles), with no exclusive achievement and the Genesis art; Day of the Dead moved to id 12 so season numbers follow the calendar. `seasons.name_final` and `art_final` mark what is still provisional (Frost's art, the ten months); a daily job emails the admins `season_ready_alert_days` (30) before such a season starts, again if launch moves the dates. Cards and emails take season titles from the `seasons` table, so a rename needs no copy change.
 
 ## Open questions
 
@@ -78,7 +79,7 @@ The ordered production procedure, with the exact values per dashboard and the pl
 - [ ] Before launch: Anthropic credits and `pnpm test:moderation` passing against the real model (all cases, especially the manipulation ones); a separate production key in the take-the-crown workspace with a monthly spending limit; auto-reload with a low threshold
 - [ ] Before launch: Supabase Pro (backups, no pausing) and Resend Pro (over 100 emails a day); Cloudflare Pro recommended
 - [ ] Before launch: `PAYMENT_PROVIDER` set to the real provider (M10b); the test provider only runs locally or in prelaunch
-- [ ] Before Frost ends (2027-01-01, later if the launch moved it): add the seasons for January–October 2027
+- [ ] Before each provisional season starts (the admin is emailed 30 days ahead): its final name and art, set with `name_final` / `art_final` in a migration
 - [ ] HSTS is sent with `includeSubDomains`: every subdomain of the production domain must serve HTTPS
 
 ## Pre-production
@@ -251,7 +252,8 @@ The ordered production procedure, with the exact values per dashboard and the pl
 - [x] `pnpm secrets:generate` (run by the owner, values never shared) and `pnpm check:deploy <url>` (outside-in check of headers, CSP, prelaunch state, legal pages, crons, limits)
 - [x] `docs/DEPLOY.md`: ordered per-dashboard steps with exact values, and which plans suffice for prelaunch
 - [ ] Owner: create the accounts and follow `docs/DEPLOY.md`
-- [x] Tests: db (prelaunch locks, launch plan and launch, season order, seasonal achievements), unit (art sets, Frost fallback), e2e (visitors see "Launching soon" in en/es, server refuses, admin takes the crown with the test provider, launch preview with a stretched Genesis), screenshots at 390 and 1440
+- [x] Season continuity (migration `0021`): provisional seasons 2–11 (January–October 2027), Day of the Dead at id 12, rollover to the season starting exactly at the end or a one-month extension with an admin email, admin email 30 days before a season without final name or art (`season-readiness` cron)
+- [x] Tests: db (prelaunch locks, launch plan and launch, season order, seasonal achievements, extension instead of closing, readiness emails), unit (art sets, Frost fallback), e2e (visitors see "Launching soon" in en/es, server refuses, admin takes the crown with the test provider, launch preview with a stretched Genesis), screenshots at 390 and 1440
 
 ## Milestone 10b — Real payment provider and launch
 
