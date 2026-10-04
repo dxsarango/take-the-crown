@@ -929,7 +929,10 @@
       "max_avatar_uploads_per_hour": "Subidas de avatar por jugador por hora",
       "max_reports_per_ip_per_hour": "Denuncias por IP por hora",
       "min_first_season_days": "Primera temporada más corta al lanzar (días)",
-      "delete_reauth_seconds": "Antigüedad del inicio de sesión para eliminar una cuenta (segundos)"
+      "delete_reauth_seconds": "Antigüedad del inicio de sesión para eliminar una cuenta (segundos)",
+      "paymentMinimum": "Dodo Payments rechaza pagos por debajo de {minimum}, el mínimo del producto: el precio mínimo del juego no puede bajar de ahí.",
+      "floorBelowMinimum": "El precio mínimo no puede ser menor que {minimum}, el mínimo del producto en Dodo. Primero baja el mínimo del producto en Dodo. No se guardó nada.",
+      "floorUnknown": "Dodo Payments no respondió, así que no se pudo comprobar el precio mínimo contra el del producto. No se guardó nada; inténtalo de nuevo."
     },
     "log": {
       "empty": "Aún no hay acciones de administración.",
@@ -964,7 +967,7 @@
     },
     "launch": {
       "prelaunch": "Prelanzamiento: el sitio es público, pero solo los admins pueden tomar la corona, con el proveedor de pagos de prueba. Lanzar borra todos los reinados, pagos y logros de prueba, empieza la temporada 0 a la hora que elijas (dura al menos {days} días; las temporadas siguientes se mueven si tiene que alargarse) y abre la corona a todos.",
-      "needProvider": "Lanzar necesita el proveedor de pagos real. Mientras PAYMENT_PROVIDER sea test, el juego sigue en prelanzamiento.",
+      "needProvider": "Lanzar necesita pagos reales: PAYMENT_PROVIDER dodo con DODO_MODE live. Mientras los pagos estén en modo de prueba, el juego sigue en prelanzamiento.",
       "startsAt": "Empieza la temporada 0 (UTC)",
       "go": "Lanzar el juego",
       "confirm": "¿Lanzar ahora? Se borran todos los reinados, pagos y logros de prueba, y la corona se abre a todos. No se puede deshacer.",
