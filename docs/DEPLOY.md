@@ -39,8 +39,8 @@ Placeholders: `<ref>` is the Supabase project ref (the subdomain of its API URL)
    supabase db push
    ```
 
-   Never pass `--include-seed`: `supabase/seed.sql` is local only. `supabase migration list` must show every migration (`0001` … `0020`) as applied remotely.
-4. **Integrations → Cron:** four active jobs: `rollover-season`, `live-achievements`, `price-alerts` (every minute) and `purge-expired-records` (daily 03:17 UTC).
+   Never pass `--include-seed`: `supabase/seed.sql` is local only. `supabase migration list` must show every migration (`0001` … `0021`) as applied remotely.
+4. **Integrations → Cron:** five active jobs: `rollover-season`, `live-achievements`, `price-alerts` (every minute), `purge-expired-records` (daily 03:17 UTC) and `season-readiness` (daily 09:00 UTC).
 5. **Storage:** the public `avatars` bucket exists (1 MB, PNG and WebP), from migration `0011`.
 6. **Authentication → URL Configuration:** Site URL `https://takethecrown.app`. Redirect URLs: `https://takethecrown.app/**`.
 7. **Authentication → Sign In / Providers → Email:** enabled. Email OTP expiration `900` seconds. "Confirm email" may stay on: both templates below carry the same sign-in link.
@@ -153,6 +153,6 @@ Placeholders: `<ref>` is the Supabase project ref (the subdomain of its API URL)
 | Anthropic | No credits needed: moderation is unavailable, so messages and links wait for admin review | Credits, auto-reload, monthly spend limit, `pnpm test:moderation` passing |
 | Google, X | Free (non-sensitive scopes; X Free tier covers sign-in) | Same |
 
-## Seasons after Frost
+## Seasons
 
-Genesis (season 0) runs until 2026-12-01 (or 14 days from a later launch), Frost (season 1) through December 2026, and Day of the Dead (season 2) in November 2027. Seasons for January to October 2027 must be added before Frost ends: when a season ends, the crown moves to the next season id, and with no season running until November 2027 nobody could take it.
+Genesis (season 0) runs until 2026-12-01 (or 14 days from a later launch), Frost (season 1) through December 2026, provisional monthly seasons 2–11 through October 2027, and Day of the Dead (season 12) in November 2027. The launch moves all of them together. If a season ever ends with no season starting at that moment, it runs one more month and the admins get an email; the admins are also emailed 30 days before a season starts without its final name or art.
