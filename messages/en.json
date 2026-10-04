@@ -44,7 +44,8 @@
     },
     "nextDesc": {
       "1": "A frozen hall, a new seasonal crown and frame, and new achievements. The throne starts empty at {price}.",
-      "2": "Papel picado, marigolds and candlelight, a sugar skull crown, a new seasonal frame and medal. The throne starts empty at {price}."
+      "2": "A new season, new records to set and a new King of the Season to crown. The throne starts empty at {price}.",
+      "12": "Papel picado, marigolds and candlelight, a sugar skull crown, a new seasonal frame and medal. The throne starts empty at {price}."
     },
     "frame": {
       "0": "Genesis frame",
@@ -56,7 +57,8 @@
       "1": "Frost crown",
       "2": "Sugar skull crown"
     },
-    "title": "Season {n}: {name}"
+    "title": "Season {n}: {name}",
+    "nextDescProvisional": "A new season, new records to set and a new King of the Season to crown. The throne starts empty at {price}."
   },
   "home": {
     "signin": "Sign in",
@@ -1016,6 +1018,13 @@
       "done": "Done. You won't get these emails anymore.",
       "invalid": "This link isn't valid anymore. You can change your alerts in your profile settings.",
       "settings": "Profile settings"
-    }
+    },
+    "seasonsBtn": "Open seasons",
+    "extendedPreheader": "No season was ready to follow it, so the crown stays open.",
+    "extendedTitle": "{season} now ends on {date}",
+    "extendedBody": "No season starts when {season} ended, so it runs one more month instead of closing the crown. Add the next season, starting exactly when this one ends, in the admin area.",
+    "notReadyPreheader": "Its final name or art is still missing.",
+    "notReadyTitle": "{season} starts on {date} and isn't ready",
+    "notReadyBody": "{missing, select, name {Its final name is still missing.} art {Its final art is still missing.} other {Its final name and art are still missing.}} Until then it shows its provisional name and the Genesis art."
   }
 }

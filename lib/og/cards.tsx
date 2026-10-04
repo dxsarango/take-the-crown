@@ -15,6 +15,7 @@ import { cardScene, flagPixels, medalPixels } from "./art";
 import { CARD_SIZES, type CardModel, type CardSize } from "./data";
 import { cardFonts } from "./fonts";
 import { dataURL, pixelsPNG, withUploadPixels } from "./raster";
+import { seasonTitle } from "@/lib/realm/season-title";
 
 // Share cards from design/share/SHARE.md. Pixel art is drawn to PNG at the exact size it is shown,
 // so the renderer never resamples it. Flags use the nearest integer scale to the design's size.
@@ -57,12 +58,11 @@ type Texts = {
 
 export async function renderCard(model: CardModel, size: CardSize, locale: Locale): Promise<ImageResponse> {
   const t = await getTranslations({ locale, namespace: "share" });
-  const seasonT = await getTranslations({ locale, namespace: "season" });
   const rankT = await getTranslations({ locale, namespace: "rank" });
   const unitT = await getTranslations({ locale, namespace: "common.units" });
   const units = { h: unitT("h"), m: unitT("m"), s: unitT("s") };
   const texts: Texts = {
-    season: seasonT.has(`name.${model.seasonId}` as "name.0") ? seasonT(`name.${model.seasonId}` as "name.0") : String(model.seasonId),
+    season: await seasonTitle(model.seasonId, locale),
     rank: (p) => rankT(p.rank),
     duration: (seconds) => formatDuration(seconds, units),
   };

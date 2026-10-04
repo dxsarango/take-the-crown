@@ -45,6 +45,11 @@ vi.mock("@/lib/supabase/service", () => ({
   }),
 }));
 
+// Season titles come from the database; the sender only needs the one these tests use.
+vi.mock("@/lib/realm/season-title", () => ({
+  seasonTitle: async (id: number, locale: string) => (locale === "es" ? `Temporada ${id}: Escarcha` : `Season ${id}: Frost`),
+}));
+
 const sendEmail = vi.fn();
 vi.mock("@/lib/email/provider", async (original) => ({
   ...(await original<typeof import("@/lib/email/provider")>()),

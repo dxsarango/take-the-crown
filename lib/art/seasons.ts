@@ -1,9 +1,10 @@
 /**
  * The design numbers its season art T0 Genesis, T1 Day of the Dead, T2 Frost. The game's season
- * order differs (migration 0020: Genesis, Frost, Day of the Dead), so every art lookup goes through
- * the season's art set. Art sets without their own art yet (T2 Frost) fall back to Genesis.
+ * order differs (migrations 0020 and 0021: Genesis, Frost, ten provisional months, Day of the Dead
+ * as season 12), so every art lookup goes through the season's art set. Seasons without their own
+ * art (Frost's T2, the provisional ones) fall back to Genesis.
  */
-const ART_SET: Record<number, number> = { 0: 0, 1: 2, 2: 1 };
+const ART_SET: Record<number, number> = { 0: 0, 1: 2, 12: 1 };
 
 /** The design art set (T number) a season id is drawn with. */
 export function artSet(season: number): number {

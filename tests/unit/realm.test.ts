@@ -22,8 +22,8 @@ describe("podium art", () => {
   });
 
   it("uses each season's stone", () => {
-    // Season 2 is Day of the Dead (art set T1); Frost (season 1) uses Genesis until its art ships.
-    expect(pedestalPixels(1, 2)[0]).toBe("#0C1E26");
+    // Season 12 is Day of the Dead (art set T1); Frost (season 1) uses Genesis until its art ships.
+    expect(pedestalPixels(1, 12)[0]).toBe("#0C1E26");
     expect(pedestalPixels(1, 1)[0]).toBe("#1F1C27");
   });
 

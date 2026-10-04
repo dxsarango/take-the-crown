@@ -44,7 +44,8 @@
     },
     "nextDesc": {
       "1": "Un salón helado, corona y marco de temporada nuevos, y nuevos logros. El trono empieza vacío a {price}.",
-      "2": "Papel picado, cempasúchil y velas, una corona de calavera de azúcar, un marco y una medalla de temporada nuevos. El trono empieza vacío a {price}."
+      "2": "Una nueva temporada, nuevos récords por batir y un nuevo Rey de la temporada por coronar. El trono empieza vacío a {price}.",
+      "12": "Papel picado, cempasúchil y velas, una corona de calavera de azúcar, un marco y una medalla de temporada nuevos. El trono empieza vacío a {price}."
     },
     "frame": {
       "0": "Marco Genesis",
@@ -56,7 +57,8 @@
       "1": "Corona Escarcha",
       "2": "Corona Calavera"
     },
-    "title": "Temporada {n}: {name}"
+    "title": "Temporada {n}: {name}",
+    "nextDescProvisional": "Una nueva temporada, nuevos récords por batir y un nuevo Rey de la temporada por coronar. El trono empieza vacío a {price}."
   },
   "home": {
     "signin": "Iniciar sesión",
@@ -1016,6 +1018,13 @@
       "done": "Listo. Ya no recibirás estos correos.",
       "invalid": "Este enlace ya no es válido. Puedes cambiar tus alertas en los ajustes de tu perfil.",
       "settings": "Ajustes del perfil"
-    }
+    },
+    "seasonsBtn": "Abrir temporadas",
+    "extendedPreheader": "No había una temporada lista para seguirla, así que la corona sigue abierta.",
+    "extendedTitle": "{season} ahora termina el {date}",
+    "extendedBody": "Ninguna temporada empieza cuando terminó {season}, así que dura un mes más en vez de cerrar la corona. Añade la siguiente temporada, empezando justo cuando termina esta, en el área de administración.",
+    "notReadyPreheader": "Todavía le falta su nombre o su arte final.",
+    "notReadyTitle": "{season} empieza el {date} y no está lista",
+    "notReadyBody": "{missing, select, name {Todavía le falta su nombre final.} art {Todavía le falta su arte final.} other {Todavía le faltan su nombre y su arte finales.}} Hasta entonces muestra su nombre provisional y el arte de Génesis."
   }
 }

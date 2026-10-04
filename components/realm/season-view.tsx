@@ -17,8 +17,8 @@ import { usePlayerName } from "@/components/player-name";
 import { isFormerName, profileHref } from "@/lib/game/former";
 import { artSet } from "@/lib/art/seasons";
 
-/** Next-season announcement art by art set: the real scene when it exists, the provisional one otherwise. */
-const NEXT_SCENE: Record<number, string> = { 1: "t1", 2: "t2-provisional" };
+/** Next-season announcement art by art set; seasons without their own art announce with Genesis. */
+const NEXT_SCENE: Record<number, string> = { 0: "t0", 1: "t1", 2: "t2-provisional" };
 
 type Props = { data: SeasonEnd; current: SeasonInfo; readAt: string };
 
@@ -240,7 +240,9 @@ export function SeasonView({ data, current, readAt }: Props) {
                   {counting && nextStart && <div className="font-pixel text-40 leading-none font-bold tabular-nums">{formatClock((nextStart - now) / 1000, u)}</div>}
                 </div>
                 <p className="text-16 leading-body text-pretty lg:text-20 lg:leading-[1.45] lg:font-medium">
-                  {seasonT(`nextDesc.${next.id}` as "nextDesc.1", { price: formatPrice(data.floorCents, locale) })}
+                  {seasonT.has(`nextDesc.${next.id}` as "nextDesc.1")
+                    ? seasonT(`nextDesc.${next.id}` as "nextDesc.1", { price: formatPrice(data.floorCents, locale) })
+                    : seasonT("nextDescProvisional", { price: formatPrice(data.floorCents, locale) })}
                 </p>
                 {keep && <p className="text-14 leading-body text-pretty text-crown-muted">{keep}</p>}
                 <div className="flex flex-col gap-1 lg:hidden">{nextActions}</div>

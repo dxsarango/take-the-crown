@@ -157,15 +157,25 @@ test("the cron sends the other alerts and skips the ones that no longer apply", 
        ('price_drop', $1, jsonb_build_object('price_cents', $2::int, 'threshold_cents', $3::int, 'season_id', 0)),
        ('price_drop', $1, jsonb_build_object('price_cents', 100, 'threshold_cents', 100, 'season_id', 0)),
        ('reports_threshold', $4, jsonb_build_object('reign_id', $5::bigint, 'reports', 3)),
+       ('season_extended', $4, '{"season_id": 12, "ends_at": "2028-01-01T00:00:00Z"}'),
+       ('season_not_ready', $4, '{"season_id": 2, "starts_at": "2027-01-01T00:00:00Z", "name_final": false, "art_final": false}'),
        ('mystery', $1, '{}')`,
     [kenji.id, crown.price, crown.price + 100, admin.id, reign.id],
   );
 
-  expect(await runCron(page)).toEqual({ sent: 3, failed: 0, skipped: 2 });
+  expect(await runCron(page)).toEqual({ sent: 5, failed: 0, skipped: 2 });
   expect((await mailTo("kenji@test.local", /has started/)).Subject).toBe("Season 1: Frost has started");
   expect((await mailTo("kenji@test.local", /down to/)).HTML).toContain("Take the crown for");
-  const report = await mailTo("mbali@test.local");
+  const report = await mailTo("mbali@test.local", /reports/);
   expect(report.Subject).toBe("A message reached 3 reports");
+  // The crown never closes for want of a season: the admins hear about the extension, and about
+  // seasons coming without their final name or art. Titles come from the seasons table.
+  const extended = await mailTo("mbali@test.local", /now ends/);
+  expect(extended.Subject).toBe("Season 12: Day of the Dead now ends on January 1, 2028");
+  expect(extended.HTML).toContain("/en/admin#seasons");
+  const notReady = await mailTo("mbali@test.local", /isn't ready/);
+  expect(notReady.Subject).toBe("Season 2: January 2027 starts on January 1, 2027 and isn't ready");
+  expect(notReady.Text).toContain("Its final name and art are still missing.");
   expect(report.HTML).toContain("/en/admin#reports");
 
   const skipped = await sql("select kind, last_error from notifications where failed_at is not null order by kind");

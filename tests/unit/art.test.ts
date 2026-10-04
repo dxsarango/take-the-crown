@@ -57,10 +57,10 @@ describe("scenes", () => {
   } as const;
   const sizes = ["98x72", "240x84", "100x90", "120x84"];
 
-  // The design's art sets: T0 is Genesis (season 0), T1 is Day of the Dead (season 2).
+  // The design's art sets: T0 is Genesis (season 0), T1 is Day of the Dead (season 12).
   for (const [art, season] of [
     [0, 0],
-    [1, 2],
+    [1, 12],
   ]) {
     for (const size of sizes) {
       for (const [variant, options] of Object.entries(variants)) {
