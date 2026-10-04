@@ -106,6 +106,7 @@ export async function createLock(body: unknown, ip: string): Promise<LockOutcome
       email: buyer.email,
       locale: input.locale,
       successUrl: `${serverEnv().NEXT_PUBLIC_SITE_URL}/${input.locale}?lock=${lock.id}`,
+      cancelUrl: `${serverEnv().NEXT_PUBLIC_SITE_URL}/${input.locale}?lock=${lock.id}&cancelled=1`,
     });
     const { error: checkoutError } = await db.rpc("set_lock_checkout", {
       p_lock_id: lock.id,

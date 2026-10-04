@@ -101,6 +101,7 @@ describe("test provider webhooks", () => {
       email: event.email,
       locale: "en",
       successUrl: "http://localhost:3000/en",
+      cancelUrl: "http://localhost:3000/en?cancelled=1",
     });
     expect(checkout.mode).toBe("overlay");
     expect(checkout.checkoutId).toMatch(/^test_chk_/);

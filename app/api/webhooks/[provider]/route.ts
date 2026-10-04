@@ -1,8 +1,24 @@
+import { mkdir, writeFile } from "node:fs/promises";
+import path from "node:path";
 import { after } from "next/server";
+import { isDeployed } from "@/lib/config/deployment";
 import { processOutbox } from "@/lib/email/outbox";
 import { providerByName } from "@/lib/payments";
 import { serviceClient } from "@/lib/supabase/service";
 import { revalidateHome } from "@/lib/home/cache";
+
+/**
+ * Local only: keeps each raw provider webhook with its signature headers, as test fixtures
+ * (tests/fixtures/dodo/README.md) and so the Dodo e2e can deliver one again as a duplicate.
+ */
+async function recordWebhook(request: Request): Promise<void> {
+  const body = await request.text();
+  const type = /"type"s*:s*"([a-z._]+)"/.exec(body)?.[1] ?? "unknown";
+  const headers = Object.fromEntries(["webhook-id", "webhook-timestamp", "webhook-signature"].map((h) => [h, request.headers.get(h)]));
+  const dir = path.join(process.cwd(), "tests", "fixtures", "dodo", "recorded");
+  await mkdir(dir, { recursive: true });
+  await writeFile(path.join(dir, `${type}-${Date.now()}.json`), JSON.stringify({ headers, body }, null, 2));
+}
 
 /**
  * Payment webhooks. The signature is always verified; the database decides whether a payment
@@ -12,6 +28,7 @@ export async function POST(request: Request, { params }: RouteContext<"/api/webh
   const provider = await providerByName((await params).provider).catch(() => null);
   if (!provider) return new Response(null, { status: 404 });
 
+  if (process.env.DODO_RECORD_WEBHOOKS === "1" && !isDeployed()) await recordWebhook(request.clone());
   const event = await provider.verifyWebhook(request);
   if (!event) return new Response(null, { status: 401 });
 
