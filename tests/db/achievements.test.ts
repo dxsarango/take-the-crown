@@ -275,17 +275,17 @@ describe("award_takeover_achievements", () => {
       expect(await has(king, "founder")).toBe(false);
     });
 
-    it("awards remembered for reigning in Day of the Dead (season 2)", async () => {
-      await q("update seasons set starts_at = now() - interval '1 day' where id = 2");
-      await q("update crown_state set season_id = 2");
+    it("awards remembered for reigning in Day of the Dead (season 12)", async () => {
+      await q("update seasons set starts_at = now() - interval '1 day' where id = 12");
+      await q("update crown_state set season_id = 12");
       const king = new Player("king");
       await king.takeover();
       expect(await has(king, "remembered")).toBe(true);
     });
 
     it("skips seasons without an exclusive achievement", async () => {
-      await q("update seasons set starts_at = now() - interval '1 day', exclusive_achievement = null where id = 2");
-      await q("update crown_state set season_id = 2");
+      await q("update seasons set starts_at = now() - interval '1 day' where id = 3");
+      await q("update crown_state set season_id = 3");
       const king = new Player("king");
       await king.takeover();
       expect(await achievementsOf(await king.id())).toEqual(["bargain_hunter", "first_blood", "patriot"]);

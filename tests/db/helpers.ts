@@ -271,15 +271,14 @@ export async function count(table: string, where = "true", params: unknown[] = [
 
 /** Ends season `id` `secondsAgo` seconds ago and starts the next one at that moment, like the real calendar. */
 export async function closeSeason(id: number, secondsAgo = 0): Promise<void> {
+  // One statement, so the end and the next start are the very same instant (rollover looks for it).
   await q(
-    `update seasons set
-       starts_at = least(starts_at, now() - make_interval(secs => $2) - interval '1 day'),
-       ends_at = now() - make_interval(secs => $2)
-     where id = $1`,
+    `with t as (select now() - make_interval(secs => $2) as at)
+     update seasons s set
+       starts_at = case when s.id = $1 then least(s.starts_at, t.at - interval '1 day') else least(s.starts_at, t.at) end,
+       ends_at = case when s.id = $1 then t.at else s.ends_at end
+     from t
+     where s.id in ($1, $1 + 1)`,
     [id, secondsAgo],
   );
-  await q("update seasons set starts_at = least(starts_at, now() - make_interval(secs => $2)) where id = $1 + 1", [
-    id,
-    secondsAgo,
-  ]);
 }
