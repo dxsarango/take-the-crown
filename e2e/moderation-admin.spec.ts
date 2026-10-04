@@ -290,12 +290,12 @@ test.describe("admin", () => {
     await page.getByRole("button", { name: en.admin.config.save }).click();
     await expect(shown(page, en.admin.config.invalid)).toBeVisible();
 
-    // Season 2 (Day of the Dead) has not started: its dates can move, as long as it stays after season 1.
-    const dead = () => page.locator("li").filter({ hasText: "2 · Day of the Dead" });
+    // Season 12 (Day of the Dead) has not started: its dates can move, as long as it stays after season 1.
+    const dead = () => page.locator("li").filter({ hasText: "12 · Day of the Dead" });
     await dead().getByLabel(en.admin.seasons.ends).fill("2027-12-15T00:00");
     await dead().getByRole("button", { name: en.admin.seasons.save }).click();
     await expect(shown(page, en.admin.done)).toBeVisible();
-    expect((await sql<{ ends_at: Date }>("select ends_at from seasons where id = 2"))[0].ends_at.toISOString()).toBe("2027-12-15T00:00:00.000Z");
+    expect((await sql<{ ends_at: Date }>("select ends_at from seasons where id = 12"))[0].ends_at.toISOString()).toBe("2027-12-15T00:00:00.000Z");
 
     await dead().getByLabel(en.admin.seasons.starts).fill("2026-12-15T00:00");
     await dead().getByRole("button", { name: en.admin.seasons.save }).click();

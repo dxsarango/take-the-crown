@@ -11,6 +11,7 @@ import { serviceClient } from "@/lib/supabase/service";
 import { type AlertKind, alertOffToken } from "./links";
 import { type Email, EmailError, sendEmail } from "./provider";
 import { Dethroned, type Frame, Notice, renderEmail } from "./templates";
+import { seasonTitle } from "@/lib/realm/season-title";
 
 type Db = ReturnType<typeof serviceClient>;
 type Notification = { id: number; kind: string; profile_id: string; payload: unknown };
@@ -30,6 +31,8 @@ const payloads = {
   price_drop: z.object({ price_cents: z.number(), threshold_cents: z.number(), season_id: z.number() }),
   season_started: z.object({ season_id: z.number(), slug: z.string() }),
   reports_threshold: z.object({ reign_id: z.number(), reports: z.number() }),
+  season_extended: z.object({ season_id: z.number(), ends_at: z.string() }),
+  season_not_ready: z.object({ season_id: z.number(), starts_at: z.string(), name_final: z.boolean(), art_final: z.boolean() }),
 };
 
 function site(): string {
@@ -54,14 +57,18 @@ async function recipient(db: Db, profileId: string): Promise<Recipient> {
 }
 
 async function frameFor(to: Recipient, seasonId: number, preview: string, foot: string, alert: { kind: AlertKind; label: string } | null): Promise<Frame> {
-  const season = await getTranslations({ locale: to.locale, namespace: "season" });
   return {
     lang: to.locale,
     preview,
-    season: season.has(`name.${seasonId}` as "name.0") ? season(`name.${seasonId}` as "name.0") : String(seasonId),
+    season: await seasonTitle(seasonId, to.locale),
     foot,
     unsubscribe: alert ? { label: alert.label, url: `${site()}/${to.locale}/alerts/off?token=${alertOffToken(to.profileId, alert.kind)}` } : null,
   };
+}
+
+/** A date for admin emails, in UTC so every admin reads the same day. */
+function adminDate(iso: string, locale: Locale): string {
+  return new Intl.DateTimeFormat(locale === "es" ? "es-419" : "en-US", { dateStyle: "long", timeZone: "UTC" }).format(new Date(iso));
 }
 
 /** One-click unsubscribe headers (RFC 8058) for alert emails. */
@@ -180,6 +187,33 @@ async function build(db: Db, n: Notification): Promise<Omit<Email, "idempotencyK
         Notice({ frame, title: t("reportsTitle", values), body: t("reportsBody", values), button: { label: t("reportsBtn"), url: `${home}/admin#reports` }, note: null }),
       );
       return { to: to.email, subject: t("reportsSubject", values), html, text };
+    }
+
+    case "season_extended": {
+      if (!to.isAdmin) throw new Skip("not_admin");
+      const p = payloads.season_extended.safeParse(n.payload);
+      if (!p.success) throw new Skip("bad_payload");
+      const t = await getTranslations({ locale: to.locale, namespace: "email" });
+      const frame = await frameFor(to, p.data.season_id, t("extendedPreheader"), t("reportsFoot", { brand: BRAND_NAME }), null);
+      const values = { season: frame.season, date: adminDate(p.data.ends_at, to.locale) };
+      const { html, text } = await renderEmail(
+        Notice({ frame, title: t("extendedTitle", values), body: t("extendedBody", values), button: { label: t("seasonsBtn"), url: `${home}/admin#seasons` }, note: null }),
+      );
+      return { to: to.email, subject: t("extendedTitle", values), html, text };
+    }
+
+    case "season_not_ready": {
+      if (!to.isAdmin) throw new Skip("not_admin");
+      const p = payloads.season_not_ready.safeParse(n.payload);
+      if (!p.success) throw new Skip("bad_payload");
+      const t = await getTranslations({ locale: to.locale, namespace: "email" });
+      const frame = await frameFor(to, p.data.season_id, t("notReadyPreheader"), t("reportsFoot", { brand: BRAND_NAME }), null);
+      const missing = !p.data.name_final && !p.data.art_final ? "both" : p.data.name_final ? "art" : "name";
+      const values = { season: frame.season, date: adminDate(p.data.starts_at, to.locale), missing };
+      const { html, text } = await renderEmail(
+        Notice({ frame, title: t("notReadyTitle", values), body: t("notReadyBody", values), button: { label: t("seasonsBtn"), url: `${home}/admin#seasons` }, note: null }),
+      );
+      return { to: to.email, subject: t("notReadyTitle", values), html, text };
     }
 
     default:
