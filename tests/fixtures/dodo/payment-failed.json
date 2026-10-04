@@ -1,0 +1,6 @@
+{
+  "business_id": "bus_test_crown",
+  "type": "payment.failed",
+  "timestamp": "2026-10-04T12:01:00Z",
+  "data": { "payload_type": "Payment", "payment_id": "pay_test_fail", "status": "failed", "total_amount": 3400, "currency": "USD", "customer": { "email": "nadia@example.com" }, "metadata": {} }
+}

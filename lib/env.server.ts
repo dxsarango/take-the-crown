@@ -3,7 +3,8 @@ import { z } from "zod";
 
 const schema = z.object({
   SUPABASE_SERVICE_ROLE_KEY: z.string().min(1),
-  PAYMENT_PROVIDER: z.enum(["test"]),
+  // "test" is the local stand-in (and prelaunch admins' checkout); "dodo" is Dodo Payments.
+  PAYMENT_PROVIDER: z.enum(["test", "dodo"]),
   PAYMENT_WEBHOOK_SECRET: z.string().min(16),
   IP_HASH_SALT: z.string().min(16),
   NEXT_PUBLIC_SITE_URL: z.url(),
@@ -21,6 +22,11 @@ const schema = z.object({
   MAILPIT_URL: z.url().default("http://127.0.0.1:54324"),
   // Signs the "turn off alerts" links in emails.
   EMAIL_LINK_SECRET: z.string().min(32).optional(),
+  // Dodo Payments: test and live modes have separate keys, products and webhooks.
+  DODO_MODE: z.enum(["test", "live"]).default("test"),
+  DODO_API_KEY: z.string().optional(),
+  DODO_WEBHOOK_SECRET: z.string().optional(),
+  DODO_PRODUCT_ID: z.string().optional(),
 });
 
 export type ServerEnv = z.infer<typeof schema>;

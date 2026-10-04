@@ -14,3 +14,6 @@ next-env.d.ts
 /playwright-report/
 /blob-report/
 /playwright/.cache/
+
+# Raw Dodo webhooks recorded locally (DODO_RECORD_WEBHOOKS=1)
+/tests/fixtures/dodo/recorded/

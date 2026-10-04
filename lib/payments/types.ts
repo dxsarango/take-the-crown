@@ -6,6 +6,8 @@ export type CheckoutInput = {
   email: string;
   locale: string;
   successUrl: string;
+  /** Where the buyer lands after backing out of a redirect checkout. */
+  cancelUrl: string;
 };
 
 export type Checkout = {

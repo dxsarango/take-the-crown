@@ -1,0 +1,22 @@
+{
+  "business_id": "bus_test_crown",
+  "type": "payment.succeeded",
+  "timestamp": "2026-10-04T12:00:00Z",
+  "data": {
+    "payload_type": "Payment",
+    "payment_id": "pay_test_7Hq2Lc",
+    "business_id": "bus_test_crown",
+    "brand_id": "bus_test_crown",
+    "status": "succeeded",
+    "total_amount": 3400,
+    "settlement_amount": 3400,
+    "currency": "USD",
+    "settlement_currency": "USD",
+    "customer": { "customer_id": "cus_test_91", "name": "Nadia", "email": "nadia@example.com", "phone_number": null, "metadata": {} },
+    "metadata": { "lock_id": "6a0c1d2e-3f40-4b5c-8d6e-7f8091a2b3c4" },
+    "checkout_session_id": "cks_test_Xa81",
+    "product_cart": [{ "product_id": "pdt_test_crown", "quantity": 1 }],
+    "refunds": [],
+    "created_at": "2026-10-04T11:59:58Z"
+  }
+}
