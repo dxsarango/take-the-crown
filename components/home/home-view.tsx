@@ -4,7 +4,7 @@ import { useLocale } from "next-intl";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useAuth } from "@/components/auth/auth-provider";
 import { PaymentModal } from "@/components/payment/payment-modal";
-import { type Draft, type PaymentResult, newAvatarSeed, takeDraft } from "@/components/payment/use-payment";
+import { type CheckoutReturn, type Draft, type PaymentResult, newAvatarSeed, releaseLock, takeDraft } from "@/components/payment/use-payment";
 import { TopBar } from "@/components/top-bar";
 import type { Monarch } from "@/lib/art/coronation";
 import type { HomeData } from "@/lib/home/data";
@@ -80,7 +80,7 @@ export function HomeView({ initial }: { initial: HomeData }) {
   const { shown: data, crowning, land, end, replay } = useCoronation(live);
   const season = data.season.id;
   const state = heroState(data.crown, data.king?.startedAt ?? null, now);
-  const [modal, setModal] = useState<{ draft: Draft; detected: boolean } | null>(null);
+  const [modal, setModal] = useState<{ draft: Draft; detected: boolean; returning?: CheckoutReturn } | null>(null);
   const [notice, setNotice] = useState<HomeNotice | null>(null);
   const geo = useRef<string | null>(null);
   const prelaunchAtLoad = useRef(initial.crown.prelaunch);
@@ -97,7 +97,19 @@ export function HomeView({ initial }: { initial: HomeData }) {
     const resume = takeParam(url, "resume");
     // "Take the crown" from another page (the profile's come-back block).
     const take = takeParam(url, "take");
-    if (resume || take) window.history.replaceState(null, "", url);
+    // Back from the payment provider's page (?lock=…, with Dodo's payment_id and status, or cancelled=1).
+    const lockId = url.searchParams.get("lock");
+    const status = url.searchParams.get("status");
+    const cancelled = takeParam(url, "cancelled");
+    for (const key of ["lock", "status", "payment_id", "email"]) url.searchParams.delete(key);
+    if (resume || take || lockId) window.history.replaceState(null, "", url);
+    if (lockId && /^[0-9a-f-]{36}$/.test(lockId)) {
+      const draft = takeDraft() ?? emptyDraft(null);
+      if (cancelled) releaseLock(lockId);
+      // Opened after the first render, like the other URL-driven dialogs.
+      else queueMicrotask(() => setModal({ draft, detected: false, returning: { lockId, status } }));
+      return;
+    }
     fetch("/api/geo")
       .then((r) => r.json() as Promise<{ country: string | null }>)
       .then((r) => {
@@ -172,6 +184,7 @@ export function HomeView({ initial }: { initial: HomeData }) {
           messageMax={live.crown.maxMessageLength}
           now={now}
           initial={modal.draft}
+          returning={modal.returning ?? null}
           detectedCountry={modal.detected}
           viewer={viewer}
           onDone={onPaymentDone}
