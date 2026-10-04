@@ -89,7 +89,11 @@ Placeholders: `<ref>` is the Supabase project ref (the subdomain of its API URL)
    | `NEXT_PUBLIC_SUPABASE_URL` | `https://<ref>.supabase.co` |
    | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase publishable (anon) key |
    | `SUPABASE_SERVICE_ROLE_KEY` | Supabase secret (service role) key |
-   | `PAYMENT_PROVIDER` | `test` (until M10b; it only works while prelaunch is on) |
+   | `PAYMENT_PROVIDER` | `dodo` |
+   | `DODO_MODE` | `test` during prelaunch (launch is refused in test mode), `live` once Dodo verifies the account |
+   | `DODO_API_KEY` | Dodo API key of that mode |
+   | `DODO_WEBHOOK_SECRET` | signing secret of the production webhook endpoint of that mode (step 8) |
+   | `DODO_PRODUCT_ID` | the Pay What You Want product of that mode |
    | `PAYMENT_WEBHOOK_SECRET` | from `pnpm secrets:generate` |
    | `IP_HASH_SALT` | from `pnpm secrets:generate` (never change it) |
    | `CRON_SECRET` | from `pnpm secrets:generate` |
@@ -135,12 +139,37 @@ Placeholders: `<ref>` is the Supabase project ref (the subdomain of its API URL)
 3. **`/en/admin` → Config → Legal pages:**
    - Contact `hola@takethecrown.app`, city, payment provider (until the provider answers, the name you will use), effective date.
    - Run `pnpm check:deploy https://takethecrown.app` again: no placeholders left.
-4. **Test the flow** as admin: take the crown with the test checkout, get dethroned from a second admin account (dethroned email arrives), share cards, turn off an alert from the email, delete a test account. All of this is wiped at launch.
+4. **Test the flow** as admin: take the crown on Dodo's test checkout (step 8), get dethroned from a second admin account (dethroned email arrives), share cards, turn off an alert from the email, delete a test account. All of this is wiped at launch.
 5. **Anthropic** (before launch): add credits, run `pnpm test:moderation` against the real model (all cases pass), set a monthly spend limit and auto-reload with a low threshold.
+
+## 8. Dodo Payments
+
+Test and live modes are separate: each has its own API key, product and webhook endpoints. Prelaunch runs in **test mode**: admins pay on Dodo's real checkout with test cards (`4242 4242 4242 4242`, any future date, CVC `123`).
+
+1. **Product** (in the mode you are configuring): one-time, **Pay What You Want** on, price **$5.00** (the minimum; it must not be above `app_config.floor_cents`, and the admin refuses a floor below it). Keep adaptive pricing off, or leave it: the app asks for USD in every checkout. Copy the product ID into `DODO_PRODUCT_ID`.
+2. **Developer → Webhooks → Add endpoint:**
+   - URL: `https://takethecrown.app/api/webhooks/dodo`
+   - Events: `payment.succeeded` and `refund.succeeded` (others are acknowledged and ignored, so subscribing to more is harmless).
+   - Copy the endpoint's signing secret (`whsec_…`) into `DODO_WEBHOOK_SECRET` in Vercel and redeploy.
+3. Cloudflare must not challenge `/api/webhooks/*` (Bot Fight Mode stays off; the rate-limit rule does not cover it).
+4. Check: take the crown as admin on the site with the test card; Dodo's dashboard shows the webhook delivered with 200, and `/admin` → Payments shows it `applied`.
+5. **Going live** (after Dodo verifies the account): create the live product and the live webhook endpoint (same URL), set `DODO_MODE=live`, the live `DODO_API_KEY`, `DODO_PRODUCT_ID` and `DODO_WEBHOOK_SECRET`, redeploy, and do one small real payment and refund before launching.
+
+### Webhooks on your machine
+
+Dodo has to reach your local server, so it needs a public URL:
+
+1. Install `cloudflared` (`winget install Cloudflare.cloudflared`).
+2. Stable hostname (recommended, the domain is already on Cloudflare): `cloudflared tunnel login`, `cloudflared tunnel create crown-dev`, `cloudflared tunnel route dns crown-dev dev-hooks.takethecrown.app`, then run `cloudflared tunnel run --url http://localhost:3100 crown-dev` whenever you test.
+   Quick alternative without login: `cloudflared tunnel --url http://localhost:3100` prints a random `https://….trycloudflare.com` address that changes every run.
+3. In Dodo's **test mode**, add a second webhook endpoint `https://dev-hooks.takethecrown.app/api/webhooks/dodo` (or the trycloudflare address) with the same two events, and put its signing secret in `.env.local` as `DODO_WEBHOOK_SECRET`, next to the test `DODO_API_KEY` and `DODO_PRODUCT_ID`.
+4. Stop `pnpm dev` (Next allows one dev server per checkout), keep the tunnel running and run `pnpm e2e:dodo`. It starts the app on port 3100 with `PAYMENT_PROVIDER=dodo`, pays on Dodo's checkout with the test card, checks the takeover, a late payment refunded through the refund API and a duplicate webhook, and records the raw webhooks in `tests/fixtures/dodo/recorded/`.
+
+Dodo's CLI (`dodo wh listen`) is not used: it re-serializes the JSON it relays, which can break the signature check.
 
 ## Launch (M10b)
 
-`/admin` → Launch. Pick the start, check the resulting season dates (Genesis lasts at least `app_config.min_first_season_days`, 14 by default, and later seasons move with it), then confirm. It only works with the real payment provider. It deletes every prelaunch test reign, payment and achievement, and opens the crown to everyone.
+`/admin` → Launch. Pick the start, check the resulting season dates (Genesis lasts at least `app_config.min_first_season_days`, 14 by default, and later seasons move with it), then confirm. It only works with Dodo in live mode (`PAYMENT_PROVIDER=dodo`, `DODO_MODE=live`). It deletes every prelaunch test reign, payment and achievement, and opens the crown to everyone.
 
 ## Plans: prelaunch vs launch
 

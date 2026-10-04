@@ -138,7 +138,7 @@ API and assets:
 | `POST /api/locks` | Create price lock + checkout |
 | `GET /api/locks/[id]` | Lock status while checkout is open |
 | `POST /api/locks/[id]/release` | Release own lock |
-| `POST /api/webhooks/[provider]` | Payment webhooks |
+| `POST /api/webhooks/[provider]` | Payment webhooks (`dodo`, or `test` locally) |
 | `POST /api/reports` | Report the current king's message |
 | `GET /api/names/availability?name=` | Live public name check |
 | `GET /api/geo` | Country from `cf-ipcountry` for the payment modal |
@@ -210,17 +210,21 @@ Before creating a lock:
 
 ## 10. Payments
 
-Provider is pending approval (Paddle, Lemon Squeezy or Dodo Payments). Implement a provider interface and a `test` provider first:
+The provider is **Dodo Payments** (merchant of record), behind a provider interface, plus a local `test` provider:
 
 ```ts
 interface PaymentProvider {
-  createCheckout(input: { lockId: string; priceCents: number; email: string; locale: string; successUrl: string }): Promise<{ checkoutId: string; url: string }>;
+  createCheckout(input: { lockId: string; priceCents: number; email: string; locale: string; successUrl: string; cancelUrl: string }): Promise<{ checkoutId: string; url: string; mode: "overlay" | "redirect" }>;
   verifyWebhook(req: Request): Promise<NormalizedEvent | null>;
   refund(providerPaymentId: string): Promise<void>;
 }
 ```
 
 Requirements for the chosen provider: custom price per checkout, metadata passthrough, signed webhooks, refund API. `createCheckout` also says whether checkout opens as an overlay inside the payment modal or as a redirect. The `test` provider simulates checkout and webhooks locally and is used in e2e tests: its checkout is an overlay with Pay and Decline, paying posts an HMAC-SHA256-signed webhook (`x-test-signature`, `PAYMENT_WEBHOOK_SECRET`) to `/api/webhooks/test`, and refunds are confirmed by a webhook too. It refuses to run in production.
+
+**Dodo Payments.** One one-time product with Pay What You Want on; its price is the minimum Dodo accepts, and `app_config.floor_cents` may never go below it (the admin refuses such a floor, reading the minimum from Dodo's product API). Each checkout session (`POST /checkouts`) passes the locked price from `create_price_lock` in `product_cart[].amount` (cents, never from the client), `billing_currency: "USD"`, the buyer's email, `metadata.lock_id`, and return and cancel URLs back to `/{locale}?lock=…`. Checkout is Dodo's hosted page (redirect); back home, the payment modal follows the lock until the webhook crowns the buyer, and a cancelled checkout releases the lock.
+
+Webhooks (`POST /api/webhooks/dodo`) are verified with the Standard Webhooks scheme (HMAC-SHA256 over `webhook-id.webhook-timestamp.body`, `v1` signatures, five-minute tolerance) using `DODO_WEBHOOK_SECRET`. `payment.succeeded` → `record_paid_payment` (event id = `webhook-id`, lock from `metadata.lock_id`, else from the checkout session stored by `set_lock_checkout`); `refund.succeeded` → `mark_payment_refunded`; other events are acknowledged and ignored. On `refund_pending` the route calls Dodo's refund API (`POST /refunds`). Test and live modes (`DODO_MODE`) have separate keys, products and webhooks; on a deployment, test payments (test provider or Dodo test mode) only work during prelaunch, and launch is refused while payments are in test mode.
 
 Checkout terms shown before paying: payments are final; buyers pay for visibility, not a prize.
 
@@ -263,7 +267,7 @@ Operator: Dario Sarango (natural person, Ecuador). Governing law: Ecuador. Priva
 
 ## 16. Environment variables
 
-`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `PAYMENT_PROVIDER`, provider keys and webhook secret, `EMAIL_PROVIDER`, `RESEND_API_KEY`, `EMAIL_FROM`, `EMAIL_LINK_SECRET`, `ANTHROPIC_API_KEY`, `NEXT_PUBLIC_TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET_KEY`, `CLOUDFLARE_ORIGIN_SECRET`, `IP_HASH_SALT`, `CRON_SECRET`, `NEXT_PUBLIC_SITE_URL`.
+`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `PAYMENT_PROVIDER`, `PAYMENT_WEBHOOK_SECRET` (test provider), `DODO_MODE`, `DODO_API_KEY`, `DODO_WEBHOOK_SECRET`, `DODO_PRODUCT_ID`, `EMAIL_PROVIDER`, `RESEND_API_KEY`, `EMAIL_FROM`, `EMAIL_LINK_SECRET`, `ANTHROPIC_API_KEY`, `NEXT_PUBLIC_TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET_KEY`, `CLOUDFLARE_ORIGIN_SECRET`, `IP_HASH_SALT`, `CRON_SECRET`, `NEXT_PUBLIC_SITE_URL`.
 
 ## 17. Build order
 
