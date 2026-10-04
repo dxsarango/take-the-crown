@@ -7,9 +7,8 @@ import { routing } from "@/i18n/routing";
 import { CONFIG_FIELDS, LEGAL_FIELDS, configSchema, legalSchema } from "@/lib/admin/config";
 import { currentAdmin } from "@/lib/admin/guard";
 import { MODEL_REASONS } from "@/lib/moderation/model";
-import { paymentProvider } from "@/lib/payments";
+import { paymentMinimumCents, paymentProvider, testPayments } from "@/lib/payments";
 import { serviceClient } from "@/lib/supabase/service";
-import { serverEnv } from "@/lib/env.server";
 import { revalidateHome } from "@/lib/home/cache";
 
 /**
@@ -160,6 +159,12 @@ export async function saveConfig(form: FormData) {
   const me = await admin();
   const parsed = configSchema.safeParse(Object.fromEntries(CONFIG_FIELDS.map((k) => [k, form.get(k)])));
   if (!parsed.success) return done(form, "failed", { reason: "config" });
+  // Dodo refuses checkouts below the product's Pay What You Want minimum: the floor must not go under it.
+  const minimum = await paymentMinimumCents().catch(() => undefined);
+  if (minimum === undefined) return done(form, "failed", { reason: "floor_unknown" });
+  if (minimum !== null && parsed.data.floor_cents < minimum) {
+    return done(form, "failed", { reason: "floor", minimum: String(minimum) });
+  }
   const db = serviceClient();
   const { error } = await db
     .from("app_config")
@@ -177,7 +182,7 @@ export async function saveConfig(form: FormData) {
 export async function launchGame(form: FormData) {
   const me = await admin();
   const startsAt = z.iso.datetime({ local: true }).safeParse(form.get("startsAt"));
-  if (!startsAt.success || serverEnv().PAYMENT_PROVIDER === "test") return done(form, "failed", { reason: "launch" });
+  if (!startsAt.success || testPayments()) return done(form, "failed", { reason: "launch" });
   const at = new Date(`${startsAt.data}Z`).toISOString();
   const db = serviceClient();
   const { error } = await db.rpc("launch_game", { p_starts_at: at });

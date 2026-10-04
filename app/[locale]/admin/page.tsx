@@ -10,7 +10,7 @@ import { CONFIG_FIELDS, LEGAL_FIELDS } from "@/lib/admin/config";
 import { fetchAdminOverview, fetchLaunchPlan } from "@/lib/admin/data";
 import { currentAdmin } from "@/lib/admin/guard";
 import { BRAND_NAME } from "@/lib/config/brand";
-import { serverEnv } from "@/lib/env.server";
+import { paymentMinimumCents, testPayments } from "@/lib/payments";
 import { displayLink, formatPrice } from "@/lib/format";
 import { MODEL_REASONS } from "@/lib/moderation/model";
 import { dismissReport, hideMessage, refundPayment, releaseName, reviewContent, launchGame, previewLaunch, saveConfig, saveLegal, saveSeasonDates, setBanned } from "./actions";
@@ -67,7 +67,8 @@ export default async function AdminPage({ params, searchParams }: PageProps<"/[l
   const utc = (iso: string) =>
     `${new Intl.DateTimeFormat(locale === "es" ? "es-419" : "en-US", { dateStyle: "medium", timeStyle: "short", timeZone: "UTC" }).format(new Date(iso))} UTC`;
   const localInput = (iso: string) => iso.slice(0, 16);
-  const testPayments = serverEnv().PAYMENT_PROVIDER === "test";
+  const paymentsAreTest = testPayments();
+  const paymentMinimum = await paymentMinimumCents().catch(() => null);
   const launchPlan = data.config.prelaunch ? await fetchLaunchPlan(query.launchAt) : null;
   const now = new Date();
 
@@ -87,6 +88,10 @@ export default async function AdminPage({ params, searchParams }: PageProps<"/[l
               ? t("legal.invalid")
             : query.reason === "launch"
               ? t("launch.invalid")
+            : query.reason === "floor"
+              ? t("config.floorBelowMinimum", { minimum: formatPrice(Number(query.minimum), locale) })
+            : query.reason === "floor_unknown"
+              ? t("config.floorUnknown")
             : t("failed")
         : null;
 
@@ -177,7 +182,7 @@ export default async function AdminPage({ params, searchParams }: PageProps<"/[l
                   </table>
                   {launchPlan.extended && <p className="text-14 font-bold">{t("launch.extended", { days: data.config.min_first_season_days })}</p>}
                   {/* Step 2: launch with exactly these dates. */}
-                  {testPayments ? (
+                  {paymentsAreTest ? (
                     <p className="bg-crown-velvet p-4 text-14 leading-body font-bold shadow-[inset_4px_0_0_var(--crown-text)]">{t("launch.needProvider")}</p>
                   ) : (
                     <form action={launchGame}>
@@ -429,6 +434,9 @@ export default async function AdminPage({ params, searchParams }: PageProps<"/[l
 
         <Section id="config" title={t("nav.config")}>
           <p className="text-14 text-crown-muted">{t("config.help")}</p>
+          {paymentMinimum !== null && (
+            <p className="text-14 text-crown-muted">{t("config.paymentMinimum", { minimum: formatPrice(paymentMinimum, locale) })}</p>
+          )}
           <form action={saveConfig} className="grid gap-4 sm:grid-cols-2">
             <Back locale={locale} section="config" />
             {CONFIG_FIELDS.map((key) => (

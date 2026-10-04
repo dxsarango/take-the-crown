@@ -929,7 +929,10 @@
       "max_avatar_uploads_per_hour": "Avatar uploads per player per hour",
       "max_reports_per_ip_per_hour": "Reports per IP per hour",
       "min_first_season_days": "Shortest first season at launch (days)",
-      "delete_reauth_seconds": "Sign-in age to delete an account (seconds)"
+      "delete_reauth_seconds": "Sign-in age to delete an account (seconds)",
+      "paymentMinimum": "Dodo Payments refuses checkouts under {minimum}, the product's minimum: the floor price can't go below it.",
+      "floorBelowMinimum": "The floor price can't be lower than {minimum}, the Dodo product's minimum price. Lower the product's minimum in Dodo first. Nothing was saved.",
+      "floorUnknown": "Dodo Payments didn't answer, so the floor price couldn't be checked against the product's minimum. Nothing was saved; try again."
     },
     "log": {
       "empty": "No admin actions yet.",
@@ -964,7 +967,7 @@
     },
     "launch": {
       "prelaunch": "Prelaunch: the site is public, but only admins can take the crown, with the test payment provider. Launching deletes every test reign, payment and achievement, starts season 0 at the time you choose (it lasts at least {days} days; later seasons move if it has to grow) and opens the crown to everyone.",
-      "needProvider": "Launch needs the real payment provider. While PAYMENT_PROVIDER is test, the game stays in prelaunch.",
+      "needProvider": "Launch needs real payments: PAYMENT_PROVIDER dodo with DODO_MODE live. While payments are in test mode, the game stays in prelaunch.",
       "startsAt": "Season 0 starts (UTC)",
       "go": "Launch the game",
       "confirm": "Launch now? Every test reign, payment and achievement is deleted, and the crown opens to everyone. This can't be undone.",
