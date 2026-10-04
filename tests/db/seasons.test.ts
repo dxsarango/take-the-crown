@@ -73,7 +73,6 @@ describe("rollover_season", () => {
     await ageCurrentReign(60);
     await steady.takeover();
     await ageCurrentReign(3 * 3600);
-    await endSeason(0);
     // Close the last reign at a time we control.
     await closeSeason(0);
     await rollover();
@@ -125,15 +124,6 @@ describe("rollover_season", () => {
     expect(reign.price_paid_cents).toBe(500);
   });
 
-  it("keeps the crown closed until the next season starts", async () => {
-    await endSeason(0);
-    await q("update seasons set starts_at = now() + interval '1 hour' where id = 1");
-    await rollover();
-    const state = await one<{ season_id: number }>("select season_id from crown_state");
-    expect(state.season_id).toBe(1);
-    await expect(createLock()).rejects.toThrow("season_closed");
-  });
-
   it("runs only once per season", async () => {
     await endSeason(0);
     await rollover();
@@ -143,40 +133,57 @@ describe("rollover_season", () => {
     expect(await count("events", "kind = 'season_started'")).toBe(1);
   });
 
-  describe("without a next season", () => {
+  describe("without a season starting when this one ends", () => {
     async function moveToLastSeason(): Promise<void> {
-      await q("update seasons set starts_at = now() - interval '2 days' where id = 2");
-      await q("update crown_state set season_id = 2");
+      await q("update seasons set starts_at = now() - interval '2 days' where id = 12");
+      await q("update crown_state set season_id = 12");
     }
 
-    it("raises no_next_season_configured and keeps the crown in the closed season", async () => {
-      await moveToLastSeason();
-      await new Player("king").takeover();
-      await endSeason(2);
+    async function makeAdmin(): Promise<string> {
+      const admin = new Player("admin");
+      await admin.takeover();
+      const id = await admin.id();
+      await q("update profile_private set is_admin = true where profile_id = $1", [id]);
+      return id;
+    }
 
-      await expect(rollover()).rejects.toThrow("no_next_season_configured");
-      const state = await one<{ season_id: number; current_reign_id: number | null }>("select * from crown_state");
-      expect(state.season_id).toBe(2);
-      expect(state.current_reign_id).not.toBeNull();
+    it("runs the season one more month, keeps the crown open and tells the admins", async () => {
+      await moveToLastSeason();
+      const adminId = await makeAdmin();
+      const king = await new Player("king").takeover();
+      await endSeason(12);
+      const { ends_at: endedAt } = await one<{ ends_at: Date }>("select ends_at from seasons where id = 12");
+
+      await rollover();
+
+      const season = await one<{ ends_at: Date; closed_at: Date | null }>("select ends_at, closed_at from seasons where id = 12");
+      expect(season.closed_at).toBeNull();
+      const extended = new Date(endedAt);
+      extended.setUTCMonth(extended.getUTCMonth() + 1);
+      expect(season.ends_at.getTime()).toBe(extended.getTime());
+      // The reign goes on and the crown can still be taken.
+      expect(await one("select season_id, current_reign_id from crown_state")).toEqual({ season_id: 12, current_reign_id: king.id });
+      await expect(new Player("taker").takeover()).resolves.toMatchObject({ season_id: 12 });
+
+      const notices = await q<{ profile_id: string; payload: { season_id: number } }>(
+        "select profile_id, payload from notifications where kind = 'season_extended'",
+      );
+      expect(notices).toEqual([{ profile_id: adminId, payload: { season_id: 12, ends_at: expect.any(String) } }]);
+      // Once extended, nothing more happens until the new end.
+      await rollover();
+      expect(await count("notifications", "kind = 'season_extended'")).toBe(1);
     });
 
-    it("refunds payments until the next season is added", async () => {
-      await moveToLastSeason();
-      const lock = await createLock();
-      await endSeason(2);
-      await expect(rollover()).rejects.toThrow("no_next_season_configured");
-
-      expect(await pay(lock)).toBe("refund_pending");
-      await expect(createLock()).rejects.toThrow("season_closed");
-
-      await q(`
-        insert into seasons (id, slug, name_en, name_es, skin, starts_at, ends_at)
-        values (3, 'test-next', 'Next', 'Siguiente', 'genesis', now(), now() + interval '30 days')
-      `);
+    it("extends when the next season leaves a gap, and moves on once one starts exactly at the end", async () => {
+      await endSeason(0);
+      await q("update seasons set starts_at = starts_at + interval '1 hour', ends_at = ends_at + interval '1 hour' where id = 1");
       await rollover();
-      const state = await one<{ season_id: number }>("select season_id from crown_state");
-      expect(state.season_id).toBe(3);
-      await expect(createLock()).resolves.toMatchObject({ season_id: 3 });
+      expect(await one("select season_id from crown_state")).toEqual({ season_id: 0 });
+
+      // The admin adds a season that starts exactly when the extended one ends; that end comes.
+      await closeSeason(0, 60);
+      await rollover();
+      expect(await one("select season_id from crown_state")).toEqual({ season_id: 1 });
     });
   });
 });
