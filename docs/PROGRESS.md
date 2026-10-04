@@ -81,6 +81,7 @@ The ordered production procedure, with the exact values per dashboard and the pl
 - [ ] Before launch: Supabase Pro (backups, no pausing) and Resend Pro (over 100 emails a day); Cloudflare Pro recommended
 - [ ] Before launch: Dodo in live mode (`DODO_MODE=live` with the live key, product and webhook secret); test payments only run locally or in prelaunch
 - [ ] Before each provisional season starts (the admin is emailed 30 days ahead): its final name and art, set with `name_final` / `art_final` in a migration
+- [ ] Uptime monitor on `/api/health` (`docs/DEPLOY.md` step 7), and `pnpm check:deploy` with `CHECK_DATABASE_URL` after every migration push (row level security and the anon read allowlist)
 - [ ] HSTS is sent with `includeSubDomains`: every subdomain of the production domain must serve HTTPS
 
 ## Pre-production

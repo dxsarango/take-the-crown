@@ -156,6 +156,7 @@ API and assets:
 | `GET /art/throne/[file]` | Throne room scene per season and size (static) |
 | `GET /art/[...path]` | Design handoff pixel assets: flags, icons, seals… (static) |
 | `GET /api/time` | Server clock for the client clock offset |
+| `GET /api/health` | Uptime check: `{"ok": true}` when the database answers, 503 otherwise |
 | `GET /og/[template]/[id]` | Share cards (victory, challenge, achievement, dethroned, rank); `?size=story` for 1080×1920, `?locale=` |
 | `GET /og/mail/[id]` | Dethroned email header image |
 | `GET /og/flag/[code].png` | Pixel flag as PNG for emails |

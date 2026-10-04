@@ -23,7 +23,11 @@ Placeholders: `<ref>` is the Supabase project ref (the subdomain of its API URL)
 ## 2. Resend: sending domain
 
 1. **Domains → Add domain:** `takethecrown.app`, region `us-east-1`.
-2. Add every record Resend shows (MX and TXT on `send`, the DKIM TXT `resend._domainkey`) in Cloudflare DNS as **DNS only** (grey cloud). Then **Verify**.
+2. Let Resend's **automatic setup** (Cloudflare) create the records, then **Verify**. It creates **CNAME** records, not the MX and TXT on `send` that the manual instructions list:
+   - CNAME `send` and CNAME `rsend`, pointing where Resend shows (bounces and SPF are handled on Resend's side);
+   - the DKIM record for `resend._domainkey`, as Resend lists it.
+
+   All of them must stay **DNS only** (grey cloud). If you ever set the domain up by hand instead, add exactly the records Resend's domain page shows; do not mix both sets.
 3. In Cloudflare DNS add TXT `_dmarc` = `v=DMARC1; p=none; rua=mailto:hola@takethecrown.app`. Move to `p=quarantine` after a few weeks of clean reports.
 4. **API Keys:** create `vercel-production` (Sending access, domain `takethecrown.app`) for step 5, and `supabase-smtp` (Sending access, same domain) for step 3.
 
@@ -124,23 +128,24 @@ Placeholders: `<ref>` is the Supabase project ref (the subdomain of its API URL)
    - Expression: `(http.request.uri.path in {"/api/locks" "/api/auth/magic-link" "/api/reports" "/api/profile" "/api/profile/avatar"} and http.request.method ne "GET")`.
    - Counted by IP, `20` requests per `10 seconds`, action **Block** for `10 seconds`.
    - The app enforces the hourly limits; `/api/names/availability` is covered by this rule on Pro (`120` per minute) and by the app's validation meanwhile.
-4. **Caching:** no "Cache Everything" rule. HTML carries a per-request CSP nonce and must not be cached; static assets cache by default.
+4. **Caching:** no "Cache Everything" rule. HTML carries a per-request CSP nonce and must not be cached; static assets cache by default. `/api/*` (including `/api/health`) answers `Cache-Control: no-store` and is never cached.
 5. **Security → WAF → Managed rules:** the Cloudflare Free Managed Ruleset is on by default.
 
 ## 7. Check, sign in, configure
 
-1. From the repo: `pnpm check:deploy https://takethecrown.app`. No FAIL lines. Expected WARNs right now: the legal placeholders not filled in yet (next step).
-2. Sign in on the site with your own email, then make yourself admin in **Supabase → SQL Editor** (one-off):
+1. From the repo: `CHECK_DATABASE_URL="<Supabase → Connect → Session pooler connection string>" pnpm check:deploy https://takethecrown.app`. No FAIL lines. It also checks `/api/health` and, with the connection string, that row level security is on for every table and that anon reads only the allowlist in `scripts/database-checks.mjs` (`pnpm check:db <connection string>` runs just that part). Expected WARNs right now: the legal placeholders not filled in yet (next step).
+2. **Uptime monitoring:** point a monitor (Better Stack, UptimeRobot or similar; free tiers suffice) at `https://takethecrown.app/api/health` every minute, alerting `hola@takethecrown.app`. It answers `200 {"ok":true}` when the app reaches its database and `503 {"ok":false}` when it can't, and returns nothing else. The Cloudflare rate-limit rule (step 6) does not match it, and it is never cached. If Cloudflare ever challenges the monitor, add a WAF custom rule that skips security for `http.request.uri.path eq "/api/health"`.
+3. Sign in on the site with your own email, then make yourself admin in **Supabase → SQL Editor** (one-off):
 
    ```sql
    update profile_private set is_admin = true where email = '<your email>';
    ```
 
-3. **`/en/admin` → Config → Legal pages:**
+4. **`/en/admin` → Config → Legal pages:**
    - Contact `hola@takethecrown.app`, city, payment provider (until the provider answers, the name you will use), effective date.
    - Run `pnpm check:deploy https://takethecrown.app` again: no placeholders left.
-4. **Test the flow** as admin: take the crown on Dodo's test checkout (step 8), get dethroned from a second admin account (dethroned email arrives), share cards, turn off an alert from the email, delete a test account. All of this is wiped at launch.
-5. **Anthropic** (before launch): add credits, run `pnpm test:moderation` against the real model (all cases pass), set a monthly spend limit and auto-reload with a low threshold.
+5. **Test the flow** as admin: take the crown on Dodo's test checkout (step 8), get dethroned from a second admin account (dethroned email arrives), share cards, turn off an alert from the email, delete a test account. All of this is wiped at launch.
+6. **Anthropic** (before launch): add credits, run `pnpm test:moderation` against the real model (all cases pass), set a monthly spend limit and auto-reload with a low threshold.
 
 ## 8. Dodo Payments
 
