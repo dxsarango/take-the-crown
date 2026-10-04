@@ -17,7 +17,7 @@ import type { ModerationReason } from "@/lib/moderation/reasons";
 import type { Rank } from "@/lib/game/rank";
 import { lockSegments } from "@/lib/home/hero";
 import type { ViewerSummary } from "@/lib/profile/viewer";
-import { type Draft, type PaymentResult, usePayment } from "./use-payment";
+import { type CheckoutReturn, type Draft, type PaymentResult, usePayment } from "./use-payment";
 
 const SEGMENTS = 20;
 type Size = "mobile" | "desktop";
@@ -207,6 +207,8 @@ type Props = {
   messageMax: number;
   now: number;
   initial: Draft;
+  /** Set when the buyer comes back from a redirect checkout. */
+  returning?: CheckoutReturn | null;
   detectedCountry: boolean;
   /** Signed-in buyers keep their name, avatar and email. */
   viewer: ViewerSummary | null;
@@ -215,7 +217,7 @@ type Props = {
   onSignIn: (draft: Draft) => void;
 };
 
-export function PaymentModal({ season, priceCents, lockSeconds, messageMax, now, initial, detectedCountry, viewer, onDone, onSignIn }: Props) {
+export function PaymentModal({ season, priceCents, lockSeconds, messageMax, now, initial, returning = null, detectedCountry, viewer, onDone, onSignIn }: Props) {
   const t = useTranslations("payment");
   const common = useTranslations("common");
   const login = useTranslations("login");
@@ -226,7 +228,7 @@ export function PaymentModal({ season, priceCents, lockSeconds, messageMax, now,
   const dialog = useRef<HTMLDialogElement>(null);
   const [draft, setDraft] = useState<Draft>(initial);
   const [countryTouched, setCountryTouched] = useState(false);
-  const { phase, submit, payTest, decline, close, clearFailure } = usePayment({ locale, now, onDone });
+  const { phase, submit, payTest, decline, close, clearFailure } = usePayment({ locale, now, onDone, returning });
   const nameCheck = useNameCheck(viewer ? "" : draft.name);
   const human = useHumanCheck("lock");
   // Terms §5: the buyer accepts immediate delivery and the loss of withdrawal before every checkout.

@@ -56,16 +56,41 @@ export function releaseLock(lockId: string): void {
   void fetch(`/api/locks/${lockId}/release`, { method: "POST", keepalive: true }).catch(() => undefined);
 }
 
+/** Back from a redirect checkout (Dodo): the lock, and the status the provider put in the URL. */
+export type CheckoutReturn = { lockId: string; status: string | null };
+
 type Options = {
   locale: string;
   now: number;
   onDone: (result: PaymentResult) => void;
+  returning?: CheckoutReturn | null;
 };
 
 /** The payment flow: lock on submit, checkout, then wait for the webhook to crown the buyer. */
-export function usePayment({ locale, now, onDone }: Options) {
-  const [phase, setPhase] = useState<PaymentPhase>({ kind: "form" });
+export function usePayment({ locale, now, onDone, returning = null }: Options) {
+  const [phase, setPhase] = useState<PaymentPhase>(returning ? { kind: "submitting" } : { kind: "form" });
   const finish = useEffectEvent((result: PaymentResult) => onDone(result));
+
+  // Back from the provider's page: pick the lock up again and wait for its webhook like an overlay.
+  const returnedLock = returning?.lockId ?? null;
+  const returnedStatus = returning?.status ?? null;
+  useEffect(() => {
+    if (!returnedLock) return;
+    if (returnedStatus === "failed" || returnedStatus === "cancelled") {
+      releaseLock(returnedLock);
+      finish("payment_failed");
+      return;
+    }
+    void fetch(`/api/locks/${returnedLock}`, { cache: "no-store" })
+      .then((r) => r.json() as Promise<{ status: string; expiresAt?: string; priceCents?: number }>)
+      .then((lock) => {
+        if (lock.status === "applied") setPhase({ kind: "success", crownedAt: Date.now(), moderationPending: false });
+        else if (lock.status === "active" && lock.expiresAt && lock.priceCents)
+          setPhase({ kind: "checkout", lockId: returnedLock, priceCents: lock.priceCents, expiresAt: lock.expiresAt, paying: true, moderationPending: false });
+        else finish("lock_expired");
+      })
+      .catch(() => finish("payment_failed"));
+  }, [returnedLock, returnedStatus]);
 
   const submit = useCallback(
     async (draft: Draft, consent: { acceptWithdrawal: boolean; turnstileToken: string | null }) => {
@@ -95,6 +120,8 @@ export function usePayment({ locale, now, onDone }: Options) {
         return setPhase({ kind: "verify", email: draft.email.trim() });
       }
       if (outcome.checkout.mode === "redirect") {
+        // The success screen after the provider's page shows what the buyer typed.
+        saveDraft(draft);
         window.location.assign(outcome.checkout.url);
         return;
       }
