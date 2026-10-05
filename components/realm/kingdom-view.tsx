@@ -68,6 +68,9 @@ function Entry({ entry, now, season }: { entry: HistoryEntry; now: number; seaso
       <span className={size === "S" ? "hidden lg:block" : ""}>
         <RankTag rank={entry.rank} label={rank(entry.rank)} small />
       </span>
+      {entry.reversed && (
+        <span className="flex h-6 items-center rounded-tag border border-crown-danger px-2 font-pixel text-12 font-medium text-crown-danger">{t("reversed")}</span>
+      )}
     </div>
   );
   const message = entry.message && <p className={`leading-[1.45] text-pretty ${tier.msgM} ${tier.msgD} lg:line-clamp-none lg:max-w-[560px]`}>{home("quote", { message: entry.message })}</p>;

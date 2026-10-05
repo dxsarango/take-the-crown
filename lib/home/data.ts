@@ -94,6 +94,7 @@ export async function fetchHomeData(db: PublicClient, now = new Date()): Promise
     db
       .from("public_reigns")
       .select("id, profile_id, name, country_code, message, link, started_at, duration_seconds")
+      .eq("reversed", false)
       .order("started_at", { ascending: false })
       .limit(SUCCESSION_SIZE + 1),
     db

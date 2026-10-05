@@ -120,12 +120,48 @@ export async function fetchAdminOverview() {
       }),
     ),
     seasons: must(seasonsRes, "seasons"),
+    reversals: await fetchReversals(db),
     config: must(configRes, "config"),
     log: (logRes.data ?? []).map((l) => ({ ...l, adminName: adminNames.get(l.admin_profile_id) ?? l.admin_profile_id })),
   };
 }
 
 export type AdminOverview = Awaited<ReturnType<typeof fetchAdminOverview>>;
+
+/** Reigns reversed after delivery (refund or chargeback), newest first. */
+async function fetchReversals(db: ReturnType<typeof serviceClient>) {
+  const reigns = must(
+    await db
+      .from("reigns")
+      .select("id, profile_id, name, season_id, price_paid_cents, reversal_kind, reversed_at, payment_id")
+      .not("reversed_at", "is", null)
+      .order("reversed_at", { ascending: false })
+      .limit(50),
+    "reversed reigns",
+  );
+  const [paymentsRes, profilesRes] = await Promise.all([
+    db.from("payments").select("id, provider, provider_payment_id, dispute_status").in("id", reigns.flatMap((r) => (r.payment_id ? [r.payment_id] : []))),
+    db.from("profiles").select("id, is_banned").in("id", reigns.map((r) => r.profile_id)),
+  ]);
+  const payments = new Map(must(paymentsRes, "payments").map((p) => [p.id, p]));
+  const banned = new Map(must(profilesRes, "profiles").map((p) => [p.id, p.is_banned]));
+  return reigns.map((r) => {
+    const payment = r.payment_id ? payments.get(r.payment_id) : undefined;
+    return {
+      reignId: r.id,
+      profileId: r.profile_id,
+      name: r.name,
+      seasonId: r.season_id,
+      priceCents: r.price_paid_cents,
+      kind: r.reversal_kind === "chargeback" ? ("chargeback" as const) : ("refund" as const),
+      reversedAt: r.reversed_at!,
+      provider: payment?.provider ?? null,
+      providerPaymentId: payment?.provider_payment_id ?? null,
+      disputeStatus: payment?.dispute_status ?? null,
+      banned: banned.get(r.profile_id) ?? false,
+    };
+  });
+}
 
 export type LaunchPlan = {
   startsAt: string;

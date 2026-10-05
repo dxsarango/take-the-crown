@@ -639,7 +639,8 @@
       "marigold": "marco Cempasúchil",
       "frost": "marco Escarcha"
     },
-    "season": "Temporada"
+    "season": "Temporada",
+    "reversed": "Reembolsado"
   },
   "login": {
     "head": "Inicia sesión para guardar tus reinados, logros y alertas.",
@@ -853,7 +854,8 @@
       "config": "Configuración",
       "log": "Registro",
       "review": "En revisión",
-      "launch": "Lanzamiento"
+      "launch": "Lanzamiento",
+      "reversals": "Reversiones"
     },
     "crown": {
       "king": "Rey",
@@ -976,6 +978,13 @@
       "preview": "Ver las fechas de temporada",
       "season": "Temporada",
       "extended": "Génesis terminaría demasiado pronto, así que dura {days} días y todas las temporadas siguientes se mueven lo mismo."
+    },
+    "reversals": {
+      "help": "Reinados cuyo pago se reembolsó después de entregar la corona, o con contracargo. Siguen en el historial, marcados, sin mensaje ni enlace, y no cuentan para nada. Un contracargo suspende la cuenta; levántala aquí si la disputa se resuelve a tu favor.",
+      "empty": "No hay reinados revertidos.",
+      "reign": "Reinado {id} · {name} · temporada {season}",
+      "refund": "Reembolsado",
+      "chargeback": "Contracargo"
     }
   },
   "report": {
