@@ -13,6 +13,7 @@
     "floor": "Floor price {price}",
     "report": "Report",
     "final": "Payments are final. You're paying for visibility, not a prize.",
+    "taxes": "Taxes may be added at checkout depending on your location.",
     "close": "Close",
     "nameL": "Display name",
     "countryL": "Country",

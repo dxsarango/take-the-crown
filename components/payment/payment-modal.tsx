@@ -658,6 +658,7 @@ export function PaymentModal({ season, priceCents, lockSeconds, messageMax, now,
               {ackBox("mobile")}
               {human.widget}
               {payButton("")}
+              <div className="text-center text-12 text-crown-muted">{common("taxes")}</div>
               {!viewer && <div className="text-center text-12 text-crown-muted">{t("noAcct")}</div>}
             </div>
           )}
@@ -720,6 +721,7 @@ export function PaymentModal({ season, priceCents, lockSeconds, messageMax, now,
               <div className="flex flex-col items-end gap-2">
                 {human.widget}
                 {payButton("min-w-[380px] px-7")}
+                <div className="mx-1 text-right text-12 text-crown-muted">{common("taxes")}</div>
               </div>
             </div>
           )}
