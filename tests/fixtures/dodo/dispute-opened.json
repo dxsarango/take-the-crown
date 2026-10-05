@@ -1,0 +1,16 @@
+{
+  "business_id": "bus_test_crown",
+  "type": "dispute.opened",
+  "timestamp": "2026-10-20T09:00:00Z",
+  "data": {
+    "payload_type": "Dispute",
+    "dispute_id": "dsp_test_4Rn1",
+    "payment_id": "pay_test_7Hq2Lc",
+    "business_id": "bus_test_crown",
+    "amount": "3400",
+    "currency": "USD",
+    "dispute_status": "dispute_opened",
+    "dispute_stage": "dispute",
+    "created_at": "2026-10-20T08:59:58Z"
+  }
+}

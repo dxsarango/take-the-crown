@@ -68,7 +68,23 @@ export async function POST(request: Request, { params }: RouteContext<"/api/webh
         p_provider_payment_id: event.providerPaymentId,
       });
       if (error) return new Response(null, { status: 500 });
+      // A refund of a delivered crown reverses its reign (mark_payment_refunded), which the home shows.
+      revalidateHome();
       return Response.json({ result: "refunded" });
+    }
+    case "dispute": {
+      const { data: result, error } = await db.rpc("record_payment_dispute", {
+        p_provider: provider.name,
+        p_provider_payment_id: event.providerPaymentId,
+        p_status: event.status,
+      });
+      if (error) {
+        console.error("record_payment_dispute failed", error.message);
+        return new Response(null, { status: 500 });
+      }
+      if (result === "unknown_payment") console.error("dispute for an unknown payment", event.providerPaymentId);
+      if (result === "reversed") revalidateHome();
+      return Response.json({ result });
     }
     case "ignored":
       return Response.json({ result: "ignored" });
