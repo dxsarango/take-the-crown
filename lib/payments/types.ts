@@ -1,5 +1,16 @@
 /** Provider-agnostic payment interface (SPEC §10). */
 
+export const DISPUTE_STATUSES = [
+  "dispute_opened",
+  "dispute_challenged",
+  "dispute_accepted",
+  "dispute_cancelled",
+  "dispute_expired",
+  "dispute_won",
+  "dispute_lost",
+] as const;
+export type DisputeStatus = (typeof DISPUTE_STATUSES)[number];
+
 export type CheckoutInput = {
   lockId: string;
   priceCents: number;
@@ -28,6 +39,8 @@ export type NormalizedEvent =
       email: string;
     }
   | { type: "refund_succeeded"; eventId: string; providerPaymentId: string }
+  /** A chargeback's progress; opened, accepted and lost ones reverse the reign (record_payment_dispute). */
+  | { type: "dispute"; eventId: string; providerPaymentId: string; status: DisputeStatus }
   | { type: "ignored"; eventId: string };
 
 export interface PaymentProvider {

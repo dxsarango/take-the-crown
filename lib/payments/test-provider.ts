@@ -1,7 +1,7 @@
 import "server-only";
 import { createHmac, randomUUID, timingSafeEqual } from "node:crypto";
 import { z } from "zod";
-import type { Checkout, CheckoutInput, NormalizedEvent, PaymentProvider } from "./types";
+import { type Checkout, type CheckoutInput, DISPUTE_STATUSES, type NormalizedEvent, type PaymentProvider } from "./types";
 
 /**
  * Local and e2e stand-in for a real merchant of record. Checkout happens in an overlay inside the
@@ -22,6 +22,7 @@ const eventSchema = z.discriminatedUnion("type", [
     email: z.email(),
   }),
   z.object({ type: z.literal("refund_succeeded"), eventId: z.string().min(1), providerPaymentId: z.string().min(1) }),
+  z.object({ type: z.literal("dispute"), eventId: z.string().min(1), providerPaymentId: z.string().min(1), status: z.enum(DISPUTE_STATUSES) }),
 ]);
 
 export type TestEvent = z.infer<typeof eventSchema>;

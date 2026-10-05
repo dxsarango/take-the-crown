@@ -2,7 +2,7 @@ import "server-only";
 import { z } from "zod";
 import { serviceClient } from "@/lib/supabase/service";
 import { verifyWebhookSignature } from "./standard-webhooks";
-import type { Checkout, CheckoutInput, NormalizedEvent, PaymentProvider } from "./types";
+import { type Checkout, type CheckoutInput, DISPUTE_STATUSES, type DisputeStatus, type NormalizedEvent, type PaymentProvider } from "./types";
 
 /**
  * Dodo Payments, merchant of record (SPEC §10). One one-time product with Pay What You Want on:
@@ -33,10 +33,13 @@ const paymentData = z.object({
 
 const refundData = z.object({ payment_id: z.string().min(1) });
 
+const disputeData = z.object({ payment_id: z.string().min(1) });
+
 /** A Dodo webhook body mapped to our events; the lock comes from metadata or the checkout session. */
 export type DodoEvent =
   | { type: "payment_succeeded"; providerPaymentId: string; lockId: string | null; checkoutId: string | null; amountCents: number; currency: string; email: string }
   | { type: "refund_succeeded"; providerPaymentId: string }
+  | { type: "dispute"; providerPaymentId: string; status: DisputeStatus }
   | { type: "ignored" };
 
 export function mapDodoEvent(json: unknown): DodoEvent | null {
@@ -60,6 +63,14 @@ export function mapDodoEvent(json: unknown): DodoEvent | null {
   if (type === "refund.succeeded") {
     const refund = refundData.safeParse(data);
     return refund.success ? { type: "refund_succeeded", providerPaymentId: refund.data.payment_id } : null;
+  }
+  // dispute.opened … dispute.lost: the event name carries the status (Dodo's dispute_status values).
+  const disputeStatus = /^dispute.([a-z]+)$/.exec(type)?.[1];
+  if (disputeStatus) {
+    const status = DISPUTE_STATUSES.find((s) => s === `dispute_${disputeStatus}`);
+    const dispute = disputeData.safeParse(data);
+    if (!status || !dispute.success) return null;
+    return { type: "dispute", providerPaymentId: dispute.data.payment_id, status };
   }
   return { type: "ignored" };
 }
@@ -119,7 +130,7 @@ export class DodoProvider implements PaymentProvider {
     const event = mapDodoEvent(json);
     if (!event) return null;
     if (event.type === "ignored") return { type: "ignored", eventId: id };
-    if (event.type === "refund_succeeded") return { ...event, eventId: id };
+    if (event.type === "refund_succeeded" || event.type === "dispute") return { ...event, eventId: id };
 
     // Metadata carries the lock; the checkout session we stored on the lock is the fallback.
     const lockId = event.lockId ?? (event.checkoutId ? await lockForCheckout(event.checkoutId) : null);

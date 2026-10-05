@@ -85,6 +85,18 @@ describe("Dodo payloads", () => {
     expect(mapDodoEvent(JSON.parse(fixture("refund-succeeded")))).toEqual({ type: "refund_succeeded", providerPaymentId: "pay_test_7Hq2Lc" });
   });
 
+  it("maps every dispute event to its status, from opened to won", () => {
+    expect(mapDodoEvent(JSON.parse(fixture("dispute-opened")))).toEqual({ type: "dispute", providerPaymentId: "pay_test_7Hq2Lc", status: "dispute_opened" });
+    expect(mapDodoEvent(JSON.parse(fixture("dispute-won")))).toEqual({ type: "dispute", providerPaymentId: "pay_test_7Hq2Lc", status: "dispute_won" });
+    for (const status of ["challenged", "accepted", "cancelled", "expired", "lost"]) {
+      const json = JSON.parse(fixture("dispute-opened"));
+      json.type = `dispute.${status}`;
+      expect(mapDodoEvent(json)).toMatchObject({ type: "dispute", status: `dispute_${status}` });
+    }
+    expect(mapDodoEvent({ type: "dispute.reopened", data: { payment_id: "pay_1" } })).toBeNull();
+    expect(mapDodoEvent({ type: "dispute.opened", data: {} })).toBeNull();
+  });
+
   it("ignores other events and refuses malformed ones", () => {
     expect(mapDodoEvent(JSON.parse(fixture("payment-failed")))).toEqual({ type: "ignored" });
     expect(mapDodoEvent({ type: "payment.succeeded", data: { payment_id: "pay_1" } })).toBeNull();
@@ -174,6 +186,16 @@ describe("DodoProvider", () => {
       email: "nadia@example.com",
     });
     expect(await provider().verifyWebhook(request(body, { ...signed(body), signature: "v1,Zm9yZ2Vk" }))).toBeNull();
+  });
+
+  it("passes signed dispute webhooks on with their status", async () => {
+    const body = fixture("dispute-opened");
+    expect(await provider().verifyWebhook(request(body))).toEqual({
+      type: "dispute",
+      eventId: "msg_2Xq8",
+      providerPaymentId: "pay_test_7Hq2Lc",
+      status: "dispute_opened",
+    });
   });
 
   it("finds the lock through the checkout session when metadata is missing", async () => {
