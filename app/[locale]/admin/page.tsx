@@ -24,7 +24,7 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/admin">)
   return { title: `${t("title")} · ${BRAND_NAME}`, robots: { index: false, follow: false } };
 }
 
-const SECTIONS = ["crown", "launch", "payments", "reports", "review", "names", "seasons", "config", "log"] as const;
+const SECTIONS = ["crown", "launch", "payments", "reversals", "reports", "review", "names", "seasons", "config", "log"] as const;
 
 const secondary =
   "hit-area m-1 h-10 bg-crown-hall px-3.5 text-14 font-bold whitespace-nowrap shadow-relief-card hover:bg-crown-stone focus-visible:outline-offset-[6px] active:bg-crown-ink";
@@ -246,6 +246,43 @@ export default async function AdminPage({ params, searchParams }: PageProps<"/[l
                 </tbody>
               </table>
             </div>
+          )}
+        </Section>
+
+        <Section id="reversals" title={t("nav.reversals")}>
+          <p className="text-14 text-crown-muted">{t("reversals.help")}</p>
+          {data.reversals.length === 0 ? (
+            <p className="text-14 text-crown-muted">{t("reversals.empty")}</p>
+          ) : (
+            <ul className="flex flex-col gap-3">
+              {data.reversals.map((r) => (
+                <li
+                  key={r.reignId}
+                  className={`flex flex-col gap-3 bg-crown-velvet p-4 sm:flex-row sm:items-center sm:justify-between ${r.kind === "chargeback" ? "shadow-flag-danger" : "shadow-[inset_4px_0_0_var(--crown-text)]"}`}
+                >
+                  <div className="flex min-w-0 flex-col gap-1 text-14">
+                    <span className="font-bold">{t("reversals.reign", { id: r.reignId, name: r.name, season: r.seasonId })}</span>
+                    <span className="text-crown-muted">
+                      {t(`reversals.${r.kind}`)} · {formatPrice(r.priceCents, locale)} · {utc(r.reversedAt)}
+                      {r.disputeStatus ? ` · ${r.disputeStatus}` : ""}
+                    </span>
+                    {r.providerPaymentId && (
+                      <span className="text-12 [overflow-wrap:anywhere] text-crown-muted">
+                        {r.provider} {r.providerPaymentId}
+                      </span>
+                    )}
+                  </div>
+                  <form action={setBanned}>
+                    <Back locale={locale} section="reversals" />
+                    <input type="hidden" name="profileId" value={r.profileId} />
+                    <input type="hidden" name="banned" value={r.banned ? "false" : "true"} />
+                    <button type="submit" className={secondary}>
+                      {r.banned ? t("reports.unban") : t("reports.ban")}
+                    </button>
+                  </form>
+                </li>
+              ))}
+            </ul>
           )}
         </Section>
 

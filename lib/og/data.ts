@@ -27,10 +27,11 @@ export type CardModel =
 async function reign(db: PublicClient, id: number) {
   const { data } = await db
     .from("public_reigns")
-    .select("id, profile_id, season_id, started_at, duration_seconds, ended_at, dethroned_by")
+    .select("id, profile_id, season_id, started_at, duration_seconds, ended_at, dethroned_by, reversed")
     .eq("id", id)
     .maybeSingle();
-  return data?.profile_id && data.season_id !== null && data.started_at ? data : null;
+  // A refunded or charged-back reign has no share card.
+  return data?.profile_id && data.season_id !== null && data.started_at && !data.reversed ? data : null;
 }
 
 async function person(db: PublicClient, profileId: string): Promise<Person | null> {

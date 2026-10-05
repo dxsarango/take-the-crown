@@ -57,6 +57,7 @@ export async function profileCard(db: PublicClient, profileId: string, requested
     .from("public_reigns")
     .select("id, ended_at, dethroned_by")
     .eq("profile_id", profileId)
+    .eq("reversed", false)
     .order("started_at", { ascending: false })
     .limit(1)
     .maybeSingle();
@@ -72,6 +73,7 @@ export async function seasonCard(db: PublicClient, seasonId: number, kingProfile
     .select("id")
     .eq("season_id", seasonId)
     .eq("profile_id", kingProfileId)
+    .eq("reversed", false)
     .order("duration_seconds", { ascending: false, nullsFirst: false })
     .limit(1)
     .maybeSingle();

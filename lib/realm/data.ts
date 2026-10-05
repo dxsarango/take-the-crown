@@ -72,6 +72,8 @@ export type HistoryEntry = Person & {
   message: string | null;
   dethronedBy: string | null;
   open: boolean;
+  /** Refunded or charged back after delivery: shown, marked, and counted nowhere. */
+  reversed: boolean;
 };
 
 export type SeasonSummary = {
@@ -87,7 +89,7 @@ export type SeasonSummary = {
 export async function fetchHistoryPage(db: PublicClient, seasonId: number, before?: string): Promise<HistoryEntry[]> {
   let query = db
     .from("public_reigns")
-    .select("id, profile_id, name, country_code, message, started_at, duration_seconds, ended_at")
+    .select("id, profile_id, name, country_code, message, started_at, duration_seconds, ended_at, reversed")
     .eq("season_id", seasonId)
     .order("started_at", { ascending: false })
     .limit(HISTORY_PAGE);
@@ -117,6 +119,7 @@ export async function fetchHistoryPage(db: PublicClient, seasonId: number, befor
         message: r.message,
         dethronedBy: to.get(r.id) ?? null,
         open: r.ended_at === null,
+        reversed: r.reversed === true,
       },
     ];
   });
@@ -196,7 +199,7 @@ export async function fetchHallOfFame(db: PublicClient, seasonId: number): Promi
     db.from("season_leaderboard").select("season_id, profile_id, crowns, longest_seconds, shortest_seconds"),
     db.from("country_leaderboard").select("season_id, country_code, reign_seconds, kings"),
     // A player can reign for the same country in several seasons: count them once for all time.
-    db.from("public_reigns").select("profile_id, country_code").not("country_code", "is", null),
+    db.from("public_reigns").select("profile_id, country_code").not("country_code", "is", null).eq("reversed", false),
   ]);
   const board = must(boardRes, "leaderboard");
   const countries = must(countryRes, "country leaderboard");
@@ -256,6 +259,7 @@ export async function fetchSeasonEnd(db: PublicClient, slug: string): Promise<Se
       .from("public_reigns")
       .select("profile_id, duration_seconds, started_at")
       .eq("season_id", season.id)
+      .eq("reversed", false)
       .not("duration_seconds", "is", null)
       .order("duration_seconds", { ascending: false })
       .limit(1),
@@ -263,6 +267,7 @@ export async function fetchSeasonEnd(db: PublicClient, slug: string): Promise<Se
       .from("public_reigns")
       .select("profile_id, duration_seconds, started_at")
       .eq("season_id", season.id)
+      .eq("reversed", false)
       .not("duration_seconds", "is", null)
       .order("duration_seconds", { ascending: true })
       .limit(1),
@@ -270,6 +275,7 @@ export async function fetchSeasonEnd(db: PublicClient, slug: string): Promise<Se
       .from("public_reigns")
       .select("profile_id, price_paid_cents, started_at")
       .eq("season_id", season.id)
+      .eq("reversed", false)
       .order("price_paid_cents", { ascending: false })
       .limit(1),
     db.from("app_config").select("floor_cents").single(),
