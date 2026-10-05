@@ -127,6 +127,11 @@ function LaunchingSoon({ align, className = "" }: { align: "left" | "right"; cla
   );
 }
 
+function TaxNote({ align }: { align: "left" | "right" }) {
+  const common = useTranslations("common");
+  return <p className={`mx-1 text-12 text-crown-muted ${align === "right" ? "text-right" : ""}`}>{common("taxes")}</p>;
+}
+
 function AdminTestNote({ align }: { align: "left" | "right" }) {
   const home = useTranslations("home");
   return <p className={`mx-1 font-pixel text-12 font-medium text-crown-gold ${align === "right" ? "text-right" : ""}`}>{home("adminTest")}</p>;
@@ -277,6 +282,7 @@ export function Hero({ king, crown, state, season, notice, onTake }: Props) {
         ) : (
           <>
             <TakeButton label={buttonLabel} onClick={onTake} />
+            <TaxNote align="left" />
             {crown.prelaunch && <AdminTestNote align="left" />}
           </>
         )}
@@ -320,6 +326,7 @@ export function Hero({ king, crown, state, season, notice, onTake }: Props) {
           ) : (
             <>
               <TakeButton label={buttonLabel} onClick={onTake} className={king ? "min-w-[340px] px-7" : "min-w-[400px] px-7"} />
+              <TaxNote align="right" />
               {crown.prelaunch && <AdminTestNote align="right" />}
             </>
           )}
