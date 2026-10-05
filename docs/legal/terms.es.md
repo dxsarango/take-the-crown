@@ -33,11 +33,11 @@ Los pagos los procesa {{PAYMENT_PROVIDER}}, que actúa como comerciante registra
 
 La posición destacada es contenido digital que se entrega de inmediato al confirmarse tu pago. Al completar la compra, solicitas la entrega inmediata y reconoces que pierdes cualquier derecho de desistimiento una vez entregada la corona, en la medida que lo permita la ley que te sea aplicable.
 
-Todas las compras son definitivas una vez entregadas. Solo se reembolsan automáticamente cuando la corona no puede entregarse, por ejemplo, si tu reserva expiró y otro jugador tomó la corona antes de que se confirmara tu pago, o si la temporada terminó mientras tanto.
+Todas las compras son definitivas una vez entregadas, salvo los reembolsos que {{PAYMENT_PROVIDER}} conceda según sus propias condiciones para compradores. Solo se reembolsan automáticamente cuando la corona no puede entregarse, por ejemplo, si tu reserva expiró y otro jugador tomó la corona antes de que se confirmara tu pago, o si la temporada terminó mientras tanto.
 
 El contenido ocultado por incumplir estos términos, según la sección 7, no da derecho a reembolso, porque la posición destacada se sigue entregando.
 
-Si abres un contracargo por una compra entregada, podemos suspender tu cuenta.
+Si una compra entregada se reembolsa o es objeto de un contracargo, su reinado permanece en el historial público marcado como reembolsado: se ocultan su mensaje y su enlace, deja de contar para las clasificaciones, los rangos y las estadísticas, y se retiran los logros obtenidos con él. Si abres un contracargo, además suspendemos tu cuenta.
 
 ## 6. Cuentas y nombres
 

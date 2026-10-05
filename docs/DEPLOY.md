@@ -154,7 +154,8 @@ Test and live modes are separate: each has its own API key, product and webhook 
 1. **Product** (in the mode you are configuring): one-time, **Pay What You Want** on, price **$5.00** (the minimum; it must not be above `app_config.floor_cents`, and the admin refuses a floor below it). Keep adaptive pricing off, or leave it: the app asks for USD in every checkout. Copy the product ID into `DODO_PRODUCT_ID`.
 2. **Developer → Webhooks → Add endpoint:**
    - URL: `https://takethecrown.app/api/webhooks/dodo`
-   - Events: `payment.succeeded` and `refund.succeeded` (others are acknowledged and ignored, so subscribing to more is harmless).
+   - Events: `payment.succeeded`, `refund.succeeded` and every dispute event (`dispute.opened`, `dispute.challenged`, `dispute.accepted`, `dispute.cancelled`, `dispute.expired`, `dispute.won`, `dispute.lost`). Others are acknowledged and ignored, so subscribing to more is harmless.
+   - What they do: a payment crowns the buyer; a refund before delivery only closes the payment; a refund of a delivered crown, or an opened, accepted or lost dispute, reverses the reign (kept in history, marked, counted nowhere); a dispute also suspends the account. Reversed reigns are listed in `/admin` → Reversals, where a suspension can be lifted.
    - Copy the endpoint's signing secret (`whsec_…`) into `DODO_WEBHOOK_SECRET` in Vercel and redeploy.
 3. Cloudflare must not challenge `/api/webhooks/*` (Bot Fight Mode stays off; the rate-limit rule does not cover it).
 4. Check: take the crown as admin on the site with the test card; Dodo's dashboard shows the webhook delivered with 200, and `/admin` → Payments shows it `applied`.
@@ -167,7 +168,7 @@ Dodo has to reach your local server, so it needs a public URL:
 1. Install `cloudflared` (`winget install Cloudflare.cloudflared`).
 2. Stable hostname (recommended, the domain is already on Cloudflare): `cloudflared tunnel login`, `cloudflared tunnel create crown-dev`, `cloudflared tunnel route dns crown-dev dev-hooks.takethecrown.app`, then run `cloudflared tunnel run --url http://localhost:3100 crown-dev` whenever you test.
    Quick alternative without login: `cloudflared tunnel --url http://localhost:3100` prints a random `https://….trycloudflare.com` address that changes every run.
-3. In Dodo's **test mode**, add a second webhook endpoint `https://dev-hooks.takethecrown.app/api/webhooks/dodo` (or the trycloudflare address) with the same two events, and put its signing secret in `.env.local` as `DODO_WEBHOOK_SECRET`, next to the test `DODO_API_KEY` and `DODO_PRODUCT_ID`.
+3. In Dodo's **test mode**, add a second webhook endpoint `https://dev-hooks.takethecrown.app/api/webhooks/dodo` (or the trycloudflare address) with the same events, and put its signing secret in `.env.local` as `DODO_WEBHOOK_SECRET`, next to the test `DODO_API_KEY` and `DODO_PRODUCT_ID`.
 4. Stop `pnpm dev` (Next allows one dev server per checkout), keep the tunnel running and run `pnpm e2e:dodo`. It starts the app on port 3100 with `PAYMENT_PROVIDER=dodo`, pays on Dodo's checkout with the test card, checks the takeover, a late payment refunded through the refund API and a duplicate webhook, and records the raw webhooks in `tests/fixtures/dodo/recorded/`.
 
 Dodo's CLI (`dodo wh listen`) is not used: it re-serializes the JSON it relays, which can break the signature check.
