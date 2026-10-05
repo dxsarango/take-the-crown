@@ -33,11 +33,11 @@ Payments are processed by {{PAYMENT_PROVIDER}}, which acts as the merchant of re
 
 The placement is digital content delivered immediately when your payment is confirmed. By completing the purchase, you request immediate delivery and acknowledge that you lose any right of withdrawal once the crown is delivered, to the extent permitted by the law that applies to you.
 
-All purchases are final once delivered. Purchases are refunded automatically only when the crown cannot be delivered, for example if your reservation expired and another player took the crown before your payment was confirmed, or if the season ended in the meantime.
+All purchases are final once delivered, except for refunds that {{PAYMENT_PROVIDER}} grants under its own buyer terms. Purchases are refunded automatically only when the crown cannot be delivered, for example if your reservation expired and another player took the crown before your payment was confirmed, or if the season ended in the meantime.
 
 Content hidden for breaking these terms, as described in section 7, does not give a right to a refund, because the placement itself is still delivered.
 
-If you open a chargeback for a delivered purchase, we may suspend your account.
+If a delivered purchase is refunded or charged back, its reign stays in the public history marked as refunded: its message and link are hidden, it no longer counts toward leaderboards, ranks or statistics, and the achievements earned through it are removed. If you open a chargeback, we also suspend your account.
 
 ## 6. Accounts and names
 
