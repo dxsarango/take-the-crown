@@ -199,13 +199,13 @@ isOneToOne: false
                   ]
                 },"payments": {
                   Row: {
-                    "amount_cents": number,"created_at": string,"currency": string,"email": string,"id": string,"lock_id": string,"provider": string,"provider_payment_id": string,"status": Database["public"]['Enums']["payment_status"],"updated_at": string
+                    "amount_cents": number,"created_at": string,"currency": string,"dispute_status": string | null,"email": string,"id": string,"lock_id": string,"provider": string,"provider_payment_id": string,"status": Database["public"]['Enums']["payment_status"],"updated_at": string
                   }
                   Insert: {
-                    "amount_cents": number,"created_at"?: string,"currency": string,"email": string,"id"?: string,"lock_id": string,"provider": string,"provider_payment_id": string,"status"?: Database["public"]['Enums']["payment_status"],"updated_at"?: string
+                    "amount_cents": number,"created_at"?: string,"currency": string,"dispute_status"?: string | null,"email": string,"id"?: string,"lock_id": string,"provider": string,"provider_payment_id": string,"status"?: Database["public"]['Enums']["payment_status"],"updated_at"?: string
                   }
                   Update: {
-                    "amount_cents"?: number,"created_at"?: string,"currency"?: string,"email"?: string,"id"?: string,"lock_id"?: string,"provider"?: string,"provider_payment_id"?: string,"status"?: Database["public"]['Enums']["payment_status"],"updated_at"?: string
+                    "amount_cents"?: number,"created_at"?: string,"currency"?: string,"dispute_status"?: string | null,"email"?: string,"id"?: string,"lock_id"?: string,"provider"?: string,"provider_payment_id"?: string,"status"?: Database["public"]['Enums']["payment_status"],"updated_at"?: string
                   }
                   Relationships: [
                     {
@@ -411,13 +411,13 @@ isOneToOne: false
                   ]
                 },"reigns": {
                   Row: {
-                    "country_code": string | null,"dethroned_by": string | null,"duration_seconds": number | null,"end_reason": Database["public"]['Enums']["reign_end_reason"] | null,"ended_at": string | null,"id": number,"link": string | null,"local_hour": number | null,"message": string | null,"message_hidden": boolean,"moderation_attempts": number,"moderation_reason": string | null,"moderation_status": Database["public"]['Enums']["moderation_status"],"name": string,"payment_id": string | null,"price_paid_cents": number,"profile_id": string,"season_id": number,"started_at": string
+                    "country_code": string | null,"dethroned_by": string | null,"duration_seconds": number | null,"end_reason": Database["public"]['Enums']["reign_end_reason"] | null,"ended_at": string | null,"id": number,"link": string | null,"local_hour": number | null,"message": string | null,"message_hidden": boolean,"moderation_attempts": number,"moderation_reason": string | null,"moderation_status": Database["public"]['Enums']["moderation_status"],"name": string,"payment_id": string | null,"price_paid_cents": number,"profile_id": string,"reversal_kind": string | null,"reversed_at": string | null,"season_id": number,"started_at": string
                   }
                   Insert: {
-                    "country_code"?: string | null,"dethroned_by"?: string | null,"duration_seconds"?: never,"end_reason"?: Database["public"]['Enums']["reign_end_reason"] | null,"ended_at"?: string | null,"id"?: never,"link"?: string | null,"local_hour"?: number | null,"message"?: string | null,"message_hidden"?: boolean,"moderation_attempts"?: number,"moderation_reason"?: string | null,"moderation_status"?: Database["public"]['Enums']["moderation_status"],"name": string,"payment_id"?: string | null,"price_paid_cents": number,"profile_id": string,"season_id": number,"started_at"?: string
+                    "country_code"?: string | null,"dethroned_by"?: string | null,"duration_seconds"?: never,"end_reason"?: Database["public"]['Enums']["reign_end_reason"] | null,"ended_at"?: string | null,"id"?: never,"link"?: string | null,"local_hour"?: number | null,"message"?: string | null,"message_hidden"?: boolean,"moderation_attempts"?: number,"moderation_reason"?: string | null,"moderation_status"?: Database["public"]['Enums']["moderation_status"],"name": string,"payment_id"?: string | null,"price_paid_cents": number,"profile_id": string,"reversal_kind"?: string | null,"reversed_at"?: string | null,"season_id": number,"started_at"?: string
                   }
                   Update: {
-                    "country_code"?: string | null,"dethroned_by"?: string | null,"duration_seconds"?: never,"end_reason"?: Database["public"]['Enums']["reign_end_reason"] | null,"ended_at"?: string | null,"id"?: never,"link"?: string | null,"local_hour"?: number | null,"message"?: string | null,"message_hidden"?: boolean,"moderation_attempts"?: number,"moderation_reason"?: string | null,"moderation_status"?: Database["public"]['Enums']["moderation_status"],"name"?: string,"payment_id"?: string | null,"price_paid_cents"?: number,"profile_id"?: string,"season_id"?: number,"started_at"?: string
+                    "country_code"?: string | null,"dethroned_by"?: string | null,"duration_seconds"?: never,"end_reason"?: Database["public"]['Enums']["reign_end_reason"] | null,"ended_at"?: string | null,"id"?: never,"link"?: string | null,"local_hour"?: number | null,"message"?: string | null,"message_hidden"?: boolean,"moderation_attempts"?: number,"moderation_reason"?: string | null,"moderation_status"?: Database["public"]['Enums']["moderation_status"],"name"?: string,"payment_id"?: string | null,"price_paid_cents"?: number,"profile_id"?: string,"reversal_kind"?: string | null,"reversed_at"?: string | null,"season_id"?: number,"started_at"?: string
                   }
                   Relationships: [
                     {
@@ -552,6 +552,12 @@ isOneToOne: false
                   Relationships: [
                     {
       foreignKeyName: "reigns_profile_id_fkey"
+      columns: ["from_profile_id"]
+isOneToOne: false
+      referencedRelation: "profile_stats"
+      referencedColumns: ["profile_id"]
+    },{
+      foreignKeyName: "reigns_profile_id_fkey"
       columns: ["to_profile_id"]
 isOneToOne: false
       referencedRelation: "profile_stats"
@@ -566,8 +572,8 @@ isOneToOne: false
       foreignKeyName: "reigns_profile_id_fkey"
       columns: ["from_profile_id"]
 isOneToOne: false
-      referencedRelation: "profile_stats"
-      referencedColumns: ["profile_id"]
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
     },{
       foreignKeyName: "reigns_profile_id_fkey"
       columns: ["to_profile_id"]
@@ -577,12 +583,6 @@ isOneToOne: false
     },{
       foreignKeyName: "reigns_profile_id_fkey"
       columns: ["profile_id"]
-isOneToOne: false
-      referencedRelation: "profiles"
-      referencedColumns: ["id"]
-    },{
-      foreignKeyName: "reigns_profile_id_fkey"
-      columns: ["from_profile_id"]
 isOneToOne: false
       referencedRelation: "profiles"
       referencedColumns: ["id"]
@@ -627,13 +627,13 @@ isOneToOne: false
                   ]
                 },"public_reigns": {
                   Row: {
-                    "country_code": string | null,"dethroned_by": string | null,"duration_seconds": number | null,"end_reason": Database["public"]['Enums']["reign_end_reason"] | null,"ended_at": string | null,"id": number | null,"link": string | null,"message": string | null,"name": string | null,"price_paid_cents": number | null,"profile_id": string | null,"season_id": number | null,"started_at": string | null
+                    "country_code": string | null,"dethroned_by": string | null,"duration_seconds": number | null,"end_reason": Database["public"]['Enums']["reign_end_reason"] | null,"ended_at": string | null,"id": number | null,"link": string | null,"message": string | null,"name": string | null,"price_paid_cents": number | null,"profile_id": string | null,"reversed": boolean | null,"season_id": number | null,"started_at": string | null
                   }
                   Insert: {
-                           "country_code"?: string | null,"dethroned_by"?: string | null,"duration_seconds"?: number | null,"end_reason"?: Database["public"]['Enums']["reign_end_reason"] | null,"ended_at"?: string | null,"id"?: number | null,"link"?: never,"message"?: never,"name"?: string | null,"price_paid_cents"?: number | null,"profile_id"?: string | null,"season_id"?: number | null,"started_at"?: string | null
+                           "country_code"?: string | null,"dethroned_by"?: string | null,"duration_seconds"?: number | null,"end_reason"?: Database["public"]['Enums']["reign_end_reason"] | null,"ended_at"?: string | null,"id"?: number | null,"link"?: never,"message"?: never,"name"?: string | null,"price_paid_cents"?: number | null,"profile_id"?: string | null,"reversed"?: never,"season_id"?: number | null,"started_at"?: string | null
                          }
                         Update: {
-                           "country_code"?: string | null,"dethroned_by"?: string | null,"duration_seconds"?: number | null,"end_reason"?: Database["public"]['Enums']["reign_end_reason"] | null,"ended_at"?: string | null,"id"?: number | null,"link"?: never,"message"?: never,"name"?: string | null,"price_paid_cents"?: number | null,"profile_id"?: string | null,"season_id"?: number | null,"started_at"?: string | null
+                           "country_code"?: string | null,"dethroned_by"?: string | null,"duration_seconds"?: number | null,"end_reason"?: Database["public"]['Enums']["reign_end_reason"] | null,"ended_at"?: string | null,"id"?: number | null,"link"?: never,"message"?: never,"name"?: string | null,"price_paid_cents"?: number | null,"profile_id"?: string | null,"reversed"?: never,"season_id"?: number | null,"started_at"?: string | null
                          }
                         Relationships: [
                     {
@@ -882,6 +882,9 @@ isOneToOne: false
 "record_paid_payment":
 { Args: { "p_amount_cents": number,"p_currency": string,"p_email": string,"p_event_id": string,"p_lock_id": string,"p_provider": string,"p_provider_payment_id": string }; Returns: string
                            },
+"record_payment_dispute":
+{ Args: { "p_provider": string,"p_provider_payment_id": string,"p_status": string }; Returns: string
+                           },
 "record_rank_ups":
 { Args: { "p_profile_id": string }; Returns: number
                            },
@@ -899,6 +902,7 @@ isOneToOne: false
               "amount_cents": number,
 "created_at": string,
 "currency": string,
+"dispute_status": string | null,
 "email": string,
 "id": string,
 "lock_id": string,
@@ -915,6 +919,9 @@ isOneToOne: false
       } },
 "resolve_buyer_profile":
 { Args: { "p_lock": Database["public"]['Tables']["price_locks"]['Row'] }; Returns: string
+                           },
+"reverse_payment":
+{ Args: { "p_kind": string,"p_payment_id": string }; Returns: number
                            },
 "review_reign_moderation":
 { Args: { "p_admin_profile_id": string,"p_approved": boolean,"p_reason": string,"p_reign_id": number }; Returns: undefined
@@ -974,7 +981,7 @@ isOneToOne: false
       } }
           }
           Enums: {
-            "event_kind": "crown_taken"|"achievement_unlocked"|"season_started"|"season_ended"|"rank_up","lock_status": "active"|"consumed"|"expired","moderation_status": "approved"|"pending"|"rejected","payment_status": "paid"|"applied"|"refund_pending"|"refunded"|"failed","rarity": "common"|"rare"|"epic"|"legendary"|"seasonal","reign_end_reason": "dethroned"|"season_end"|"admin"
+            "event_kind": "crown_taken"|"achievement_unlocked"|"season_started"|"season_ended"|"rank_up","lock_status": "active"|"consumed"|"expired","moderation_status": "approved"|"pending"|"rejected","payment_status": "paid"|"applied"|"refund_pending"|"refunded"|"failed","rarity": "common"|"rare"|"epic"|"legendary"|"seasonal","reign_end_reason": "dethroned"|"season_end"|"admin"|"reversed"
           }
           CompositeTypes: {
             [_ in never]: never
@@ -1094,7 +1101,7 @@ export const Constants = {
           }
         },"public": {
           Enums: {
-            "event_kind": ["crown_taken", "achievement_unlocked", "season_started", "season_ended", "rank_up"],"lock_status": ["active", "consumed", "expired"],"moderation_status": ["approved", "pending", "rejected"],"payment_status": ["paid", "applied", "refund_pending", "refunded", "failed"],"rarity": ["common", "rare", "epic", "legendary", "seasonal"],"reign_end_reason": ["dethroned", "season_end", "admin"]
+            "event_kind": ["crown_taken", "achievement_unlocked", "season_started", "season_ended", "rank_up"],"lock_status": ["active", "consumed", "expired"],"moderation_status": ["approved", "pending", "rejected"],"payment_status": ["paid", "applied", "refund_pending", "refunded", "failed"],"rarity": ["common", "rare", "epic", "legendary", "seasonal"],"reign_end_reason": ["dethroned", "season_end", "admin", "reversed"]
           }
         }
 } as const
