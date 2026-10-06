@@ -65,7 +65,7 @@ export function mapDodoEvent(json: unknown): DodoEvent | null {
     return refund.success ? { type: "refund_succeeded", providerPaymentId: refund.data.payment_id } : null;
   }
   // dispute.opened … dispute.lost: the event name carries the status (Dodo's dispute_status values).
-  const disputeStatus = /^dispute.([a-z]+)$/.exec(type)?.[1];
+  const disputeStatus = /^dispute\.([a-z]+)$/.exec(type)?.[1];
   if (disputeStatus) {
     const status = DISPUTE_STATUSES.find((s) => s === `dispute_${disputeStatus}`);
     const dispute = disputeData.safeParse(data);
