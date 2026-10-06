@@ -71,7 +71,7 @@ export function coronationStage(
   });
 
   // The crown that flies is the old king's (the new king has none yet). From an empty throne it
-  // rises from the cushion.
+  // comes down from above the scene.
   const wearer = from ?? to;
   const crownLayer = renderAvatar(avatarTraits(wearer.avatar), { season: artSet(season), layer: "crown" });
   let x0 = 99;
@@ -132,20 +132,26 @@ export function coronationStage(
   };
 }
 
-function crownPosition(st: Stage, t: number): [number, number] {
+/** Top-left of the flying crown at `t` ms, in scene pixels. */
+export function crownPosition(st: Stage, t: number): [number, number] {
   const { P0, cOff } = st;
   const endX = P0.x + cOff.x;
   const baseY = P0.y + cOff.y;
-  // From an empty throne the crown starts on the cushion, where the scene draws it.
-  const startX = st.fromEmpty ? endX : Math.round(P0.x + (st.oldEnd - P0.x) * easeOut(clamp(t / 350))) + cOff.x;
-  const startY = st.fromEmpty ? P0.y + 39 : baseY;
-  const liftX = st.fromEmpty ? endX : st.oldEnd + cOff.x;
-  if (t < 350) return [startX, startY];
-  if (t < 500) return [liftX, startY - Math.round(st.lift * easeOut((t - 350) / 150))];
-  if (t < 1150) {
-    const u = easeInOut((t - 500) / 650);
-    const y = startY + (baseY - startY) * u;
-    return [Math.round(liftX + (endX - liftX) * u), Math.round(y - st.lift - st.apex * 4 * u * (1 - u))];
+  if (st.fromEmpty) {
+    // No previous king: the crown waits above the scene while the new king walks in, then comes
+    // straight down on the same beats as the flight, so landing, flash, rays and confetti match.
+    const above = -st.ch - 1;
+    if (t < 500) return [endX, above];
+    if (t < 1150) return [endX, Math.round(above + (baseY - st.lift - above) * easeInOut((t - 500) / 650))];
+  } else {
+    const startX = Math.round(P0.x + (st.oldEnd - P0.x) * easeOut(clamp(t / 350))) + cOff.x;
+    const liftX = st.oldEnd + cOff.x;
+    if (t < 350) return [startX, baseY];
+    if (t < 500) return [liftX, baseY - Math.round(st.lift * easeOut((t - 350) / 150))];
+    if (t < 1150) {
+      const u = easeInOut((t - 500) / 650);
+      return [Math.round(liftX + (endX - liftX) * u), Math.round(baseY - st.lift - st.apex * 4 * u * (1 - u))];
+    }
   }
   if (t < 1260) return [endX, Math.round(baseY - st.lift + (st.lift + 1) * easeIn((t - 1150) / 110))];
   if (t < 1300) return [endX, baseY + 1];

@@ -5,6 +5,8 @@ import { FORMER_KING_PIXELS } from "@/lib/art/former-king";
 import { framePixels } from "@/lib/art/frames";
 import { FORMER_KING_SEED, avatarSource } from "@/lib/profile/avatar";
 import { seasonScene } from "@/lib/art/scenes";
+import { coronationStage, crownPosition } from "@/lib/art/coronation";
+import { THRONE_SIZES } from "@/lib/art/throne";
 import { RANKS } from "@/lib/game/rank";
 import { pixelDiff, readPixelSVG } from "../helpers/svg-pixels";
 
@@ -82,5 +84,27 @@ describe("scenes", () => {
 
   it("draws Frost (season 1) with the Genesis scene until its art ships", () => {
     expect(seasonScene(1, 98, 72)).toEqual(seasonScene(0, 98, 72));
+  });
+});
+
+describe("coronation", () => {
+  const who = (seed: string) => ({ avatar: { seed }, rank: "peasant" as const });
+
+  it.each(["mobile", "desktop"] as const)("brings the crown down from above onto the first king of an empty throne (%s)", (size) => {
+    const { width, height } = THRONE_SIZES[size];
+    const empty = coronationStage(0, size, width, height, null, who("first"));
+    const handed = coronationStage(0, size, width, height, who("old"), who("first"));
+    const landing = crownPosition(handed, 1300);
+
+    // Out of sight above the scene while the new king walks in, then straight down.
+    expect(crownPosition(empty, 0)[1]).toBeLessThan(0);
+    expect(crownPosition(empty, 499)[1]).toBeLessThan(0);
+    const xs = new Set([0, 600, 900, 1100, 1200].map((t) => crownPosition(empty, t)[0]));
+    expect(xs).toEqual(new Set([landing[0]]));
+    const ys = [500, 700, 900, 1100, 1149].map((t) => crownPosition(empty, t)[1]);
+    expect([...ys].sort((a, b) => a - b)).toEqual(ys);
+    // Same landing beat and spot as a handover, so flash, rays and confetti line up.
+    expect(crownPosition(empty, 1300)).toEqual(landing);
+    expect(crownPosition(empty, 1800)).toEqual(landing);
   });
 });
