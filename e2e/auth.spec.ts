@@ -57,6 +57,8 @@ test("starts Google and X sign-in, and explains when a provider is off", async (
   await expect(loginDialog(page).getByRole("link", { name: en.login.x })).toHaveAttribute("href", "/auth/sign-in/x?next=%2Fen");
 
   // X stays off in the local stack until its OAuth app exists.
+  const probe = await page.request.get("http://127.0.0.1:54321/auth/v1/authorize?provider=x", { maxRedirects: 0 });
+  test.skip(probe.status() === 302, "X (OAuth 2.0) is enabled in local Supabase");
   await loginDialog(page).getByRole("link", { name: en.login.x }).click();
   await page.waitForURL(/\/en$/);
   await expect(loginDialog(page).getByText(en.login.errUnavailable)).toBeVisible();
@@ -74,6 +76,23 @@ test("hands Google sign-in to Supabase Auth with a PKCE challenge", async ({ pag
   expect(location.searchParams.get("provider")).toBe("google");
   expect(location.searchParams.get("code_challenge")).toBeTruthy();
   expect(location.searchParams.get("redirect_to")).toBe("http://localhost:3000/auth/callback?next=%2Fen");
+});
+
+test("hands X sign-in to Supabase's OAuth 2.0 provider, asking for the email", async ({ page }) => {
+  // Runs when the local stack has X on (`[auth.external.x]`, any client id): Supabase's authorize
+  // endpoint redirects to X only for an enabled provider.
+  const probe = await page.request.get("http://127.0.0.1:54321/auth/v1/authorize?provider=x", { maxRedirects: 0 });
+  test.skip(probe.status() !== 302, "X (OAuth 2.0) is not enabled in local Supabase");
+
+  const start = await page.request.get("/auth/sign-in/x?next=%2Fen", { maxRedirects: 0 });
+  const authorize = new URL(start.headers().location);
+  expect(authorize.pathname).toBe("/auth/v1/authorize");
+  expect(authorize.searchParams.get("provider")).toBe("x");
+  expect(authorize.searchParams.get("code_challenge")).toBeTruthy();
+
+  const toX = new URL((await page.request.get(authorize.href, { maxRedirects: 0 })).headers().location);
+  expect(`${toX.host}${toX.pathname}`).toBe("x.com/i/oauth2/authorize");
+  expect(toX.searchParams.get("scope")?.split(" ")).toEqual(expect.arrayContaining(["users.email", "users.read"]));
 });
 
 test("comes back with an error when the callback fails", async ({ page }) => {
