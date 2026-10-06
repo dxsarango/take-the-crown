@@ -151,7 +151,7 @@ Placeholders: `<ref>` is the Supabase project ref (the subdomain of its API URL)
 
 Test and live modes are separate: each has its own API key, product and webhook endpoints. Prelaunch runs in **test mode**: admins pay on Dodo's real checkout with test cards (`4242 4242 4242 4242`, any future date, CVC `123`).
 
-1. **Product** (in the mode you are configuring): one-time, **Pay What You Want** on, price **$5.00** (the minimum; it must not be above `app_config.floor_cents`, and the admin refuses a floor below it). Keep adaptive pricing off, or leave it: the app asks for USD in every checkout. Copy the product ID into `DODO_PRODUCT_ID`.
+1. **Product** (in the mode you are configuring): one-time, **Pay What You Want** on, price **$5.00** (the minimum; it must not be above `app_config.floor_cents`, and the admin refuses a floor below it). Keep adaptive pricing off, or leave it: the app asks for USD in every checkout. Copy the product ID into `DODO_PRODUCT_ID`. With Pay What You Want off, Dodo ignores the crown's price and charges the product's fixed price, so every takeover above it is underpaid and refunded; `/admin` (config) and `pnpm e2e:dodo` warn about it.
 2. **Developer → Webhooks → Add endpoint:**
    - URL: `https://takethecrown.app/api/webhooks/dodo`
    - Events: `payment.succeeded`, `refund.succeeded` and every dispute event (`dispute.opened`, `dispute.challenged`, `dispute.accepted`, `dispute.cancelled`, `dispute.expired`, `dispute.won`, `dispute.lost`). Others are acknowledged and ignored, so subscribing to more is harmless.
@@ -169,7 +169,7 @@ Dodo has to reach your local server, so it needs a public URL:
 2. Stable hostname (recommended, the domain is already on Cloudflare): `cloudflared tunnel login`, `cloudflared tunnel create crown-dev`, `cloudflared tunnel route dns crown-dev dev-hooks.takethecrown.app`, then run `cloudflared tunnel run --url http://localhost:3100 crown-dev` whenever you test.
    Quick alternative without login: `cloudflared tunnel --url http://localhost:3100` prints a random `https://….trycloudflare.com` address that changes every run.
 3. In Dodo's **test mode**, add a second webhook endpoint `https://dev-hooks.takethecrown.app/api/webhooks/dodo` (or the trycloudflare address) with the same events, and put its signing secret in `.env.local` as `DODO_WEBHOOK_SECRET`, next to the test `DODO_API_KEY` and `DODO_PRODUCT_ID`.
-4. Stop `pnpm dev` (Next allows one dev server per checkout), keep the tunnel running and run `pnpm e2e:dodo`. It starts the app on port 3100 with `PAYMENT_PROVIDER=dodo`, pays on Dodo's checkout with the test card, checks the takeover, a late payment refunded through the refund API and a duplicate webhook, and records the raw webhooks in `tests/fixtures/dodo/recorded/`.
+4. Stop `pnpm dev` (Next allows one dev server per checkout), keep the tunnel running and run `pnpm e2e:dodo`. A preflight checks local Supabase, Playwright's browser, the Dodo variables, the test product (Pay What You Want), the test webhook endpoint and that the tunnel reaches port 3100, and says what to start or fix. It starts the app on port 3100 with `PAYMENT_PROVIDER=dodo`, pays on Dodo's checkout with the test card, checks the takeover, a late payment refunded through the refund API and a duplicate webhook, and records the raw webhooks in `tests/fixtures/dodo/recorded/`.
 
 Dodo's CLI (`dodo wh listen`) is not used: it re-serializes the JSON it relays, which can break the signature check.
 
