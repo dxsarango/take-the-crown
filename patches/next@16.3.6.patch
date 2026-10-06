@@ -1,0 +1,31 @@
+diff --git a/dist/server/dev/next-dev-server.js b/dist/server/dev/next-dev-server.js
+index 64966ab665f5cda9c203172ff3a2f9a4cf8cbf47..43eae650ad40e50077a8eddd4f4326781c6ebbda 100644
+--- a/dist/server/dev/next-dev-server.js
++++ b/dist/server/dev/next-dev-server.js
+@@ -687,7 +687,25 @@ class DevServer extends _nextserver.default {
+                 };
+                 const updatedManifest = JSON.stringify(existingManifest);
+                 if (updatedManifest !== rawExistingManifest) {
+-                    await _fs.default.promises.writeFile((0, _path.join)(this.distDir, _constants1.PRERENDER_MANIFEST), updatedManifest);
++                    // Patched (take-the-crown): write atomically. Requests read this manifest while it is
++                    // rewritten; a plain writeFile truncates it first, so a concurrent read finds it empty
++                    // ("Unexpected end of JSON input"). Windows may refuse the rename while a reader has the
++                    // file open, so retry briefly.
++                    const manifestPath = (0, _path.join)(this.distDir, _constants1.PRERENDER_MANIFEST);
++                    const tempPath = manifestPath + "." + process.pid + "." + Math.random().toString(36).slice(2) + ".tmp";
++                    await _fs.default.promises.writeFile(tempPath, updatedManifest);
++                    for(let attempt = 0;; attempt++){
++                        try {
++                            await _fs.default.promises.rename(tempPath, manifestPath);
++                            break;
++                        } catch (err) {
++                            if (attempt >= 20 || err.code !== "EPERM" && err.code !== "EBUSY" && err.code !== "EACCES") {
++                                await _fs.default.promises.rm(tempPath, { force: true });
++                                throw err;
++                            }
++                            await new Promise((resolve)=>setTimeout(resolve, 10));
++                        }
++                    }
+                 }
+             }
+             this.staticPathsCache.set(pathname, value);
