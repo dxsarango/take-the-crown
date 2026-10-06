@@ -943,6 +943,7 @@
       "min_first_season_days": "Shortest first season at launch (days)",
       "delete_reauth_seconds": "Sign-in age to delete an account (seconds)",
       "paymentMinimum": "Dodo Payments refuses checkouts under {minimum}, the product's minimum: the floor price can't go below it.",
+      "fixedPrice": "The Dodo product doesn't have Pay What You Want turned on, so every checkout charges its fixed {price} instead of the crown's price, and any takeover above {price} is refunded. Turn on Pay What You Want for the product in Dodo.",
       "floorBelowMinimum": "The floor price can't be lower than {minimum}, the Dodo product's minimum price. Lower the product's minimum in Dodo first. Nothing was saved.",
       "floorUnknown": "Dodo Payments didn't answer, so the floor price couldn't be checked against the product's minimum. Nothing was saved; try again."
     },

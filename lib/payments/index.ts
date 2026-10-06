@@ -49,6 +49,11 @@ export async function paymentMinimumCents(): Promise<number | null> {
   return serverEnv().PAYMENT_PROVIDER === "dodo" ? dodoProvider().minimumCents() : null;
 }
 
+/** The payment product's settings, or null when the provider has no product (test provider). */
+export async function paymentProduct(): Promise<{ minimumCents: number; payWhatYouWant: boolean } | null> {
+  return serverEnv().PAYMENT_PROVIDER === "dodo" ? dodoProvider().product() : null;
+}
+
 /** The provider named in a webhook URL, if it is the configured one. */
 export async function providerByName(name: string): Promise<PaymentProvider | null> {
   const provider = await paymentProvider();

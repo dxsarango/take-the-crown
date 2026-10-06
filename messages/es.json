@@ -943,6 +943,7 @@
       "min_first_season_days": "Primera temporada más corta al lanzar (días)",
       "delete_reauth_seconds": "Antigüedad del inicio de sesión para eliminar una cuenta (segundos)",
       "paymentMinimum": "Dodo Payments rechaza pagos por debajo de {minimum}, el mínimo del producto: el precio mínimo del juego no puede bajar de ahí.",
+      "fixedPrice": "El producto de Dodo no tiene activado Pay What You Want, así que cada pago cobra su precio fijo de {price} en lugar del precio de la corona, y toda compra por encima de {price} se reembolsa. Activa Pay What You Want en el producto en Dodo.",
       "floorBelowMinimum": "El precio mínimo no puede ser menor que {minimum}, el mínimo del producto en Dodo. Primero baja el mínimo del producto en Dodo. No se guardó nada.",
       "floorUnknown": "Dodo Payments no respondió, así que no se pudo comprobar el precio mínimo contra el del producto. No se guardó nada; inténtalo de nuevo."
     },

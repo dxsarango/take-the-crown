@@ -161,6 +161,14 @@ describe("DodoProvider", () => {
     expect(fetchMock.mock.calls[0][0]).toBe("https://live.dodopayments.com/products/pdt_test_crown");
   });
 
+  it("says whether the product takes the locked price (Pay What You Want)", async () => {
+    fetchMock.mockResolvedValueOnce(Response.json({ price: { type: "one_time_price", price: 500, pay_what_you_want: true } }));
+    expect(await provider("test").product()).toEqual({ minimumCents: 500, payWhatYouWant: true });
+    // A fixed-price product charges 500 whatever the checkout asks for.
+    fetchMock.mockResolvedValueOnce(Response.json({ price: { type: "one_time_price", price: 500, pay_what_you_want: false } }));
+    expect(await provider("test").product()).toEqual({ minimumCents: 500, payWhatYouWant: false });
+  });
+
   it("refunds a payment through the refund API", async () => {
     fetchMock.mockResolvedValue(Response.json({ refund_id: "ref_1", status: "pending" }));
     await provider().refund("pay_test_7Hq2Lc");
