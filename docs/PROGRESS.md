@@ -4,7 +4,7 @@ Checklist for the build order in `docs/SPEC.md` §17. A milestone is done when i
 
 ## Pending verification
 
-- [ ] **Live moderation suite (`pnpm test:moderation`) has never run against the real model.** It stays skipped until the Anthropic account has credits; all cases, especially the manipulation ones, must pass before launch (see the deployment checklist).
+- [ ] **Live moderation suite (`pnpm test:moderation`) has never run against the real model.** It stays skipped until the Anthropic account has credits (it reads `ANTHROPIC_API_KEY` from the shell, `.env.local` or `.env`; before that fix it skipped even with the key in `.env.local`, because Vitest does not load env files into `process.env`); all cases, especially the manipulation ones, must pass before launch (see the deployment checklist).
 
 ## Decisions
 
