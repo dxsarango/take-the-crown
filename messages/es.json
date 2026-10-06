@@ -674,7 +674,9 @@
     "errUnavailable": "Esa opción de acceso no está disponible ahora. Usa un enlace mágico.",
     "errLimited": "Se pidieron demasiados enlaces de inicio de sesión. Vuelve a intentarlo en una hora.",
     "signOut": "Cerrar sesión",
-    "yourProfile": "Tu perfil"
+    "accountMenu": "Menú de la cuenta",
+    "viewProfile": "Ver perfil",
+    "editProfile": "Editar perfil"
   },
   "share": {
     "knight": "Caballero",
