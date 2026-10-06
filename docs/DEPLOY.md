@@ -128,7 +128,7 @@ Placeholders: `<ref>` is the Supabase project ref (the subdomain of its API URL)
    - Expression: `(http.request.uri.path in {"/api/locks" "/api/auth/magic-link" "/api/reports" "/api/profile" "/api/profile/avatar"} and http.request.method ne "GET")`.
    - Counted by IP, `20` requests per `10 seconds`, action **Block** for `10 seconds`.
    - The app enforces the hourly limits; `/api/names/availability` is covered by this rule on Pro (`120` per minute) and by the app's validation meanwhile.
-4. **Caching:** no "Cache Everything" rule. HTML carries a per-request CSP nonce and must not be cached; static assets cache by default. `/api/*` (including `/api/health`) answers `Cache-Control: no-store` and is never cached.
+   4. **Caching:** no "Cache Everything" rule. HTML carries a per-request CSP nonce and must not be cached; static assets cache by default. `/api/*` (including `/api/health`) answers `Cache-Control: no-store` and is never cached.
 5. **Security → WAF → Managed rules:** the Cloudflare Free Managed Ruleset is on by default.
 
 ## 7. Check, sign in, configure
