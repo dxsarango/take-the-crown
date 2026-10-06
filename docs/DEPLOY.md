@@ -56,7 +56,14 @@ Placeholders: `<ref>` is the Supabase project ref (the subdomain of its API URL)
     - Subject: `Your sign-in link · Tu enlace para entrar`
     - Body: the whole of `supabase/templates/sign-in.html`.
 11. **Project Settings → API Keys:** keep the project URL `https://<ref>.supabase.co`, the publishable (anon) key and the secret (service role) key for step 5.
-12. **Backups:** the Free plan has none. Pro keeps daily backups for 7 days; add Point-in-Time Recovery when real payments start (see the plans table).
+12. **Authentication → Multi-Factor:** App Authenticator (TOTP) enabled (the default). Admins must set it up on their first visit to `/admin` (decision 49).
+13. **Authentication → Sessions** (Pro plan and up; on Free these settings are missing and sessions last until sign-out, which is also acceptable for prelaunch):
+    - Time-box user sessions: `0` (never). Players keep their session for as long as they use it.
+    - Inactivity timeout: `720` hours (30 days). A session not refreshed for 30 days ends; every visit refreshes it.
+    - Single session per user: off (players sign in on several devices).
+    - Keep the access token expiry at `3600` seconds (**JWT Keys**) and refresh token reuse detection on with its 10-second interval.
+    - These apply to admins too; the 12-hour admin session and the 10-minute re-authentication are enforced by the app (`app_config.admin_session_seconds`, `admin_reauth_seconds`).
+14. **Backups:** the Free plan has none. Pro keeps daily backups for 7 days; add Point-in-Time Recovery when real payments start (see the plans table).
 
 ## 4. Google and X sign-in
 
@@ -141,6 +148,12 @@ Placeholders: `<ref>` is the Supabase project ref (the subdomain of its API URL)
    update profile_private set is_admin = true where email = '<your email>';
    ```
 
+   Open `/en/admin` and set up two-step verification with an authenticator app (1Password, Google Authenticator, Authy). An admin who loses the authenticator has their factor removed in the SQL Editor, then sets it up again on the next visit:
+
+   ```sql
+   delete from auth.mfa_factors where user_id = (select id from auth.users where email = '<admin email>');
+   ```
+
 4. **`/en/admin` → Config → Legal pages:**
    - Contact `hola@takethecrown.app`, city, payment provider (until the provider answers, the name you will use), effective date.
    - Run `pnpm check:deploy https://takethecrown.app` again: no placeholders left.
@@ -202,7 +215,7 @@ Vercel deploys `main` on its own; the database does not change until you push th
 | Service | Prelaunch | Before launch |
 |---|---|---|
 | Vercel | **Pro** from the start: per-minute crons, and Hobby forbids commercial use | Pro; set spend management |
-| Supabase | Free works (500 MB database, 1 GB storage, 50k monthly users), but it pauses after a week without traffic and has **no backups**; Pro if the provider's review may take weeks | **Pro** (no pausing, daily backups for 7 days); PITR add-on once real money flows |
+| Supabase | Free works (500 MB database, 1 GB storage, 50k monthly users), but it pauses after a week without traffic, has **no backups** and no session inactivity timeout; Pro if the provider's review may take weeks | **Pro** (no pausing, daily backups for 7 days, session inactivity timeout); PITR add-on once real money flows |
 | Cloudflare | Free: proxy, SSL, Free Managed Ruleset, one rate-limit rule, Transform Rules, Email Routing, Turnstile | Pro recommended for the full managed WAF ruleset and more rate-limit rules (names availability, per-route thresholds) |
 | Resend | Free: 3,000 emails a month, **100 a day**, one domain | **Pro**: dethroned alerts plus sign-in links will pass 100 a day |
 | Anthropic | No credits needed: moderation is unavailable, so messages and links wait for admin review | Credits, auto-reload, monthly spend limit, `pnpm test:moderation` passing |
