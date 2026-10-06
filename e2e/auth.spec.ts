@@ -165,3 +165,20 @@ for (const locale of ["en", "es"] as const) {
     await page.screenshot({ path: `test-results/screens/login-sent-${locale}-${info.project.name}.png` });
   });
 }
+
+test("a session whose user was deleted ends cleanly instead of failing", async ({ page, context }) => {
+  await signInByEmail(page, "vanished@test.local", "/en");
+  await expect(page.getByRole("button", { name: en.home.signin }).filter({ visible: true })).toHaveCount(0);
+  const authCookies = async () => (await context.cookies()).filter((c) => c.name.includes("auth-token"));
+  expect((await authCookies()).length).toBeGreaterThan(0);
+
+  // The account is gone on the server while the browser still holds its session.
+  await sql("delete from auth.users where email = 'vanished@test.local'");
+  const me = await page.request.get("/api/me");
+  expect(me.status()).toBe(200);
+  expect(await me.json()).toEqual({ viewer: null });
+  expect(await authCookies()).toEqual([]);
+
+  await page.goto("/en");
+  await expect(signInButton(page)).toBeVisible();
+});
