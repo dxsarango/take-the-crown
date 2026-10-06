@@ -157,10 +157,19 @@ export class DodoProvider implements PaymentProvider {
     });
   }
 
+/**
+   * The product's settings that checkouts depend on. Without Pay What You Want, Dodo ignores the
+   * locked price in the checkout and charges the product's fixed price, so every takeover above
+   * it is underpaid and refunded.
+   */
+  async product(): Promise<{ minimumCents: number; payWhatYouWant: boolean }> {
+    const product = productAnswer.parse(await this.call(`/products/${encodeURIComponent(this.config.productId)}`, { method: "GET" }));
+    return { minimumCents: product.price.price, payWhatYouWant: product.price.pay_what_you_want === true };
+  }
+
   /** The product's Pay What You Want minimum, in cents: the floor price may never go below it. */
   async minimumCents(): Promise<number> {
-    const product = productAnswer.parse(await this.call(`/products/${encodeURIComponent(this.config.productId)}`, { method: "GET" }));
-    return product.price.price;
+    return (await this.product()).minimumCents;
   }
 }
 

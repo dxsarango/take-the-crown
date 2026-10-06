@@ -10,7 +10,7 @@ import { CONFIG_FIELDS, LEGAL_FIELDS } from "@/lib/admin/config";
 import { fetchAdminOverview, fetchLaunchPlan } from "@/lib/admin/data";
 import { currentAdmin } from "@/lib/admin/guard";
 import { BRAND_NAME } from "@/lib/config/brand";
-import { paymentMinimumCents, testPayments } from "@/lib/payments";
+import { paymentProduct, testPayments } from "@/lib/payments";
 import { displayLink, formatPrice } from "@/lib/format";
 import { MODEL_REASONS } from "@/lib/moderation/model";
 import { dismissReport, hideMessage, refundPayment, releaseName, reviewContent, launchGame, previewLaunch, saveConfig, saveLegal, saveSeasonDates, setBanned } from "./actions";
@@ -68,7 +68,8 @@ export default async function AdminPage({ params, searchParams }: PageProps<"/[l
     `${new Intl.DateTimeFormat(locale === "es" ? "es-419" : "en-US", { dateStyle: "medium", timeStyle: "short", timeZone: "UTC" }).format(new Date(iso))} UTC`;
   const localInput = (iso: string) => iso.slice(0, 16);
   const paymentsAreTest = testPayments();
-  const paymentMinimum = await paymentMinimumCents().catch(() => null);
+  const product = await paymentProduct().catch(() => null);
+  const paymentMinimum = product?.minimumCents ?? null;
   const launchPlan = data.config.prelaunch ? await fetchLaunchPlan(query.launchAt) : null;
   const now = new Date();
 
@@ -473,6 +474,11 @@ export default async function AdminPage({ params, searchParams }: PageProps<"/[l
           <p className="text-14 text-crown-muted">{t("config.help")}</p>
           {paymentMinimum !== null && (
             <p className="text-14 text-crown-muted">{t("config.paymentMinimum", { minimum: formatPrice(paymentMinimum, locale) })}</p>
+          )}
+          {product && !product.payWhatYouWant && (
+            <p role="alert" className="bg-crown-velvet p-4 text-14 font-bold shadow-flag-danger">
+              {t("config.fixedPrice", { price: formatPrice(product.minimumCents, locale) })}
+            </p>
           )}
           <form action={saveConfig} className="grid gap-4 sm:grid-cols-2">
             <Back locale={locale} section="config" />
