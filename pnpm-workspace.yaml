@@ -3,3 +3,5 @@ allowBuilds:
   '@swc/core': false
   sharp: false
   unrs-resolver: false
+patchedDependencies:
+  next@16.3.6: patches/next@16.3.6.patch
