@@ -613,8 +613,9 @@ export function PaymentModal({ season, priceCents, lockSeconds, messageMax, now,
     );
 
   // Signed-in buyers are already kept; the success screen's other column is for sharing the reign.
+  const sharing = isSuccess && viewer !== null && phase.reignId !== null;
   const reignShare = (size: Size) =>
-    isSuccess && viewer && phase.reignId !== null ? <ReignShare reignId={phase.reignId} viewer={viewer} size={size} /> : null;
+    sharing && viewer && phase.kind === "success" && phase.reignId !== null ? <ReignShare reignId={phase.reignId} viewer={viewer} size={size} /> : null;
 
   const showForm = !isSuccess;
   const formDisabled = phase.kind !== "form";
@@ -627,7 +628,7 @@ export function PaymentModal({ season, priceCents, lockSeconds, messageMax, now,
         e.preventDefault();
         close();
       }}
-      className="m-0 max-h-none w-full max-w-none bg-crown-ink text-crown-text backdrop:bg-crown-abyss/84 max-lg:h-dvh lg:m-auto lg:max-h-[calc(100dvh-48px)] lg:w-[920px] lg:shadow-modal"
+      className={`m-0 max-h-none w-full max-w-none bg-crown-ink text-crown-text backdrop:bg-crown-abyss/84 max-lg:h-dvh lg:m-auto lg:max-h-[calc(100dvh-48px)] lg:w-[920px] lg:shadow-modal ${sharing ? "xl:w-[1084px]" : ""}`}
     >
       <form
         id="payment-form"

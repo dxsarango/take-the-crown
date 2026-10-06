@@ -96,7 +96,13 @@ for (const locale of ["en", "es"] as const) {
     for (const key of ["firstBlood", "founder", "bag", "patriot"] as const) {
       await expect(share.getByText(m.medals[key].name, { exact: true })).toBeVisible();
     }
-    await expect.poll(() => share.locator("img").first().evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth)).toBe(1200);
+    const card = share.locator("img").first();
+    await expect.poll(() => card.evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth)).toBe(1200);
+    // An exact fraction of the card, nearest-neighbor: half on a wide desktop, a quarter on phones.
+    expect(await card.evaluate((img) => [img.getBoundingClientRect().width, getComputedStyle(img).imageRendering])).toEqual([
+      testInfo.project.name === "desktop" ? 600 : 300,
+      "pixelated",
+    ]);
     await page.screenshot({ path: `${SCREENS}/payment-success-shared-${locale}-${testInfo.project.name}.png` });
 
     // "Watch your coronation" replays it.
