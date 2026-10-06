@@ -1,9 +1,9 @@
 import { mkdir } from "node:fs/promises";
 import { type APIRequestContext, expect, test } from "@playwright/test";
 import en from "../messages/en.json";
+import { signInAsAdmin } from "./fixtures/admin";
 import { sql } from "./fixtures/db";
 import { resetKingdom, seedKingdom } from "./fixtures/kingdom";
-import { signInByEmail } from "./fixtures/mail";
 import { HUMAN_TOKEN } from "./fixtures/payment";
 
 const SCREENS = "test-results/screens";
@@ -40,8 +40,7 @@ test("the admin sees refunds the provider refused and retries them", async ({ pa
     [stopped],
   );
 
-  await sql("update profile_private set is_admin = true where email = 'kenji@test.local'");
-  await signInByEmail(page, "kenji@test.local", "/en/admin");
+  await signInAsAdmin(page, "kenji@test.local");
   await page.goto("/en/admin#refunds");
   const section = page.locator("#refunds");
   const items = section.getByTestId("admin-refund");

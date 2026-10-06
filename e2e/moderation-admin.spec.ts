@@ -1,5 +1,6 @@
 import { type Page, expect, test } from "@playwright/test";
 import en from "../messages/en.json";
+import { signInAsAdmin } from "./fixtures/admin";
 import { sql } from "./fixtures/db";
 import { resetKingdom, seedKingdom } from "./fixtures/kingdom";
 import { signInByEmail } from "./fixtures/mail";
@@ -170,9 +171,7 @@ test.describe("reports", () => {
 
 test.describe("admin", () => {
   async function asAdmin(page: Page) {
-    await sql("update profile_private set is_admin = true where email = 'kenji@test.local'");
-    await signInByEmail(page, "kenji@test.local", "/en/admin");
-    await expect(page.getByRole("heading", { level: 1, name: en.admin.title })).toBeVisible();
+    await signInAsAdmin(page, "kenji@test.local");
   }
 
   test("is invisible to everyone but admins", async ({ page }) => {
