@@ -4,6 +4,7 @@ import { serverEnv } from "@/lib/env.server";
 import { type Classifier, ModerationUnavailable, anthropicClassifier, testClassifier } from "./classifier";
 import type { ModeratedField, ModerationSubmission } from "./model";
 import type { ModerationReason } from "./reasons";
+import { isManipulation, isManipulativeLink, isManipulativeName } from "./manipulation";
 import { linkProblem, messageProblem, nameProblem } from "./rules";
 import { isDeployed } from "@/lib/config/deployment";
 
@@ -39,13 +40,13 @@ function configuredClassifier(): Classifier {
   return classifier;
 }
 
-/** The rules alone: no model call. */
+/** The rules alone: no model call. Text that addresses the moderator is "manipulation" in every field. */
 export function ruleVerdict(input: ModerationInput): ModerationVerdict {
-  const name = nameProblem(input.name);
+  const name = isManipulativeName(input.name) ? "manipulation" : nameProblem(input.name);
   if (name) return { verdict: "reject", field: "name", reason: name };
-  const link = input.link ? linkProblem(input.link) : null;
+  const link = input.link ? (isManipulativeLink(input.link) ? "manipulation" : linkProblem(input.link)) : null;
   if (link) return { verdict: "reject", field: "link", reason: link };
-  const message = input.message ? messageProblem(input.message) : null;
+  const message = input.message ? (isManipulation(input.message) ? "manipulation" : messageProblem(input.message)) : null;
   if (message) return { verdict: "reject", field: "message", reason: message };
   return { verdict: "allow" };
 }
