@@ -282,6 +282,7 @@ The ordered production procedure, with the exact values per dashboard and the pl
 - [x] Refunds the provider refuses (decision 46): `refund_pending` kept, retried by `/api/cron/refunds` with backoff, `/admin` → Refunds, `refunds_stuck` email at most hourly; tests with Dodo's `INSUFFICIENT_WALLET_FUNDS` answer (db, unit, e2e)
 - [x] `pnpm e2e:dodo` run against Dodo test mode (2026-10-06): a takeover through the hosted checkout, Pay What You Want charging the locked $34, the signed webhook crowning the buyer and the duplicate ignored; a recorded `payment.succeeded` body is now a unit-test fixture (refund and dispute fixtures stay doc-shaped until Dodo can refund in test mode)
 - [ ] `pnpm e2e:dodo` late-payment test (refund through Dodo): pending until Dodo says how to fund the test wallet. Until then Dodo refuses its refund with `INSUFFICIENT_WALLET_FUNDS`; the test checks it stays `refund_pending` with a retry scheduled, then skips with that reason
+- [x] Account menu on the top bar portrait (view profile, edit profile, sign out; WAI-ARIA menu button, en/es, 390 and 1440) and sign-out in the admin header; signing out ends this device's session only, deletes the Supabase cookies even when the Auth API call fails, and returns to the current page (home from pages that need a session)
 - [ ] Staging environment (separate Supabase project, Vercel preview variables)
 - [ ] Dodo account verification, live product and webhook; one small real payment and refund
 - [ ] Final art for Frost (scene, crown, frame, `frostbound` medal) from the design
