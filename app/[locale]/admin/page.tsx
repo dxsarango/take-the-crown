@@ -3,12 +3,13 @@ import { hasLocale } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 import type { ReactNode } from "react";
+import { AdminGate } from "@/components/admin/admin-gate";
 import { ConfirmButton } from "@/components/admin/confirm-button";
 import { Link } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
 import { CONFIG_FIELDS, LEGAL_FIELDS } from "@/lib/admin/config";
 import { fetchAdminOverview, fetchLaunchPlan } from "@/lib/admin/data";
-import { currentAdmin } from "@/lib/admin/guard";
+import { adminAccess } from "@/lib/admin/guard";
 import { BRAND_NAME } from "@/lib/config/brand";
 import { paymentProduct, testPayments } from "@/lib/payments";
 import { displayLink, formatPrice } from "@/lib/format";
@@ -54,16 +55,22 @@ export default async function AdminPage({ params, searchParams }: PageProps<"/[l
   if (!hasLocale(routing.locales, locale)) notFound();
   setRequestLocale(locale);
   // Anyone else gets a plain 404: the page does not admit it exists.
-  if (!(await currentAdmin())) notFound();
+  const access = await adminAccess();
+  if (!access) notFound();
+  const query = await searchParams;
+  const status = query.status;
+  if (access.state !== "ok") {
+    const one = (v: string | string[] | undefined) => (typeof v === "string" ? v : undefined);
+    return <AdminGate access={access} locale={locale} status={one(status)} reason={one(query.reason)} />;
+  }
 
   const t = await getTranslations({ locale, namespace: "admin" });
   const home = await getTranslations({ locale, namespace: "home" });
+  const login = await getTranslations({ locale, namespace: "login" });
   const payment = await getTranslations({ locale, namespace: "payment" });
   const reasonText = (reason: string) =>
     payment.has(`rejWhy.${reason}` as "rejWhy.hate") ? payment(`rejWhy.${reason}` as "rejWhy.hate") : reason;
   const data = await fetchAdminOverview();
-  const query = await searchParams;
-  const status = query.status;
   const utc = (iso: string) =>
     `${new Intl.DateTimeFormat(locale === "es" ? "es-419" : "en-US", { dateStyle: "medium", timeStyle: "short", timeZone: "UTC" }).format(new Date(iso))} UTC`;
   const localInput = (iso: string) => iso.slice(0, 16);
@@ -74,7 +81,9 @@ export default async function AdminPage({ params, searchParams }: PageProps<"/[l
   const now = new Date();
 
   const notice =
-    status === "ok"
+    status === "reauth"
+      ? t("security.reauth", { minutes: Math.round(access.limits.reauthSeconds / 60), email: access.admin.email })
+      : status === "ok"
       ? typeof query.name === "string"
         ? query.released === "1"
           ? t("names.released", { name: query.name })
@@ -112,6 +121,12 @@ export default async function AdminPage({ params, searchParams }: PageProps<"/[l
           <Link href="/" className="flex h-11 flex-none items-center px-3 text-crown-muted hover:bg-crown-hall hover:text-crown-text">
             {t("back")}
           </Link>
+          <form action="/auth/sign-out" method="post" className="flex flex-none">
+            <input type="hidden" name="next" value={`/${locale}`} />
+            <button type="submit" className="flex h-11 items-center px-3 text-crown-muted hover:bg-crown-hall hover:text-crown-text">
+              {login("signOut")}
+            </button>
+          </form>
         </nav>
       </header>
 

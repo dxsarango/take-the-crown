@@ -6,7 +6,8 @@ import type { Locale } from "@/i18n/routing";
 import { BRAND_NAME } from "@/lib/config/brand";
 import { daysLeft } from "@/lib/format";
 import type { Season } from "@/lib/home/data";
-import { PersonIcon, Portrait } from "./art";
+import { AccountMenu } from "./account-menu";
+import { PersonIcon } from "./art";
 import { useAuth } from "./auth/auth-provider";
 import { LocaleSwitch } from "./locale-switch";
 
@@ -20,7 +21,6 @@ export type TopBarSection = (typeof NAV)[number]["key"];
 export function TopBar({ season, now, section }: { season: Season; now: number; section?: TopBarSection }) {
   const t = useTranslations("season");
   const home = useTranslations("home");
-  const login = useTranslations("login");
   const realm = useTranslations("realm");
   const locale = useLocale() as Locale;
   const { viewer, ready, openLogin } = useAuth();
@@ -57,15 +57,7 @@ export function TopBar({ season, now, section }: { season: Season; now: number; 
       <div className="flex items-center gap-2 lg:gap-4">
         <LocaleSwitch />
         {viewer ? (
-          <Link
-            href={`/u/${viewer.name.toLowerCase()}`}
-            aria-label={login("yourProfile")}
-            title={viewer.name}
-            className="hit-area flex items-center gap-3 focus-visible:outline-offset-2"
-          >
-            <span className="hidden max-w-40 truncate text-14 font-bold lg:block">{viewer.name}</span>
-            <Portrait avatar={viewer.avatar} rank={viewer.rank} season={season.id} crown={false} scale={1} />
-          </Link>
+          <AccountMenu viewer={viewer} season={season.id} />
         ) : (
           // On mobile Sign in is an icon so the full brand fits at the design's size (decision 20).
           <>

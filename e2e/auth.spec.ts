@@ -14,6 +14,13 @@ test.beforeEach(clearMail);
 const visible = (page: Page, text: string | RegExp) => page.getByText(text).filter({ visible: true }).first();
 const signInButton = (page: Page) => page.getByRole("button", { name: en.home.signin }).filter({ visible: true });
 const loginDialog = (page: Page) => page.getByRole("dialog");
+const accountMenu = (page: Page) => page.getByRole("button", { name: en.login.accountMenu });
+
+async function expectProfileLink(page: Page, href: string) {
+  await accountMenu(page).click();
+  await expect(page.getByRole("menuitem", { name: en.login.viewProfile })).toHaveAttribute("href", href);
+  await page.keyboard.press("Escape");
+}
 
 test("signs in with a magic link and claims the guest profile bought with that email", async ({ page }) => {
   await page.goto("/en");
@@ -29,7 +36,7 @@ test("signs in with a magic link and claims the guest profile bought with that e
 
   await page.goto(await latestSignInLink("kenji@test.local"));
   await page.waitForURL(/\/en$/);
-  await expect(page.getByRole("link", { name: en.login.yourProfile })).toHaveAttribute("href", "/en/u/kenji");
+  await expectProfileLink(page, "/en/u/kenji");
   const [row] = await sql<{ claimed: boolean }>("select user_id is not null as claimed from profiles where name = 'kenji'");
   expect(row.claimed).toBe(true);
 });
@@ -104,6 +111,54 @@ test("signs out from edit profile", async ({ page }) => {
   expect(me.viewer).toBeNull();
 });
 
+test("signs out from the account menu with the keyboard and stays on the page", async ({ page }, info) => {
+  await signInByEmail(page, "jules@test.local", "/en/kingdom");
+  const button = accountMenu(page);
+  await button.focus();
+  await page.keyboard.press("Enter");
+  await expect(button).toHaveAttribute("aria-expanded", "true");
+  await expect(page.getByRole("menuitem", { name: en.login.viewProfile })).toBeFocused();
+  await page.screenshot({ path: `test-results/screens/account-menu-${info.project.name}.png` });
+
+  await page.keyboard.press("Escape");
+  await expect(page.getByRole("menu")).toHaveCount(0);
+  await expect(button).toBeFocused();
+
+  await page.keyboard.press("ArrowUp");
+  await expect(page.getByRole("menuitem", { name: en.login.signOut })).toBeFocused();
+  await page.keyboard.press("Enter");
+  await page.waitForURL(/\/en\/kingdom$/);
+  await expect(signInButton(page)).toBeVisible();
+  expect((await page.context().cookies()).filter((c) => c.name.startsWith("sb-"))).toEqual([]);
+  const me = await (await page.request.get("/api/me")).json();
+  expect(me.viewer).toBeNull();
+});
+
+test("opens edit profile from the account menu", async ({ page }) => {
+  await signInByEmail(page, "jules@test.local", "/en");
+  await accountMenu(page).click();
+  await page.keyboard.press("ArrowDown");
+  await expect(page.getByRole("menuitem", { name: en.login.editProfile })).toBeFocused();
+  await page.getByRole("menuitem", { name: en.login.editProfile }).click();
+  await page.waitForURL(/\/en\/settings\/profile$/);
+  await expect(page.getByRole("heading", { level: 1, name: en.editProfile.title })).toBeVisible();
+});
+
+for (const locale of ["en", "es"] as const) {
+  test(`closes the account menu when clicking outside ${locale}`, async ({ page }, info) => {
+    const messages = { en, es }[locale];
+    await signInByEmail(page, "jules@test.local", `/${locale}`);
+    await page.getByRole("button", { name: messages.login.accountMenu }).click();
+    const menu = page.getByRole("menu");
+    for (const key of ["viewProfile", "editProfile", "signOut"] as const) {
+      await expect(menu.getByRole("menuitem", { name: messages.login[key] })).toBeVisible();
+    }
+    await page.screenshot({ path: `test-results/screens/account-menu-${locale}-${info.project.name}.png` });
+    await page.mouse.click(5, 400);
+    await expect(menu).toHaveCount(0);
+  });
+}
+
 test("a signed-in buyer keeps their name and skips the email field", async ({ page }) => {
   await signInByEmail(page, "sorenh@test.local", "/en");
   await page.getByRole("button", { name: /^Take the crown for/ }).filter({ visible: true }).click();
@@ -149,7 +204,7 @@ test("asks a guest to sign in after paying, with their email ready", async ({ pa
   await login.getByRole("button", { name: en.login.magic }).click();
   await page.goto(await latestSignInLink("fresh.guest@test.local"));
   await page.waitForURL(/\/en$/);
-  await expect(page.getByRole("link", { name: en.login.yourProfile })).toHaveAttribute("href", "/en/u/fresh_guest");
+  await expectProfileLink(page, "/en/u/fresh_guest");
 });
 
 for (const locale of ["en", "es"] as const) {

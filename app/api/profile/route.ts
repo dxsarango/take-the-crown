@@ -1,9 +1,9 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
+import { emailReauthLink, within } from "@/lib/auth/reauth";
 import { currentViewer } from "@/lib/auth/viewer";
 import { moderate } from "@/lib/moderation";
-import { clientIp, hashIp, sameOrigin } from "@/lib/security/request";
-import { sendMagicLink } from "@/lib/auth/magic-link";
+import { clientIp, sameOrigin } from "@/lib/security/request";
 import { routing } from "@/i18n/routing";
 import { verifyHuman } from "@/lib/security/human";
 import { withinHourlyLimit } from "@/lib/security/rate-limit";
@@ -100,12 +100,8 @@ export async function DELETE(request: Request) {
   // A recent sign-in proves the player is at the keyboard; otherwise email a sign-in link that
   // brings them back to this dialog.
   const { data: config } = await db.from("app_config").select("delete_reauth_seconds").single();
-  const reauthMs = (config?.delete_reauth_seconds ?? 600) * 1000;
-  const signedInAt = viewer.lastSignInAt ? Date.parse(viewer.lastSignInAt) : 0;
-  if (!(Date.now() - signedInAt < reauthMs)) {
-    if (await withinHourlyLimit(`magic_link_email:${hashIp(viewer.email.toLowerCase())}`, "max_magic_links_per_hour")) {
-      await sendMagicLink(viewer.email, `/${parsed.data.locale}/settings/profile?delete=1`);
-    }
+  if (!within(viewer.lastSignInAt, config?.delete_reauth_seconds ?? 600)) {
+    await emailReauthLink(viewer.email, `/${parsed.data.locale}/settings/profile?delete=1`);
     return Response.json({ ok: false, error: "reauth" }, { status: 403 });
   }
   if (!(await deleteAccount(viewer.profileId))) return Response.json({ ok: false }, { status: 500 });

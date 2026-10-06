@@ -2,6 +2,7 @@ import { mkdir } from "node:fs/promises";
 import { type Page, expect, test } from "@playwright/test";
 import en from "../messages/en.json";
 import es from "../messages/es.json";
+import { passTwoStep } from "./fixtures/admin";
 import { sql } from "./fixtures/db";
 import { resetKingdom, seedKingdom } from "./fixtures/kingdom";
 import { signInByEmail } from "./fixtures/mail";
@@ -81,6 +82,7 @@ test("an admin takes the crown with the test provider", async ({ page }) => {
   // Launching shows the resulting season dates first: a late launch stretches Genesis to 14 days
   // and moves Frost and Day of the Dead by the same amount.
   await page.goto("/en/admin#launch");
+  await passTwoStep(page, "mbali@test.local");
   const launch = page.locator("#launch");
   await launch.getByLabel(en.admin.launch.startsAt).fill("2026-11-25T00:00");
   await launch.getByRole("button", { name: en.admin.launch.preview }).click();

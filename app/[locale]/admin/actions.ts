@@ -5,16 +5,20 @@ import { z } from "zod";
 import { redirect } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
 import { CONFIG_FIELDS, LEGAL_FIELDS, configSchema, legalSchema } from "@/lib/admin/config";
-import { currentAdmin } from "@/lib/admin/guard";
+import { type Admin, adminAccess } from "@/lib/admin/guard";
+import { emailReauthLink } from "@/lib/auth/reauth";
+import { BRAND_NAME } from "@/lib/config/brand";
 import { MODEL_REASONS } from "@/lib/moderation/model";
 import { paymentMinimumCents, testPayments } from "@/lib/payments";
 import { requestRefund } from "@/lib/payments/refunds";
 import { serviceClient } from "@/lib/supabase/service";
+import { sessionClient } from "@/lib/supabase/session";
 import { revalidateHome } from "@/lib/home/cache";
 
 /**
- * Admin actions (SPEC §13). Each one checks is_admin again: server actions are public endpoints.
- * They answer by redirecting back to the admin page with a one-word status for the notice.
+ * Admin actions (SPEC §13). Each one checks is_admin and the session again (decision 49): server
+ * actions are public endpoints. They answer by redirecting back to the admin page with a one-word
+ * status for the notice.
  */
 
 function localeOf(form: FormData): "en" | "es" {
@@ -30,17 +34,89 @@ async function done(form: FormData, status: "ok" | "failed", extra: Record<strin
   return redirect({ href: `/admin?${params}${typeof section === "string" ? `#${section}` : ""}`, locale: localeOf(form) });
 }
 
-async function admin() {
-  const current = await currentAdmin();
-  if (!current) throw new Error("Not an admin");
-  return current;
+function back(form: FormData | null, query = ""): never {
+  return redirect({ href: `/admin${query}`, locale: form ? localeOf(form) : routing.defaultLocale });
+}
+
+/**
+ * The admin, once the session passed every step on /admin (recent sign-in, TOTP). Sensitive
+ * actions (refunds, suspensions, config, season dates, launch) also need a sign-in within the last
+ * few minutes; without one the admin gets a sign-in link by email and repeats the action.
+ */
+async function admin(form: FormData, sensitive = false): Promise<Admin> {
+  const access = await adminAccess();
+  if (!access) throw new Error("Not an admin");
+  if (access.state !== "ok") return back(form);
+  if (sensitive && !access.recent) {
+    const section = form.get("section");
+    const hash = typeof section === "string" ? `#${section}` : "";
+    await emailReauthLink(access.admin.email, `/${localeOf(form)}/admin${hash}`);
+    return back(form, `?status=reauth${hash}`);
+  }
+  return access.admin;
+}
+
+/** Emails a sign-in link back to /admin, for a session that signed in too long ago. */
+export async function sendAdminSignInLink(form: FormData) {
+  const access = await adminAccess();
+  if (!access) throw new Error("Not an admin");
+  await emailReauthLink(access.admin.email, `/${localeOf(form)}/admin`);
+  return back(form, "?status=linkSent");
+}
+
+export type TotpEnrollment = { ok: true; factorId: string; qrCode: string; secret: string } | { ok: false };
+
+/**
+ * Starts TOTP enrollment for an admin without a factor: drops any factor left unverified by an
+ * earlier attempt, then answers with the QR code and the secret for the authenticator app.
+ */
+export async function startTotpEnrollment(): Promise<TotpEnrollment> {
+  const access = await adminAccess();
+  if (access?.state !== "enroll") return { ok: false };
+  const auth = (await sessionClient()).auth;
+  const { data: factors } = await auth.mfa.listFactors();
+  for (const factor of factors?.all ?? []) {
+    if (factor.factor_type === "totp" && factor.status === "unverified") await auth.mfa.unenroll({ factorId: factor.id });
+  }
+  const { data, error } = await auth.mfa.enroll({ factorType: "totp", issuer: BRAND_NAME });
+  if (error || !data) {
+    console.error("TOTP enrollment failed", error?.message);
+    return { ok: false };
+  }
+  return { ok: true, factorId: data.id, qrCode: data.totp.qr_code, secret: data.totp.secret };
+}
+
+const totpCode = z.string().transform((v) => v.replace(/\s/g, "")).pipe(z.string().regex(/^\d{6}$/));
+
+/** Checks a code against one of the admin's own factors; a match raises this session to AAL2. */
+async function challenge(factorId: string, code: unknown): Promise<boolean> {
+  const parsed = totpCode.safeParse(code);
+  if (!parsed.success) return false;
+  const { error } = await (await sessionClient()).auth.mfa.challengeAndVerify({ factorId, code: parsed.data });
+  return !error;
+}
+
+/** Finishes enrollment with the first code from the app. Answers in place so a typo keeps the QR code. */
+export async function confirmTotpEnrollment(factorId: string, code: string): Promise<boolean> {
+  const access = await adminAccess();
+  if (access?.state !== "enroll" || !uuid.safeParse(factorId).success) return false;
+  return challenge(factorId, code);
+}
+
+/** Answers the TOTP challenge for a session that signed in with the first factor only. */
+export async function verifyTotp(form: FormData) {
+  const access = await adminAccess();
+  if (!access) throw new Error("Not an admin");
+  if (access.state !== "verify") return back(form);
+  if (!(await challenge(access.factorId, form.get("code")))) return back(form, "?status=failed&reason=code");
+  return back(form);
 }
 
 const id = z.coerce.number().int().positive();
 const uuid = z.uuid();
 
 export async function refundPayment(form: FormData) {
-  const me = await admin();
+  const me = await admin(form, true);
   const paymentId = uuid.safeParse(form.get("paymentId"));
   if (!paymentId.success) return done(form, "failed");
   const { data: payment, error } = await serviceClient().rpc("request_manual_refund", {
@@ -56,7 +132,7 @@ export async function refundPayment(form: FormData) {
 
 /** "Retry now" on a pending refund, also one whose retries stopped. */
 export async function retryRefund(form: FormData) {
-  await admin();
+  await admin(form, true);
   const paymentId = uuid.safeParse(form.get("paymentId"));
   if (!paymentId.success) return done(form, "failed");
   const outcome = await requestRefund(paymentId.data).catch(() => null);
@@ -64,7 +140,7 @@ export async function retryRefund(form: FormData) {
 }
 
 export async function hideMessage(form: FormData) {
-  const me = await admin();
+  const me = await admin(form);
   const reignId = id.safeParse(form.get("reignId"));
   if (!reignId.success) return done(form, "failed");
   const { error } = await serviceClient().rpc("hide_reign_message", { p_reign_id: reignId.data, p_admin_profile_id: me.profileId });
@@ -73,7 +149,7 @@ export async function hideMessage(form: FormData) {
 
 /** Approves held or rejected content (false positives included), or rejects held content with a reason. */
 export async function reviewContent(form: FormData) {
-  const me = await admin();
+  const me = await admin(form);
   const reignId = id.safeParse(form.get("reignId"));
   const approved = form.get("decision") === "approve";
   const reason = z.enum(MODEL_REASONS).safeParse(form.get("reason"));
@@ -89,7 +165,7 @@ export async function reviewContent(form: FormData) {
 }
 
 export async function setBanned(form: FormData) {
-  const me = await admin();
+  const me = await admin(form, true);
   const profileId = uuid.safeParse(form.get("profileId"));
   if (!profileId.success) return done(form, "failed");
   const { error } = await serviceClient().rpc("set_profile_banned", {
@@ -101,7 +177,7 @@ export async function setBanned(form: FormData) {
 }
 
 export async function dismissReport(form: FormData) {
-  const me = await admin();
+  const me = await admin(form);
   const reportIds = z.array(id).min(1).safeParse(form.getAll("reportId"));
   if (!reportIds.success) return done(form, "failed");
   for (const reportId of reportIds.data) {
@@ -112,7 +188,7 @@ export async function dismissReport(form: FormData) {
 }
 
 export async function releaseName(form: FormData) {
-  const me = await admin();
+  const me = await admin(form);
   const name = z.string().trim().min(3).max(24).safeParse(form.get("name"));
   if (!name.success) return done(form, "failed");
   const db = serviceClient();
@@ -127,7 +203,7 @@ const seasonDates = z
   .refine((v) => v.startsAt < v.endsAt);
 
 export async function saveSeasonDates(form: FormData) {
-  const me = await admin();
+  const me = await admin(form, true);
   const parsed = seasonDates.safeParse({ seasonId: form.get("seasonId"), startsAt: form.get("startsAt"), endsAt: form.get("endsAt") });
   if (!parsed.success) return done(form, "failed", { reason: "season" });
   const startsAt = new Date(`${parsed.data.startsAt}Z`);
@@ -162,7 +238,7 @@ export async function saveSeasonDates(form: FormData) {
 }
 
 export async function saveConfig(form: FormData) {
-  const me = await admin();
+  const me = await admin(form, true);
   const parsed = configSchema.safeParse(Object.fromEntries(CONFIG_FIELDS.map((k) => [k, form.get(k)])));
   if (!parsed.success) return done(form, "failed", { reason: "config" });
   // Dodo refuses checkouts below the product's Pay What You Want minimum: the floor must not go under it.
@@ -186,7 +262,7 @@ export async function saveConfig(form: FormData) {
  * given time (UTC) and opens the crown to everyone. Only with the real payment provider.
  */
 export async function launchGame(form: FormData) {
-  const me = await admin();
+  const me = await admin(form, true);
   const startsAt = z.iso.datetime({ local: true }).safeParse(form.get("startsAt"));
   if (!startsAt.success || testPayments()) return done(form, "failed", { reason: "launch" });
   const at = new Date(`${startsAt.data}Z`).toISOString();
@@ -199,14 +275,14 @@ export async function launchGame(form: FormData) {
 
 /** Shows the season dates a launch at this time would give, before anything changes. */
 export async function previewLaunch(form: FormData) {
-  await admin();
+  await admin(form);
   const startsAt = z.iso.datetime({ local: true }).safeParse(form.get("startsAt"));
   if (!startsAt.success) return done(form, "failed", { reason: "launch" });
   return redirect({ href: `/admin?launchAt=${encodeURIComponent(`${startsAt.data}Z`)}#launch`, locale: localeOf(form) });
 }
 
 export async function saveLegal(form: FormData) {
-  const me = await admin();
+  const me = await admin(form, true);
   const parsed = legalSchema.safeParse(Object.fromEntries(LEGAL_FIELDS.map((k) => [k, form.get(k)])));
   if (!parsed.success) return done(form, "failed", { reason: "legal" });
   const db = serviceClient();

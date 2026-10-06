@@ -2,9 +2,9 @@ import { createHmac, randomUUID } from "node:crypto";
 import { mkdir } from "node:fs/promises";
 import { type APIRequestContext, type Page, expect, test } from "@playwright/test";
 import en from "../messages/en.json";
+import { signInAsAdmin } from "./fixtures/admin";
 import { sql } from "./fixtures/db";
 import { resetKingdom, seedKingdom } from "./fixtures/kingdom";
-import { signInByEmail } from "./fixtures/mail";
 import { HUMAN_TOKEN } from "./fixtures/payment";
 
 const SCREENS = "test-results/screens";
@@ -40,8 +40,7 @@ async function webhook(request: APIRequestContext, event: Record<string, string>
 }
 
 async function asAdmin(page: Page) {
-  await sql("update profile_private set is_admin = true where email = 'kenji@test.local'");
-  await signInByEmail(page, "kenji@test.local", "/en/admin");
+  await signInAsAdmin(page, "kenji@test.local");
 }
 
 test("a refund after delivery takes the throne back and marks the reign in the history", async ({ page, request }) => {

@@ -158,7 +158,7 @@ test.describe("season end", () => {
     await expect(page.getByRole("dialog").getByRole("heading", { name: en.login.head })).toBeVisible();
 
     await signInByEmail(page, "kenji@test.local", "/en/seasons/frost");
-    await expect(page.getByRole("link", { name: en.login.yourProfile })).toBeVisible();
+    await expect(page.getByRole("button", { name: en.login.accountMenu })).toBeVisible();
     await page.getByRole("button", { name: en.realm.remind }).filter({ visible: true }).click();
     await expect(shown(page, en.realm.reminded)).toBeVisible();
     const [row] = await sql("select alerts_season_start from profile_private where email = 'kenji@test.local'");
@@ -183,7 +183,7 @@ test.describe("unlocks", () => {
 
   test("shows the player's own achievements and rank-ups, one at a time", async ({ page }) => {
     await signInByEmail(page, "kenji@test.local", "/en");
-    await expect(page.getByRole("link", { name: en.login.yourProfile })).toBeVisible();
+    await expect(page.getByRole("button", { name: en.login.accountMenu })).toBeVisible();
     // Let the realtime channel subscribe.
     await page.waitForTimeout(1500);
 
