@@ -86,7 +86,8 @@ Placeholders: `<ref>` is the Supabase project ref (the subdomain of its API URL)
    - OAuth 2.0 `on`, permissions `Read`, "Request email from users" `on`, type `Web App`.
    - Callback URI `https://<ref>.supabase.co/auth/v1/callback`, website `https://takethecrown.app`.
    - Terms `https://takethecrown.app/en/terms`, privacy `https://takethecrown.app/en/privacy`.
-3. Copy the **OAuth 2.0** Client ID and Secret into **Supabase → Authentication → Providers → X / Twitter (OAuth 2.0)**.
+3. Copy the **OAuth 2.0** Client ID and Secret into **Supabase → Authentication → Providers → X / Twitter (OAuth 2.0)** (provider id `x`; Supabase asks X for `users.email tweet.read users.read offline.access`). Leave the legacy **Twitter (OAuth 1.0a)** provider off: the app never uses it.
+4. If sign-in with X shows "That sign-in option isn't available right now", the Vercel function logs carry Supabase's reason (`OAuth provider "x" is unavailable: …`); errors after X's consent screen are logged as `Sign-in came back without a code: …`.
 
 ## 5. Vercel: project, variables, domain
 
