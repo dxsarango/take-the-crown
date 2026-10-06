@@ -1009,6 +1009,25 @@
       "reign": "Reign {id} · {name} · season {season}",
       "refund": "Refunded",
       "chargeback": "Chargeback"
+    },
+    "security": {
+      "staleHead": "Sign in again",
+      "staleBody": "The admin needs a sign-in from the last {hours} hours on this device. We’ll email a sign-in link to {email}.",
+      "sendLink": "Email me a sign-in link",
+      "linkSent": "Sign-in link sent to {email}. Open it on this device.",
+      "enrollHead": "Set up two-step verification",
+      "enrollBody": "Admins confirm every sign-in with a code from an authenticator app, such as 1Password, Google Authenticator or Authy.",
+      "enrollStart": "Set up the authenticator app",
+      "enrollFailed": "We couldn’t start the setup. Try again.",
+      "enrollScan": "Scan the QR code with the app, or type the setup key into it. Then enter the 6-digit code it shows.",
+      "qrAlt": "QR code for the authenticator app",
+      "secretL": "Setup key",
+      "verifyHead": "Two-step verification",
+      "verifyBody": "Enter the 6-digit code from your authenticator app.",
+      "codeL": "6-digit code",
+      "verify": "Verify",
+      "codeBad": "That code didn’t work. Enter the code the app shows now.",
+      "reauth": "This action needs a sign-in from the last {minutes} minutes. We emailed a sign-in link to {email}: open it on this device, then repeat the action."
     }
   },
   "report": {

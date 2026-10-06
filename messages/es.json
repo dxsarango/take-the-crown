@@ -1009,6 +1009,25 @@
       "reign": "Reinado {id} · {name} · temporada {season}",
       "refund": "Reembolsado",
       "chargeback": "Contracargo"
+    },
+    "security": {
+      "staleHead": "Vuelve a iniciar sesión",
+      "staleBody": "El admin necesita un inicio de sesión de las últimas {hours} horas en este dispositivo. Te enviaremos un enlace a {email}.",
+      "sendLink": "Envíame un enlace para entrar",
+      "linkSent": "Enlace enviado a {email}. Ábrelo en este dispositivo.",
+      "enrollHead": "Configura la verificación en dos pasos",
+      "enrollBody": "Los admins confirman cada inicio de sesión con un código de una app de autenticación, como 1Password, Google Authenticator o Authy.",
+      "enrollStart": "Configurar la app de autenticación",
+      "enrollFailed": "No pudimos iniciar la configuración. Inténtalo de nuevo.",
+      "enrollScan": "Escanea el código QR con la app o escribe en ella la clave de configuración. Después ingresa el código de 6 dígitos que muestra.",
+      "qrAlt": "Código QR para la app de autenticación",
+      "secretL": "Clave de configuración",
+      "verifyHead": "Verificación en dos pasos",
+      "verifyBody": "Ingresa el código de 6 dígitos de tu app de autenticación.",
+      "codeL": "Código de 6 dígitos",
+      "verify": "Verificar",
+      "codeBad": "Ese código no funcionó. Ingresa el que muestra la app ahora.",
+      "reauth": "Esta acción necesita un inicio de sesión de los últimos {minutes} minutos. Te enviamos un enlace a {email}: ábrelo en este dispositivo y repite la acción."
     }
   },
   "report": {
