@@ -18,6 +18,9 @@ export const configSchema = z.object({
   max_reports_per_ip_per_hour: z.coerce.number().int().min(1).max(1_000),
   min_first_season_days: z.coerce.number().int().min(1).max(90),
   delete_reauth_seconds: z.coerce.number().int().min(60).max(86_400),
+  refund_retry_base_seconds: z.coerce.number().int().min(10).max(3_600),
+  refund_retry_max_seconds: z.coerce.number().int().min(60).max(86_400),
+  refund_alert_interval_seconds: z.coerce.number().int().min(300).max(86_400),
 });
 
 export const CONFIG_FIELDS = Object.keys(configSchema.shape) as (keyof z.infer<typeof configSchema>)[];

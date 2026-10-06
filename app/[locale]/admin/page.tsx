@@ -13,7 +13,7 @@ import { BRAND_NAME } from "@/lib/config/brand";
 import { paymentProduct, testPayments } from "@/lib/payments";
 import { displayLink, formatPrice } from "@/lib/format";
 import { MODEL_REASONS } from "@/lib/moderation/model";
-import { dismissReport, hideMessage, refundPayment, releaseName, reviewContent, launchGame, previewLaunch, saveConfig, saveLegal, saveSeasonDates, setBanned } from "./actions";
+import { dismissReport, hideMessage, refundPayment, retryRefund, releaseName, reviewContent, launchGame, previewLaunch, saveConfig, saveLegal, saveSeasonDates, setBanned } from "./actions";
 
 export const dynamic = "force-dynamic";
 
@@ -24,7 +24,7 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/admin">)
   return { title: `${t("title")} · ${BRAND_NAME}`, robots: { index: false, follow: false } };
 }
 
-const SECTIONS = ["crown", "launch", "payments", "reversals", "reports", "review", "names", "seasons", "config", "log"] as const;
+const SECTIONS = ["crown", "launch", "payments", "refunds", "reversals", "reports", "review", "names", "seasons", "config", "log"] as const;
 
 const secondary =
   "hit-area m-1 h-10 bg-crown-hall px-3.5 text-14 font-bold whitespace-nowrap shadow-relief-card hover:bg-crown-stone focus-visible:outline-offset-[6px] active:bg-crown-ink";
@@ -247,6 +247,53 @@ export default async function AdminPage({ params, searchParams }: PageProps<"/[l
                 </tbody>
               </table>
             </div>
+          )}
+        </Section>
+
+        <Section id="refunds" title={t("nav.refunds")}>
+          <p className="text-14 text-crown-muted">{t("refunds.help")}</p>
+          {data.refunds.length === 0 ? (
+            <p className="text-14 text-crown-muted">{t("refunds.empty")}</p>
+          ) : (
+            <ul className="flex flex-col gap-3">
+              {data.refunds.map((r) => {
+                const failed = r.refund_requested_at === null && r.refund_last_error !== null;
+                const state = r.refund_requested_at
+                  ? t("refunds.requested", { date: utc(r.refund_requested_at), provider: r.provider })
+                  : !failed
+                    ? t("refunds.due", { provider: r.provider })
+                    : r.refund_next_attempt_at
+                      ? t("refunds.retrying", { attempts: r.refund_attempts, date: utc(r.refund_next_attempt_at) })
+                      : t("refunds.stopped", { attempts: r.refund_attempts, provider: r.provider });
+                return (
+                  <li
+                    key={r.id}
+                    data-testid="admin-refund"
+                    className={`flex flex-col gap-3 bg-crown-velvet p-4 sm:flex-row sm:items-center sm:justify-between ${failed ? "shadow-flag-danger" : "shadow-[inset_4px_0_0_var(--crown-text)]"}`}
+                  >
+                    <div className="flex min-w-0 flex-col gap-1 text-14">
+                      <span className="font-bold">
+                        <span className="font-pixel">{formatPrice(r.amount_cents, locale)}</span> {r.currency} · {r.email} · {utc(r.created_at)}
+                      </span>
+                      <span>{state}</span>
+                      {failed && <span className="text-12 [overflow-wrap:anywhere] text-crown-muted">{r.refund_last_error}</span>}
+                      <span className="text-12 [overflow-wrap:anywhere] text-crown-muted">
+                        {r.provider} {r.provider_payment_id}
+                      </span>
+                    </div>
+                    {!r.refund_requested_at && (
+                      <form action={retryRefund}>
+                        <Back locale={locale} section="refunds" />
+                        <input type="hidden" name="paymentId" value={r.id} />
+                        <button type="submit" className={secondary}>
+                          {t("refunds.retry")}
+                        </button>
+                      </form>
+                    )}
+                  </li>
+                );
+              })}
+            </ul>
           )}
         </Section>
 

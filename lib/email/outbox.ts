@@ -33,6 +33,7 @@ const payloads = {
   reports_threshold: z.object({ reign_id: z.number(), reports: z.number() }),
   season_extended: z.object({ season_id: z.number(), ends_at: z.string() }),
   season_not_ready: z.object({ season_id: z.number(), starts_at: z.string(), name_final: z.boolean(), art_final: z.boolean() }),
+  refunds_stuck: z.object({ count: z.number().int().positive(), oldest_at: z.string() }),
 };
 
 function site(): string {
@@ -214,6 +215,20 @@ async function build(db: Db, n: Notification): Promise<Omit<Email, "idempotencyK
         Notice({ frame, title: t("notReadyTitle", values), body: t("notReadyBody", values), button: { label: t("seasonsBtn"), url: `${home}/admin#seasons` }, note: null }),
       );
       return { to: to.email, subject: t("notReadyTitle", values), html, text };
+    }
+
+    case "refunds_stuck": {
+      if (!to.isAdmin) throw new Skip("not_admin");
+      const p = payloads.refunds_stuck.safeParse(n.payload);
+      if (!p.success) throw new Skip("bad_payload");
+      const t = await getTranslations({ locale: to.locale, namespace: "email" });
+      const crown = await liveCrown(db);
+      const values = { count: p.data.count, date: adminDate(p.data.oldest_at, to.locale) };
+      const frame = await frameFor(to, crown.seasonId, t("stuckPreheader"), t("reportsFoot", { brand: BRAND_NAME }), null);
+      const { html, text } = await renderEmail(
+        Notice({ frame, title: t("stuckTitle", values), body: t("stuckBody", values), button: { label: t("stuckBtn"), url: `${home}/admin#refunds` }, note: null }),
+      );
+      return { to: to.email, subject: t("stuckTitle", values), html, text };
     }
 
     default:

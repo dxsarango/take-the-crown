@@ -7,7 +7,8 @@ import { routing } from "@/i18n/routing";
 import { CONFIG_FIELDS, LEGAL_FIELDS, configSchema, legalSchema } from "@/lib/admin/config";
 import { currentAdmin } from "@/lib/admin/guard";
 import { MODEL_REASONS } from "@/lib/moderation/model";
-import { paymentMinimumCents, paymentProvider, testPayments } from "@/lib/payments";
+import { paymentMinimumCents, testPayments } from "@/lib/payments";
+import { requestRefund } from "@/lib/payments/refunds";
 import { serviceClient } from "@/lib/supabase/service";
 import { revalidateHome } from "@/lib/home/cache";
 
@@ -47,14 +48,19 @@ export async function refundPayment(form: FormData) {
     p_admin_profile_id: me.profileId,
   });
   if (error || !payment) return done(form, "failed");
-  try {
-    // The provider confirms with a refund webhook, which marks the payment refunded.
-    await (await paymentProvider()).refund(payment.provider_payment_id);
-  } catch (e) {
-    console.error("manual refund failed", e);
-    return done(form, "failed");
-  }
-  return done(form, "ok");
+  // The provider confirms with a refund webhook, which marks the payment refunded. A refused
+  // request shows under pending refunds and is retried.
+  const outcome = await requestRefund(payment.id).catch(() => null);
+  return done(form, outcome === "requested" ? "ok" : "failed");
+}
+
+/** "Retry now" on a pending refund, also one whose retries stopped. */
+export async function retryRefund(form: FormData) {
+  await admin();
+  const paymentId = uuid.safeParse(form.get("paymentId"));
+  if (!paymentId.success) return done(form, "failed");
+  const outcome = await requestRefund(paymentId.data).catch(() => null);
+  return done(form, outcome === "requested" ? "ok" : "failed");
 }
 
 export async function hideMessage(form: FormData) {
