@@ -113,7 +113,7 @@ Placeholders: `<ref>` is the Supabase project ref (the subdomain of its API URL)
 
 4. **Settings → Domains:** add `takethecrown.app` and `www.takethecrown.app`, with `www` redirecting (308) to the apex. Create the DNS records Vercel shows in Cloudflare as **DNS only** (usually A `@` `76.76.21.21` and CNAME `www` `cname.vercel-dns.com`). Wait until both show "Valid Configuration" with a certificate.
 5. **Deployments:** redeploy production after the variables are set. `NEXT_PUBLIC_*` values are built into the pages.
-6. **Settings → Cron Jobs:** `/api/cron/moderation` and `/api/cron/notifications`, every minute.
+6. **Settings → Cron Jobs:** `/api/cron/moderation`, `/api/cron/notifications` and `/api/cron/refunds`, every minute (from `vercel.json`).
 7. **Settings → Billing → Spend Management:** set a spend amount with notifications (for example, $50 a month).
 8. **Settings → Deployment Protection:** production is public. Keep Vercel Authentication for previews.
 
@@ -159,7 +159,7 @@ Test and live modes are separate: each has its own API key, product and webhook 
    - Copy the endpoint's signing secret (`whsec_…`) into `DODO_WEBHOOK_SECRET` in Vercel and redeploy.
 3. Cloudflare must not challenge `/api/webhooks/*` (Bot Fight Mode stays off; the rate-limit rule does not cover it).
 4. Check: take the crown as admin on the site with the test card; Dodo's dashboard shows the webhook delivered with 200, and `/admin` → Payments shows it `applied`.
-5. **Going live** (after Dodo verifies the account): create the live product and the live webhook endpoint (same URL), set `DODO_MODE=live`, the live `DODO_API_KEY`, `DODO_PRODUCT_ID` and `DODO_WEBHOOK_SECRET`, redeploy, and do one small real payment and refund before launching.
+5. **Going live** (after Dodo verifies the account): create the live product, one-time with **Pay What You Want** on and a **$5.00** minimum like the test one (`/admin` warns if it has a fixed price), and the live webhook endpoint (same URL), set `DODO_MODE=live`, the live `DODO_API_KEY`, `DODO_PRODUCT_ID` and `DODO_WEBHOOK_SECRET`, redeploy, and do one small real payment and refund before launching.
 
 ### Webhooks on your machine
 

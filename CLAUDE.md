@@ -13,6 +13,8 @@ Pay-to-take-the-crown web game. One crown, rising price with decay, glory measur
 
 Next.js App Router, TypeScript strict, Tailwind, Supabase (Postgres, Auth, Realtime, Storage, pg_cron), next-intl, Resend, next/og, sharp, Vitest, Playwright, pnpm.
 
+Next is patched (`patches/next@*.patch`, pnpm `patchedDependencies`): review the patch on every Next upgrade and drop it once Next fixes the bug (docs/PROGRESS.md, decision 47).
+
 ## Conventions
 
 - Everything in English: code, identifiers, comments, commits, docs.
