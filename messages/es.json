@@ -865,7 +865,8 @@
       "log": "Registro",
       "review": "En revisión",
       "launch": "Lanzamiento",
-      "reversals": "Reversiones"
+      "reversals": "Reversiones",
+      "refunds": "Reembolsos"
     },
     "crown": {
       "king": "Rey",
@@ -885,7 +886,7 @@
       "status": "Estado",
       "provider": "Proveedor",
       "refund": "Reembolsar",
-      "confirmRefund": "¿Reembolsar {amount} a {email}? El reinado que pagó se mantiene.",
+      "confirmRefund": "¿Reembolsar {amount} a {email}? Si pagó un reinado, ese reinado se revierte: queda en el historial, marcado, y no cuenta para nada.",
       "status_paid": "Pagado",
       "status_applied": "Aplicado",
       "status_refund_pending": "Reembolso pendiente",
@@ -942,6 +943,9 @@
       "max_reports_per_ip_per_hour": "Denuncias por IP por hora",
       "min_first_season_days": "Primera temporada más corta al lanzar (días)",
       "delete_reauth_seconds": "Antigüedad del inicio de sesión para eliminar una cuenta (segundos)",
+      "refund_retry_base_seconds": "Primer reintento de un reembolso tras (segundos)",
+      "refund_retry_max_seconds": "Espera máxima entre reintentos de un reembolso (segundos)",
+      "refund_alert_interval_seconds": "Email de reembolsos atascados como mucho cada (segundos)",
       "paymentMinimum": "Dodo Payments rechaza pagos por debajo de {minimum}, el mínimo del producto: el precio mínimo del juego no puede bajar de ahí.",
       "fixedPrice": "El producto de Dodo no tiene activado Pay What You Want, así que cada pago cobra su precio fijo de {price} en lugar del precio de la corona, y toda compra por encima de {price} se reembolsa. Activa Pay What You Want en el producto en Dodo.",
       "floorBelowMinimum": "El precio mínimo no puede ser menor que {minimum}, el mínimo del producto en Dodo. Primero baja el mínimo del producto en Dodo. No se guardó nada.",
@@ -989,6 +993,15 @@
       "preview": "Ver las fechas de temporada",
       "season": "Temporada",
       "extended": "Génesis terminaría demasiado pronto, así que dura {days} días y todas las temporadas siguientes se mueven lo mismo."
+    },
+    "refunds": {
+      "help": "Reembolsos que el juego debe: pagos que no pudo aplicar y reembolsos que pediste. Si el proveedor de pagos rechaza uno, se reintenta solo, esperando más cada vez; los admins reciben un email como máximo una vez por hora mientras alguno siga atascado.",
+      "empty": "No hay reembolsos pendientes.",
+      "requested": "Pedido el {date}. Esperando que {provider} lo confirme.",
+      "retrying": "{attempts, plural, one {# intento falló} other {# intentos fallaron}}. Próximo intento: {date}.",
+      "stopped": "Detenido tras {attempts, plural, one {# intento} other {# intentos}}: reintentar no arregla este rechazo. Revísalo en {provider} y luego reintenta.",
+      "due": "Pidiéndolo a {provider} ahora.",
+      "retry": "Reintentar ahora"
     },
     "reversals": {
       "help": "Reinados cuyo pago se reembolsó después de entregar la corona, o con contracargo. Siguen en el historial, marcados, sin mensaje ni enlace, y no cuentan para nada. Un contracargo suspende la cuenta; levántala aquí si la disputa se resuelve a tu favor.",
@@ -1048,6 +1061,10 @@
     "extendedBody": "Ninguna temporada empieza cuando terminó {season}, así que dura un mes más en vez de cerrar la corona. Añade la siguiente temporada, empezando justo cuando termina esta, en el área de administración.",
     "notReadyPreheader": "Todavía le falta su nombre o su arte final.",
     "notReadyTitle": "{season} empieza el {date} y no está lista",
-    "notReadyBody": "{missing, select, name {Todavía le falta su nombre final.} art {Todavía le falta su arte final.} other {Todavía le faltan su nombre y su arte finales.}} Hasta entonces muestra su nombre provisional y el arte de Génesis."
+    "notReadyBody": "{missing, select, name {Todavía le falta su nombre final.} art {Todavía le falta su arte final.} other {Todavía le faltan su nombre y su arte finales.}} Hasta entonces muestra su nombre provisional y el arte de Génesis.",
+    "stuckPreheader": "El proveedor de pagos rechazó reembolsarlos. El juego sigue reintentando.",
+    "stuckTitle": "{count, plural, one {# reembolso está atascado} other {# reembolsos están atascados}}",
+    "stuckBody": "El proveedor de pagos rechazó {count, plural, one {un reembolso} other {# reembolsos}} que el juego debe a compradores, el más antiguo del {date}. El juego reintenta solo, pero los compradores esperan hasta que salga. Revisa el motivo en el área de administración; recibes este correo como máximo una vez por hora mientras dure.",
+    "stuckBtn": "Abrir reembolsos"
   }
 }

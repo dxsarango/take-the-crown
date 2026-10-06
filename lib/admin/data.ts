@@ -121,6 +121,14 @@ export async function fetchAdminOverview() {
     ),
     seasons: must(seasonsRes, "seasons"),
     reversals: await fetchReversals(db),
+    refunds: must(
+      await db
+        .from("payments")
+        .select("id, provider, provider_payment_id, amount_cents, currency, email, created_at, refund_attempts, refund_next_attempt_at, refund_last_error, refund_requested_at")
+        .eq("status", "refund_pending")
+        .order("created_at"),
+      "pending refunds",
+    ),
     config: must(configRes, "config"),
     log: (logRes.data ?? []).map((l) => ({ ...l, adminName: adminNames.get(l.admin_profile_id) ?? l.admin_profile_id })),
   };

@@ -865,7 +865,8 @@
       "log": "Log",
       "review": "In review",
       "launch": "Launch",
-      "reversals": "Reversals"
+      "reversals": "Reversals",
+      "refunds": "Refunds"
     },
     "crown": {
       "king": "King",
@@ -885,7 +886,7 @@
       "status": "Status",
       "provider": "Provider",
       "refund": "Refund",
-      "confirmRefund": "Refund {amount} to {email}? The reign it paid for stays.",
+      "confirmRefund": "Refund {amount} to {email}? If it paid for a reign, that reign is reversed: it stays in the history, marked, and counts toward nothing.",
       "status_paid": "Paid",
       "status_applied": "Applied",
       "status_refund_pending": "Refund pending",
@@ -942,6 +943,9 @@
       "max_reports_per_ip_per_hour": "Reports per IP per hour",
       "min_first_season_days": "Shortest first season at launch (days)",
       "delete_reauth_seconds": "Sign-in age to delete an account (seconds)",
+      "refund_retry_base_seconds": "First refund retry after (seconds)",
+      "refund_retry_max_seconds": "Longest wait between refund retries (seconds)",
+      "refund_alert_interval_seconds": "Stuck refunds email at most every (seconds)",
       "paymentMinimum": "Dodo Payments refuses checkouts under {minimum}, the product's minimum: the floor price can't go below it.",
       "fixedPrice": "The Dodo product doesn't have Pay What You Want turned on, so every checkout charges its fixed {price} instead of the crown's price, and any takeover above {price} is refunded. Turn on Pay What You Want for the product in Dodo.",
       "floorBelowMinimum": "The floor price can't be lower than {minimum}, the Dodo product's minimum price. Lower the product's minimum in Dodo first. Nothing was saved.",
@@ -989,6 +993,15 @@
       "preview": "See the season dates",
       "season": "Season",
       "extended": "Genesis would end too soon, so it lasts {days} days and every later season moves by the same amount."
+    },
+    "refunds": {
+      "help": "Refunds the game owes: payments it couldn't apply, and refunds you asked for. When the payment provider refuses one, it is retried on its own, waiting longer each time; admins get an email at most once an hour while any is stuck.",
+      "empty": "No refunds pending.",
+      "requested": "Requested {date}. Waiting for {provider} to confirm it.",
+      "retrying": "{attempts, plural, one {# attempt failed} other {# attempts failed}}. Next try {date}.",
+      "stopped": "Stopped after {attempts, plural, one {# attempt} other {# attempts}}: retrying won't fix this refusal. Check it in {provider}, then retry.",
+      "due": "Asking {provider} now.",
+      "retry": "Retry now"
     },
     "reversals": {
       "help": "Reigns whose payment was refunded after the crown was delivered, or charged back. They stay in the history, marked, without message or link, and count toward nothing. A chargeback suspends the account; lift it here if the dispute ends in your favor.",
@@ -1048,6 +1061,10 @@
     "extendedBody": "No season starts when {season} ended, so it runs one more month instead of closing the crown. Add the next season, starting exactly when this one ends, in the admin area.",
     "notReadyPreheader": "Its final name or art is still missing.",
     "notReadyTitle": "{season} starts on {date} and isn't ready",
-    "notReadyBody": "{missing, select, name {Its final name is still missing.} art {Its final art is still missing.} other {Its final name and art are still missing.}} Until then it shows its provisional name and the Genesis art."
+    "notReadyBody": "{missing, select, name {Its final name is still missing.} art {Its final art is still missing.} other {Its final name and art are still missing.}} Until then it shows its provisional name and the Genesis art.",
+    "stuckPreheader": "The payment provider refused to refund them. The game keeps retrying.",
+    "stuckTitle": "{count, plural, one {# refund is} other {# refunds are}} stuck",
+    "stuckBody": "The payment provider refused {count, plural, one {a refund} other {# refunds}} the game owes buyers, the oldest from {date}. The game retries on its own, but the buyers wait until it goes through. Check the reason in the admin area; you get this email at most once an hour while it lasts.",
+    "stuckBtn": "Open refunds"
   }
 }
