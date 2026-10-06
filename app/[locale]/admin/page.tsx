@@ -58,6 +58,7 @@ export default async function AdminPage({ params, searchParams }: PageProps<"/[l
 
   const t = await getTranslations({ locale, namespace: "admin" });
   const home = await getTranslations({ locale, namespace: "home" });
+  const login = await getTranslations({ locale, namespace: "login" });
   const payment = await getTranslations({ locale, namespace: "payment" });
   const reasonText = (reason: string) =>
     payment.has(`rejWhy.${reason}` as "rejWhy.hate") ? payment(`rejWhy.${reason}` as "rejWhy.hate") : reason;
@@ -112,6 +113,12 @@ export default async function AdminPage({ params, searchParams }: PageProps<"/[l
           <Link href="/" className="flex h-11 flex-none items-center px-3 text-crown-muted hover:bg-crown-hall hover:text-crown-text">
             {t("back")}
           </Link>
+          <form action="/auth/sign-out" method="post" className="flex flex-none">
+            <input type="hidden" name="next" value={`/${locale}`} />
+            <button type="submit" className="flex h-11 items-center px-3 text-crown-muted hover:bg-crown-hall hover:text-crown-text">
+              {login("signOut")}
+            </button>
+          </form>
         </nav>
       </header>
 
