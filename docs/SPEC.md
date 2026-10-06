@@ -95,7 +95,7 @@ Write access: none for `anon`/`authenticated`. They have `SELECT` on public tabl
 4. If the user closes the checkout, `POST /api/locks/:id/release` calls `release_price_lock`.
 5. Provider webhook → `POST /api/webhooks/[provider]`: verify signature, normalize, call `record_paid_payment`. On `refund_pending`, call the provider refund API and then `mark_payment_refunded` when the refund webhook arrives.
 6. After `applied`, process pending notifications (§9) and revalidate the home and profile pages.
-7. Realtime delivers the change to every open client, which plays the coronation animation.
+7. Realtime delivers the change to every open client, which plays the coronation animation. The buyer's page also plays it when the modal learns the lock was applied (`GET /api/locks/:id` returns the reign), so a buyer back from a redirect checkout, whose page loads with the new king already on the throne, still sees it; the same goes for the achievement toasts of that reign. From an empty throne (the first reign of the game or a season) the crown comes down from above onto the new king, on the same beats.
 
 ### Guest purchase and claiming
 
