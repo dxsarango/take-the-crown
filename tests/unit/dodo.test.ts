@@ -24,6 +24,7 @@ vi.mock("@/lib/supabase/service", () => ({
 
 const { signWebhook, verifyWebhookSignature } = await import("@/lib/payments/standard-webhooks");
 const { DodoProvider, mapDodoEvent } = await import("@/lib/payments/dodo");
+const { RefundError } = await import("@/lib/payments/types");
 
 const fixture = (name: string) => readFileSync(path.join(process.cwd(), "tests", "fixtures", "dodo", `${name}.json`), "utf8");
 // A Standard Webhooks secret: whsec_ + base64 of the signing key.
@@ -180,6 +181,37 @@ describe("DodoProvider", () => {
   it("fails loudly when Dodo refuses a call", async () => {
     fetchMock.mockResolvedValue(new Response("product below minimum", { status: 422 }));
     await expect(provider().refund("pay_1")).rejects.toThrow(/422/);
+  });
+
+  describe("refund refusals", () => {
+    const refusal = async (response: Response | Error) => {
+      if (response instanceof Error) fetchMock.mockRejectedValue(response);
+      else fetchMock.mockResolvedValue(response);
+      const error = await provider()
+        .refund("pay_1")
+        .then(() => null, (e: unknown) => e);
+      expect(error).toBeInstanceOf(RefundError);
+      return error as InstanceType<typeof RefundError>;
+    };
+
+    it("retries when the wallet is short", async () => {
+      const error = await refusal(new Response(fixture("refund-insufficient-funds"), { status: 409 }));
+      expect(error).toMatchObject({ retry: true, code: "INSUFFICIENT_WALLET_FUNDS" });
+      expect(error.message).toMatch(/409.*Insufficient funds in wallet/);
+    });
+
+    it("retries rate limits, outages and network failures", async () => {
+      expect((await refusal(new Response("slow down", { status: 429 }))).retry).toBe(true);
+      expect((await refusal(new Response("bad gateway", { status: 502 }))).retry).toBe(true);
+      expect((await refusal(new TypeError("fetch failed"))).retry).toBe(true);
+      expect((await refusal(new DOMException("timed out", "TimeoutError"))).retry).toBe(true);
+    });
+
+    it("stops on refusals retrying can't fix", async () => {
+      const notFound = await refusal(Response.json({ code: "NOT_FOUND", message: "Payment not found" }, { status: 404 }));
+      expect(notFound).toMatchObject({ retry: false, code: "NOT_FOUND" });
+      expect((await refusal(new Response("unprocessable", { status: 422 }))).retry).toBe(false);
+    });
   });
 
   it("verifies webhooks and uses the webhook id as the event id", async () => {

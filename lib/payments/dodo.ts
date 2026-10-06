@@ -2,7 +2,7 @@ import "server-only";
 import { z } from "zod";
 import { serviceClient } from "@/lib/supabase/service";
 import { verifyWebhookSignature } from "./standard-webhooks";
-import { type Checkout, type CheckoutInput, DISPUTE_STATUSES, type DisputeStatus, type NormalizedEvent, type PaymentProvider } from "./types";
+import { type Checkout, type CheckoutInput, DISPUTE_STATUSES, type DisputeStatus, type NormalizedEvent, type PaymentProvider, RefundError } from "./types";
 
 /**
  * Dodo Payments, merchant of record (SPEC §10). One one-time product with Pay What You Want on:
@@ -15,6 +15,31 @@ export type DodoConfig = { mode: "test" | "live"; apiKey: string; webhookSecret:
 const BASE_URL = { test: "https://test.dodopayments.com", live: "https://live.dodopayments.com" } as const;
 
 const checkoutAnswer = z.object({ session_id: z.string().min(1), checkout_url: z.url() });
+const errorAnswer = z.object({ code: z.string().optional(), message: z.string().optional() });
+
+/** Dodo answered with an error status; `code` is Dodo's error code when the body has one. */
+export class DodoApiError extends Error {
+  constructor(
+    message: string,
+    readonly status: number,
+    readonly code: string | null,
+  ) {
+    super(message);
+    this.name = "DodoApiError";
+  }
+}
+
+// Refusals that clear up on their own: the wallet is short until payments settle or it is topped up.
+const RETRYABLE_CODES = new Set(["INSUFFICIENT_WALLET_FUNDS"]);
+
+/** Whether asking Dodo for a refund again later can succeed after this error. */
+export function refundRetryable(error: unknown): boolean {
+  if (error instanceof DodoApiError) {
+    return error.status === 429 || error.status >= 500 || (error.code !== null && RETRYABLE_CODES.has(error.code));
+  }
+  // Network failures and timeouts.
+  return true;
+}
 
 const productAnswer = z.object({
   price: z.object({ type: z.string(), price: z.number().int(), pay_what_you_want: z.boolean().optional() }),
@@ -91,7 +116,16 @@ export class DodoProvider implements PaymentProvider {
       body: init.body === undefined ? undefined : JSON.stringify(init.body),
       signal: AbortSignal.timeout(15_000),
     });
-    if (!response.ok) throw new Error(`Dodo ${init.method} ${path} answered ${response.status}: ${(await response.text()).slice(0, 300)}`);
+    if (!response.ok) {
+      const text = (await response.text()).slice(0, 300);
+      let code: string | null = null;
+      try {
+        code = errorAnswer.parse(JSON.parse(text)).code ?? null;
+      } catch {
+        // Not JSON: keep the status and the text.
+      }
+      throw new DodoApiError(`Dodo ${init.method} ${path} answered ${response.status}: ${text}`, response.status, code);
+    }
     return response.json();
   }
 
@@ -151,10 +185,15 @@ export class DodoProvider implements PaymentProvider {
   }
 
   async refund(providerPaymentId: string): Promise<void> {
-    await this.call("/refunds", {
-      method: "POST",
-      body: { payment_id: providerPaymentId, reason: "The crown could not be delivered for this payment." },
-    });
+    try {
+      await this.call("/refunds", {
+        method: "POST",
+        body: { payment_id: providerPaymentId, reason: "The crown could not be delivered for this payment." },
+      });
+    } catch (e) {
+      const message = e instanceof Error ? e.message : String(e);
+      throw new RefundError(message, refundRetryable(e), e instanceof DodoApiError ? e.code : null);
+    }
   }
 
 /**
