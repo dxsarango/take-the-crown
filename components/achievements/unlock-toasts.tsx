@@ -178,16 +178,45 @@ function Toast({ unlock, viewer, season, onDone }: { unlock: Unlock; viewer: Vie
 
 type AchievementInfo = { rarity: Rarity };
 
+const REIGN_UNLOCKS = "crown:reign-unlocks";
+/** Kept until the toasts mount: on a page that just loaded, the viewer may still be loading. */
+let pendingReign: number | null = null;
+
+/**
+ * Asks the toasts to show what a reign the viewer just bought unlocked. The realtime channel only
+ * hears inserts made after it subscribed; a buyer back from a redirect checkout arrives later.
+ */
+export function announceReignUnlocks(reignId: number): void {
+  pendingReign = reignId;
+  window.dispatchEvent(new CustomEvent<number>(REIGN_UNLOCKS, { detail: reignId }));
+}
+
 /**
  * Listens for the signed-in player's own unlocks (achievements and rank-ups) and shows them one
  * at a time. Other players' unlocks never reach this component: the channel filters by profile.
  */
+/** Whether a modal dialog is open: it sits in the top layer, so a toast would play hidden behind it. */
+function useModalOpen(): boolean {
+  const modal = () => typeof document !== "undefined" && document.querySelector("dialog[open]") !== null;
+  const [open, setOpen] = useState(modal);
+  useEffect(() => {
+    const observer = new MutationObserver(() => setOpen(modal()));
+    observer.observe(document.body, { subtree: true, childList: true, attributes: true, attributeFilter: ["open"] });
+    return () => observer.disconnect();
+  }, []);
+  return open;
+}
+
 export function UnlockToasts({ viewer, season }: { viewer: ViewerSummary; season: number }) {
   const [queue, setQueue] = useState<Unlock[]>([]);
+  const modalOpen = useModalOpen();
   const [waiting, setWaiting] = useState(false);
   const rarities = useRef(new Map<string, AchievementInfo>());
+  const seen = useRef(new Set<number>());
 
   const receive = useEffectEvent((row: { id: number; kind: string; season_id: number | null; payload: unknown }) => {
+    if (seen.current.has(row.id)) return;
+    seen.current.add(row.id);
     const payload = (row.payload ?? {}) as Record<string, unknown>;
     if (row.kind === "achievement_unlocked" && isAchievementCode(payload.code)) {
       const rarity = rarities.current.get(payload.code)?.rarity ?? "common";
@@ -213,12 +242,27 @@ export function UnlockToasts({ viewer, season }: { viewer: ViewerSummary; season
         (change) => receive(change.new as { id: number; kind: string; season_id: number | null; payload: unknown }),
       )
       .subscribe();
+    const catchUp = (reignId: number) => {
+      pendingReign = null;
+      void db
+        .from("events")
+        .select("id, kind, season_id, payload")
+        .eq("profile_id", viewer.profileId)
+        .eq("reign_id", reignId)
+        .in("kind", ["achievement_unlocked", "rank_up"])
+        .order("id")
+        .then(({ data }) => (data ?? []).forEach(receive));
+    };
+    const onAnnounce = (e: Event) => catchUp((e as CustomEvent<number>).detail);
+    window.addEventListener(REIGN_UNLOCKS, onAnnounce);
+    if (pendingReign !== null) catchUp(pendingReign);
     return () => {
+      window.removeEventListener(REIGN_UNLOCKS, onAnnounce);
       void db.removeChannel(channel);
     };
   }, [viewer.profileId]);
 
-  const current = waiting ? null : queue[0];
+  const current = waiting || modalOpen ? null : queue[0];
   if (!current) return null;
   return (
     <Toast

@@ -17,13 +17,18 @@ export type PaymentPhase =
   | { kind: "submitting" }
   | { kind: "checkout"; lockId: string; priceCents: number; expiresAt: string; paying: boolean; moderationPending: boolean }
   | { kind: "verify"; email: string }
-  | { kind: "success"; crownedAt: number; moderationPending: boolean };
+  | { kind: "success"; reignId: number | null; crownedAt: number; moderationPending: boolean };
 
 /** How the modal ended, so the home can show the matching state. */
 export type PaymentResult = "crowned" | "payment_failed" | "lock_expired" | "closed";
 
 const DRAFT_KEY = "crown:payment-draft";
 const POLL_MS = 1000;
+
+type LockResponse =
+  | { status: "applied"; reignId: number | null; startedAt: string | null }
+  | { status: "active"; expiresAt: string; priceCents: number }
+  | { status: "refunded" | "expired" | "not_found" };
 
 export function newAvatarSeed(): string {
   const bytes = crypto.getRandomValues(new Uint8Array(16));
@@ -63,13 +68,21 @@ type Options = {
   locale: string;
   now: number;
   onDone: (result: PaymentResult) => void;
+  /** The buyer was crowned: the page plays the coronation if it has not seen it yet. */
+  onCrowned?: (reignId: number) => void;
   returning?: CheckoutReturn | null;
 };
 
 /** The payment flow: lock on submit, checkout, then wait for the webhook to crown the buyer. */
-export function usePayment({ locale, now, onDone, returning = null }: Options) {
+export function usePayment({ locale, now, onDone, onCrowned, returning = null }: Options) {
   const [phase, setPhase] = useState<PaymentPhase>(returning ? { kind: "submitting" } : { kind: "form" });
   const finish = useEffectEvent((result: PaymentResult) => onDone(result));
+  /** The reign clock starts when the database crowned the buyer, not when this page found out. */
+  const crowned = useEffectEvent((lock: Extract<LockResponse, { status: "applied" }>, moderationPending: (p: PaymentPhase) => boolean) => {
+    const crownedAt = lock.startedAt ? new Date(lock.startedAt).getTime() : now;
+    setPhase((p) => ({ kind: "success", reignId: lock.reignId, crownedAt, moderationPending: moderationPending(p) }));
+    if (lock.reignId !== null) onCrowned?.(lock.reignId);
+  });
 
   // Back from the provider's page: pick the lock up again and wait for its webhook like an overlay.
   const returnedLock = returning?.lockId ?? null;
@@ -82,10 +95,10 @@ export function usePayment({ locale, now, onDone, returning = null }: Options) {
       return;
     }
     void fetch(`/api/locks/${returnedLock}`, { cache: "no-store" })
-      .then((r) => r.json() as Promise<{ status: string; expiresAt?: string; priceCents?: number }>)
+      .then((r) => r.json() as Promise<LockResponse>)
       .then((lock) => {
-        if (lock.status === "applied") setPhase({ kind: "success", crownedAt: Date.now(), moderationPending: false });
-        else if (lock.status === "active" && lock.expiresAt && lock.priceCents)
+        if (lock.status === "applied") crowned(lock, () => false);
+        else if (lock.status === "active")
           setPhase({ kind: "checkout", lockId: returnedLock, priceCents: lock.priceCents, expiresAt: lock.expiresAt, paying: true, moderationPending: false });
         else finish("lock_expired");
       })
@@ -166,12 +179,12 @@ export function usePayment({ locale, now, onDone, returning = null }: Options) {
     let stopped = false;
     const poll = async () => {
       const response = await fetch(`/api/locks/${lockId}`, { cache: "no-store" }).catch(() => null);
-      const body = response?.ok ? ((await response.json()) as { status: string }) : null;
+      const body = response?.ok ? ((await response.json()) as LockResponse) : null;
       if (stopped || !body) return;
       if (body.status === "applied") {
-        setPhase((p) => ({ kind: "success", crownedAt: Date.now(), moderationPending: p.kind === "checkout" && p.moderationPending }));
-      }
-      else if (body.status === "refunded" || body.status === "expired") finish("lock_expired");
+        stopped = true;
+        crowned(body, (p) => p.kind === "checkout" && p.moderationPending);
+      } else if (body.status === "refunded" || body.status === "expired") finish("lock_expired");
     };
     const timer = setInterval(poll, POLL_MS);
     return () => {

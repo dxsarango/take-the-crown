@@ -17,6 +17,7 @@ import type { ModerationReason } from "@/lib/moderation/reasons";
 import type { Rank } from "@/lib/game/rank";
 import { lockSegments } from "@/lib/home/hero";
 import type { ViewerSummary } from "@/lib/profile/viewer";
+import { ReignShare } from "./reign-share";
 import { type CheckoutReturn, type Draft, type PaymentResult, usePayment } from "./use-payment";
 
 const SEGMENTS = 20;
@@ -213,11 +214,13 @@ type Props = {
   /** Signed-in buyers keep their name, avatar and email. */
   viewer: ViewerSummary | null;
   onDone: (result: PaymentResult) => void;
+  /** The buyer was crowned; the page plays the coronation if it never saw the crown change. */
+  onCrowned?: (reignId: number) => void;
   /** "Email me a magic link" after paying: the home closes this and opens the sign-in sheet. */
   onSignIn: (draft: Draft) => void;
 };
 
-export function PaymentModal({ season, priceCents, lockSeconds, messageMax, now, initial, returning = null, detectedCountry, viewer, onDone, onSignIn }: Props) {
+export function PaymentModal({ season, priceCents, lockSeconds, messageMax, now, initial, returning = null, detectedCountry, viewer, onDone, onCrowned, onSignIn }: Props) {
   const t = useTranslations("payment");
   const common = useTranslations("common");
   const login = useTranslations("login");
@@ -228,7 +231,7 @@ export function PaymentModal({ season, priceCents, lockSeconds, messageMax, now,
   const dialog = useRef<HTMLDialogElement>(null);
   const [draft, setDraft] = useState<Draft>(initial);
   const [countryTouched, setCountryTouched] = useState(false);
-  const { phase, submit, payTest, decline, close, clearFailure } = usePayment({ locale, now, onDone, returning });
+  const { phase, submit, payTest, decline, close, clearFailure } = usePayment({ locale, now, onDone, onCrowned, returning });
   const nameCheck = useNameCheck(viewer ? "" : draft.name);
   const human = useHumanCheck("lock");
   // Terms §5: the buyer accepts immediate delivery and the loss of withdrawal before every checkout.
@@ -522,6 +525,8 @@ export function PaymentModal({ season, priceCents, lockSeconds, messageMax, now,
           {t("test.decline")}
         </button>
       </div>
+      {/* As on a real checkout, so test runs show what buyers see. */}
+      <p className="text-12 text-crown-muted">{common("taxes")}</p>
     </div>
   );
 
@@ -607,6 +612,10 @@ export function PaymentModal({ season, priceCents, lockSeconds, messageMax, now,
       </div>
     );
 
+  // Signed-in buyers are already kept; the success screen's other column is for sharing the reign.
+  const reignShare = (size: Size) =>
+    isSuccess && viewer && phase.reignId !== null ? <ReignShare reignId={phase.reignId} viewer={viewer} size={size} /> : null;
+
   const showForm = !isSuccess;
   const formDisabled = phase.kind !== "form";
 
@@ -652,6 +661,7 @@ export function PaymentModal({ season, priceCents, lockSeconds, messageMax, now,
               </fieldset>
             )}
             {isSuccess && signIn && <div className="flex flex-col gap-3 pt-5 shadow-[var(--crown-bar-top)]">{signIn}</div>}
+            {reignShare("mobile") && <div className="pt-5 shadow-[var(--crown-bar-top)]">{reignShare("mobile")}</div>}
           </div>
           {showForm && (
             <div className="flex flex-none flex-col gap-2.5 bg-crown-ink px-4 pt-3.5 pb-4 shadow-[var(--crown-bar-top)]">
@@ -707,6 +717,7 @@ export function PaymentModal({ season, priceCents, lockSeconds, messageMax, now,
                 {pendingReview}
                 {signIn}
                 {signIn && <p className="text-12 leading-body text-crown-muted">{t("skipNote")}</p>}
+                {reignShare("desktop")}
               </div>
             )}
             {previewCard("desktop")}

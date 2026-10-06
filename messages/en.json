@@ -79,7 +79,8 @@
     "faq": "FAQ",
     "terms": "Terms",
     "quote": "“{message}”",
-    "noReigns": "No one has reigned this season yet.",
+    "noReigns": "No one has reigned yet.",
+    "noPastReigns": "No one has lost the crown yet.",
     "feedEmpty": "No proclamations in the last 24 hours.",
     "feed": {
       "fellTo": "fell to",
@@ -142,6 +143,14 @@
     "xLogin": "Continue with X",
     "email": "Email me a magic link",
     "watch": "Watch your coronation",
+    "share": {
+      "title": "Share your reign while it lasts.",
+      "cardAlt": "Victory card: {name}, king of the internet",
+      "copy": "Copy link",
+      "postX": "Post on X",
+      "story": "Image for stories",
+      "unlocked": "Unlocked with this reign"
+    },
     "skipNote": "If you skip this, your reign still counts, but you won't get alerts or keep achievements.",
     "youName": "your-name",
     "rejLinkT": "We can't use this link.",
