@@ -13,7 +13,7 @@ import { revalidateHome } from "@/lib/home/cache";
  */
 async function recordWebhook(request: Request): Promise<void> {
   const body = await request.text();
-  const type = /"type"s*:s*"([a-z._]+)"/.exec(body)?.[1] ?? "unknown";
+  const type = /"type"\s*:\s*"([a-z._]+)"/.exec(body)?.[1] ?? "unknown";
   const headers = Object.fromEntries(["webhook-id", "webhook-timestamp", "webhook-signature"].map((h) => [h, request.headers.get(h)]));
   const dir = path.join(process.cwd(), "tests", "fixtures", "dodo", "recorded");
   await mkdir(dir, { recursive: true });
