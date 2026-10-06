@@ -4,6 +4,7 @@ import { after } from "next/server";
 import { isDeployed } from "@/lib/config/deployment";
 import { processOutbox } from "@/lib/email/outbox";
 import { providerByName } from "@/lib/payments";
+import { paymentIdFor, requestRefund } from "@/lib/payments/refunds";
 import { serviceClient } from "@/lib/supabase/service";
 import { revalidateHome } from "@/lib/home/cache";
 
@@ -50,10 +51,9 @@ export async function POST(request: Request, { params }: RouteContext<"/api/webh
         return new Response(null, { status: 500 });
       }
       if (result === "refund_pending") {
-        await provider.refund(event.providerPaymentId).catch((e: unknown) => {
-          // Stays refund_pending; the admin refund action (M7) picks it up.
-          console.error("refund failed", event.providerPaymentId, e);
-        });
+        // A refused request stays refund_pending and the refunds cron retries it.
+        const paymentId = await paymentIdFor(provider.name, event.providerPaymentId);
+        if (paymentId) await requestRefund(paymentId).catch((e: unknown) => console.error("refund request failed", paymentId, e));
       }
       if (result === "applied") {
         revalidateHome();

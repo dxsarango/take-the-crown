@@ -4,3 +4,6 @@ server with `DODO_RECORD_WEBHOOKS=1`, complete a test checkout (and a refund), a
 from `tests/fixtures/dodo/recorded/` here (each file keeps the signature headers and the raw body;
 copy the `body`). Recorded bodies are signed with your test webhook secret,
 which the tests do not know, so the tests re-sign them.
+
+`refund-insufficient-funds.json` is the body Dodo's test API answered (409) to a refund request while
+the test wallet had no funds.

@@ -3,6 +3,7 @@
   "regions": ["iad1"],
   "crons": [
     { "path": "/api/cron/moderation", "schedule": "* * * * *" },
-    { "path": "/api/cron/notifications", "schedule": "* * * * *" }
+    { "path": "/api/cron/notifications", "schedule": "* * * * *" },
+    { "path": "/api/cron/refunds", "schedule": "* * * * *" }
   ]
 }
