@@ -43,8 +43,8 @@ Placeholders: `<ref>` is the Supabase project ref (the subdomain of its API URL)
    supabase db push
    ```
 
-   Never pass `--include-seed`: `supabase/seed.sql` is local only. `supabase migration list` must show every migration (`0001` … `0021`) as applied remotely.
-4. **Integrations → Cron:** five active jobs: `rollover-season`, `live-achievements`, `price-alerts` (every minute), `purge-expired-records` (daily 03:17 UTC) and `season-readiness` (daily 09:00 UTC).
+   Never pass `--include-seed`: `supabase/seed.sql` is local only. `supabase migration list` must show every migration in `supabase/migrations` as applied remotely.
+4. **Integrations → Cron:** six active jobs: `rollover-season`, `live-achievements`, `price-alerts`, `stuck-refund-alerts` (every minute), `purge-expired-records` (daily 03:17 UTC) and `season-readiness` (daily 09:00 UTC).
 5. **Storage:** the public `avatars` bucket exists (1 MB, PNG and WebP), from migration `0011`.
 6. **Authentication → URL Configuration:** Site URL `https://takethecrown.app`. Redirect URLs: `https://takethecrown.app/**`.
 7. **Authentication → Sign In / Providers → Email:** enabled. Email OTP expiration `900` seconds. "Confirm email" may stay on: both templates below carry the same sign-in link.
@@ -172,6 +172,26 @@ Dodo has to reach your local server, so it needs a public URL:
 4. Stop `pnpm dev` (Next allows one dev server per checkout), keep the tunnel running and run `pnpm e2e:dodo`. A preflight checks local Supabase, Playwright's browser, the Dodo variables, the test product (Pay What You Want), the test webhook endpoint and that the tunnel reaches port 3100, and says what to start or fix. It starts the app on port 3100 with `PAYMENT_PROVIDER=dodo`, pays on Dodo's checkout with the test card, checks the takeover, a late payment refunded through the refund API and a duplicate webhook, and records the raw webhooks in `tests/fixtures/dodo/recorded/`.
 
 Dodo's CLI (`dodo wh listen`) is not used: it re-serializes the JSON it relays, which can break the signature check.
+
+## After merging a PR with a migration
+
+Vercel deploys `main` on its own; the database does not change until you push the migration. Push it right after the merge, so the deployed code and the schema match.
+
+1. Update your checkout:
+
+   ```bash
+   git checkout main
+   git pull --ff-only
+   ```
+
+2. Push the new migrations to production (the project linked in step 3; the CLI asks for the database password):
+
+   ```bash
+   supabase db push
+   ```
+
+   It lists the migrations it will apply and asks before applying them. Never pass `--include-seed`. `supabase migration list` must then show every migration as applied remotely.
+3. Check the site and the database: `CHECK_DATABASE_URL="<Supabase → Connect → Session pooler connection string>" pnpm check:deploy https://takethecrown.app`. No FAIL lines.
 
 ## Launch (M10b)
 

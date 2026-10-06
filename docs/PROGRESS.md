@@ -94,6 +94,8 @@ The ordered production procedure, with the exact values per dashboard and the pl
 
 ## Pre-production
 
+- [ ] Later improvement: push migrations from a GitHub Action when a PR with a migration merges (`supabase db push` with the project's access token and database password as secrets, then `pnpm check:deploy`), replacing the manual steps in `docs/DEPLOY.md` ("After merging a PR with a migration")
+
 - [ ] Replace the social logos in `design/assets/icons/social/` (drawn from memory) and the new TikTok, website, GitHub and LinkedIn icons with marks checked against the official brand kits
 
 ## Milestone 1 — Scaffold, tokens, i18n, local Supabase
@@ -278,8 +280,8 @@ The ordered production procedure, with the exact values per dashboard and the pl
 - [x] First takeover fixes (decision 45): coronation and toasts without realtime, replay from data, crown descending onto an empty throne, success screen sharing column, succession empty copy, tax note on the test checkout; `pnpm e2e:prod` runs the suite against a production build; e2e for the first takeover of a season (inline and redirect checkout, reduced motion, en/es, 390 and 1440)
 - [x] `pnpm e2e:dodo` fills Dodo's real two-step checkout (billing details, then the card in Dodo's payment iframe); a preflight for every e2e command (local Supabase and Mailpit, Playwright's Chromium; for Dodo the variables, the product's Pay What You Want, the test webhook endpoint and the tunnel reaching port 3100); `/admin` warns when the Dodo product has a fixed price; the dev-server manifest race patched in Next
 - [x] Refunds the provider refuses (decision 46): `refund_pending` kept, retried by `/api/cron/refunds` with backoff, `/admin` → Refunds, `refunds_stuck` email at most hourly; tests with Dodo's `INSUFFICIENT_WALLET_FUNDS` answer (db, unit, e2e)
-- [ ] Run `pnpm e2e:dodo` to the end once the owner turns on Pay What You Want for the test product, and replace the doc-shaped fixtures with recorded webhooks
-- [ ] `pnpm e2e:dodo` late-payment test (refund through Dodo): pending until Dodo says how to fund the test wallet; until then its refund is refused with `INSUFFICIENT_WALLET_FUNDS` and stays `refund_pending`
+- [x] `pnpm e2e:dodo` run against Dodo test mode (2026-10-06): a takeover through the hosted checkout, Pay What You Want charging the locked $34, the signed webhook crowning the buyer and the duplicate ignored; a recorded `payment.succeeded` body is now a unit-test fixture (refund and dispute fixtures stay doc-shaped until Dodo can refund in test mode)
+- [ ] `pnpm e2e:dodo` late-payment test (refund through Dodo): pending until Dodo says how to fund the test wallet. Until then Dodo refuses its refund with `INSUFFICIENT_WALLET_FUNDS`; the test checks it stays `refund_pending` with a retry scheduled, then skips with that reason
 - [ ] Staging environment (separate Supabase project, Vercel preview variables)
 - [ ] Dodo account verification, live product and webhook; one small real payment and refund
 - [ ] Final art for Frost (scene, crown, frame, `frostbound` medal) from the design
