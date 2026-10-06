@@ -180,6 +180,14 @@ test.describe("admin", () => {
     expect((await page.goto("/en/admin"))?.status()).toBe(404);
   });
 
+  test("signs out from the admin header", async ({ page }) => {
+    await asAdmin(page);
+    await page.getByRole("button", { name: en.login.signOut }).click();
+    await page.waitForURL(/\/en$/);
+    await expect(page.getByRole("button", { name: en.home.signin }).filter({ visible: true })).toBeVisible();
+    expect((await page.goto("/en/admin"))?.status()).toBe(404);
+  });
+
   test("hides a reported message and bans its author", async ({ page }) => {
     const [reign] = await sql<{ id: number }>("select current_reign_id as id from crown_state");
     await sql("insert into reports (reign_id, reporter_ip_hash, reason) values ($1, 'a', 'spam'), ($1, 'b', 'scam')", [reign.id]);

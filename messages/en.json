@@ -674,7 +674,9 @@
     "errUnavailable": "That sign-in option isn't available right now. Use a magic link instead.",
     "errLimited": "Too many sign-in links were requested. Try again in an hour.",
     "signOut": "Sign out",
-    "yourProfile": "Your profile"
+    "accountMenu": "Account menu",
+    "viewProfile": "View profile",
+    "editProfile": "Edit profile"
   },
   "share": {
     "knight": "Knight",
