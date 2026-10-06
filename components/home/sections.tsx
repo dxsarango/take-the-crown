@@ -31,7 +31,8 @@ function Empty({ children }: { children: ReactNode }) {
   return <p className="text-14 text-crown-muted">{children}</p>;
 }
 
-export function Succession({ reigns, season }: { reigns: PastReign[]; season: number }) {
+/** Past reigns only: the current king is on the throne above, not in the line. */
+export function Succession({ reigns, season, hasKing }: { reigns: PastReign[]; season: number; hasKing: boolean }) {
   const t = useTranslations("home");
   const units = useUnits();
   return (
@@ -41,7 +42,7 @@ export function Succession({ reigns, season }: { reigns: PastReign[]; season: nu
         <SectionLink href="/kingdom">{t("history")}</SectionLink>
       </div>
       {reigns.length === 0 ? (
-        <Empty>{t("noReigns")}</Empty>
+        <Empty>{hasKing ? t("noPastReigns") : t("noReigns")}</Empty>
       ) : (
         <ol className="-mx-4 flex gap-3 overflow-x-auto px-4 pb-1 lg:mx-0 lg:grid lg:grid-cols-10 lg:overflow-visible lg:px-0 lg:pb-0">
           {reigns.map((reign) => (

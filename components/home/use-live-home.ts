@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { type HomeData, fetchHomeData } from "@/lib/home/data";
 import { clockOffset } from "@/lib/home/hero";
 import { publicClient } from "@/lib/supabase/public";
@@ -37,9 +37,13 @@ export function useServerNow(initial: string): number {
   return now;
 }
 
-/** Home data kept live: refetched whenever the crown changes or an event is published. */
-export function useLiveHome(initial: HomeData): HomeData {
+/**
+ * Home data kept live: refetched whenever the crown changes or an event is published, and on
+ * demand (`refresh`) when the page learns of a change some other way.
+ */
+export function useLiveHome(initial: HomeData): { data: HomeData; refresh: () => void } {
   const [data, setData] = useState(initial);
+  const refetchRef = useRef<() => void>(() => undefined);
 
   useEffect(() => {
     const db = publicClient();
@@ -56,6 +60,7 @@ export function useLiveHome(initial: HomeData): HomeData {
           .catch(() => undefined);
       }, REFETCH_DEBOUNCE_MS);
     };
+    refetchRef.current = refetch;
 
     const channel = db
       .channel("home")
@@ -72,5 +77,6 @@ export function useLiveHome(initial: HomeData): HomeData {
     };
   }, []);
 
-  return data;
+  const refresh = useCallback(() => refetchRef.current(), []);
+  return { data, refresh };
 }

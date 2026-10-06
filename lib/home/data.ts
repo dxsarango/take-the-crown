@@ -46,7 +46,7 @@ export type King = Person & {
   startedAt: string;
 };
 
-export type PastReign = Person & { reignId: number; durationSeconds: number };
+export type PastReign = Person & { reignId: number; durationSeconds: number; endedAt: string | null };
 
 export type HallOfFame = {
   longest: (Person & { seconds: number }) | null;
@@ -93,7 +93,7 @@ export async function fetchHomeData(db: PublicClient, now = new Date()): Promise
     db.from("seasons").select("id, slug, name_en, name_es, starts_at, ends_at"),
     db
       .from("public_reigns")
-      .select("id, profile_id, name, country_code, message, link, started_at, duration_seconds")
+      .select("id, profile_id, name, country_code, message, link, started_at, ended_at, duration_seconds")
       .eq("reversed", false)
       .order("started_at", { ascending: false })
       .limit(SUCCESSION_SIZE + 1),
@@ -178,7 +178,7 @@ export async function fetchHomeData(db: PublicClient, now = new Date()): Promise
     .slice(0, SUCCESSION_SIZE)
     .flatMap((r) => {
       const reign = asReign(r);
-      return reign ? [{ ...reign, durationSeconds: r.duration_seconds ?? 0 }] : [];
+      return reign ? [{ ...reign, durationSeconds: r.duration_seconds ?? 0, endedAt: r.ended_at }] : [];
     });
 
   type Entry = (typeof leaderboard)[number];

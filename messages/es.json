@@ -79,7 +79,8 @@
     "faq": "Preguntas frecuentes",
     "terms": "Términos",
     "quote": "“{message}”",
-    "noReigns": "Nadie ha reinado aún esta temporada.",
+    "noReigns": "Nadie ha reinado todavía.",
+    "noPastReigns": "Nadie ha perdido la corona todavía.",
     "feedEmpty": "Sin pregones en las últimas 24 horas.",
     "feed": {
       "fellTo": "cayó ante",
@@ -142,6 +143,14 @@
     "xLogin": "Continuar con X",
     "email": "Envíame un enlace mágico",
     "watch": "Ver tu coronación",
+    "share": {
+      "title": "Comparte tu reinado mientras dure.",
+      "cardAlt": "Tarjeta de victoria: {name}, rey de internet",
+      "copy": "Copiar enlace",
+      "postX": "Publicar en X",
+      "story": "Imagen para historias",
+      "unlocked": "Desbloqueado con este reinado"
+    },
     "skipNote": "Si lo saltas, tu reinado cuenta igual, pero no recibirás alertas ni guardarás logros.",
     "youName": "tu-nombre",
     "rejLinkT": "No podemos usar este enlace.",
