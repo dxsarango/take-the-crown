@@ -19,6 +19,9 @@ export async function GET(request: Request, { params }: RouteContext<"/auth/sign
     provider,
     options: { redirectTo: callbackUrl(next), skipBrowserRedirect: true },
   });
-  if (error || !data.url) return back("failed");
+  if (error || !data.url) {
+    console.error(`OAuth sign-in with "${provider}" could not start:`, error?.message ?? "no authorize URL");
+    return back("failed");
+  }
   return NextResponse.redirect(data.url);
 }
