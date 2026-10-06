@@ -1,0 +1,70 @@
+{
+  "business_id": "bus_recorded",
+  "data": {
+    "billing": {
+      "city": "New York",
+      "country": "EC",
+      "state": "NY",
+      "street": "1 Main St",
+      "zipcode": "10001"
+    },
+    "brand_id": "bus_recorded",
+    "business_id": "bus_recorded",
+    "card_holder_name": null,
+    "card_issuing_country": "GB",
+    "card_last_four": "4242",
+    "card_network": "visa",
+    "card_type": "credit",
+    "checkout_session_id": "cks_0Np8S3dQ6XE5ImUzxfbQd",
+    "created_at": "2026-10-06T07:18:47.178678Z",
+    "currency": "USD",
+    "custom_field_responses": null,
+    "customer": {
+      "customer_id": "cus_0Np8A7kreXB2WQxyGElKH",
+      "email": "dodo.buyer@test.local",
+      "metadata": {},
+      "name": "Crown Tester",
+      "phone_number": null
+    },
+    "digital_products_delivered": false,
+    "discount_id": null,
+    "discounts": null,
+    "disputes": [],
+    "error_code": null,
+    "error_message": null,
+    "invoice_id": "inv_0Np8S4DpPoHoKjvGFSP3O",
+    "invoice_url": "https://test.dodopayments.com/invoices/payments/pay_0Np8S4DpPoHoKjvBSA39B",
+    "is_multi_subscription": false,
+    "is_update_payment_method": false,
+    "metadata": {
+      "lock_id": "f9ce3ca9-1dc7-47ab-99c7-8343ebf5a4ed"
+    },
+    "payload_type": "Payment",
+    "payment_id": "pay_0Np8S4DpPoHoKjvBSA39B",
+    "payment_link": "https://test.checkout.dodopayments.com/U6CGKz0H",
+    "payment_method": "card",
+    "payment_method_id": "pm_C2lDHJ7kxztAnCuBR0ZU",
+    "payment_method_type": "credit",
+    "payment_provider": "dodo",
+    "product_cart": [
+      {
+        "product_id": "pdt_0Np45ZCweKsTS3qIP1Tad",
+        "quantity": 1
+      }
+    ],
+    "refund_status": null,
+    "refunds": [],
+    "retry_attempt": 0,
+    "settlement_amount": 3400,
+    "settlement_currency": "USD",
+    "settlement_tax": 0,
+    "status": "succeeded",
+    "subscription_id": null,
+    "subscription_ids": [],
+    "tax": 0,
+    "total_amount": 3400,
+    "updated_at": null
+  },
+  "timestamp": "2026-10-06T07:18:53.311349Z",
+  "type": "payment.succeeded"
+}
