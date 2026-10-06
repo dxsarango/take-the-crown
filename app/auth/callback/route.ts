@@ -10,12 +10,20 @@ export async function GET(request: Request) {
   const next = safeNext(url.searchParams.get("next"));
   const go = (path: string) => NextResponse.redirect(new URL(path, url.origin));
 
-  // Provider errors (a cancelled consent screen) and expired links arrive without a code.
-  if (!code) return go(withParam(next, "auth_error", "failed"));
+  // Provider errors (a cancelled consent screen, a misconfigured app) and expired links arrive
+  // without a code; Supabase passes the reason along, which only the logs should see.
+  if (!code) {
+    const reason = ["error", "error_code", "error_description"].map((k) => url.searchParams.get(k)).filter(Boolean).join(": ");
+    if (reason) console.error("Sign-in came back without a code:", reason.slice(0, 300));
+    return go(withParam(next, "auth_error", "failed"));
+  }
 
   const session = await sessionClient();
   const { data, error } = await session.auth.exchangeCodeForSession(code);
-  if (error || !data.user) return go(withParam(next, "auth_error", "failed"));
+  if (error || !data.user) {
+    console.error("Sign-in code exchange failed:", error?.code ?? "", error?.message ?? "no user");
+    return go(withParam(next, "auth_error", "failed"));
+  }
 
   // Profiles are keyed by email; an X account without one cannot own a profile.
   if (!data.user.email) {
