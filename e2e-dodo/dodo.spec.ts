@@ -1,6 +1,6 @@
 import { readFile, readdir } from "node:fs/promises";
 import path from "node:path";
-import { type Frame, type Page, expect, test } from "@playwright/test";
+import { type Page, expect, test } from "@playwright/test";
 import en from "../messages/en.json";
 import { sql } from "../e2e/fixtures/db";
 import { resetKingdom, seedKingdom } from "../e2e/fixtures/kingdom";
@@ -12,8 +12,10 @@ import { acceptDelivery } from "../e2e/fixtures/payment";
  */
 
 const RECORDED = path.join(process.cwd(), "tests", "fixtures", "dodo", "recorded");
-// Dodo's published test card (docs.dodopayments.com/miscellaneous/testing-process).
-const CARD = { number: "4242424242424242", expiry: "06/32", cvc: "123", name: "Crown Tester", zip: "10001" };
+// Dodo's published test card (docs.dodopayments.com/miscellaneous/testing-process), and a US
+// billing address: the checkout preselects the country from the IP, which varies by machine.
+const CARD = { number: "4242424242424242", expiry: "06/32", cvc: "123" };
+const BILLING = { name: "Crown Tester", country: "US", address: "1 Main St", city: "New York", state: "NY", zip: "10001" };
 
 test.describe.configure({ mode: "serial" });
 test.beforeAll(async () => {
@@ -23,31 +25,27 @@ test.beforeAll(async () => {
 test.beforeEach(() => seedKingdom());
 test.afterAll(resetKingdom);
 
-/** Fills the first visible field matching one of the selectors, in the page or any of its frames. */
-async function fill(page: Page, selectors: string[], value: string): Promise<void> {
-  const scopes: (Page | Frame)[] = [page, ...page.frames()];
-  for (const scope of scopes) {
-    for (const selector of selectors) {
-      const field = scope.locator(selector).first();
-      if (await field.isVisible().catch(() => false)) {
-        await field.fill(value);
-        return;
-      }
-    }
-  }
-  throw new Error(`No field for ${selectors.join(" | ")} on Dodo's checkout`);
-}
-
-/** Completes Dodo's hosted checkout with the test card and waits to land back on our site. */
+/**
+ * Completes Dodo's hosted checkout and waits to land back on our site. Two steps: contact and
+ * billing details on the page (the email comes prefilled from the session), then the card in
+ * Dodo's payment iframe, paid with the page's "Pay now".
+ */
 async function payOnDodo(page: Page): Promise<void> {
-  await page.waitForURL(/dodopayments\.com/, { timeout: 30_000 });
-  await page.waitForLoadState("networkidle");
-  await fill(page, ['input[autocomplete="cc-number"]', 'input[name*="card" i][name*="number" i]', 'input[placeholder*="1234"]'], CARD.number);
-  await fill(page, ['input[autocomplete="cc-exp"]', 'input[name*="exp" i]', 'input[placeholder*="MM" i]'], CARD.expiry);
-  await fill(page, ['input[autocomplete="cc-csc"]', 'input[name*="cvc" i]', 'input[name*="cvv" i]', 'input[placeholder*="CVC" i]'], CARD.cvc);
-  await fill(page, ['input[autocomplete="cc-name"]', 'input[name*="name" i]'], CARD.name).catch(() => undefined);
-  await fill(page, ['input[autocomplete="postal-code"]', 'input[name*="zip" i]', 'input[name*="postal" i]'], CARD.zip).catch(() => undefined);
-  await page.getByRole("button", { name: /^(pay|complete|buy)/i }).first().click();
+  await page.waitForURL(/checkout\.dodopayments\.com/, { timeout: 30_000 });
+  await page.locator("input[name=fullName]").fill(BILLING.name);
+  await page.locator("select[name=country]").selectOption(BILLING.country);
+  await page.getByRole("button", { name: "Enter address manually" }).click();
+  await page.locator("input[name=addressLine]").fill(BILLING.address);
+  await page.locator("input[name=city]").fill(BILLING.city);
+  await page.locator("input[name=state]").fill(BILLING.state);
+  await page.locator("input[name=zipCode]").fill(BILLING.zip);
+  await page.getByRole("button", { name: "Continue to Payment" }).click();
+
+  const card = page.frameLocator("#dodo-checkout-iframe-payment");
+  await card.getByRole("textbox", { name: "Card number" }).fill(CARD.number, { timeout: 30_000 });
+  await card.getByRole("textbox", { name: "Expiry" }).fill(CARD.expiry);
+  await card.getByRole("textbox", { name: "Security code" }).fill(CARD.cvc);
+  await page.getByRole("button", { name: "Pay now" }).click();
   await page.waitForURL((url) => url.hostname === "localhost", { timeout: 90_000 });
 }
 
