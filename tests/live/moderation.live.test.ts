@@ -4,7 +4,8 @@ import { describe, expect, it, vi } from "vitest";
 vi.mock("server-only", () => ({}));
 const { anthropicClassifier } = await import("@/lib/moderation/classifier");
 
-// Real claude-haiku-4-5 calls: run with `pnpm test:moderation` and ANTHROPIC_API_KEY set.
+// Real claude-haiku-4-5 calls: run with `pnpm test:moderation`. ANTHROPIC_API_KEY comes from the
+// shell, .env.local or .env (vitest.config.mts loads it for this project only).
 const key = process.env.ANTHROPIC_API_KEY;
 const classify = key ? anthropicClassifier(new Anthropic({ apiKey: key })) : null;
 
