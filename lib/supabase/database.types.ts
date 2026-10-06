@@ -69,13 +69,13 @@ isOneToOne: false
                   ]
                 },"app_config": {
                   Row: {
-                    "decay_bps_per_hour": number,"delete_reauth_seconds": number,"floor_cents": number,"id": boolean,"late_payment_grace_seconds": number,"legal_city": string | null,"legal_contact_email": string | null,"legal_effective_date": string | null,"legal_payment_provider": string | null,"lock_seconds": number,"max_avatar_uploads_per_hour": number,"max_email_attempts": number,"max_locks_per_ip_per_hour": number,"max_magic_links_per_hour": number,"max_message_length": number,"max_moderations_per_ip_per_hour": number,"max_profile_saves_per_hour": number,"max_reports_per_ip_per_hour": number,"min_first_season_days": number,"name_change_days": number,"prelaunch": boolean,"season_ready_alert_days": number,"step_bps": number,"updated_at": string
+                    "decay_bps_per_hour": number,"delete_reauth_seconds": number,"floor_cents": number,"id": boolean,"late_payment_grace_seconds": number,"legal_city": string | null,"legal_contact_email": string | null,"legal_effective_date": string | null,"legal_payment_provider": string | null,"lock_seconds": number,"max_avatar_uploads_per_hour": number,"max_email_attempts": number,"max_locks_per_ip_per_hour": number,"max_magic_links_per_hour": number,"max_message_length": number,"max_moderations_per_ip_per_hour": number,"max_profile_saves_per_hour": number,"max_reports_per_ip_per_hour": number,"min_first_season_days": number,"name_change_days": number,"prelaunch": boolean,"refund_alert_interval_seconds": number,"refund_retry_base_seconds": number,"refund_retry_max_seconds": number,"season_ready_alert_days": number,"step_bps": number,"updated_at": string
                   }
                   Insert: {
-                    "decay_bps_per_hour"?: number,"delete_reauth_seconds"?: number,"floor_cents"?: number,"id"?: boolean,"late_payment_grace_seconds"?: number,"legal_city"?: string | null,"legal_contact_email"?: string | null,"legal_effective_date"?: string | null,"legal_payment_provider"?: string | null,"lock_seconds"?: number,"max_avatar_uploads_per_hour"?: number,"max_email_attempts"?: number,"max_locks_per_ip_per_hour"?: number,"max_magic_links_per_hour"?: number,"max_message_length"?: number,"max_moderations_per_ip_per_hour"?: number,"max_profile_saves_per_hour"?: number,"max_reports_per_ip_per_hour"?: number,"min_first_season_days"?: number,"name_change_days"?: number,"prelaunch"?: boolean,"season_ready_alert_days"?: number,"step_bps"?: number,"updated_at"?: string
+                    "decay_bps_per_hour"?: number,"delete_reauth_seconds"?: number,"floor_cents"?: number,"id"?: boolean,"late_payment_grace_seconds"?: number,"legal_city"?: string | null,"legal_contact_email"?: string | null,"legal_effective_date"?: string | null,"legal_payment_provider"?: string | null,"lock_seconds"?: number,"max_avatar_uploads_per_hour"?: number,"max_email_attempts"?: number,"max_locks_per_ip_per_hour"?: number,"max_magic_links_per_hour"?: number,"max_message_length"?: number,"max_moderations_per_ip_per_hour"?: number,"max_profile_saves_per_hour"?: number,"max_reports_per_ip_per_hour"?: number,"min_first_season_days"?: number,"name_change_days"?: number,"prelaunch"?: boolean,"refund_alert_interval_seconds"?: number,"refund_retry_base_seconds"?: number,"refund_retry_max_seconds"?: number,"season_ready_alert_days"?: number,"step_bps"?: number,"updated_at"?: string
                   }
                   Update: {
-                    "decay_bps_per_hour"?: number,"delete_reauth_seconds"?: number,"floor_cents"?: number,"id"?: boolean,"late_payment_grace_seconds"?: number,"legal_city"?: string | null,"legal_contact_email"?: string | null,"legal_effective_date"?: string | null,"legal_payment_provider"?: string | null,"lock_seconds"?: number,"max_avatar_uploads_per_hour"?: number,"max_email_attempts"?: number,"max_locks_per_ip_per_hour"?: number,"max_magic_links_per_hour"?: number,"max_message_length"?: number,"max_moderations_per_ip_per_hour"?: number,"max_profile_saves_per_hour"?: number,"max_reports_per_ip_per_hour"?: number,"min_first_season_days"?: number,"name_change_days"?: number,"prelaunch"?: boolean,"season_ready_alert_days"?: number,"step_bps"?: number,"updated_at"?: string
+                    "decay_bps_per_hour"?: number,"delete_reauth_seconds"?: number,"floor_cents"?: number,"id"?: boolean,"late_payment_grace_seconds"?: number,"legal_city"?: string | null,"legal_contact_email"?: string | null,"legal_effective_date"?: string | null,"legal_payment_provider"?: string | null,"lock_seconds"?: number,"max_avatar_uploads_per_hour"?: number,"max_email_attempts"?: number,"max_locks_per_ip_per_hour"?: number,"max_magic_links_per_hour"?: number,"max_message_length"?: number,"max_moderations_per_ip_per_hour"?: number,"max_profile_saves_per_hour"?: number,"max_reports_per_ip_per_hour"?: number,"min_first_season_days"?: number,"name_change_days"?: number,"prelaunch"?: boolean,"refund_alert_interval_seconds"?: number,"refund_retry_base_seconds"?: number,"refund_retry_max_seconds"?: number,"season_ready_alert_days"?: number,"step_bps"?: number,"updated_at"?: string
                   }
                   Relationships: [
                     
@@ -199,13 +199,13 @@ isOneToOne: false
                   ]
                 },"payments": {
                   Row: {
-                    "amount_cents": number,"created_at": string,"currency": string,"dispute_status": string | null,"email": string,"id": string,"lock_id": string,"provider": string,"provider_payment_id": string,"status": Database["public"]['Enums']["payment_status"],"updated_at": string
+                    "amount_cents": number,"created_at": string,"currency": string,"dispute_status": string | null,"email": string,"id": string,"lock_id": string,"provider": string,"provider_payment_id": string,"refund_attempts": number,"refund_last_error": string | null,"refund_next_attempt_at": string | null,"refund_requested_at": string | null,"status": Database["public"]['Enums']["payment_status"],"updated_at": string
                   }
                   Insert: {
-                    "amount_cents": number,"created_at"?: string,"currency": string,"dispute_status"?: string | null,"email": string,"id"?: string,"lock_id": string,"provider": string,"provider_payment_id": string,"status"?: Database["public"]['Enums']["payment_status"],"updated_at"?: string
+                    "amount_cents": number,"created_at"?: string,"currency": string,"dispute_status"?: string | null,"email": string,"id"?: string,"lock_id": string,"provider": string,"provider_payment_id": string,"refund_attempts"?: number,"refund_last_error"?: string | null,"refund_next_attempt_at"?: string | null,"refund_requested_at"?: string | null,"status"?: Database["public"]['Enums']["payment_status"],"updated_at"?: string
                   }
                   Update: {
-                    "amount_cents"?: number,"created_at"?: string,"currency"?: string,"dispute_status"?: string | null,"email"?: string,"id"?: string,"lock_id"?: string,"provider"?: string,"provider_payment_id"?: string,"status"?: Database["public"]['Enums']["payment_status"],"updated_at"?: string
+                    "amount_cents"?: number,"created_at"?: string,"currency"?: string,"dispute_status"?: string | null,"email"?: string,"id"?: string,"lock_id"?: string,"provider"?: string,"provider_payment_id"?: string,"refund_attempts"?: number,"refund_last_error"?: string | null,"refund_next_attempt_at"?: string | null,"refund_requested_at"?: string | null,"status"?: Database["public"]['Enums']["payment_status"],"updated_at"?: string
                   }
                   Relationships: [
                     {
@@ -552,7 +552,7 @@ isOneToOne: false
                   Relationships: [
                     {
       foreignKeyName: "reigns_profile_id_fkey"
-      columns: ["from_profile_id"]
+      columns: ["profile_id"]
 isOneToOne: false
       referencedRelation: "profile_stats"
       referencedColumns: ["profile_id"]
@@ -564,13 +564,13 @@ isOneToOne: false
       referencedColumns: ["profile_id"]
     },{
       foreignKeyName: "reigns_profile_id_fkey"
-      columns: ["profile_id"]
+      columns: ["from_profile_id"]
 isOneToOne: false
       referencedRelation: "profile_stats"
       referencedColumns: ["profile_id"]
     },{
       foreignKeyName: "reigns_profile_id_fkey"
-      columns: ["from_profile_id"]
+      columns: ["profile_id"]
 isOneToOne: false
       referencedRelation: "profiles"
       referencedColumns: ["id"]
@@ -582,7 +582,7 @@ isOneToOne: false
       referencedColumns: ["id"]
     },{
       foreignKeyName: "reigns_profile_id_fkey"
-      columns: ["profile_id"]
+      columns: ["from_profile_id"]
 isOneToOne: false
       referencedRelation: "profiles"
       referencedColumns: ["id"]
@@ -785,6 +785,30 @@ isOneToOne: false
         isOneToOne: false
         isSetofReturn: true
       } },
+"claim_refunds":
+{ Args: { "p_limit"?: number,"p_payment_id"?: string }; Returns: {
+              "amount_cents": number,
+"created_at": string,
+"currency": string,
+"dispute_status": string | null,
+"email": string,
+"id": string,
+"lock_id": string,
+"provider": string,
+"provider_payment_id": string,
+"refund_attempts": number,
+"refund_last_error": string | null,
+"refund_next_attempt_at": string | null,
+"refund_requested_at": string | null,
+"status": Database["public"]['Enums']["payment_status"],
+"updated_at": string
+            }[]
+                          SetofOptions: {
+        from: "*"
+        to: "payments"
+        isOneToOne: false
+        isSetofReturn: true
+      } },
 "create_price_lock":
 { Args: { "p_avatar_seed"?: string,"p_country_code": string,"p_email": string,"p_ip_hash": string,"p_link": string,"p_local_hour": number,"p_locale": string,"p_message": string,"p_name": string,"p_profile_id": string }; Returns: {
               "avatar_seed": string | null,
@@ -876,6 +900,9 @@ isOneToOne: false
 "queue_season_readiness_alerts":
 { Args: Record<PropertyKey, never>; Returns: undefined
                            },
+"queue_stuck_refund_alert":
+{ Args: Record<PropertyKey, never>; Returns: number
+                           },
 "rank_for_seconds":
 { Args: { "p_seconds": number }; Returns: string
                            },
@@ -887,6 +914,12 @@ isOneToOne: false
                            },
 "record_rank_ups":
 { Args: { "p_profile_id": string }; Returns: number
+                           },
+"record_refund_failed":
+{ Args: { "p_error": string,"p_payment_id": string,"p_retry": boolean }; Returns: undefined
+                           },
+"record_refund_requested":
+{ Args: { "p_payment_id": string }; Returns: undefined
                            },
 "release_price_lock":
 { Args: { "p_lock_id": string }; Returns: undefined
@@ -908,6 +941,10 @@ isOneToOne: false
 "lock_id": string,
 "provider": string,
 "provider_payment_id": string,
+"refund_attempts": number,
+"refund_last_error": string | null,
+"refund_next_attempt_at": string | null,
+"refund_requested_at": string | null,
 "status": Database["public"]['Enums']["payment_status"],
 "updated_at": string
             }
