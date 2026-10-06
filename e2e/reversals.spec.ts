@@ -5,6 +5,7 @@ import en from "../messages/en.json";
 import { sql } from "./fixtures/db";
 import { resetKingdom, seedKingdom } from "./fixtures/kingdom";
 import { signInByEmail } from "./fixtures/mail";
+import { HUMAN_TOKEN } from "./fixtures/payment";
 
 const SCREENS = "test-results/screens";
 
@@ -20,7 +21,7 @@ test.afterAll(resetKingdom);
 /** Takes the crown through the test provider, as a buyer would; returns the provider's payment id. */
 async function buy(request: APIRequestContext, name: string): Promise<string> {
   const lock = (await (
-    await request.post("/api/locks", { data: { name, email: `${name}@test.local`, locale: "en", message: "Mine now", acceptWithdrawal: true } })
+    await request.post("/api/locks", { data: { name, email: `${name}@test.local`, locale: "en", message: "Mine now", acceptWithdrawal: true, turnstileToken: HUMAN_TOKEN } })
   ).json()) as { lockId: string };
   expect((await request.post("/api/test-provider/pay", { data: { lockId: lock.lockId } })).status()).toBe(204);
   await expect

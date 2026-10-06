@@ -5,7 +5,7 @@ import es from "../messages/es.json";
 import { sql } from "./fixtures/db";
 import { resetKingdom, seedKingdom } from "./fixtures/kingdom";
 import { signInByEmail } from "./fixtures/mail";
-import { acceptDelivery } from "./fixtures/payment";
+import { HUMAN_TOKEN, acceptDelivery } from "./fixtures/payment";
 
 const SCREENS = "test-results/screens";
 
@@ -56,7 +56,9 @@ test("visitors see the whole site, with the crown launching soon", async ({ page
 
 test("the server refuses anyone but an admin", async ({ request }) => {
   test.skip(test.info().project.name !== "desktop", "server behaviour");
-  const response = await request.post("/api/locks", { data: { name: "eager_buyer", email: "eager@test.local", locale: "en", acceptWithdrawal: true } });
+  const response = await request.post("/api/locks", {
+    data: { name: "eager_buyer", email: "eager@test.local", locale: "en", acceptWithdrawal: true, turnstileToken: HUMAN_TOKEN },
+  });
   expect(response.status()).toBe(403);
   expect(await response.json()).toEqual({ ok: false, error: "prelaunch" });
 });
