@@ -82,6 +82,19 @@ describe("Dodo payloads", () => {
     });
   });
 
+  it("maps a payment.succeeded recorded from Dodo's test mode", () => {
+    // A $34 crown paid on Dodo's hosted checkout (pnpm e2e:dodo): Pay What You Want charged the locked price.
+    expect(mapDodoEvent(JSON.parse(fixture("payment-succeeded-recorded")))).toEqual({
+      type: "payment_succeeded",
+      providerPaymentId: "pay_0Np8S4DpPoHoKjvBSA39B",
+      lockId: "f9ce3ca9-1dc7-47ab-99c7-8343ebf5a4ed",
+      checkoutId: "cks_0Np8S3dQ6XE5ImUzxfbQd",
+      amountCents: 3400,
+      currency: "USD",
+      email: "dodo.buyer@test.local",
+    });
+  });
+
   it("maps a refund to its payment", () => {
     expect(mapDodoEvent(JSON.parse(fixture("refund-succeeded")))).toEqual({ type: "refund_succeeded", providerPaymentId: "pay_test_7Hq2Lc" });
   });

@@ -7,3 +7,8 @@ which the tests do not know, so the tests re-sign them.
 
 `refund-insufficient-funds.json` is the body Dodo's test API answered (409) to a refund request while
 the test wallet had no funds.
+
+`payment-succeeded-recorded.json` is a real `payment.succeeded` body from Dodo's test mode (the
+`pnpm e2e:dodo` takeover, business ids replaced). Refund and dispute bodies are still doc-shaped:
+Dodo's test wallet could not refund yet, and no dispute has been opened in test mode from the
+checkout.
