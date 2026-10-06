@@ -22,7 +22,13 @@ export function nameHint(user: Pick<User, "user_metadata">): string {
     .replace(/\s+/g, "_");
 }
 
-/** Claims the guest profile bought with this email, or creates one (SPEC §4). */
+// Postgres foreign_key_violation: the auth user was deleted between checking the session and saving.
+const FOREIGN_KEY_VIOLATION = "23503";
+
+/**
+ * Claims the guest profile bought with this email, or creates one (SPEC §4). Safe under concurrent
+ * first requests. Null when the user has no email, or no longer exists (its session outlived it).
+ */
 export async function ensureProfile(user: User): Promise<string | null> {
   if (!user.email) return null;
   const { data, error } = await serviceClient().rpc("ensure_profile_for_user", {
@@ -30,16 +36,27 @@ export async function ensureProfile(user: User): Promise<string | null> {
     p_email: user.email,
     p_name_hint: nameHint(user),
   });
-  if (error || !data) throw new Error(`Could not resolve profile: ${error?.message}`);
+  if (error?.code === FOREIGN_KEY_VIOLATION) return null;
+  if (error) throw new Error(`Could not resolve profile: ${error.message}`);
   return data;
 }
 
 /** The signed-in player, with their profile, or null. */
 export async function currentViewer(): Promise<Viewer | null> {
   const session = await sessionClient();
-  const { data } = await session.auth.getUser();
+  // A session for a deleted user ends here (where cookies can be written); the player carries on signed out.
+  const signOut = () => session.auth.signOut({ scope: "local" }).catch(() => undefined);
+  const { data, error } = await session.auth.getUser();
+  if (error?.code === "user_not_found") {
+    await signOut();
+    return null;
+  }
   const user = data.user;
   if (!user?.email) return null;
   const profileId = await ensureProfile(user);
-  return profileId ? { userId: user.id, email: user.email, profileId, lastSignInAt: user.last_sign_in_at ?? null } : null;
+  if (!profileId) {
+    await signOut();
+    return null;
+  }
+  return { userId: user.id, email: user.email, profileId, lastSignInAt: user.last_sign_in_at ?? null };
 }
