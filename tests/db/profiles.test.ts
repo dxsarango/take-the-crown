@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
 import { describe, expect, it } from "vitest";
-import { Player, count, createLock, one, pay, q, svc, uniqueEmail, withFreshGame } from "./helpers";
+import { Player, count, createLock, one, pay, q, service, svc, uniqueEmail, withFreshGame } from "./helpers";
 
 withFreshGame();
 
@@ -70,6 +70,41 @@ describe("guest purchase", () => {
 });
 
 describe("ensure_profile_for_user", () => {
+  it("creates one profile when a new player's first requests arrive together", async () => {
+    const email = uniqueEmail("burst");
+    const userId = await createAuthUser(email);
+    // The first call is mid-transaction (its profile not committed yet) when the second arrives.
+    const first = await service.connect();
+    try {
+      await first.query("begin");
+      const { rows } = await first.query<{ id: string }>("select ensure_profile_for_user($1, $2, 'Burst') as id", [userId, email]);
+      const second = ensureProfile(userId, email);
+      await new Promise((resolve) => setTimeout(resolve, 200));
+      await first.query("commit");
+      expect(await second).toBe(rows[0].id);
+    } finally {
+      first.release();
+    }
+    const ids = await Promise.all(Array.from({ length: 8 }, () => ensureProfile(userId, email)));
+    expect(new Set(ids).size).toBe(1);
+    expect(await count("profiles", "user_id = $1", [userId])).toBe(1);
+    expect(await count("profile_private", "profile_id = $1", [ids[0]])).toBe(1);
+  });
+
+  it("claims a guest profile once when the claims race", async () => {
+    const guest = new Player("racing_guest");
+    await guest.takeover();
+    const userId = await createAuthUser(guest.email);
+    const ids = await Promise.all(Array.from({ length: 6 }, () => ensureProfile(userId, guest.email)));
+    expect(new Set(ids)).toEqual(new Set([await guest.id()]));
+  });
+
+  it("answers null for a session whose auth user no longer exists", async () => {
+    const email = uniqueEmail("gone");
+    expect(await ensureProfile(randomUUID(), email)).toBeNull();
+    expect(await count("profile_private", "email = $1", [email])).toBe(0);
+  });
+
   it("claims the guest profile bought with the same email", async () => {
     const guest = new Player("guest");
     await guest.takeover();
