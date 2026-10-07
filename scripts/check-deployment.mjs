@@ -3,6 +3,7 @@
 // nothing. With CHECK_DATABASE_URL set (the hosted project's connection string), it also checks
 // row level security and what anon can read (scripts/database-checks.mjs).
 
+import { findSecrets } from "./bundle-secrets.mjs";
 import { checkDatabase } from "./database-checks.mjs";
 import { countryReport } from "./geo-report.mjs";
 
@@ -64,6 +65,17 @@ await check("home page", async () => {
   report(cloudflare ? "PASS" : "WARN", "served through Cloudflare", cloudflare ? `cf-ray ${response.headers.get("cf-ray")}` : "no cf-ray header");
   const cache = response.headers.get("cf-cache-status");
   report(!cache || /^(DYNAMIC|BYPASS|MISS)$/.test(cache) ? "PASS" : "FAIL", "HTML not cached by Cloudflare", cache ?? "no cf-cache-status");
+});
+
+await check("client bundle", async () => {
+  const sources = [...new Set([...home.matchAll(/<script[^>]+src="([^"]+\.js)"/g)].map((m) => m[1]))];
+  const leaks = [];
+  for (const src of sources) {
+    const text = await (await get(src)).text();
+    for (const finding of findSecrets(text)) leaks.push(`${src}: ${finding}`);
+  }
+  if (!sources.length) report("FAIL", "client bundle has no server secrets", "no scripts found on the home page");
+  else report(leaks.length ? "FAIL" : "PASS", "client bundle has no server secrets", leaks.length ? leaks.join("; ") : `${sources.length} chunks`);
 });
 
 await check("prelaunch state", async () => {
