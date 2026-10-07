@@ -4,6 +4,7 @@ import createMiddleware from "next-intl/middleware";
 import { routing } from "./i18n/routing";
 import { publicEnv } from "./lib/env";
 import { contentSecurityPolicy, newNonce } from "./lib/security/csp";
+import { sessionCookieOptions } from "./lib/supabase/cookies";
 
 const intl = createMiddleware(routing);
 
@@ -26,6 +27,7 @@ export default async function proxy(request: NextRequest) {
 
   if (request.cookies.getAll().some((c) => c.name.startsWith("sb-"))) {
     const supabase = createServerClient(publicEnv.NEXT_PUBLIC_SUPABASE_URL, publicEnv.NEXT_PUBLIC_SUPABASE_ANON_KEY, {
+      cookieOptions: sessionCookieOptions(request.nextUrl.protocol === "https:"),
       cookies: {
         getAll: () => request.cookies.getAll(),
         setAll: (list) => {
