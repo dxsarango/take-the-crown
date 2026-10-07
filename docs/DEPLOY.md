@@ -173,7 +173,7 @@ Test and live modes are separate: each has its own API key, product and webhook 
    - Copy the endpoint's signing secret (`whsec_…`) into `DODO_WEBHOOK_SECRET` in Vercel and redeploy.
 3. Cloudflare must not challenge `/api/webhooks/*` (Bot Fight Mode stays off; the rate-limit rule does not cover it).
 4. Check: take the crown as admin on the site with the test card; Dodo's dashboard shows the webhook delivered with 200, and `/admin` → Payments shows it `applied`.
-5. **Going live** (after Dodo verifies the account): create the live product, one-time with **Pay What You Want** on and a **$5.00** minimum like the test one (`/admin` warns if it has a fixed price), and the live webhook endpoint (same URL), set `DODO_MODE=live`, the live `DODO_API_KEY`, `DODO_PRODUCT_ID` and `DODO_WEBHOOK_SECRET`, redeploy, and do one small real payment and refund before launching.
+5. **Going live** (after Dodo verifies the account): create the live product, one-time with **Pay What You Want** on and a **$5.00** minimum like the test one (`/admin` warns if it has a fixed price), and the live webhook endpoint (same URL), set `DODO_MODE=live`, the live `DODO_API_KEY`, `DODO_PRODUCT_ID` and `DODO_WEBHOOK_SECRET`, redeploy, and do one small real payment and refund before launching. Push migration `0026` to production first: payments are marked live when their webhook arrives, so a live payment recorded before it would count as a test payment and be deleted at launch. Payments taken in live mode are kept at launch for accounting (decision 52).
 
 ### Webhooks on your machine
 
@@ -209,7 +209,7 @@ Vercel deploys `main` on its own; the database does not change until you push th
 
 ## Launch (M10b)
 
-`/admin` → Launch. Pick the start, check the resulting season dates (Genesis lasts at least `app_config.min_first_season_days`, 14 by default, and later seasons move with it), then confirm. It only works with Dodo in live mode (`PAYMENT_PROVIDER=dodo`, `DODO_MODE=live`). It deletes every prelaunch test reign, payment and achievement, and opens the crown to everyone.
+`/admin` → Launch. Pick the start, check the resulting season dates (Genesis lasts at least `app_config.min_first_season_days`, 14 by default, and later seasons move with it), then confirm. It only works with Dodo in live mode (`PAYMENT_PROVIDER=dodo`, `DODO_MODE=live`). It deletes every prelaunch reign and achievement and every test payment (test provider or Dodo test mode), and opens the crown to everyone. Payments taken in live mode stay in `payments` with their lock, refund and dispute status; their reigns go, so a later refund or dispute only updates the payment.
 
 ## Plans: prelaunch vs launch
 
