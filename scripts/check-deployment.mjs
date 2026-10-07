@@ -28,6 +28,8 @@ const SECURITY_HEADERS = {
   "x-frame-options": /^DENY$/,
   "referrer-policy": /^strict-origin-when-cross-origin$/,
   "permissions-policy": /camera=\(\)/,
+  "cross-origin-opener-policy": /^same-origin$/,
+  "cross-origin-resource-policy": /^same-origin$/,
 };
 
 await check("root redirects to a language", async () => {
@@ -88,6 +90,20 @@ await check("robots and sitemap", async () => {
   const sitemap = await get("/sitemap.xml");
   const ok = robots.includes(`Sitemap: ${base.origin}/sitemap.xml`) && sitemap.status === 200;
   report(ok ? "PASS" : "FAIL", "robots and sitemap", ok ? "" : "robots.txt or sitemap.xml wrong (NEXT_PUBLIC_SITE_URL?)");
+  const api = await get("/api/time");
+  report(api.headers.get("x-robots-tag") === "noindex" ? "PASS" : "FAIL", "API not indexed", api.headers.get("x-robots-tag") ?? "no x-robots-tag");
+  const flag = await get("/og/flag/EC.png");
+  const corp = flag.headers.get("cross-origin-resource-policy");
+  report(corp === "cross-origin" ? "PASS" : "FAIL", "email images loadable from mail clients", corp ?? "no cross-origin-resource-policy");
+});
+
+await check("security.txt", async () => {
+  const response = await get("/.well-known/security.txt");
+  const text = response.status === 200 ? await response.text() : "";
+  const expires = /^Expires: (.+)$/m.exec(text)?.[1];
+  const days = expires ? (Date.parse(expires) - Date.now()) / 86_400_000 : NaN;
+  if (!/^Contact: mailto:/m.test(text) || !(days > 0)) report("FAIL", "security.txt", response.status === 200 ? `contact or expiry missing, or expired (${expires})` : `status ${response.status}`);
+  else report(days < 60 ? "WARN" : "PASS", "security.txt", `expires ${expires}${days < 60 ? ": renew it" : ""}`);
 });
 
 await check("health", async () => {

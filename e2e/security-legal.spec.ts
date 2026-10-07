@@ -71,7 +71,29 @@ test.describe("headers", () => {
       expect(headers["strict-transport-security"], path).toContain("max-age=63072000");
       expect(headers["permissions-policy"], path).toContain("camera=()");
       expect(headers["x-powered-by"], path).toBeUndefined();
+      expect(headers["cross-origin-opener-policy"], path).toBe("same-origin");
     }
+  });
+
+  test("lets other sites load only images, and keeps the API out of search", async ({ request }) => {
+    for (const path of ["/en", "/api/time", "/en/admin"]) {
+      expect((await request.get(path)).headers()["cross-origin-resource-policy"], path).toBe("same-origin");
+    }
+    for (const path of ["/og/flag/JP.png", "/art/seal/seal-t0.svg", "/avatar/valeruiz.svg", "/icons/icon-192.png"]) {
+      expect((await request.get(path)).headers()["cross-origin-resource-policy"], path).toBe("cross-origin");
+    }
+    expect((await request.get("/api/time")).headers()["x-robots-tag"]).toBe("noindex");
+    expect((await request.get("/en")).headers()["x-robots-tag"]).toBeUndefined();
+  });
+
+  test("publishes a security contact that has not expired", async ({ request }) => {
+    const response = await request.get("/.well-known/security.txt");
+    expect(response.status()).toBe(200);
+    const text = await response.text();
+    expect(text).toMatch(/^Contact: mailto:hola@takethecrown\.app$/m);
+    const expires = Date.parse(/^Expires: (.+)$/m.exec(text)?.[1] ?? "");
+    expect(expires - Date.now()).toBeGreaterThan(30 * 86_400_000);
+    expect(expires - Date.now()).toBeLessThan(366 * 86_400_000);
   });
 });
 
