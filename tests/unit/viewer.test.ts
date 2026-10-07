@@ -5,9 +5,10 @@ vi.mock("server-only", () => ({}));
 const user = { id: "user-1", email: "player@test.local", user_metadata: {}, last_sign_in_at: "2026-10-06T12:00:00Z" };
 let getUser: () => Promise<unknown>;
 let rpc: () => Promise<unknown>;
+let getClaims: () => Promise<unknown>;
 const signOut = vi.fn(async () => ({ error: null }));
 
-vi.mock("@/lib/supabase/session", () => ({ sessionClient: async () => ({ auth: { getUser: () => getUser(), signOut } }) }));
+vi.mock("@/lib/supabase/session", () => ({ sessionClient: async () => ({ auth: { getUser: () => getUser(), getClaims: () => getClaims(), signOut } }) }));
 vi.mock("@/lib/supabase/service", () => ({ serviceClient: () => ({ rpc: () => rpc() }) }));
 
 const { currentViewer } = await import("@/lib/auth/viewer");
@@ -17,6 +18,25 @@ describe("currentViewer", () => {
     signOut.mockClear();
     getUser = async () => ({ data: { user }, error: null });
     rpc = async () => ({ data: "profile-1", error: null });
+    getClaims = async () => ({ data: { claims: { amr: [{ method: "otp", timestamp: 1 }] } }, error: null });
+  });
+
+  it("signs out a session opened with a password, which the app never uses", async () => {
+    getClaims = async () => ({ data: { claims: { amr: [{ method: "password", timestamp: 1 }] } }, error: null });
+    expect(await currentViewer()).toBeNull();
+    expect(signOut).toHaveBeenCalledWith({ scope: "local" });
+  });
+
+  it("treats unreadable claims as a password session", async () => {
+    getClaims = async () => ({ data: null, error: { message: "invalid JWT" } });
+    expect(await currentViewer()).toBeNull();
+    expect(signOut).toHaveBeenCalledOnce();
+  });
+
+  it("admits OAuth and magic-link sessions, with or without a second factor", async () => {
+    getClaims = async () => ({ data: { claims: { amr: [{ method: "oauth", timestamp: 1 }, { method: "totp", timestamp: 2 }] } }, error: null });
+    expect(await currentViewer()).toMatchObject({ profileId: "profile-1" });
+    expect(signOut).not.toHaveBeenCalled();
   });
 
   it("returns the signed-in player with their profile", async () => {

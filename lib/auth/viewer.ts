@@ -41,6 +41,16 @@ export async function ensureProfile(user: User): Promise<string | null> {
   return data;
 }
 
+type SessionClient = Awaited<ReturnType<typeof sessionClient>>;
+
+/** Whether this session's verified sign-in methods include a password. Unreadable claims count as yes. */
+async function signedInWithPassword(session: SessionClient): Promise<boolean> {
+  const { data, error } = await session.auth.getClaims();
+  if (error || !data) return true;
+  const methods = (data.claims.amr ?? []).map((entry) => (typeof entry === "string" ? entry : entry.method));
+  return methods.includes("password");
+}
+
 /** The signed-in player, with their profile, or null. */
 export async function currentViewer(): Promise<Viewer | null> {
   const session = await sessionClient();
@@ -53,6 +63,12 @@ export async function currentViewer(): Promise<Viewer | null> {
   }
   const user = data.user;
   if (!user?.email) return null;
+  // The app never signs anyone in with a password: such a session comes from Supabase's open sign-up
+  // API, by someone who may not own the email (decision 53).
+  if (await signedInWithPassword(session)) {
+    await signOut();
+    return null;
+  }
   const profileId = await ensureProfile(user);
   if (!profileId) {
     await signOut();
