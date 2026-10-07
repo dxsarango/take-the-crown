@@ -300,6 +300,7 @@ The ordered production procedure, with the exact values per dashboard and the pl
 - [x] Security audit, medium: admins get one `dispute_opened` email per opened chargeback (migration `0029`), with the amount and payment, to answer it in the provider's dashboard; the admin log now has refund retries (`retry_refund`), TOTP enrollments (`mfa_enrolled`) and wrong TOTP codes (`mfa_failed`); tests (db, e2e email and admin log)
 - [x] Security audit, medium: emergency pause (migration `0030`, `app_config.paused`, enforced by a trigger on `price_locks`): `/admin` → Throne pauses and resumes takeovers (sensitive action, logged); payments for earlier locks still settle; the modal explains it (en/es); runbook `docs/INCIDENTS.md`; tests (db, e2e)
 - [x] Security audit, medium: Supabase auth cookies are HttpOnly (the browser never reads the session; it only reads public data with the anon key), SameSite=Lax, Secure on https; e2e checks every `sb-` cookie
+- [x] Security audit, medium: player messages lose control characters, zero-width spaces, soft hyphens and direction overrides or isolates before moderation and storage (a right-to-left override could make text display differently from what was checked); zero-width joiners stay for emoji; unit tests
 - [ ] Staging environment (separate Supabase project, Vercel preview variables)
 - [ ] Dodo account verification, live product and webhook; one small real payment and refund
 - [ ] Final art for Frost (scene, crown, frame, `frostbound` medal) from the design
