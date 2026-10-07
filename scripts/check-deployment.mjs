@@ -4,6 +4,7 @@
 // row level security and what anon can read (scripts/database-checks.mjs).
 
 import { checkDatabase } from "./database-checks.mjs";
+import { countryReport } from "./geo-report.mjs";
 
 const base = new URL(process.argv[2] ?? "https://takethecrown.app");
 const results = [];
@@ -126,7 +127,8 @@ await check("API", async () => {
   if (answer.error === "prelaunch" || answer.error === "human_check_failed") report("PASS", "anonymous lock refused", answer.error);
   else report("FAIL", "anonymous lock refused", `${lock.status} ${JSON.stringify(answer)}`);
   const geo = await (await get("/api/geo")).json();
-  report(geo.country ? "PASS" : "WARN", "country detection", geo.country ?? "none (Cloudflare origin secret or Vercel geo missing)");
+  const country = countryReport(geo);
+  report(country.status, "country detection", country.detail);
 });
 
 await check("images", async () => {
