@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { anonReadProblems, rlsProblems } from "../../scripts/database-checks.mjs";
+import { anonReadProblems, clientFunctionProblems, clientWriteProblems, rlsProblems } from "../../scripts/database-checks.mjs";
 import { admin, q } from "./helpers";
 
 type Query = (sql: string) => Promise<Record<string, unknown>[]>;
@@ -41,5 +41,32 @@ describe("deploy checks (pnpm check:db runs the same ones on a hosted project)",
       return anonReadProblems(tx);
     });
     expect(problems).toEqual(["anon can read payments, which is not in the allowlist", "anon can read profiles.user_id"]);
+  });
+
+  it("finds clients writing nothing and calling only the safe functions", async () => {
+    expect(await clientWriteProblems(query)).toEqual([]);
+    expect(await clientFunctionProblems(query)).toEqual([]);
+  });
+
+  it("catches the active lock id becoming readable again", async () => {
+    const problems = await inRollback(async (tx) => {
+      await tx("grant select (active_lock_id) on public.crown_state to authenticated");
+      return anonReadProblems(tx);
+    });
+    expect(problems).toEqual(["authenticated can read crown_state.active_lock_id"]);
+  });
+
+  it("catches a client gaining a write or a security definer function", async () => {
+    const problems = await inRollback(async (tx) => {
+      await tx("grant update (name) on public.profiles to authenticated");
+      await tx("grant insert on public.reports to anon");
+      await tx("grant execute on function public.launch_game(timestamptz) to authenticated");
+      return [...(await clientWriteProblems(tx)), ...(await clientFunctionProblems(tx))];
+    });
+    expect(problems).toEqual([
+      "authenticated can update profiles",
+      "anon can insert reports",
+      "clients can call launch_game (security definer)",
+    ]);
   });
 });
