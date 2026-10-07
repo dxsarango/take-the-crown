@@ -304,6 +304,8 @@ The ordered production procedure, with the exact values per dashboard and the pl
 - [x] Security audit, medium: `Cross-Origin-Opener-Policy: same-origin` (checkout is a redirect now), `Cross-Origin-Resource-Policy: same-origin` except share cards, email images, avatars, pixel art and icons (`cross-origin`), `X-Robots-Tag: noindex` on `/api` and `/auth`, `/.well-known/security.txt` (expires 2027-10-01; renew yearly); `check:deploy` checks all of them; e2e
 - [x] Security audit, medium: error and not-found pages (`app/[locale]/error.tsx`, `not-found.tsx` with a catch-all for unknown paths, `app/global-error.tsx` in both languages when the root layout fails): no stack traces, a retry and a way home, in the design's system (the design has no such screen); tests (unit render without the error text, e2e 404 in en/es at 390 and 1440)
 - [x] Security audit, medium: nothing checked the client bundle for server secrets; `check:deploy` now scans the deployed home page's chunks and `pnpm check:bundle` a local build (including the real values from `.env.local`), naming findings without printing them; unit tests
+- [x] Security audit (`docs/audits/SECURITY.md`) run on 2026-10-07: report with every item, its status and evidence in `docs/audits/SECURITY-REPORT.md`; critical, high and medium findings fixed in their own PRs; low findings and the owner checklist listed there
+- [ ] Owner: the checklist at the end of `docs/audits/SECURITY-REPORT.md`
 - [ ] Staging environment (separate Supabase project, Vercel preview variables)
 - [ ] Dodo account verification, live product and webhook; one small real payment and refund
 - [ ] Final art for Frost (scene, crown, frame, `frostbound` medal) from the design
