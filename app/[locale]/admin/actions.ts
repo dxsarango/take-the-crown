@@ -88,6 +88,12 @@ export async function startTotpEnrollment(): Promise<TotpEnrollment> {
 
 const totpCode = z.string().transform((v) => v.replace(/\s/g, "")).pipe(z.string().regex(/^\d{6}$/));
 
+/** The admin log (SPEC §13) for actions that are not logged by their SQL function. */
+async function logAction(adminProfileId: string, action: string, target: string) {
+  const { error } = await serviceClient().from("admin_actions").insert({ admin_profile_id: adminProfileId, action, target });
+  if (error) console.error("admin log failed", action, error.message);
+}
+
 /** Checks a code against one of the admin's own factors; a match raises this session to AAL2. */
 async function challenge(factorId: string, code: unknown): Promise<boolean> {
   const parsed = totpCode.safeParse(code);
@@ -100,7 +106,9 @@ async function challenge(factorId: string, code: unknown): Promise<boolean> {
 export async function confirmTotpEnrollment(factorId: string, code: string): Promise<boolean> {
   const access = await adminAccess();
   if (access?.state !== "enroll" || !uuid.safeParse(factorId).success) return false;
-  return challenge(factorId, code);
+  const ok = await challenge(factorId, code);
+  await logAction(access.admin.profileId, ok ? "mfa_enrolled" : "mfa_failed", factorId);
+  return ok;
 }
 
 /** Answers the TOTP challenge for a session that signed in with the first factor only. */
@@ -108,7 +116,10 @@ export async function verifyTotp(form: FormData) {
   const access = await adminAccess();
   if (!access) throw new Error("Not an admin");
   if (access.state !== "verify") return back(form);
-  if (!(await challenge(access.factorId, form.get("code")))) return back(form, "?status=failed&reason=code");
+  if (!(await challenge(access.factorId, form.get("code")))) {
+    await logAction(access.admin.profileId, "mfa_failed", access.factorId);
+    return back(form, "?status=failed&reason=code");
+  }
   return back(form);
 }
 
@@ -132,9 +143,10 @@ export async function refundPayment(form: FormData) {
 
 /** "Retry now" on a pending refund, also one whose retries stopped. */
 export async function retryRefund(form: FormData) {
-  await admin(form, true);
+  const me = await admin(form, true);
   const paymentId = uuid.safeParse(form.get("paymentId"));
   if (!paymentId.success) return done(form, "failed");
+  await logAction(me.profileId, "retry_refund", paymentId.data);
   const outcome = await requestRefund(paymentId.data).catch(() => null);
   return done(form, outcome === "requested" ? "ok" : "failed");
 }

@@ -56,6 +56,7 @@ test("the admin sees refunds the provider refused and retries them", async ({ pa
   await expect.poll(async () => (await sql<{ status: string }>("select status from payments where id = $1", [stopped]))[0].status).toBe("refunded");
   await page.goto("/en/admin#refunds");
   await expect(page.locator("#refunds").getByTestId("admin-refund")).toHaveCount(1);
+  expect(await sql("select action, target from admin_actions where action = 'retry_refund'")).toEqual([{ action: "retry_refund", target: stopped }]);
 });
 
 test("the refunds cron retries what is due and is closed to strangers", async ({ request }) => {

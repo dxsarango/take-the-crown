@@ -47,6 +47,11 @@ test("an admin sets up TOTP on the first visit and needs a code on every new sig
     [ADMIN],
   );
   expect(factors.n).toBe(1);
+  // The wrong code and the enrollment are in the admin log.
+  expect((await sql<{ action: string }>("select action from admin_actions where action like 'mfa_%' order by id")).map((r) => r.action)).toEqual([
+    "mfa_failed",
+    "mfa_enrolled",
+  ]);
 
   // A sign-in on another device (no cookies) must answer the challenge; no second enrollment.
   await page.context().clearCookies();
