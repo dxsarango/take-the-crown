@@ -88,6 +88,82 @@ describe("client IP", () => {
   });
 });
 
+describe("country detection", () => {
+  afterEach(() => {
+    vi.resetModules();
+    vi.stubEnv("CLOUDFLARE_ORIGIN_SECRET", "");
+  });
+  const secret = "s".repeat(40);
+  const load = async (configured: string) => {
+    vi.resetModules();
+    vi.stubEnv("CLOUDFLARE_ORIGIN_SECRET", configured);
+    return (await import("@/lib/security/request")).detectCountry;
+  };
+  // A visitor in Ecuador through Cloudflare's Miami edge: Vercel geolocates the edge.
+  const viaMiami = { "cf-ipcountry": "EC", "x-vercel-ip-country": "US" };
+
+  it("uses Cloudflare's country when the origin secret is valid", async () => {
+    const detect = await load(secret);
+    expect(detect(new Headers({ ...viaMiami, "x-origin-secret": secret }))).toEqual({ country: "EC", source: "cloudflare", cloudflare: "trusted" });
+  });
+
+  it("falls back to Vercel's geolocation and says why Cloudflare was not trusted", async () => {
+    const configured = await load(secret);
+    expect(configured(new Headers(viaMiami))).toEqual({ country: "US", source: "vercel", cloudflare: "no_secret_header" });
+    expect(configured(new Headers({ ...viaMiami, "x-origin-secret": "x".repeat(40) }))).toEqual({ country: "US", source: "vercel", cloudflare: "wrong_secret" });
+    expect(configured(new Headers({ ...viaMiami, "x-origin-secret": "short" }))).toMatchObject({ source: "vercel", cloudflare: "wrong_secret" });
+    const unconfigured = await load("");
+    expect(unconfigured(new Headers({ ...viaMiami, "x-origin-secret": secret }))).toEqual({ country: "US", source: "vercel", cloudflare: "not_configured" });
+  });
+
+  it("falls back to Vercel when Cloudflare has no usable country, and reports none without either", async () => {
+    const detect = await load(secret);
+    for (const unknown of ["XX", "T1", "", "ecuador"]) {
+      expect(detect(new Headers({ "cf-ipcountry": unknown, "x-vercel-ip-country": "EC", "x-origin-secret": secret }))).toEqual({
+        country: "EC",
+        source: "vercel",
+        cloudflare: "trusted",
+      });
+    }
+    expect(detect(new Headers({ "x-origin-secret": secret }))).toEqual({ country: null, source: null, cloudflare: "trusted" });
+  });
+
+  it("answers /api/geo with the country, its source and the trust state, never the secret", async () => {
+    vi.resetModules();
+    vi.stubEnv("CLOUDFLARE_ORIGIN_SECRET", secret);
+    const { GET } = await import("@/app/api/geo/route");
+    const response = GET(new Request("https://takethecrown.app/api/geo", { headers: { ...viaMiami, "x-origin-secret": secret } }));
+    expect(response.headers.get("cache-control")).toBe("no-store");
+    const body = await response.text();
+    expect(JSON.parse(body)).toEqual({ country: "EC", source: "cloudflare", cloudflare: "trusted" });
+    expect(body).not.toContain(secret);
+  });
+});
+
+describe("check:deploy country report", () => {
+  it("passes with Cloudflare as the source", async () => {
+    const { countryReport } = await import("@/scripts/geo-report.mjs");
+    expect(countryReport({ country: "EC", source: "cloudflare", cloudflare: "trusted" })).toEqual({
+      status: "PASS",
+      detail: "EC (source: Cloudflare cf-ipcountry)",
+    });
+  });
+
+  it("warns with Vercel as the source and names the cause", async () => {
+    const { countryReport } = await import("@/scripts/geo-report.mjs");
+    expect(countryReport({ country: "US", source: "vercel", cloudflare: "no_secret_header" })).toEqual({
+      status: "WARN",
+      detail: expect.stringMatching(/^US \(source: Vercel geolocation.*no x-origin-secret.*Transform Rule/),
+    });
+    expect(countryReport({ country: "US", source: "vercel", cloudflare: "wrong_secret" }).detail).toContain("does not match CLOUDFLARE_ORIGIN_SECRET");
+    expect(countryReport({ country: "US", source: "vercel", cloudflare: "not_configured" }).detail).toContain("is not set on Vercel");
+    expect(countryReport({ country: null, source: null, cloudflare: "trusted" })).toEqual({
+      status: "WARN",
+      detail: "none (source: none; not Cloudflare because Cloudflare sent no country)",
+    });
+  });
+});
+
 describe("verifyHuman", () => {
   const fetchMock = vi.fn();
   beforeEach(() => {

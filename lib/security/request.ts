@@ -2,18 +2,26 @@ import "server-only";
 import { createHash, timingSafeEqual } from "node:crypto";
 import { serverEnv } from "@/lib/env.server";
 
+/** Whether Cloudflare's headers can be trusted for this request, or why not. */
+export type CloudflareTrust = "trusted" | "not_configured" | "no_secret_header" | "wrong_secret";
+
 /**
  * Whether the request came through our Cloudflare zone: a Transform Rule there adds
  * `x-origin-secret`. Anyone can send Cloudflare's own headers straight to Vercel, so they count
  * only with the secret.
  */
-function viaCloudflare(headers: Headers): boolean {
+function cloudflareTrust(headers: Headers): CloudflareTrust {
   const secret = serverEnv().CLOUDFLARE_ORIGIN_SECRET;
+  if (!secret) return "not_configured";
   const given = headers.get("x-origin-secret");
-  if (!secret || !given) return false;
+  if (!given) return "no_secret_header";
   const a = Buffer.from(given);
   const b = Buffer.from(secret);
-  return a.length === b.length && timingSafeEqual(a, b);
+  return a.length === b.length && timingSafeEqual(a, b) ? "trusted" : "wrong_secret";
+}
+
+function viaCloudflare(headers: Headers): boolean {
+  return cloudflareTrust(headers) === "trusted";
 }
 
 /**
@@ -47,8 +55,28 @@ export function sameOrigin(request: Request): boolean {
   }
 }
 
-/** ISO country from Cloudflare or Vercel, when present and valid; only a suggestion for the form. */
-export function requestCountry(headers: Headers): string | null {
-  const code = ((viaCloudflare(headers) ? headers.get("cf-ipcountry") : null) ?? headers.get("x-vercel-ip-country"))?.toUpperCase() ?? null;
+function validCountry(value: string | null): string | null {
+  const code = value?.toUpperCase() ?? null;
   return code && /^[A-Z]{2}$/.test(code) && code !== "XX" && code !== "T1" ? code : null;
+}
+
+export type DetectedCountry = { country: string | null; source: "cloudflare" | "vercel" | null; cloudflare: CloudflareTrust };
+
+/**
+ * The visitor's country and where it came from. Behind the Cloudflare proxy, Vercel geolocates
+ * Cloudflare's edge (a Miami edge reads as US for a visitor in Ecuador), so Cloudflare's
+ * cf-ipcountry comes first, when the origin secret proves the request came through our zone.
+ * Otherwise, or when Cloudflare has no country, Vercel's geolocation.
+ */
+export function detectCountry(headers: Headers): DetectedCountry {
+  const cloudflare = cloudflareTrust(headers);
+  const fromCloudflare = cloudflare === "trusted" ? validCountry(headers.get("cf-ipcountry")) : null;
+  if (fromCloudflare) return { country: fromCloudflare, source: "cloudflare", cloudflare };
+  const fromVercel = validCountry(headers.get("x-vercel-ip-country"));
+  return { country: fromVercel, source: fromVercel ? "vercel" : null, cloudflare };
+}
+
+/** ISO country, when present and valid; only a suggestion for the form. */
+export function requestCountry(headers: Headers): string | null {
+  return detectCountry(headers).country;
 }
