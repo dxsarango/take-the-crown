@@ -1102,5 +1102,14 @@
     "disputeTitle": "A buyer disputed a {amount} payment",
     "disputeBody": "{test, select, yes {Test mode: } other {}}a chargeback was opened for payment {payment}. The game already reversed its reign and suspended the account. Answer the dispute with your evidence in the payment provider's dashboard before its deadline; if you win, lift the suspension in the admin area.",
     "disputeBtn": "Open reversals"
+  },
+  "errors": {
+    "notFoundTitle": "This page isn’t in the kingdom",
+    "notFoundBody": "The link may be old, or the name may have changed.",
+    "errorTitle": "Something broke",
+    "errorBody": "Something went wrong on our side. Try again, or go back to the throne.",
+    "retry": "Try again",
+    "home": "Back to the throne",
+    "crownAlt": "Crown"
   }
 }
