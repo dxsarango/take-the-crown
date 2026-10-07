@@ -160,11 +160,12 @@ test("the cron sends the other alerts and skips the ones that no longer apply", 
        ('season_extended', $4, '{"season_id": 12, "ends_at": "2028-01-01T00:00:00Z"}'),
        ('season_not_ready', $4, '{"season_id": 2, "starts_at": "2027-01-01T00:00:00Z", "name_final": false, "art_final": false}'),
        ('refunds_stuck', $4, '{"count": 2, "oldest_at": "2026-10-05T12:00:00Z"}'),
+       ('dispute_opened', $4, '{"payment_id": "11111111-1111-4111-8111-111111111111", "amount_cents": 3400, "currency": "USD", "live": true}'),
        ('mystery', $1, '{}')`,
     [kenji.id, crown.price, crown.price + 100, admin.id, reign.id],
   );
 
-  expect(await runCron(page)).toEqual({ sent: 6, failed: 0, skipped: 2 });
+  expect(await runCron(page)).toEqual({ sent: 7, failed: 0, skipped: 2 });
   expect((await mailTo("kenji@test.local", /has started/)).Subject).toBe("Season 1: Frost has started");
   expect((await mailTo("kenji@test.local", /down to/)).HTML).toContain("Take the crown for");
   const report = await mailTo("mbali@test.local", /reports/);
@@ -182,6 +183,11 @@ test("the cron sends the other alerts and skips the ones that no longer apply", 
   expect(stuck.Subject).toBe("2 refunds are stuck");
   expect(stuck.Text).toContain("the oldest from October 5, 2026");
   expect(stuck.HTML).toContain("/en/admin#refunds");
+  const disputed = await mailTo("mbali@test.local", /disputed/);
+  expect(disputed.Subject).toBe("A buyer disputed a $34 payment");
+  expect(disputed.Text).toContain("payment 11111111-1111-4111-8111-111111111111");
+  expect(disputed.Text).not.toContain("Test mode");
+  expect(disputed.HTML).toContain("/en/admin#reversals");
 
   const skipped = await sql("select kind, last_error from notifications where failed_at is not null order by kind");
   expect(skipped).toEqual([
