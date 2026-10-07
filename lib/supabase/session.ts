@@ -20,10 +20,3 @@ export async function sessionClient() {
     },
   });
 }
-
-/** The signed-in user's id and verified email, or null. */
-export async function currentUser(): Promise<{ id: string; email: string } | null> {
-  const db = await sessionClient();
-  const { data } = await db.auth.getUser();
-  return data.user?.email ? { id: data.user.id, email: data.user.email } : null;
-}

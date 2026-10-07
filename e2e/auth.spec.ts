@@ -1,4 +1,5 @@
 import { type Page, expect, test } from "@playwright/test";
+import { createServerClient } from "@supabase/ssr";
 import en from "../messages/en.json";
 import es from "../messages/es.json";
 import { sql } from "./fixtures/db";
@@ -93,6 +94,60 @@ test("hands X sign-in to Supabase's OAuth 2.0 provider, asking for the email", a
   const toX = new URL((await page.request.get(authorize.href, { maxRedirects: 0 })).headers().location);
   expect(`${toX.host}${toX.pathname}`).toBe("x.com/i/oauth2/authorize");
   expect(toX.searchParams.get("scope")?.split(" ")).toEqual(expect.arrayContaining(["users.email", "users.read"]));
+});
+
+test("a password someone set through Supabase's sign-up API stops working once the owner signs in", async ({ page, request }) => {
+  // The app has no password sign-in, but Supabase's sign-up API is open to anyone with the anon key.
+  const auth = "http://127.0.0.1:54321/auth/v1";
+  const headers = { apikey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "", "content-type": "application/json" };
+  const email = "hijack.target@test.local";
+  const password = "chosen-by-someone-else";
+  const signUp = await request.post(`${auth}/signup`, { headers, data: { email, password } });
+  expect(signUp.ok()).toBe(true);
+  const attacker = await request.post(`${auth}/token?grant_type=password`, { headers, data: { email, password } });
+  const { refresh_token: refreshToken } = (await attacker.json()) as { refresh_token: string };
+  expect(refreshToken).toBeTruthy();
+
+  // The owner signs in with a magic link, as players do.
+  await signInByEmail(page, email, "/en");
+  await expect(accountMenu(page)).toBeVisible();
+
+  // The password no longer works and the session opened with it is gone.
+  const again = await request.post(`${auth}/token?grant_type=password`, { headers, data: { email, password } });
+  expect(again.status()).toBe(400);
+  const refresh = await request.post(`${auth}/token?grant_type=refresh_token`, { headers, data: { refresh_token: refreshToken } });
+  expect(refresh.ok()).toBe(false);
+  // The owner is still signed in.
+  expect(((await (await page.request.get("/api/me")).json()) as { viewer: unknown }).viewer).not.toBeNull();
+});
+
+test("refuses a session opened with a password", async ({ page, context, request }) => {
+  const auth = "http://127.0.0.1:54321/auth/v1";
+  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "";
+  const email = "password.session@test.local";
+  const password = "chosen-by-someone-else";
+  expect((await request.post(`${auth}/signup`, { headers: { apikey: anonKey, "content-type": "application/json" }, data: { email, password } })).ok()).toBe(true);
+
+  // The same cookies a browser would hold after signing in with that password.
+  const jar: { name: string; value: string }[] = [];
+  const supabase = createServerClient("http://127.0.0.1:54321", anonKey, {
+    cookies: {
+      getAll: () => jar,
+      setAll: (list: { name: string; value: string }[]) => {
+        jar.splice(0, jar.length, ...list.map(({ name, value }) => ({ name, value })));
+      },
+    },
+  });
+  const { error } = await supabase.auth.signInWithPassword({ email, password });
+  expect(error).toBeNull();
+  expect(jar.length).toBeGreaterThan(0);
+  await context.addCookies(jar.map(({ name, value }) => ({ name, value, url: "http://localhost:3000" })));
+
+  const me = (await (await page.request.get("/api/me")).json()) as { viewer: unknown };
+  expect(me.viewer).toBeNull();
+  // Signed out on the server: the cookies are gone, and no profile was claimed for that email.
+  expect((await context.cookies()).filter((c) => c.name.startsWith("sb-") && c.value)).toEqual([]);
+  expect(await sql("select 1 from profile_private where email = $1", [email])).toEqual([]);
 });
 
 test("comes back with an error when the callback fails", async ({ page }) => {
