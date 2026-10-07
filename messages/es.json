@@ -1102,5 +1102,14 @@
     "disputeTitle": "Un comprador disputó un pago de {amount}",
     "disputeBody": "{test, select, yes {Modo de prueba: } other {}}se abrió un contracargo por el pago {payment}. El juego ya revirtió su reinado y suspendió la cuenta. Responde la disputa con tus pruebas en el panel del proveedor de pagos antes de su plazo; si la ganas, levanta la suspensión en el área de administración.",
     "disputeBtn": "Abrir reversiones"
+  },
+  "errors": {
+    "notFoundTitle": "Esta página no está en el reino",
+    "notFoundBody": "Puede que el enlace sea viejo o que el nombre haya cambiado.",
+    "errorTitle": "Algo se rompió",
+    "errorBody": "Algo falló de nuestro lado. Inténtalo de nuevo o vuelve al trono.",
+    "retry": "Intentar de nuevo",
+    "home": "Volver al trono",
+    "crownAlt": "Corona"
   }
 }
