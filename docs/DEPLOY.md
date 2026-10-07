@@ -131,6 +131,7 @@ Placeholders: `<ref>` is the Supabase project ref (the subdomain of its API URL)
 2. **Rules → Transform Rules → Modify Request Header:**
    - Name `origin secret`, when `All incoming requests`.
    - **Set static** header `x-origin-secret` = the `CLOUDFLARE_ORIGIN_SECRET` value.
+   - Without it the app cannot trust Cloudflare's `cf-ipcountry` and falls back to Vercel's geolocation, which sees Cloudflare's edge (a visitor in Ecuador through Miami reads as `US`). `pnpm check:deploy` prints the country's source and, on a fallback, why: no `x-origin-secret` (rule missing or not matching), a value that differs from Vercel's `CLOUDFLARE_ORIGIN_SECRET`, or the variable not set on Vercel (redeploy after changing it).
 3. **Security → WAF → Rate limiting rules** (the Free plan allows one rule, with a 10-second period):
    - Name `write APIs`.
    - Expression: `(http.request.uri.path in {"/api/locks" "/api/auth/magic-link" "/api/reports" "/api/profile" "/api/profile/avatar"} and http.request.method ne "GET")`.
