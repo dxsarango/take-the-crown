@@ -47,7 +47,7 @@ Placeholders: `<ref>` is the Supabase project ref (the subdomain of its API URL)
 4. **Integrations → Cron:** six active jobs: `rollover-season`, `live-achievements`, `price-alerts`, `stuck-refund-alerts` (every minute), `purge-expired-records` (daily 03:17 UTC) and `season-readiness` (daily 09:00 UTC).
 5. **Storage:** the public `avatars` bucket exists (1 MB, PNG and WebP), from migration `0011`.
 6. **Authentication → URL Configuration:** Site URL `https://takethecrown.app`. Redirect URLs: `https://takethecrown.app/**`.
-7. **Authentication → Sign In / Providers → Email:** enabled. Email OTP expiration `900` seconds. "Confirm email" may stay on: both templates below carry the same sign-in link.
+7. **Authentication → Sign In / Providers → Email:** enabled. Email OTP expiration `900` seconds. Keep "Confirm email" **on**: both templates below carry the same sign-in link. Supabase's sign-up API also accepts passwords, which the app never uses: it refuses sessions opened with a password, and the owner's first link or OAuth sign-in replaces any password someone set (decision 53). With "Confirm email" off, such a sign-up would at least get a session at once.
 8. **Authentication → Emails → SMTP Settings:** enable custom SMTP.
    - Host `smtp.resend.com`, port `465`, username `resend`, password = the `supabase-smtp` key from Resend.
    - Sender email `auth@takethecrown.app`, sender name `Take the Crown`.
