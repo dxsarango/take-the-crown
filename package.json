@@ -22,6 +22,7 @@
     "test:moderation": "vitest run --project live",
     "secrets:generate": "node scripts/generate-secrets.mjs",
     "check:deploy": "node scripts/check-deployment.mjs",
+    "check:bundle": "node scripts/check-bundle.mjs",
     "e2e:dodo": "node scripts/e2e-preflight.mjs --dodo && playwright test --config playwright.dodo.config.ts",
     "e2e:prod": "node scripts/e2e-preflight.mjs && playwright test --config playwright.prod.config.ts",
     "check:db": "node scripts/database-checks.mjs"
