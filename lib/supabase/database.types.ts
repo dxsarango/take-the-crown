@@ -856,6 +856,9 @@ isOneToOne: false
 "ensure_profile_for_user":
 { Args: { "p_email": string,"p_name_hint": string,"p_user_id": string }; Returns: string
                            },
+"forget_password_access":
+{ Args: { "p_user_id": string }; Returns: number
+                           },
 "generate_profile_name":
 { Args: Record<PropertyKey, never>; Returns: string
                            },
