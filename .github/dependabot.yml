@@ -1,0 +1,15 @@
+# Security updates and a weekly look at outdated packages. Next upgrades also need
+# patches/next@*.patch reviewed (docs/PROGRESS.md, decision 47).
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: build
+      include: scope
+    groups:
+      minor-and-patch:
+        update-types: [minor, patch]
