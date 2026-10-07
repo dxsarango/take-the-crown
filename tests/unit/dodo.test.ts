@@ -191,6 +191,20 @@ describe("DodoProvider", () => {
     expect(JSON.parse(init.body as string)).toMatchObject({ payment_id: "pay_test_7Hq2Lc" });
   });
 
+  it("refunds a live payment through the live refund API", async () => {
+    fetchMock.mockResolvedValue(Response.json({ refund_id: "ref_1", status: "pending" }));
+    await provider("live").refund("pay_live_1");
+    const [url, init] = fetchMock.mock.calls[0] as [string, RequestInit];
+    expect(url).toBe("https://live.dodopayments.com/refunds");
+    expect(init.method).toBe("POST");
+    expect(JSON.parse(init.body as string)).toMatchObject({ payment_id: "pay_live_1" });
+  });
+
+  it("marks live mode, whose payments are kept at launch", () => {
+    expect(provider("live").live).toBe(true);
+    expect(provider("test").live).toBe(false);
+  });
+
   it("fails loudly when Dodo refuses a call", async () => {
     fetchMock.mockResolvedValue(new Response("product below minimum", { status: 422 }));
     await expect(provider().refund("pay_1")).rejects.toThrow(/422/);

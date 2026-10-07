@@ -57,6 +57,8 @@ export class RefundError extends Error {
 
 export interface PaymentProvider {
   readonly name: string;
+  /** Real money: payments it takes are kept for accounting when the game launches (decision 52). */
+  readonly live: boolean;
   createCheckout(input: CheckoutInput): Promise<Checkout>;
   /** Returns null when the signature or payload is invalid. */
   verifyWebhook(req: Request): Promise<NormalizedEvent | null>;

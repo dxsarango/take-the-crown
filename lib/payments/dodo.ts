@@ -103,6 +103,11 @@ export function mapDodoEvent(json: unknown): DodoEvent | null {
 export class DodoProvider implements PaymentProvider {
   readonly name = "dodo";
 
+  /** Test mode and live mode have separate webhook endpoints and secrets, so a verified webhook is in this mode. */
+  get live(): boolean {
+    return this.config.mode === "live";
+  }
+
   constructor(private readonly config: DodoConfig) {}
 
   get mode(): "test" | "live" {
