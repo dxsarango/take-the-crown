@@ -107,3 +107,28 @@ describe("test provider webhooks", () => {
     expect(checkout.checkoutId).toMatch(/^test_chk_/);
   });
 });
+
+describe("player text", () => {
+  const c = (...codes: number[]) => String.fromCharCode(...codes);
+  const parse = (message: string) => lockRequestSchema.parse({ ...valid, message }).message;
+
+  it("drops direction overrides and isolates, so text cannot be flipped or reordered", () => {
+    // RIGHT-TO-LEFT OVERRIDE makes "nimda" display as "admin".
+    expect(parse(`Talk to ${c(0x202e)}nimda${c(0x202c)} now`)).toBe("Talk to nimda now");
+    expect(parse(`${c(0x2067)}abc${c(0x2069)} ${c(0x200f)}x${c(0x200e)}${c(0x061c)}`)).toBe("abc x");
+  });
+
+  it("drops zero-width spaces, soft hyphens, byte order marks and control characters", () => {
+    expect(parse(`fr${c(0x200b)}ee m${c(0x00ad)}oney${c(0xfeff)}${c(0x2060)}${c(0x0007)}${c(0x0085)}`)).toBe("free money");
+    expect(parse(`line${c(0x0000)}one`)).toBe("lineone");
+  });
+
+  it("keeps emoji sequences, accents and other scripts intact", () => {
+    const family = `${c(0xd83d, 0xdc69)}${c(0x200d)}${c(0xd83d, 0xdc67)}`;
+    expect(parse(`Reino de ñandú ${family} مرحبا 你好`)).toBe(`Reino de ñandú ${family} مرحبا 你好`);
+  });
+
+  it("treats a message of only invisible characters as no message", () => {
+    expect(parse(`${c(0x200b)}${c(0x202e)} ${c(0xfeff)}`)).toBeNull();
+  });
+});
