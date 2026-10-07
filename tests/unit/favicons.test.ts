@@ -50,21 +50,23 @@ describe("favicon set (pnpm favicons)", () => {
     // Every pixel is fully opaque and either the background or one of the crown's colors.
     const crownColors = new Set((await designCrown()).flat().filter(Boolean));
     const seen = new Set<string>();
+    const strays: string[] = [];
+    let painted = 0;
     for (let y = 0; y < size; y++) {
       for (let x = 0; x < size; x++) {
         const p = png.at(x, y);
-        expect(p[3]).toBe(255);
         const color = hex(p)!;
-        if (color !== hex(INK)) {
-          expect(crownColors.has(color), `${file} ${x},${y} ${color}`).toBe(true);
+        if (p[3] !== 255) strays.push(`${x},${y} alpha ${p[3]}`);
+        else if (color !== hex(INK)) {
+          if (!crownColors.has(color)) strays.push(`${x},${y} ${color}`);
           seen.add(color);
+          painted++;
         }
       }
     }
+    expect(strays.slice(0, 5)).toEqual([]);
     expect(seen).toEqual(crownColors);
     // Each crown pixel is a solid scale×scale block: the painted area is a multiple of scale².
-    let painted = 0;
-    for (let y = 0; y < size; y++) for (let x = 0; x < size; x++) if (hex(png.at(x, y)) !== hex(INK)) painted++;
     expect(painted % (scale * scale)).toBe(0);
   });
 
