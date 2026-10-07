@@ -232,6 +232,11 @@
         "title": "The crown isn't up for grabs yet.",
         "why": "The game is launching soon. Until then only the team can test taking the crown.",
         "fix": "Come back on launch day. You haven't been charged."
+      },
+      "paused": {
+        "title": "Taking the crown is paused.",
+        "why": "We paused new takeovers for a moment to fix something.",
+        "fix": "Try again a little later. You haven't been charged."
       }
     },
     "nameSignedIn": "Your public name. Change it in your profile.",
@@ -878,7 +883,13 @@
       "lock": "Lock",
       "noLock": "No active lock.",
       "lockUntil": "Held until {date}",
-      "season": "Season"
+      "season": "Season",
+      "running": "Takeovers are open.",
+      "paused": "Takeovers are paused: nobody can lock the crown. Payments already in progress still settle.",
+      "pause": "Pause takeovers",
+      "resume": "Resume takeovers",
+      "confirmPause": "Pause takeovers? Nobody, admins included, can lock the crown until you resume.",
+      "confirmResume": "Resume takeovers for everyone?"
     },
     "payments": {
       "empty": "No payments yet.",

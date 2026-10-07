@@ -180,6 +180,31 @@ test.describe("admin", () => {
     expect((await page.goto("/en/admin"))?.status()).toBe(404);
   });
 
+  test("pauses and resumes takeovers in an emergency", async ({ page, browser }) => {
+    await asAdmin(page);
+    await page.goto("/en/admin#crown");
+    const crown = page.locator("#crown");
+    await expect(crown.getByRole("status")).toHaveText(en.admin.crown.running);
+    page.once("dialog", (dialog) => dialog.accept());
+    await crown.getByRole("button", { name: en.admin.crown.pause }).click();
+    await expect(crown.getByRole("status")).toHaveText(en.admin.crown.paused);
+
+    // A visitor cannot reserve the crown while it is paused, and is not charged.
+    const visitor = await browser.newPage();
+    await tryToTake(visitor, {});
+    await expect(shown(visitor, en.payment.errors.paused.title)).toBeVisible();
+    expect(await lockCount()).toBe(0);
+    await visitor.close();
+
+    page.once("dialog", (dialog) => dialog.accept());
+    await crown.getByRole("button", { name: en.admin.crown.resume }).click();
+    await expect(crown.getByRole("status")).toHaveText(en.admin.crown.running);
+    expect((await sql<{ action: string }>("select action from admin_actions where action in ('pause', 'resume') order by id")).map((r) => r.action)).toEqual([
+      "pause",
+      "resume",
+    ]);
+  });
+
   test("signs out from the admin header", async ({ page }) => {
     await asAdmin(page);
     await page.getByRole("button", { name: en.login.signOut }).click();

@@ -151,3 +151,24 @@ describe("launch_plan", () => {
     expect(genesis.ends_at.getTime() - genesis.starts_at.getTime()).toBe(20 * 86_400_000);
   });
 });
+
+describe("emergency pause", () => {
+  const paused = (on: boolean) => q("update app_config set paused = $1", [on]);
+
+  it("refuses every new lock, admins included, until it is lifted", async () => {
+    const { player, profileId } = await admin();
+    await new Player("someone").takeover();
+    await paused(true);
+    await expect(createLock()).rejects.toThrow(/paused/);
+    await expect(createLock({ email: player.email, name: player.name, profileId })).rejects.toThrow(/paused/);
+    await paused(false);
+    expect((await takeover({ email: player.email, name: player.name, profileId })).profile_id).toBe(profileId);
+  });
+
+  it("still settles a payment for a lock taken before the pause", async () => {
+    await new Player("first").takeover();
+    const lock = await createLock();
+    await paused(true);
+    expect(await pay(lock)).toBe("applied");
+  });
+});
