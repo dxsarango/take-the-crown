@@ -42,6 +42,17 @@ test("signs in with a magic link and claims the guest profile bought with that e
   expect(row.claimed).toBe(true);
 });
 
+test("keeps the session in cookies scripts cannot read", async ({ page }) => {
+  await signInByEmail(page, "kenji@test.local", "/en");
+  await page.waitForLoadState("networkidle");
+  const session = (await page.context().cookies()).filter((c) => c.name.startsWith("sb-"));
+  expect(session.length).toBeGreaterThan(0);
+  for (const cookie of session) expect(cookie, cookie.name).toMatchObject({ httpOnly: true, sameSite: "Lax", path: "/" });
+  expect(await page.evaluate(() => document.cookie)).not.toContain("sb-");
+  // Still signed in: the server reads them.
+  expect(((await (await page.request.get("/api/me")).json()) as { viewer: unknown }).viewer).not.toBeNull();
+});
+
 test("marks a mistyped email", async ({ page }) => {
   await page.goto("/en");
   await signInButton(page).click();
