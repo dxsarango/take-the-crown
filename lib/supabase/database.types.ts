@@ -199,13 +199,13 @@ isOneToOne: false
                   ]
                 },"payments": {
                   Row: {
-                    "amount_cents": number,"created_at": string,"currency": string,"dispute_status": string | null,"email": string,"id": string,"lock_id": string,"provider": string,"provider_payment_id": string,"refund_attempts": number,"refund_last_error": string | null,"refund_next_attempt_at": string | null,"refund_requested_at": string | null,"status": Database["public"]['Enums']["payment_status"],"updated_at": string
+                    "amount_cents": number,"created_at": string,"currency": string,"dispute_status": string | null,"email": string,"id": string,"live": boolean,"lock_id": string,"provider": string,"provider_payment_id": string,"refund_attempts": number,"refund_last_error": string | null,"refund_next_attempt_at": string | null,"refund_requested_at": string | null,"status": Database["public"]['Enums']["payment_status"],"updated_at": string
                   }
                   Insert: {
-                    "amount_cents": number,"created_at"?: string,"currency": string,"dispute_status"?: string | null,"email": string,"id"?: string,"lock_id": string,"provider": string,"provider_payment_id": string,"refund_attempts"?: number,"refund_last_error"?: string | null,"refund_next_attempt_at"?: string | null,"refund_requested_at"?: string | null,"status"?: Database["public"]['Enums']["payment_status"],"updated_at"?: string
+                    "amount_cents": number,"created_at"?: string,"currency": string,"dispute_status"?: string | null,"email": string,"id"?: string,"live"?: boolean,"lock_id": string,"provider": string,"provider_payment_id": string,"refund_attempts"?: number,"refund_last_error"?: string | null,"refund_next_attempt_at"?: string | null,"refund_requested_at"?: string | null,"status"?: Database["public"]['Enums']["payment_status"],"updated_at"?: string
                   }
                   Update: {
-                    "amount_cents"?: number,"created_at"?: string,"currency"?: string,"dispute_status"?: string | null,"email"?: string,"id"?: string,"lock_id"?: string,"provider"?: string,"provider_payment_id"?: string,"refund_attempts"?: number,"refund_last_error"?: string | null,"refund_next_attempt_at"?: string | null,"refund_requested_at"?: string | null,"status"?: Database["public"]['Enums']["payment_status"],"updated_at"?: string
+                    "amount_cents"?: number,"created_at"?: string,"currency"?: string,"dispute_status"?: string | null,"email"?: string,"id"?: string,"live"?: boolean,"lock_id"?: string,"provider"?: string,"provider_payment_id"?: string,"refund_attempts"?: number,"refund_last_error"?: string | null,"refund_next_attempt_at"?: string | null,"refund_requested_at"?: string | null,"status"?: Database["public"]['Enums']["payment_status"],"updated_at"?: string
                   }
                   Relationships: [
                     {
@@ -798,6 +798,7 @@ isOneToOne: false
 "dispute_status": string | null,
 "email": string,
 "id": string,
+"live": boolean,
 "lock_id": string,
 "provider": string,
 "provider_payment_id": string,
@@ -912,7 +913,7 @@ isOneToOne: false
 { Args: { "p_seconds": number }; Returns: string
                            },
 "record_paid_payment":
-{ Args: { "p_amount_cents": number,"p_currency": string,"p_email": string,"p_event_id": string,"p_lock_id": string,"p_provider": string,"p_provider_payment_id": string }; Returns: string
+{ Args: { "p_amount_cents": number,"p_currency": string,"p_email": string,"p_event_id": string,"p_live"?: boolean,"p_lock_id": string,"p_provider": string,"p_provider_payment_id": string }; Returns: string
                            },
 "record_payment_dispute":
 { Args: { "p_provider": string,"p_provider_payment_id": string,"p_status": string }; Returns: string
@@ -943,6 +944,7 @@ isOneToOne: false
 "dispute_status": string | null,
 "email": string,
 "id": string,
+"live": boolean,
 "lock_id": string,
 "provider": string,
 "provider_payment_id": string,

@@ -144,11 +144,13 @@ export type PaymentInput = {
   currency?: string;
   email?: string;
   provider?: string;
+  /** Taken by a provider in live mode (kept at launch). */
+  live?: boolean;
 };
 
 export async function pay(lock: Lock, input: PaymentInput = {}): Promise<string> {
   const rows = await svc<{ result: string }>(
-    "select record_paid_payment($1, $2, $3, $4, $5, $6, $7) as result",
+    "select record_paid_payment($1, $2, $3, $4, $5, $6, $7, $8) as result",
     [
       input.provider ?? "test",
       input.eventId ?? `evt_${randomUUID()}`,
@@ -157,6 +159,7 @@ export async function pay(lock: Lock, input: PaymentInput = {}): Promise<string>
       input.amountCents ?? lock.price_cents,
       input.currency ?? "USD",
       input.email ?? lock.email,
+      input.live ?? false,
     ],
   );
   return rows[0].result;

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { Player, createLock, currentReign, one, q, svc, takeover, withFreshGame } from "./helpers";
+import { Player, createLock, currentReign, one, pay, q, svc, takeover, withFreshGame } from "./helpers";
 
 withFreshGame();
 
@@ -75,6 +75,59 @@ describe("launch_game", () => {
     expect(seasons.every((s) => s.closed_at === null && s.king_profile_id === null)).toBe(true);
     // Profiles and the admin's rights stay.
     expect(await one("select is_admin from profile_private where profile_id = $1", [profileId])).toEqual({ is_admin: true });
+  });
+
+  it("keeps live payments and their locks, with their status, and removes their reigns", async () => {
+    const a = await admin();
+    const b = await admin();
+    await prelaunch(true);
+    const lockFor = (who: { player: Player; profileId: string }) =>
+      createLock({ email: who.player.email, name: who.player.name, profileId: who.profileId });
+
+    // An admin's real purchase in live mode crowns them.
+    const liveLock = await lockFor(a);
+    expect(await pay(liveLock, { provider: "dodo", providerPaymentId: "pay_live_crowned", live: true })).toBe("applied");
+    // A live payment that was refunded during prelaunch.
+    const refundedLock = await lockFor(b);
+    expect(await pay(refundedLock, { provider: "dodo", providerPaymentId: "pay_live_refunded", live: true, amountCents: 1 })).toBe("refund_pending");
+    await svc("select mark_payment_refunded('dodo', 'pay_live_refunded')");
+    // A Dodo test-mode payment dethrones the live king.
+    expect(await pay(await lockFor(b), { provider: "dodo", providerPaymentId: "pay_test_mode" })).toBe("applied");
+
+    await svc("select launch_game($1)", [new Date(Date.now() + 3_600_000).toISOString()]);
+
+    const kept = await q<{ provider_payment_id: string; status: string; live: boolean; lock_id: string; amount_cents: number }>(
+      "select provider_payment_id, status, live, lock_id, amount_cents from payments order by provider_payment_id",
+    );
+    expect(kept).toEqual([
+      { provider_payment_id: "pay_live_crowned", status: "applied", live: true, lock_id: liveLock.id, amount_cents: liveLock.price_cents },
+      { provider_payment_id: "pay_live_refunded", status: "refunded", live: true, lock_id: refundedLock.id, amount_cents: 1 },
+    ]);
+    expect((await q<{ id: string }>("select id from price_locks order by id")).map((l) => l.id).sort()).toEqual([liveLock.id, refundedLock.id].sort());
+    for (const table of ["reigns", "events", "profile_achievements", "rank_ups", "webhook_events"]) {
+      expect(await q(`select 1 from ${table}`), table).toEqual([]);
+    }
+    expect(await one("select current_reign_id, active_lock_id from crown_state")).toEqual({ current_reign_id: null, active_lock_id: null });
+  });
+
+  it("lets a kept live payment be refunded or disputed after launch without touching the game", async () => {
+    const a = await admin();
+    await admin(); // takes the crown from a, who can then buy it back
+    await prelaunch(true);
+    const lock = await createLock({ email: a.player.email, name: a.player.name, profileId: a.profileId });
+    await pay(lock, { provider: "dodo", providerPaymentId: "pay_live_after", live: true });
+    await svc("select launch_game($1)", [new Date(Date.now() + 3_600_000).toISOString()]);
+    const [{ id }] = await q<{ id: string }>("select id from payments where provider_payment_id = 'pay_live_after'");
+
+    // The admin's refund, then Dodo's refund webhook.
+    await svc("select request_manual_refund($1, $2)", [id, a.profileId]);
+    expect(await one("select status from payments where id = $1", [id])).toEqual({ status: "refund_pending" });
+    await svc("select mark_payment_refunded('dodo', 'pay_live_after')");
+    expect(await one("select status, live from payments where id = $1", [id])).toEqual({ status: "refunded", live: true });
+    // A dispute is recorded on the payment too.
+    await svc("select record_payment_dispute('dodo', 'pay_live_after', 'opened')");
+    expect(await one("select dispute_status from payments where id = $1", [id])).toEqual({ dispute_status: "opened" });
+    expect(await q("select 1 from reigns")).toEqual([]);
   });
 
   it("refuses outside prelaunch and for a start in the past", async () => {
