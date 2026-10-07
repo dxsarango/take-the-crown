@@ -8,12 +8,12 @@ const CLIENT_ROLES = ["anon", "authenticated"] as const;
 const WRITE_PRIVILEGES = ["INSERT", "UPDATE", "DELETE", "TRUNCATE", "REFERENCES", "TRIGGER"] as const;
 
 /** Tables and views the browser can see: exactly these, read-only. */
+/** Readable as whole tables; profiles and crown_state are readable column by column. */
 const PUBLIC_READ = [
   "achievement_stats",
   "achievements",
   "app_config",
   "country_leaderboard",
-  "crown_state",
   "events",
   "profile_achievements",
   "profile_name_history",
@@ -200,5 +200,18 @@ describe("row level security", () => {
     await q("update reigns set message = 'secret', link = 'https://x.test', message_hidden = true");
     const rows = await asRole("anon", (client) => client.query("select message, link from public_reigns"));
     expect(rows.rows.every((row) => row.message === null && row.link === null)).toBe(true);
+  });
+});
+
+describe("the active lock", () => {
+  it("keeps its id from clients, who still see whether the crown is locked and until when", async () => {
+    const lock = await createLock();
+    for (const role of ["anon", "authenticated"]) {
+      await expect(asRole(role, (c) => c.query("select active_lock_id from crown_state"))).rejects.toThrow(/permission denied/);
+      const [state] = await asRole(role, async (c) => (await c.query("select active_lock_expires_at, season_id from crown_state")).rows);
+      expect(state.active_lock_expires_at).toEqual(lock.expires_at);
+      const [crown] = await asRole(role, async (c) => (await c.query("select is_locked from public_crown_state")).rows);
+      expect(crown.is_locked).toBe(true);
+    }
   });
 });
