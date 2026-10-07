@@ -122,6 +122,24 @@ describe("chargebacks", () => {
     });
   });
 
+  it("emails every admin once when a dispute opens, however often the provider repeats it", async () => {
+    const admin = new Player("watcher");
+    await admin.takeover();
+    await q("update profile_private set is_admin = true where profile_id = $1", [await admin.id()]);
+    const buyer = new Player("disputer");
+    const crowned = await buyer.takeover();
+    const [payment] = await q<{ id: string; amount_cents: number }>("select p.id, p.amount_cents from payments p join reigns r on r.payment_id = p.id where r.id = $1", [crowned.id]);
+
+    await dispute(crowned.id, "dispute_opened");
+    await dispute(crowned.id, "dispute_opened");
+    await dispute(crowned.id, "dispute_challenged");
+
+    const alerts = await q<{ profile_id: string; payload: Record<string, unknown> }>("select profile_id, payload from notifications where kind = 'dispute_opened'");
+    expect(alerts).toEqual([
+      { profile_id: await admin.id(), payload: { payment_id: payment.id, amount_cents: payment.amount_cents, currency: "USD", live: false } },
+    ]);
+  });
+
   it("upgrades an earlier refund to a chargeback", async () => {
     const crowned = await new Player("refunded").takeover();
     await refund(crowned.id);

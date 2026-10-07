@@ -34,6 +34,7 @@ const payloads = {
   season_extended: z.object({ season_id: z.number(), ends_at: z.string() }),
   season_not_ready: z.object({ season_id: z.number(), starts_at: z.string(), name_final: z.boolean(), art_final: z.boolean() }),
   refunds_stuck: z.object({ count: z.number().int().positive(), oldest_at: z.string() }),
+  dispute_opened: z.object({ payment_id: z.uuid(), amount_cents: z.number().int(), currency: z.string(), live: z.boolean() }),
 };
 
 function site(): string {
@@ -229,6 +230,20 @@ async function build(db: Db, n: Notification): Promise<Omit<Email, "idempotencyK
         Notice({ frame, title: t("stuckTitle", values), body: t("stuckBody", values), button: { label: t("stuckBtn"), url: `${home}/admin#refunds` }, note: null }),
       );
       return { to: to.email, subject: t("stuckTitle", values), html, text };
+    }
+
+    case "dispute_opened": {
+      if (!to.isAdmin) throw new Skip("not_admin");
+      const p = payloads.dispute_opened.safeParse(n.payload);
+      if (!p.success) throw new Skip("bad_payload");
+      const t = await getTranslations({ locale: to.locale, namespace: "email" });
+      const crown = await liveCrown(db);
+      const values = { amount: formatPrice(p.data.amount_cents, to.locale), payment: p.data.payment_id, test: p.data.live ? "no" : "yes" };
+      const frame = await frameFor(to, crown.seasonId, t("disputePreheader"), t("reportsFoot", { brand: BRAND_NAME }), null);
+      const { html, text } = await renderEmail(
+        Notice({ frame, title: t("disputeTitle", values), body: t("disputeBody", values), button: { label: t("disputeBtn"), url: `${home}/admin#reversals` }, note: null }),
+      );
+      return { to: to.email, subject: t("disputeTitle", values), html, text };
     }
 
     default:

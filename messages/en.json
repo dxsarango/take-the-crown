@@ -1086,6 +1086,10 @@
     "stuckPreheader": "The payment provider refused to refund them. The game keeps retrying.",
     "stuckTitle": "{count, plural, one {# refund is} other {# refunds are}} stuck",
     "stuckBody": "The payment provider refused {count, plural, one {a refund} other {# refunds}} the game owes buyers, the oldest from {date}. The game retries on its own, but the buyers wait until it goes through. Check the reason in the admin area; you get this email at most once an hour while it lasts.",
-    "stuckBtn": "Open refunds"
+    "stuckBtn": "Open refunds",
+    "disputePreheader": "Answer it in the payment provider's dashboard before its deadline.",
+    "disputeTitle": "A buyer disputed a {amount} payment",
+    "disputeBody": "{test, select, yes {Test mode: } other {}}a chargeback was opened for payment {payment}. The game already reversed its reign and suspended the account. Answer the dispute with your evidence in the payment provider's dashboard before its deadline; if you win, lift the suspension in the admin area.",
+    "disputeBtn": "Open reversals"
   }
 }
