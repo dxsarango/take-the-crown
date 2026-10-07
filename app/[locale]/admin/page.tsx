@@ -14,7 +14,7 @@ import { BRAND_NAME } from "@/lib/config/brand";
 import { paymentProduct, testPayments } from "@/lib/payments";
 import { displayLink, formatPrice } from "@/lib/format";
 import { MODEL_REASONS } from "@/lib/moderation/model";
-import { dismissReport, hideMessage, refundPayment, retryRefund, releaseName, reviewContent, launchGame, previewLaunch, saveConfig, saveLegal, saveSeasonDates, setBanned } from "./actions";
+import { dismissReport, hideMessage, refundPayment, retryRefund, releaseName, reviewContent, launchGame, previewLaunch, saveConfig, saveLegal, saveSeasonDates, setBanned, setPaused } from "./actions";
 
 export const dynamic = "force-dynamic";
 
@@ -159,6 +159,16 @@ export default async function AdminPage({ params, searchParams }: PageProps<"/[l
               </div>
             ))}
           </dl>
+          <form action={setPaused} className="flex flex-col gap-3 bg-crown-velvet p-4 sm:flex-row sm:items-center sm:justify-between">
+            <Back locale={locale} section="crown" />
+            <input type="hidden" name="paused" value={data.config.paused ? "false" : "true"} />
+            <p role="status" className={`text-14 font-bold ${data.config.paused ? "text-crown-danger" : ""}`}>
+              {data.config.paused ? t("crown.paused") : t("crown.running")}
+            </p>
+            <ConfirmButton question={data.config.paused ? t("crown.confirmResume") : t("crown.confirmPause")} className={secondary}>
+              {data.config.paused ? t("crown.resume") : t("crown.pause")}
+            </ConfirmButton>
+          </form>
         </Section>
 
         <Section id="launch" title={t("nav.launch")}>

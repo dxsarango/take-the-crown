@@ -249,6 +249,17 @@ export async function saveSeasonDates(form: FormData) {
   return done(form, "ok");
 }
 
+/** Emergency pause (docs/INCIDENTS.md): no new locks while it is on; payments in flight settle as usual. */
+export async function setPaused(form: FormData) {
+  const me = await admin(form, true);
+  const paused = form.get("paused") === "true";
+  const db = serviceClient();
+  const { error } = await db.from("app_config").update({ paused, updated_at: new Date().toISOString() }).eq("id", true);
+  if (error) return done(form, "failed");
+  await db.from("admin_actions").insert({ admin_profile_id: me.profileId, action: paused ? "pause" : "resume" });
+  return done(form, "ok");
+}
+
 export async function saveConfig(form: FormData) {
   const me = await admin(form, true);
   const parsed = configSchema.safeParse(Object.fromEntries(CONFIG_FIELDS.map((k) => [k, form.get(k)])));

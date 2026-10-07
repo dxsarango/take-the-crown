@@ -232,6 +232,11 @@
         "title": "La corona aún no está en juego.",
         "why": "El juego se lanza pronto. Hasta entonces solo el equipo puede probar a tomar la corona.",
         "fix": "Vuelve el día del lanzamiento. No se te ha cobrado nada."
+      },
+      "paused": {
+        "title": "Tomar la corona está en pausa.",
+        "why": "Pausamos las tomas un momento para arreglar algo.",
+        "fix": "Inténtalo de nuevo en un rato. No se te ha cobrado."
       }
     },
     "nameSignedIn": "Tu nombre público. Cámbialo en tu perfil.",
@@ -878,7 +883,13 @@
       "lock": "Reserva",
       "noLock": "No hay ninguna reserva activa.",
       "lockUntil": "Reservada hasta el {date}",
-      "season": "Temporada"
+      "season": "Temporada",
+      "running": "Las tomas están abiertas.",
+      "paused": "Las tomas están en pausa: nadie puede reservar la corona. Los pagos ya en curso se resuelven igual.",
+      "pause": "Pausar las tomas",
+      "resume": "Reanudar las tomas",
+      "confirmPause": "¿Pausar las tomas? Nadie, ni los admins, puede reservar la corona hasta que reanudes.",
+      "confirmResume": "¿Reanudar las tomas para todos?"
     },
     "payments": {
       "empty": "Aún no hay pagos.",

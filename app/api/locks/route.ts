@@ -12,6 +12,7 @@ const STATUS: Record<string, number> = {
   rate_limited: 429,
   banned: 403,
   prelaunch: 403,
+  paused: 503,
   checkout_failed: 502,
   unknown: 500,
 };
