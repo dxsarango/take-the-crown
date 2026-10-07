@@ -18,6 +18,7 @@ export async function isProviderEnabled(provider: OAuthProvider): Promise<boolea
       headers: { apikey: publicEnv.NEXT_PUBLIC_SUPABASE_ANON_KEY },
       redirect: "manual",
       cache: "no-store",
+      signal: AbortSignal.timeout(5_000),
     });
     if (response.status >= 300 && response.status < 400 && response.headers.get("location")) return true;
     const body = await response.text().catch(() => "");

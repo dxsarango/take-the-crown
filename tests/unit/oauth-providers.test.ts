@@ -43,7 +43,7 @@ describe("isProviderEnabled", () => {
     expect(await isProviderEnabled("x")).toBe(true);
     const [url, init] = fetchMock.mock.calls[0];
     expect(String(url)).toBe("https://ref.supabase.co/auth/v1/authorize?provider=x");
-    expect(init).toMatchObject({ redirect: "manual", cache: "no-store" });
+    expect(init).toMatchObject({ redirect: "manual", cache: "no-store", signal: expect.any(AbortSignal) });
     expect(logged).not.toHaveBeenCalled();
   });
 
