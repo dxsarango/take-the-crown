@@ -31,12 +31,24 @@ export function localHour(timeZone: string | null | undefined, now = new Date())
   }
 }
 
+/**
+ * Characters that change how text looks without being seen: control characters, soft hyphens,
+ * zero-width spaces and direction overrides (a right-to-left override can make "nimda" read
+ * "admin", or flip the text after it). Zero-width joiners stay: emoji sequences need them.
+ */
+const INVISIBLE = /[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F-\u009F\u00AD\u061C\u200B\u200E\u200F\u202A-\u202E\u2060-\u2064\u2066-\u2069\uFEFF]/g;
+
+/** Player text as it will be shown: no invisible or direction-changing characters, spaces collapsed. */
+export function cleanText(text: string): string {
+  return text.replace(INVISIBLE, "").replace(/\s+/g, " ").trim();
+}
+
 const optionalText = z
   .string()
   .max(1000)
   .optional()
   .transform((v) => {
-    const value = v?.replace(/\s+/g, " ").trim();
+    const value = v === undefined ? "" : cleanText(v);
     return value ? value : null;
   });
 
