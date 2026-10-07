@@ -985,7 +985,7 @@
       "legal_effective_date": "Effective date"
     },
     "launch": {
-      "prelaunch": "Prelaunch: the site is public, but only admins can take the crown, with the test payment provider. Launching deletes every test reign, payment and achievement, starts season 0 at the time you choose (it lasts at least {days} days; later seasons move if it has to grow) and opens the crown to everyone.",
+      "prelaunch": "Prelaunch: the site is public, but only admins can take the crown. Launching deletes every prelaunch reign and achievement and every test payment (payments taken in live mode are kept for accounting, with their refund status, but their reigns go), starts season 0 at the time you choose (it lasts at least {days} days; later seasons move if it has to grow) and opens the crown to everyone.",
       "needProvider": "Launch needs real payments: PAYMENT_PROVIDER dodo with DODO_MODE live. While payments are in test mode, the game stays in prelaunch.",
       "startsAt": "Season 0 starts (UTC)",
       "go": "Launch the game",

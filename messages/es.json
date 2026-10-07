@@ -985,7 +985,7 @@
       "legal_effective_date": "Fecha de vigencia"
     },
     "launch": {
-      "prelaunch": "Prelanzamiento: el sitio es público, pero solo los admins pueden tomar la corona, con el proveedor de pagos de prueba. Lanzar borra todos los reinados, pagos y logros de prueba, empieza la temporada 0 a la hora que elijas (dura al menos {days} días; las temporadas siguientes se mueven si tiene que alargarse) y abre la corona a todos.",
+      "prelaunch": "Prelanzamiento: el sitio es público, pero solo los admins pueden tomar la corona. Lanzar borra todos los reinados y logros del prelanzamiento y todos los pagos de prueba (los pagos hechos en modo real se conservan para la contabilidad, con su estado de reembolso, pero sus reinados se borran), empieza la temporada 0 a la hora que elijas (dura al menos {days} días; las temporadas siguientes se mueven si tiene que alargarse) y abre la corona a todos.",
       "needProvider": "Lanzar necesita pagos reales: PAYMENT_PROVIDER dodo con DODO_MODE live. Mientras los pagos estén en modo de prueba, el juego sigue en prelanzamiento.",
       "startsAt": "Empieza la temporada 0 (UTC)",
       "go": "Lanzar el juego",
