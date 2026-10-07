@@ -44,6 +44,7 @@ export async function POST(request: Request, { params }: RouteContext<"/api/webh
         p_amount_cents: event.amountCents,
         p_currency: event.currency,
         p_email: event.email,
+        p_live: provider.live,
       });
       // A failure here makes the provider retry the webhook.
       if (error) {

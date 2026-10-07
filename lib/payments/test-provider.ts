@@ -33,6 +33,7 @@ export function signTestPayload(body: string, secret: string): string {
 
 export class TestProvider implements PaymentProvider {
   readonly name = "test";
+  readonly live = false;
 
   constructor(
     private readonly secret: string,

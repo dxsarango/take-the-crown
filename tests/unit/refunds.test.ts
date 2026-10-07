@@ -18,7 +18,7 @@ function fakeDb() {
 }
 
 function provider(refund: () => Promise<void>) {
-  return { name: "dodo", createCheckout: vi.fn(), verifyWebhook: vi.fn(), refund: vi.fn(refund) };
+  return { name: "dodo", live: true, createCheckout: vi.fn(), verifyWebhook: vi.fn(), refund: vi.fn(refund) };
 }
 
 const payment = { id: "11111111-1111-4111-8111-111111111111", provider: "dodo", provider_payment_id: "pay_1" };
