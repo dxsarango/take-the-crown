@@ -4,4 +4,10 @@ allowBuilds:
   sharp: false
   unrs-resolver: false
 patchedDependencies:
-  next@16.3.6: patches/next@16.3.6.patch
+  next@16.3.8: patches/next@16.3.8.patch
+# Security fix for a build-time dependency (pnpm audit, GHSA-68fv-2mgg-jv7q).
+overrides:
+  source-map-js: '>=1.2.2'
+# Do not install versions published less than a day ago (compromised releases are usually pulled
+# within hours). Security updates are a day late at most.
+minimumReleaseAge: 1440
