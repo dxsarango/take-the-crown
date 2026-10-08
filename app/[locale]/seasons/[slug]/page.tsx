@@ -2,13 +2,16 @@ import type { Metadata } from "next";
 import { hasLocale } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
+import { JsonLdScript } from "@/components/json-ld";
 import { SeasonView } from "@/components/realm/season-view";
 import { TimeZoneProvider } from "@/components/time-zone";
 import { routing } from "@/i18n/routing";
 import { BRAND_NAME } from "@/lib/config/brand";
 import { seasonCard, shareMetadata } from "@/lib/og/metadata";
 import { fetchSeasonEnd, fetchSeasons } from "@/lib/realm/data";
+import { siteUrl } from "@/lib/site";
 import { withBrand } from "@/lib/seo";
+import { breadcrumbs } from "@/lib/seo-jsonld";
 import { publicClient } from "@/lib/supabase/public";
 import { readerTimeZone } from "@/lib/time-zone.server";
 
@@ -50,8 +53,20 @@ export default async function SeasonPage({ params }: PageProps<"/[locale]/season
   // Only seasons that have started have a page.
   const current = seasons.find((s) => s.id === currentId);
   if (!data || !current) notFound();
+  const realm = await getTranslations({ locale, namespace: "realm" });
   return (
     <TimeZoneProvider timeZone={await readerTimeZone()}>
+      <JsonLdScript
+        data={breadcrumbs({
+          site: siteUrl(),
+          locale,
+          trail: [
+            { name: BRAND_NAME, route: "" },
+            { name: realm("histTitle"), route: "/kingdom" },
+            { name: data.season.name[locale], route: `/seasons/${slug}` },
+          ],
+        })}
+      />
       <SeasonView data={data} current={current} readAt={new Date().toISOString()} />
     </TimeZoneProvider>
   );

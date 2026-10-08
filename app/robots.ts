@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { serverEnv } from "@/lib/env.server";
+import { siteUrl } from "@/lib/site";
 
 // Never crawled: private areas and handlers. Pages, styles, scripts, images and share cards are open.
 const DISALLOW = ["/api/", "/auth/", "/*/admin", "/*/settings/", "/*/alerts/"];
@@ -22,7 +22,7 @@ const AI_CRAWLERS = [
 ];
 
 export default function robots(): MetadataRoute.Robots {
-  const site = serverEnv().NEXT_PUBLIC_SITE_URL.replace(/\/$/, "");
+  const site = siteUrl();
   return {
     rules: [
       { userAgent: "*", allow: "/", disallow: DISALLOW },
