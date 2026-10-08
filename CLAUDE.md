@@ -57,13 +57,27 @@ Next is patched (`patches/next@*.patch`, pnpm `patchedDependencies`): review the
 ## Git workflow
 
 - `main` is the default branch and always passes lint, typecheck and tests. Never commit directly to `main` and never force push it.
-- One branch per milestone or fix, created from an up-to-date `main`: `feat/<short-name>`, `fix/<short-name>`, `chore/<short-name>`, `docs/<short-name>`. Lowercase, hyphen-separated, describing the change.
 - Conventional Commits for every commit: `type(scope): subject`. Types: feat, fix, refactor, perf, test, docs, style, build, ci, chore, revert. Scopes: db, api, ui, auth, payments, game, i18n, admin, email, og, design, deps, config.
 - Subject in imperative mood, lowercase, no trailing period, max 72 characters. Add a body only when the why is not obvious. Use `BREAKING CHANGE:` in the footer when applicable.
 - Small, atomic commits that each build and pass tests. Do not mix unrelated changes. Never commit secrets or `.env` files.
-- Merge to `main` through a pull request with a conventional title and a short description of what changed and how it was tested. Keep history linear (rebase before merging).
 - Tag releases on `main` with semantic versions, starting at `v0.1.0` for launch.
-- Commit messages, commit trailers, PR titles and descriptions, and branch names must not mention or suggest AI assistance or any AI tool. No `Co-Authored-By` trailers, no "Generated with" lines, no session links, no signatures. The history must read like any developer's normal work.- When a task produces several PRs, keep shared docs (`docs/PROGRESS.md`, `docs/SPEC.md`, `docs/DEPLOY.md`) out of the feature PRs when possible and record those updates in the last PR of the series.
+- Commit messages, commit trailers, PR titles and descriptions, and branch names must not mention or suggest AI assistance or any AI tool. No `Co-Authored-By` trailers, no "Generated with" lines, no session links, no signatures. The history must read like any developer's normal work.
+
+## Branching and PRs
+
+- One task = one branch = one PR. Branch from an up-to-date `main` (`git fetch && git switch -c <type>/<name> origin/main`). Names are `feat/<short-name>`, `fix/<short-name>`, `chore/<short-name>`, `docs/<short-name>`, lowercase and hyphen-separated, describing the change.
+- Work sequentially. Do not start a new branch until the previous PR is merged, unless the new work touches completely different files.
+- Never run parallel subagents or worktrees that edit overlapping files. Parallel work is allowed only when the file sets are disjoint and stated up front.
+- Keep PRs small and short-lived: merge the same day if possible. Split large features into sequential PRs (data layer → API → UI), each mergeable on its own.
+- Merge through a pull request with a conventional title and a short description of what changed and how it was tested. Keep history linear (rebase before merging).
+- If a later PR depends on an unmerged one, stack it (branch from the previous branch) and say so in the PR description. After the base merges, rebase onto `main`.
+- Shared files (next.config, middleware, headers config, package.json, lockfile, shared utils, Supabase migrations) change in one place only. Fix shared helpers once; never patch the same issue separately in several branches.
+- Shared docs (`docs/PROGRESS.md`, `docs/SPEC.md`, `docs/DEPLOY.md`): when a task produces several PRs, keep them out of the feature PRs when possible and record those updates in the last PR of the series.
+- Migrations: only one open PR with new migrations at a time, numbered after the latest on `main` (renumber if `main` moved). Never merge a PR with a migration until the owner confirms it has been pushed to production.
+- Dependency changes go in their own commit; run `pnpm install` once.
+- Before opening or updating a PR: `git fetch && git rebase origin/main`, then lint, typecheck and unit tests.
 - After a PR is merged, rebase every other open PR on the updated `main` and resolve conflicts. If only docs conflicted, run typecheck and lint; otherwise run typecheck, lint and the full unit and database suites, plus the e2e specs for the areas the PR touches. Push with `--force-with-lease` and wait for the GitHub checks. Never force push `main`.
-- If two open PRs add migrations, renumber the later one so they never collide.
+- When given several tasks at once, first list the files each task touches. If any overlap, do them in series.
+- Audits (`SECURITY.md`, `PERFORMANCE.md`, `SEO.md`): Phase 1 writes findings to `docs/audits/<name>-findings.md` without code changes; Phase 2 implements on one branch `audit/<name>`, one commit per finding, one PR.
+- Dependabot: do not merge major updates before launch (Oct 27) without asking.
 - In every final report, list the open PRs in the order they should be merged.
