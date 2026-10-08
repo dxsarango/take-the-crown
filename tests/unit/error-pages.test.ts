@@ -1,5 +1,5 @@
 import { NextIntlClientProvider } from "next-intl";
-import { createElement } from "react";
+import { type ComponentType, createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
 import en from "@/messages/en.json";
@@ -11,13 +11,16 @@ vi.mock("./../../app/globals.css", () => ({}));
 const { default: PageError } = await import("@/app/[locale]/error");
 const { default: GlobalError } = await import("@/app/global-error");
 
+// The provider types require children in its props, which the lint rule forbids; createElement takes them as an argument.
+const Provider = NextIntlClientProvider as ComponentType<{ locale: string; messages: typeof es }>;
+
 const failure = Object.assign(new Error("relation \"secret_table\" does not exist at db.ts:42"), { digest: "123abc" });
 
 describe("error pages", () => {
   it("show a way to retry and a way home, never the error itself", () => {
     vi.spyOn(console, "error").mockImplementation(() => undefined);
     const html = renderToStaticMarkup(
-      createElement(NextIntlClientProvider, { locale: "es", messages: es, children: createElement(PageError, { error: failure, reset: () => undefined }) }),
+      createElement(Provider, { locale: "es", messages: es }, createElement(PageError, { error: failure, reset: () => undefined })),
     );
     expect(html).toContain(es.errors.errorTitle);
     expect(html).toContain(es.errors.retry);
