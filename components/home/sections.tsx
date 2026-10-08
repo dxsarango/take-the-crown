@@ -8,8 +8,8 @@ import { Link } from "@/i18n/navigation";
 import { BRAND_NAME } from "@/lib/config/brand";
 import { seasonArt } from "@/lib/art/seasons";
 import { MEDAL_KEY } from "@/lib/game/achievements";
-import { formatAgo, formatDuration } from "@/lib/format";
-import type { FeedItem, HallOfFame, PastReign, Person } from "@/lib/home/data";
+import { formatAgo, formatDuration, formatPercent, formatPrice } from "@/lib/format";
+import type { CrownState, FeedItem, HallOfFame, PastReign, Person, Season } from "@/lib/home/data";
 import { PlayerName } from "@/components/player-name";
 
 function useUnits() {
@@ -195,6 +195,46 @@ export function Feed({ items, now }: { items: FeedItem[]; now: number }) {
         </ul>
       )}
     </div>
+  );
+}
+
+/**
+ * What the game is, how the price works and what a player gets, in plain text: the page is mostly
+ * pictures and numbers, and this is what a search engine, a screen reader or a visitor without
+ * scripts reads. The numbers come from the live settings.
+ */
+export function About({ crown, season }: { crown: CrownState; season: Season }) {
+  const t = useTranslations("home.about");
+  const locale = useLocale() as Locale;
+  const link = "hit-area text-14 text-crown-muted underline underline-offset-4 hover:text-crown-text";
+  return (
+    <section aria-labelledby="about-title" className={`${SECTION} gap-3.5 py-6 lg:gap-5 lg:pt-8 lg:pb-12`}>
+      <h2 id="about-title" className="text-20 font-bold">
+        {t("title")}
+      </h2>
+      <div className="flex max-w-[640px] flex-col gap-3 text-16 leading-body text-pretty text-crown-muted">
+        <p>{t("what", { brand: BRAND_NAME })}</p>
+        <p>{t("price", { decay: formatPercent(crown.decayBpsPerHour, locale), floor: formatPrice(crown.floorCents, locale) })}</p>
+        <p>{t("get")}</p>
+      </div>
+      <nav aria-label={t("linksLabel")} className="flex flex-wrap gap-x-5 gap-y-1">
+        <Link href="/rules" className={link}>
+          {t("rules")}
+        </Link>
+        <Link href="/faq" className={link}>
+          {t("faq")}
+        </Link>
+        <Link href="/kingdom" className={link}>
+          {t("history")}
+        </Link>
+        <Link href="/hall-of-fame" className={link}>
+          {t("hof")}
+        </Link>
+        <Link href={`/seasons/${season.slug}`} className={link}>
+          {season.name[locale]}
+        </Link>
+      </nav>
+    </section>
   );
 }
 
