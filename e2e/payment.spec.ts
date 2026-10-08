@@ -61,7 +61,7 @@ test("a guest takes the crown end to end", async ({ page }) => {
   await dialog(page).getByRole("button", { name: en.common.notNow }).filter({ visible: true }).click();
   await expect(dialog(page)).toHaveCount(0);
   // "Watch your coronation" / closing replays it on the home, then the new king is shown.
-  await expect(page.getByRole("heading", { level: 1, name: me.name }).filter({ visible: true })).toBeVisible({ timeout: 5000 });
+  await expect(page.getByRole("heading", { level: 2, name: me.name }).filter({ visible: true })).toBeVisible({ timeout: 5000 });
   await expect(visible(page, "turno.app")).toBeVisible();
 });
 
@@ -93,7 +93,7 @@ test("two browsers compete for the same crown", async ({ browser }) => {
   await expect(visible(pageA, en.payment.headOk)).toBeVisible({ timeout: 10_000 });
   // Bob watches the coronation (canvas), then the new king.
   await expect(pageB.locator("canvas").filter({ visible: true })).toBeVisible({ timeout: 10_000 });
-  await expect(pageB.getByRole("heading", { level: 1, name: alice.name }).filter({ visible: true })).toBeVisible({ timeout: 10_000 });
+  await expect(pageB.getByRole("heading", { level: 2, name: alice.name }).filter({ visible: true })).toBeVisible({ timeout: 10_000 });
 
   const reigns = await sql<{ name: string }>("select name from reigns where name in ($1, $2)", [alice.name, bob.name]);
   expect(reigns).toEqual([{ name: alice.name }]);
@@ -211,14 +211,14 @@ test("screenshots of the payment modal", async ({ page }, testInfo) => {
 test("screenshot of the coronation", async ({ page }, testInfo) => {
   await seedKingdom();
   await page.goto("/en");
-  await expect(page.getByRole("heading", { level: 1, name: "valeruiz" }).filter({ visible: true })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 2, name: "valeruiz" }).filter({ visible: true })).toBeVisible();
   const lock = await (await page.request.post("/api/locks", { data: { name: "nadia.builds", email: "nadia@test.local", locale: "en", acceptWithdrawal: true, turnstileToken: HUMAN_TOKEN } })).json();
   await page.request.post("/api/test-provider/pay", { data: { lockId: lock.lockId } });
   const canvas = page.locator("canvas").filter({ visible: true });
   await expect(canvas).toBeVisible({ timeout: 10_000 });
   await page.waitForTimeout(900);
   await canvas.screenshot({ path: `test-results/screens/coronation-mid-${testInfo.project.name}.png` });
-  await expect(page.getByRole("heading", { level: 1, name: "nadia.builds" }).filter({ visible: true })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 2, name: "nadia.builds" }).filter({ visible: true })).toBeVisible();
 });
 
 test("reduced motion swaps the king with a short fade", async ({ browser }) => {
@@ -226,10 +226,10 @@ test("reduced motion swaps the king with a short fade", async ({ browser }) => {
   const context = await browser.newContext({ reducedMotion: "reduce" });
   const page = await context.newPage();
   await page.goto("/en");
-  await expect(page.getByRole("heading", { level: 1, name: "valeruiz" }).filter({ visible: true })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 2, name: "valeruiz" }).filter({ visible: true })).toBeVisible();
   const lock = await (await page.request.post("/api/locks", { data: { name: "calm.king", email: "calm@test.local", locale: "en", acceptWithdrawal: true, turnstileToken: HUMAN_TOKEN } })).json();
   await page.request.post("/api/test-provider/pay", { data: { lockId: lock.lockId } });
-  await expect(page.getByRole("heading", { level: 1, name: "calm.king" }).filter({ visible: true })).toBeVisible({ timeout: 10_000 });
+  await expect(page.getByRole("heading", { level: 2, name: "calm.king" }).filter({ visible: true })).toBeVisible({ timeout: 10_000 });
   // The fade lasts 400 ms, then the regular scene is back.
   await expect(page.locator("canvas")).toHaveCount(0, { timeout: 2000 });
   await context.close();
