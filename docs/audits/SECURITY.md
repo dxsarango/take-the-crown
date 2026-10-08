@@ -25,7 +25,7 @@ Output: `docs/audits/SECURITY-REPORT.md` with every item, its status, evidence a
 - No stack traces or internal errors in responses; generic error pages in production.
 - `robots.txt` disallows `/admin`, `/api`, `/settings`; those routes also send `noindex`.
 - Add `/.well-known/security.txt` with the contact address and an expiry date.
-- The `*.vercel.app` production URL: decide whether to block it (redirect to the domain) so traffic cannot skip Cloudflare.
+- The `*.vercel.app` production URL: the app redirects it to the domain (crons excepted), so traffic cannot skip Cloudflare.
 
 ## A03 Software supply chain failures
 

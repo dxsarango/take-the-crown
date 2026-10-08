@@ -10,6 +10,9 @@ Post-launch backlog. Nothing here is scheduled. Each idea needs a spec update an
 
 ## Phase 1: after launch
 
+### Sign out of all devices
+A button in edit profile that ends every session of the account (`signOut({ scope: "global" })`). Today sign-out ends only the current device. Build it if players ask. From the security audit (L6).
+
 ### Hail the king
 A single reaction for the current king: "Long live the king!" / "¡Viva el rey!", with a pixel crown or banner icon.
 
