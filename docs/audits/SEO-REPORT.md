@@ -73,7 +73,7 @@ The fixes are four stacked PRs, because they touch the same page files. Merge th
 ## Measurement
 
 - **Search Console and Bing Webmaster Tools — owner.** The sitemap to submit is `https://takethecrown.app/sitemap.xml`.
-- **Analytics — owner decision.** If a cookieless tool is added, the privacy policy changes (`docs/legal/privacy.*.md`).
+- **Analytics — decided and added.** Vercel Web Analytics on the live site only, cookieless, with the address scrubbed down to the path and the UTM tags, private pages and custom events not sent, and the privacy policy updated (`feat/analytics`). It must be enabled in the Vercel project to start collecting.
 
 ## Low findings
 
@@ -137,6 +137,6 @@ Tools to open in the browser, with a live URL (a player's profile, a season, the
 - [ ] `/admin`: set the legal contact email (it becomes the `Organization` email in the structured data) and the effective date (it becomes the `lastmod` of the legal pages).
 - [ ] Cloudflare → Security → Bots: confirm Bot Fight Mode is off and that "Block AI bots" / AI Crawl Control does not block the crawlers `app/robots.ts` allows (or block them in both places); if Cloudflare's "Manage your robots.txt" is on, make sure it does not prepend rules that contradict ours. Run the `GPTBot`/`ClaudeBot` curl above.
 - [ ] Vercel → Domains: `www.takethecrown.app` redirects (308) to the apex; do not redirect `*.vercel.app` there (the app does it, crons excepted).
-- [ ] Decision: privacy-friendly analytics (Vercel Web Analytics or Plausible) for launch traffic. If you add one, update the privacy policy in both languages first.
+- [x] Analytics: Vercel Web Analytics (cookieless), added with the privacy policy updated in both languages. Turn it on in Vercel → Project → Analytics → Enable, then redeploy; UTM campaign tags are kept and reported.
 - [ ] After the deploy: run the commands above, the Rich Results Test and Schema.org validator on the live URLs, and the link-preview debuggers; re-share a link in each app because they cache the first preview.
 - [ ] Optional: decide on S14 (`llms.txt`); decided not to add it.

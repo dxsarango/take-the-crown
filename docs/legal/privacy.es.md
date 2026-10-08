@@ -18,6 +18,8 @@ Dario Sarango, persona natural residente en Ecuador, es el responsable del trata
 
 **Datos técnicos.** Tu dirección IP se usa en tiempo real por seguridad y para sugerir tu país. Solo la almacenamos como un hash irreversible con sal, usado para limitar abusos. También tratamos registros de solicitudes, tipo de navegador y tu zona horaria.
 
+**Estadísticas de visitas.** Contamos las visitas con Vercel Web Analytics. No usa cookies ni guarda nada en tu dispositivo: identifica a un visitante con un hash creado a partir de la solicitud, que se descarta a las 24 horas, así que no puede seguirte de un día al siguiente ni por otros sitios web. De cada visita a una página registra la hora, la dirección de la página, la página de la que vienes, tu ubicación aproximada (país, región y ciudad), tu navegador, tu sistema operativo y el tipo de dispositivo. Antes de enviarla, quitamos de la dirección todo lo que va después del signo de interrogación, salvo las etiquetas de campaña (las que empiezan por utm_), de modo que nada de tu cuenta, de un pago o de tu correo llega a la herramienta. No medimos el área de administración, tus ajustes ni tus alertas, y no enviamos eventos personalizados.
+
 **Comunicaciones.** Los correos que te enviamos y si fueron entregados.
 
 ## 3. Qué es público
@@ -32,6 +34,7 @@ El juego es público por diseño. Tu nombre público, avatar, país, enlace prin
 | Moderar contenido, prevenir fraude, abusos y bots, y proteger el Servicio | Interés legítimo |
 | Enviar alertas de destronamiento (puedes desactivarlas) | Ejecución del contrato e interés legítimo |
 | Enviar alertas de bajada de precio e inicio de temporada | Tu consentimiento, que puedes retirar en cualquier momento |
+| Contar visitas, sin cookies ni perfiles, para entender cómo se encuentra y se usa el Servicio | Interés legítimo |
 | Conservar registros de pagos | Obligación legal |
 
 No vendemos tus datos, no los usamos para publicidad ni creamos perfiles publicitarios.
@@ -45,7 +48,7 @@ Los nombres, mensajes y enlaces se revisan con reglas automáticas y con un mode
 Usamos proveedores que tratan datos por cuenta nuestra, con contratos que los protegen:
 
 - Supabase: base de datos, autenticación y almacenamiento de archivos.
-- Vercel: alojamiento.
+- Vercel: alojamiento y estadísticas de visitas (Vercel Web Analytics).
 - Cloudflare: distribución de contenido, seguridad y protección contra bots.
 - Resend: envío de correos.
 - Anthropic: moderación automatizada de contenido.
@@ -74,7 +77,7 @@ También puedes presentar una reclamación ante la Superintendencia de Protecci�
 
 ## 10. Cookies
 
-Solo usamos cookies estrictamente necesarias para que el Servicio funcione: tu sesión, tu idioma, tu zona horaria y la protección contra bots. No usamos cookies de analítica ni de publicidad.
+Solo usamos cookies estrictamente necesarias para que el Servicio funcione: tu sesión, tu idioma, tu zona horaria y la protección contra bots. No usamos cookies de publicidad. Las estadísticas de visitas descritas en la sección 2 no usan cookies ni guardan nada en tu dispositivo.
 
 ## 11. Menores
 
