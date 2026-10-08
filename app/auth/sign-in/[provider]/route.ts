@@ -3,6 +3,7 @@ import { callbackUrl } from "@/lib/auth/magic-link";
 import { isOAuthProvider, safeNext, withParam } from "@/lib/auth/next";
 import { isProviderEnabled } from "@/lib/auth/providers";
 import { sessionClient } from "@/lib/supabase/session";
+import { redactEmails } from "@/lib/security/redact";
 
 /** Starts Google or X sign-in. The PKCE verifier is stored in this browser's cookies. */
 export async function GET(request: Request, { params }: RouteContext<"/auth/sign-in/[provider]">) {
@@ -20,7 +21,7 @@ export async function GET(request: Request, { params }: RouteContext<"/auth/sign
     options: { redirectTo: callbackUrl(next), skipBrowserRedirect: true },
   });
   if (error || !data.url) {
-    console.error(`OAuth sign-in with "${provider}" could not start:`, error?.message ?? "no authorize URL");
+    console.error(`OAuth sign-in with "${provider}" could not start:`, redactEmails(error?.message ?? "no authorize URL"));
     return back("failed");
   }
   return NextResponse.redirect(data.url);

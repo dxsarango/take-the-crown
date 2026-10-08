@@ -2,6 +2,7 @@ import "server-only";
 import { serviceClient } from "@/lib/supabase/service";
 import { paymentProvider } from "./index";
 import { type PaymentProvider, RefundError } from "./types";
+import { errorText } from "@/lib/security/redact";
 
 type Db = ReturnType<typeof serviceClient>;
 type Claimed = { id: string; provider: string; provider_payment_id: string };
@@ -25,7 +26,7 @@ export async function attemptRefunds(db: Db, provider: PaymentProvider, claimed:
       outcomes.push("requested");
     } catch (e) {
       const retry = !(e instanceof RefundError) || e.retry;
-      const message = e instanceof Error ? e.message : String(e);
+      const message = errorText(e);
       console.error(`refund of ${payment.id} failed${retry ? ", will retry" : ""}:`, message);
       await db.rpc("record_refund_failed", { p_payment_id: payment.id, p_error: message, p_retry: retry });
       outcomes.push(retry ? "retrying" : "stopped");

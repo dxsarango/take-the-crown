@@ -45,6 +45,18 @@ describe("attemptRefunds", () => {
     expect(calls).toEqual([["record_refund_failed", { p_payment_id: payment.id, p_error: expect.stringContaining("INSUFFICIENT_WALLET_FUNDS"), p_retry: true }]]);
   });
 
+  it("keeps buyers' email addresses out of the logs and the stored error", async () => {
+    const { db, calls } = fakeDb();
+    const log = vi.spyOn(console, "error").mockImplementation(() => undefined);
+    const p = provider(async () => {
+      throw new RefundError("Dodo POST /refunds answered 422: customer ana@example.com has no card", false, "INVALID");
+    });
+    await attemptRefunds(db, p, [payment]);
+    expect(calls[0][1].p_error).toBe("Dodo POST /refunds answered 422: customer [email] has no card");
+    expect(JSON.stringify(log.mock.calls)).not.toContain("ana@example.com");
+    log.mockRestore();
+  });
+
   it("stops on a permanent refusal, and retries unknown errors", async () => {
     const { db, calls } = fakeDb();
     const permanent = provider(async () => {

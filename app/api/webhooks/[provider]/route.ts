@@ -7,6 +7,7 @@ import { providerByName } from "@/lib/payments";
 import { paymentIdFor, requestRefund } from "@/lib/payments/refunds";
 import { serviceClient } from "@/lib/supabase/service";
 import { revalidateHome } from "@/lib/home/cache";
+import { errorText } from "@/lib/security/redact";
 
 /**
  * Local only: keeps each raw provider webhook with its signature headers, as test fixtures
@@ -54,12 +55,12 @@ export async function POST(request: Request, { params }: RouteContext<"/api/webh
       if (result === "refund_pending") {
         // A refused request stays refund_pending and the refunds cron retries it.
         const paymentId = await paymentIdFor(provider.name, event.providerPaymentId);
-        if (paymentId) await requestRefund(paymentId).catch((e: unknown) => console.error("refund request failed", paymentId, e));
+        if (paymentId) await requestRefund(paymentId).catch((e: unknown) => console.error("refund request failed", paymentId, errorText(e)));
       }
       if (result === "applied") {
         revalidateHome();
         // The dethroned alert goes out right after the takeover; the cron retries what fails.
-        after(() => processOutbox().catch((e: unknown) => console.error("outbox after webhook failed", e)));
+        after(() => processOutbox().catch((e: unknown) => console.error("outbox after webhook failed", errorText(e))));
       }
       return Response.json({ result });
     }
