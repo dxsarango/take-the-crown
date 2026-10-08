@@ -47,7 +47,9 @@ export async function PATCH(request: Request) {
   // The public name and product link go through the same moderation as the throne (SPEC §7), only
   // when one of them changed.
   const link = mainLinkUrl(form.link);
-  const { data: current } = await db.from("profiles").select("name, main_link").eq("id", viewer.profileId).single();
+  const { data: current } = await db.from("profiles").select("name, main_link, is_banned").eq("id", viewer.profileId).single();
+  // update_profile refuses suspended profiles too; this saves the moderation call.
+  if (current?.is_banned) return Response.json({ ok: false, error: "suspended" } satisfies SaveOutcome, { status: 403 });
   const changed = !current || current.name !== form.name.trim() || current.main_link !== link;
   const verdict = changed ? await moderate({ name: form.name.trim(), message: null, link }) : ({ verdict: "allow" } as const);
   if (verdict.verdict === "reject") {
@@ -67,6 +69,9 @@ export async function PATCH(request: Request) {
         { ok: false, error: "invalid", fields: [mapped.field], nameProblem: mapped.nameProblem } satisfies SaveOutcome,
         { status: 422 },
       );
+    }
+    if (error.message.includes("profile_suspended")) {
+      return Response.json({ ok: false, error: "suspended" } satisfies SaveOutcome, { status: 403 });
     }
     console.error("update_profile failed", error.message);
     return Response.json({ ok: false, error: "failed" } satisfies SaveOutcome, { status: 500 });

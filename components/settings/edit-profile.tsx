@@ -32,7 +32,7 @@ import {
 } from "@/lib/profile/settings";
 import { PLATFORMS, SOCIAL_KEYS, type SocialKey, isValidSocial, socialLabel, socialUrl } from "@/lib/profile/socials";
 
-type Phase = "idle" | "saving" | "saved" | "failed" | "rejected" | "unavailable" | "limited";
+type Phase = "idle" | "saving" | "saved" | "failed" | "rejected" | "unavailable" | "limited" | "suspended";
 type Upload = { pixelUrl: string; originalUrl: string; name: string };
 type ServerErrors = Partial<Record<FieldKey, "taken" | "cooldown" | "bad">>;
 
@@ -352,6 +352,7 @@ export function EditProfile({ settings, season, readAt, countries, openDelete = 
     }
     if (outcome.error === "moderation_unavailable") return setPhase("unavailable");
     if (outcome.error === "rate_limited") return setPhase("limited");
+    if (outcome.error === "suspended") return setPhase("suspended");
     if (outcome.error === "invalid") {
       const next: ServerErrors = {};
       for (const f of outcome.fields) next[f] = f === "name" ? (outcome.nameProblem ?? "bad") : "bad";
@@ -443,7 +444,7 @@ export function EditProfile({ settings, season, readAt, countries, openDelete = 
   else if (invalid) {
     statusText = t("stInvalid", { n: invalidFields.length });
     statusTone = "bad";
-  } else if (phase === "failed" || phase === "rejected" || phase === "unavailable" || phase === "limited") {
+  } else if (phase === "failed" || phase === "rejected" || phase === "unavailable" || phase === "limited" || phase === "suspended") {
     statusText = t("stFailed");
     statusTone = "bad";
   } else if (phase === "saved" && !dirty) {
@@ -569,6 +570,15 @@ export function EditProfile({ settings, season, readAt, countries, openDelete = 
           <>
             <div className="font-bold">{t("bLimitTitle")}</div>
             <div className="text-crown-muted">{t("bLimitWhy")}</div>
+          </>,
+        )}
+      {phase === "suspended" &&
+        banner(
+          "danger",
+          "bang",
+          <>
+            <div className="font-bold">{t("bSuspTitle")}</div>
+            <div className="text-crown-muted">{t("bSuspWhy")}</div>
           </>,
         )}
       {phase === "failed" &&
