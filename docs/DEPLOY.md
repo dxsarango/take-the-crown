@@ -212,6 +212,26 @@ Vercel deploys `main` on its own; the database does not change until you push th
 
 `/admin` → Launch. Pick the start, check the resulting season dates (Genesis lasts at least `app_config.min_first_season_days`, 14 by default, and later seasons move with it), then confirm. It only works with Dodo in live mode (`PAYMENT_PROVIDER=dodo`, `DODO_MODE=live`). It deletes every prelaunch reign and achievement and every test payment (test provider or Dodo test mode), and opens the crown to everyone. Payments taken in live mode stay in `payments` with their lock, refund and dispute status; their reigns go, so a later refund or dispute only updates the payment.
 
+**What launch leaves.** Launching starts the game as if nobody had played: no reigns, achievements (Founder included), ranks, rank-ups, events, reports, notifications or webhook records; the crown empty, unlocked and at the base price (`floor_cents`) from the launch time; every season without a king and moved to the launch dates. A player's profile and name stay (so does their sign-in), with zero reigns, so it reads as a newcomer's, is `noindex` and is not in the sitemap. What stays on purpose: live payments and their locks (see above), the admin log, name history and the settings. A player who reigned in prelaunch earns Founder and First blood again with their first real reign. `tests/db/launch-clean-start.test.ts` covers all of it with a prelaunch like production's.
+
+A live payment that bought a prelaunch reign keeps its money but loses the reign. If you do not want to keep it, refund it from `/admin` (before or after launch). To look before and after, in the Supabase SQL editor (read only):
+
+```sql
+select (select count(*) from reigns) as reigns,
+       (select count(*) from profile_achievements) as achievements,
+       (select count(*) from rank_ups) as rank_ups,
+       (select count(*) from events) as events,
+       (select count(*) from payments where not live) as test_payments,
+       (select count(*) from payments where live) as live_payments;
+
+select season_id, current_reign_id, base_price_cents, price_cents, is_locked from public_crown_state;
+
+select p.name from profiles p
+where exists (select 1 from public_reigns r where r.profile_id = p.id and not r.reversed);
+```
+
+After launch the first query is all zeros except `live_payments`, the second has no reign and `price_cents` equals the floor, and the third returns no rows (the sitemap lists exactly those players).
+
 ## Plans: prelaunch vs launch
 
 | Service | Prelaunch | Before launch |
