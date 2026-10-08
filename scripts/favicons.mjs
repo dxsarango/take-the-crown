@@ -57,6 +57,19 @@ async function png(size, scale, background = null) {
   return sharp(pixels, { raw: { width: size, height: size, channels: 4 } }).png({ compressionLevel: 9 }).toBuffer();
 }
 
+/**
+ * The largest integer scale at which every painted corner of the crown stays inside the circle a
+ * maskable icon keeps visible on every launcher shape: a radius of 40% of the icon's side.
+ */
+function maskableScale(size) {
+  const cx = box.left + box.width / 2;
+  const cy = box.top + box.height / 2;
+  const reach = Math.max(
+    ...painted.flatMap(([x, y]) => [[x, y], [x + 1, y], [x, y + 1], [x + 1, y + 1]]).map(([x, y]) => Math.hypot(x - cx, y - cy)),
+  );
+  return Math.floor((size * 0.4) / reach);
+}
+
 // The SVG favicon: the design's file without its embedded provenance metadata.
 const cleanSvg = svg
   .replace(/<metadata>[\s\S]*?<\/metadata>/, "")
@@ -72,6 +85,9 @@ const outputs = [
   ["app/apple-icon.png", await png(180, 10, BACKGROUND)],
   ["public/icons/icon-192.png", await png(192, 8, BACKGROUND)],
   ["public/icons/icon-512.png", await png(512, 22, BACKGROUND)],
+  // Launchers that mask the icon (a circle, a squircle) get a file made for it.
+  ["public/icons/icon-192-maskable.png", await png(192, maskableScale(192), BACKGROUND)],
+  ["public/icons/icon-512-maskable.png", await png(512, maskableScale(512), BACKGROUND)],
 ];
 for (const [file, data] of outputs) {
   await mkdir(path.dirname(path.join(ROOT, file)), { recursive: true });

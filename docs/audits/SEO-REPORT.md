@@ -19,7 +19,8 @@ The fixes are four stacked PRs, because they touch the same page files. Merge th
 | S7 | Medium | A renamed profile, or another capitalization, answered a temporary redirect (307) instead of a permanent one | fixed, [#54](https://github.com/dxsarango/take-the-crown/pull/54) |
 | S8 | Medium | No structured data at all | fixed, [#55](https://github.com/dxsarango/take-the-crown/pull/55) |
 | S9 | Low | The home page did not link to the current season or the rules (only the footer did); profiles did not link to their rival or their seasons | fixed with S2, [#56](https://github.com/dxsarango/take-the-crown/pull/56) |
-| S10–S15 | Low | See "Low findings" | listed |
+| S10, S12–S15 | Low | See "Low findings" | listed |
+| S11 | Low | The manifest's `maskable` icons were the plain icons. They were already inside the safe zone (the crown's farthest corner sat at 36% of the side, the limit is 40%), so nothing was cropped, but the files were shared and the margin was not checked | fixed: `pnpm favicons` writes `icon-192-maskable.png` and `icon-512-maskable.png` at the largest integer scale that fits, and a unit test measures it |
 
 ## Indexing and crawl
 
@@ -44,7 +45,7 @@ The fixes are four stacked PRs, because they touch the same page files. Merge th
 - **Titles and descriptions — fixed (S3).** Every title is unique per page and language and ends with the brand; the unit test keeps titles between 45 and 65 characters and descriptions between 120 and 165 (the audit asks for about 50 to 60 and about 140 to 160). Profiles read "{name}, {rank} — Take the Crown" with "{name} is a {rank} on Take the Crown, with N reigns and 85h 41m on the throne…" generated from `profile_stats`; seasons carry the number, name, start and end dates and, when there is one, the King of the Season. Brand names come from `{brand}`, never typed into the messages.
 - **Open Graph and X — fixed (S4).** `og:title`, `og:description`, `og:image` (+ size and alt), `og:url`, `og:type`, `og:site_name`, `og:locale` and `og:locale:alternate`, and `twitter:card` with title, description and image, on every indexable page. Profiles and seasons use the existing share cards (1200×630, `summary_large_image`); the home uses the king's challenge card; pages without a card use the crown icon (`summary`). Tests: unit (`tests/unit/seo.test.ts`) and e2e on the real HTML.
 - **Link previews on X, WhatsApp, Telegram, Discord, LinkedIn and iMessage — owner.** They need the live site and the platforms' debuggers; the list is in the commands at the end.
-- **Favicon set and web manifest — verified.** The head carries `icon.svg`, 16 and 32 px PNGs, the 180 px `apple-touch-icon` and `/manifest.webmanifest` (name, colors, 192 and 512 icons). The maskable entries reuse the plain icons (S11).
+- **Favicon set and web manifest — verified.** The head carries `icon.svg`, 16 and 32 px PNGs, the 180 px `apple-touch-icon` and `/manifest.webmanifest` (name, colors, 192 and 512 icons). The maskable entries had reused the plain icons; they now have files of their own (S11).
 
 ## Structured data
 
@@ -79,7 +80,6 @@ The fixes are four stacked PRs, because they touch the same page files. Merge th
 | # | Finding | Recommendation |
 |---|---|---|
 | S10 | Several blocks render a mobile and a desktop version in the same HTML (the profile has two `h1`, two "Achievements" sections…), so a crawler reads some content twice | Harmless for ranking today; if it matters, render one version and size it with CSS, which is a design-wide refactor |
-| S11 | The manifest's `maskable` icons are the plain icons, with no safe-zone padding; Android may crop the crown | Add padded `icon-192-maskable.png` and `icon-512-maskable.png` to `pnpm favicons` |
 | S12 | An unknown language prefix (`/xx/kingdom`) redirects to `/en/xx/kingdom` before the 404 | Harmless; a locale-aware 404 for unknown prefixes would save the hop |
 | S13 | The sitemap reads every reign (1,000 rows a request) to compute `lastmod`; fine at launch and cached for an hour | Past about 100,000 reigns, replace it with a SQL function that returns one row per player |
 | S14 | No `llms.txt` | Add one later if another assistant benefits; optional |
@@ -140,4 +140,4 @@ Tools to open in the browser, with a live URL (a player's profile, a season, the
 - [ ] Vercel → Domains: `www.takethecrown.app` redirects (308) to the apex; do not redirect `*.vercel.app` there (the app does it, crons excepted).
 - [ ] Decision: privacy-friendly analytics (Vercel Web Analytics or Plausible) for launch traffic. If you add one, update the privacy policy in both languages first.
 - [ ] After the deploy: run the commands above, the Rich Results Test and Schema.org validator on the live URLs, and the link-preview debuggers; re-share a link in each app because they cache the first preview.
-- [ ] Optional: decide on S11 (maskable icons) and S14 (`llms.txt`).
+- [ ] Optional: decide on S14 (`llms.txt`); decided not to add it.
