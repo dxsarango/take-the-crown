@@ -81,7 +81,7 @@ for (const locale of ["en", "es"] as const) {
       const png = await canvas(page).evaluate((c: HTMLCanvasElement) => c.toDataURL("image/png"), undefined, { timeout: 1000 }).catch(() => null);
       if (png) await writeFile(`${SCREENS}/coronation-first-${testInfo.project.name}.png`, Buffer.from(png.split(",")[1], "base64"));
     }
-    await expect(page.getByRole("heading", { level: 1, name }).filter({ visible: true })).toBeVisible({ timeout: 5000 });
+    await expect(page.getByRole("heading", { level: 2, name }).filter({ visible: true })).toBeVisible({ timeout: 5000 });
     await expect(page.locator("canvas")).toHaveCount(0, { timeout: 5000 });
     // The line of succession holds past kings only; it must not say nobody has reigned.
     await expect(shown(page, m.home.noPastReigns)).toBeVisible();
@@ -126,7 +126,7 @@ test("back from a redirect checkout, the first coronation still plays and the ac
 
   await expect(shown(page, en.payment.headOk)).toBeVisible({ timeout: 10_000 });
   await expect(canvas(page)).toBeVisible({ timeout: 5000 });
-  await expect(page.getByRole("heading", { level: 1, name }).filter({ visible: true })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 2, name }).filter({ visible: true })).toBeVisible();
   await expect(page.getByTestId("reign-share").filter({ visible: true }).getByText(en.medals.firstBlood.name, { exact: true })).toBeVisible();
 
   await expect(page.locator("canvas")).toHaveCount(0, { timeout: 5000 });
@@ -142,7 +142,7 @@ test("reduced motion fades the first king in", async ({ browser }) => {
   await openEmptyThrone(page, "en");
   const lock = await (await page.request.post("/api/locks", { data: lockBody("calm.first", "calm@test.local") })).json();
   await page.request.post("/api/test-provider/pay", { data: { lockId: lock.lockId } });
-  await expect(page.getByRole("heading", { level: 1, name: "calm.first" }).filter({ visible: true })).toBeVisible({ timeout: 10_000 });
+  await expect(page.getByRole("heading", { level: 2, name: "calm.first" }).filter({ visible: true })).toBeVisible({ timeout: 10_000 });
   await expect(page.locator("canvas")).toHaveCount(0, { timeout: 2000 });
   await context.close();
 });
