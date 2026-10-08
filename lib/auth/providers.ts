@@ -1,6 +1,7 @@
 import "server-only";
 import { publicEnv } from "@/lib/env";
 import type { OAuthProvider } from "./next";
+import { errorText, redactEmails } from "@/lib/security/redact";
 
 /**
  * Whether Supabase Auth will start sign-in with this provider (checked before redirecting to it,
@@ -22,10 +23,10 @@ export async function isProviderEnabled(provider: OAuthProvider): Promise<boolea
     });
     if (response.status >= 300 && response.status < 400 && response.headers.get("location")) return true;
     const body = await response.text().catch(() => "");
-    console.error(`OAuth provider "${provider}" is unavailable: Supabase answered ${response.status} ${body.slice(0, 300)}`);
+    console.error(`OAuth provider "${provider}" is unavailable: Supabase answered ${response.status} ${redactEmails(body.slice(0, 300))}`);
     return false;
   } catch (error) {
-    console.error(`OAuth provider "${provider}" is unavailable: could not reach Supabase Auth`, error instanceof Error ? error.message : error);
+    console.error(`OAuth provider "${provider}" is unavailable: could not reach Supabase Auth`, errorText(error));
     return false;
   }
 }

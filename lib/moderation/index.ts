@@ -7,6 +7,7 @@ import type { ModerationReason } from "./reasons";
 import { isManipulation, isManipulativeLink, isManipulativeName } from "./manipulation";
 import { linkProblem, messageProblem, nameProblem } from "./rules";
 import { isDeployed } from "@/lib/config/deployment";
+import { redactEmails } from "@/lib/security/redact";
 
 /**
  * Moderation before any lock or charge (SPEC §7): the fixed link and message rules first, then
@@ -71,7 +72,7 @@ export async function moderate(
       return verdict.verdict === "allow" ? { verdict: "allow" } : { verdict: "reject", field: verdict.field!, reason: verdict.reason! };
     } catch (error) {
       if (!(error instanceof ModerationUnavailable)) throw error;
-      console.error(`moderation unavailable (attempt ${attempt}):`, error.message);
+      console.error(`moderation unavailable (attempt ${attempt}):`, redactEmails(error.message));
     }
   }
   return { verdict: "unavailable" };

@@ -12,6 +12,7 @@ import { type AlertKind, alertOffToken } from "./links";
 import { type Email, EmailError, sendEmail } from "./provider";
 import { Dethroned, type Frame, Notice, renderEmail } from "./templates";
 import { seasonTitle } from "@/lib/realm/season-title";
+import { errorText } from "@/lib/security/redact";
 
 type Db = ReturnType<typeof serviceClient>;
 type Notification = { id: number; kind: string; profile_id: string; payload: unknown };
@@ -272,7 +273,7 @@ export async function processOutbox(limit = BATCH): Promise<{ sent: number; fail
     } catch (e) {
       const skip = e instanceof Skip;
       const final = skip || (e instanceof EmailError && !e.retry);
-      const message = e instanceof Error ? e.message : String(e);
+      const message = errorText(e);
       if (!skip) console.error(`notification ${n.id} (${n.kind}) failed:`, message);
       await db.rpc("mark_notification_failed", { p_id: n.id, p_error: skip ? `skipped: ${message}` : message, p_final: final });
       counts[skip ? "skipped" : "failed"] += 1;

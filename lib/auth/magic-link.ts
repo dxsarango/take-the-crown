@@ -1,6 +1,7 @@
 import "server-only";
 import { serverEnv } from "@/lib/env.server";
 import { sessionClient } from "@/lib/supabase/session";
+import { redactEmails } from "@/lib/security/redact";
 
 /** Absolute callback URL that finishes sign-in and then opens `next`. */
 export function callbackUrl(next: string): string {
@@ -18,5 +19,5 @@ export async function sendMagicLink(email: string, next: string): Promise<void> 
     email,
     options: { shouldCreateUser: true, emailRedirectTo: callbackUrl(next) },
   });
-  if (error) console.error("magic link failed", error.message);
+  if (error) console.error("magic link failed", redactEmails(error.message));
 }

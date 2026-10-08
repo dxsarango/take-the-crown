@@ -3,6 +3,7 @@ import { safeNext, withParam } from "@/lib/auth/next";
 import { ensureProfile } from "@/lib/auth/viewer";
 import { serviceClient } from "@/lib/supabase/service";
 import { sessionClient } from "@/lib/supabase/session";
+import { redactEmails } from "@/lib/security/redact";
 
 /** Magic link and OAuth return: start the session, then claim or create the profile. */
 export async function GET(request: Request) {
@@ -15,14 +16,14 @@ export async function GET(request: Request) {
   // without a code; Supabase passes the reason along, which only the logs should see.
   if (!code) {
     const reason = ["error", "error_code", "error_description"].map((k) => url.searchParams.get(k)).filter(Boolean).join(": ");
-    if (reason) console.error("Sign-in came back without a code:", reason.slice(0, 300));
+    if (reason) console.error("Sign-in came back without a code:", redactEmails(reason.slice(0, 300)));
     return go(withParam(next, "auth_error", "failed"));
   }
 
   const session = await sessionClient();
   const { data, error } = await session.auth.exchangeCodeForSession(code);
   if (error || !data.user) {
-    console.error("Sign-in code exchange failed:", error?.code ?? "", error?.message ?? "no user");
+    console.error("Sign-in code exchange failed:", error?.code ?? "", redactEmails(error?.message ?? "no user"));
     return go(withParam(next, "auth_error", "failed"));
   }
 

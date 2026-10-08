@@ -11,6 +11,7 @@ import type { Database } from "@/lib/supabase/database.types";
 import { serviceClient } from "@/lib/supabase/service";
 import { type LockField, type LockOutcome, lockErrorFromDb } from "./outcome";
 import { type LockRequest, localHour, lockRequestSchema } from "./input";
+import { errorText } from "@/lib/security/redact";
 
 type LockArgs = Database["public"]["Functions"]["create_price_lock"]["Args"];
 // SQL parameters accept null; the generated types do not say so.
@@ -122,7 +123,7 @@ export async function createLock(body: unknown, ip: string): Promise<LockOutcome
       moderationPending,
     };
   } catch (e) {
-    console.error("checkout failed", e);
+    console.error("checkout failed", errorText(e));
     await db.rpc("release_price_lock", { p_lock_id: lock.id });
     return { ok: false, error: "checkout_failed" };
   }
