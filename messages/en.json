@@ -954,6 +954,7 @@
       "max_magic_links_per_hour": "Sign-in links per IP and per email per hour",
       "max_avatar_uploads_per_hour": "Avatar uploads per player per hour",
       "max_reports_per_ip_per_hour": "Reports per IP per hour",
+      "max_name_checks_per_ip_per_hour": "Name availability checks per IP per hour",
       "min_first_season_days": "Shortest first season at launch (days)",
       "delete_reauth_seconds": "Sign-in age to delete an account (seconds)",
       "refund_retry_base_seconds": "First refund retry after (seconds)",

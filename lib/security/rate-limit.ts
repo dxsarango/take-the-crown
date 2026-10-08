@@ -6,7 +6,8 @@ export type LimitSetting =
   | "max_profile_saves_per_hour"
   | "max_magic_links_per_hour"
   | "max_avatar_uploads_per_hour"
-  | "max_reports_per_ip_per_hour";
+  | "max_reports_per_ip_per_hour"
+  | "max_name_checks_per_ip_per_hour";
 
 /**
  * Counts one hit for `key` against an hourly limit from app_config and says whether it may go on.
