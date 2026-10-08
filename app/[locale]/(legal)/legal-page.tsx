@@ -3,13 +3,16 @@ import { hasLocale } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { connection } from "next/server";
+import { JsonLdScript } from "@/components/json-ld";
 import { LegalView } from "@/components/legal/legal-view";
 import { routing } from "@/i18n/routing";
 import { BRAND_NAME } from "@/lib/config/brand";
 import { type LegalDoc, legalDoc } from "@/lib/legal/docs";
 import { shareMetadata } from "@/lib/og/metadata";
 import { fetchSeasons } from "@/lib/realm/data";
+import { siteUrl } from "@/lib/site";
 import { withBrand } from "@/lib/seo";
+import { breadcrumbs, faqPage, questionsOf } from "@/lib/seo-jsonld";
 import { publicClient } from "@/lib/supabase/public";
 
 type Props = { params: Promise<{ locale: string }> };
@@ -38,5 +41,22 @@ export async function LegalPage({ doc, params }: Props & { doc: LegalDoc }) {
   const [blocks, { seasons, currentId }] = await Promise.all([legalDoc(doc, locale), fetchSeasons(publicClient())]);
   const season = seasons.find((s) => s.id === currentId);
   if (!season) notFound();
-  return <LegalView doc={doc} blocks={blocks} season={season} readAt={new Date().toISOString()} />;
+  const site = siteUrl();
+  const heading = blocks.find((b) => b.kind === "title");
+  return (
+    <>
+      <JsonLdScript
+        data={breadcrumbs({
+          site,
+          locale,
+          trail: [
+            { name: BRAND_NAME, route: "" },
+            { name: heading?.kind === "title" ? heading.text : doc, route: `/${doc}` },
+          ],
+        })}
+      />
+      {doc === "faq" && <JsonLdScript data={faqPage({ site, locale, route: "/faq", questions: questionsOf(blocks) })} />}
+      <LegalView doc={doc} blocks={blocks} season={season} readAt={new Date().toISOString()} />
+    </>
+  );
 }

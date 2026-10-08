@@ -5,7 +5,11 @@ import { notFound } from "next/navigation";
 import { connection } from "next/server";
 import { HomeView } from "@/components/home/home-view";
 import { routing } from "@/i18n/routing";
-import { BRAND_NAME } from "@/lib/config/brand";
+import { JsonLdScript } from "@/components/json-ld";
+import { BRAND_NAME, OFFICIAL_PROFILES } from "@/lib/config/brand";
+import { siteUrl } from "@/lib/site";
+import { siteAndOrganization } from "@/lib/seo-jsonld";
+import { serviceClient } from "@/lib/supabase/service";
 import { playerName } from "@/lib/game/former";
 import { cachedHomeData } from "@/lib/home/cache";
 import { shareMetadata } from "@/lib/og/metadata";
@@ -39,6 +43,19 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
 
   // Rendered per request for the CSP nonce; the data comes from the cache.
   await connection();
-  const data = await cachedHomeData();
-  return <HomeView initial={data} />;
+  const [data, { data: config }] = await Promise.all([cachedHomeData(), serviceClient().from("app_config").select("legal_contact_email").single()]);
+  return (
+    <>
+      <JsonLdScript
+        data={siteAndOrganization({
+          site: siteUrl(),
+          locale,
+          brand: BRAND_NAME,
+          contactEmail: config?.legal_contact_email ?? null,
+          sameAs: OFFICIAL_PROFILES,
+        })}
+      />
+      <HomeView initial={data} />
+    </>
+  );
 }

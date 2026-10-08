@@ -1,11 +1,11 @@
-import { serverEnv } from "@/lib/env.server";
+import { siteUrl } from "@/lib/site";
 import { chunk, latest, sitemapIndexXml } from "@/lib/seo-sitemap";
 import { sitemapSource } from "@/lib/seo-sitemap-data";
 import { XML_HEADERS } from "../sitemaps/headers";
 
 /** The sitemap index: static pages, seasons and players, each in files of at most 40,000 URLs. */
 export async function GET() {
-  const site = serverEnv().NEXT_PUBLIC_SITE_URL.replace(/\/$/, "");
+  const site = siteUrl();
   const { statics, seasons, profiles } = await sitemapSource();
   const files = [
     { path: "/sitemaps/static.xml", lastmod: latest(...statics.map((p) => p.lastmod)) },
