@@ -280,3 +280,19 @@ describe("public_rivalries", () => {
     expect(pair(benId, cyId)).toBeUndefined();
   });
 });
+
+describe("suspended profiles", () => {
+  it("cannot edit their profile", async () => {
+    const { id } = await player("suspended");
+    await q("update profiles set is_banned = true where id = $1", [id]);
+    await expect(save(id, { country_code: "PE" })).rejects.toThrow(/profile_suspended/);
+    expect((await current(id)).country_code).not.toBe("PE");
+  });
+
+  it("edit again once the suspension is lifted", async () => {
+    const { id } = await player("lifted");
+    await q("update profiles set is_banned = true where id = $1", [id]);
+    await q("update profiles set is_banned = false where id = $1", [id]);
+    expect((await save(id, { country_code: "PE" })).country_code).toBe("PE");
+  });
+});
