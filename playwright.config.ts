@@ -1,5 +1,6 @@
 import { existsSync } from "node:fs";
 import { defineConfig, devices } from "@playwright/test";
+import { zoneAtNoon } from "./e2e/fixtures/clock";
 
 // Tests sign webhooks with the same secret as the local server.
 if (existsSync(".env.local")) process.loadEnvFile(".env.local");
@@ -18,6 +19,9 @@ export default defineConfig({
   use: {
     baseURL,
     trace: "on-first-retry",
+    // The game reads the buyer's local hour (the Night Owl medal is for 03:00 to 04:59) and the pages
+    // group reigns by local day. In a zone where it is noon now, no spec depends on the hour it runs.
+    timezoneId: zoneAtNoon(new Date()),
   },
   projects: [
     { name: "mobile", use: { ...devices["Desktop Chrome"], viewport: { width: 390, height: 844 } } },

@@ -1,5 +1,6 @@
 import { existsSync } from "node:fs";
 import { defineConfig, devices } from "@playwright/test";
+import { zoneAtNoon } from "./e2e/fixtures/clock";
 
 // End-to-end run against Dodo Payments in test mode (`pnpm e2e:dodo`). Needs DODO_API_KEY,
 // DODO_WEBHOOK_SECRET and DODO_PRODUCT_ID in .env.local, and a tunnel that forwards the webhook
@@ -15,7 +16,7 @@ export default defineConfig({
   workers: 1,
   timeout: 180_000,
   reporter: "list",
-  use: { baseURL, trace: "retain-on-failure" },
+  use: { baseURL, trace: "retain-on-failure", timezoneId: zoneAtNoon(new Date()) },
   projects: [{ name: "desktop", use: { ...devices["Desktop Chrome"], viewport: { width: 1440, height: 900 } } }],
   webServer: {
     command: `pnpm exec next dev -p ${port}`,
