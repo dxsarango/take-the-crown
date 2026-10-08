@@ -1,7 +1,7 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import sharp from "sharp";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 const ROOT = process.cwd();
 const INK = [0x14, 0x11, 0x1c, 255];
@@ -68,6 +68,40 @@ describe("favicon set (pnpm favicons)", () => {
     expect(seen).toEqual(crownColors);
     // Each crown pixel is a solid scale×scale block: the painted area is a multiple of scale².
     expect(painted % (scale * scale)).toBe(0);
+  });
+
+  it.each([
+    ["public/icons/icon-192-maskable.png", 192, 8],
+    ["public/icons/icon-512-maskable.png", 512, 23],
+  ])("%s keeps the whole crown inside the circle every launcher mask leaves visible", async (file, size, scale) => {
+    const png = await pixels(file);
+    expect([png.width, png.height]).toEqual([size, size]);
+    expect(png.at(0, 0)).toEqual(INK);
+    let farthest = 0;
+    let painted = 0;
+    for (let y = 0; y < size; y++) {
+      for (let x = 0; x < size; x++) {
+        if (hex(png.at(x, y)) === hex(INK)) continue;
+        painted++;
+        // The pixel's far corner from the icon's center, against a radius of 40% of the side.
+        const dx = Math.abs(x + 0.5 - size / 2) + 0.5;
+        const dy = Math.abs(y + 0.5 - size / 2) + 0.5;
+        farthest = Math.max(farthest, Math.hypot(dx, dy));
+      }
+    }
+    expect(painted % (scale * scale)).toBe(0);
+    expect(farthest).toBeLessThanOrEqual(size * 0.4 + 1);
+    // And it is the largest integer scale that fits: one more would reach outside.
+    expect((farthest / scale) * (scale + 1)).toBeGreaterThan(size * 0.4);
+  });
+
+  it("lists the maskable files in the manifest, apart from the plain ones", async () => {
+    vi.doMock("@/lib/config/brand", () => ({ BRAND_NAME: "Take the Crown" }));
+    const { default: manifest } = await import("@/app/manifest");
+    const icons = manifest().icons ?? [];
+    expect(icons.filter((i) => i.purpose === "maskable").map((i) => i.src)).toEqual(["/icons/icon-192-maskable.png", "/icons/icon-512-maskable.png"]);
+    expect(icons.filter((i) => i.purpose === "any").map((i) => i.src)).toEqual(["/icons/icon-192.png", "/icons/icon-512.png"]);
+    for (const icon of icons) await expect(readFile(path.join(ROOT, "public", icon.src))).resolves.toBeDefined();
   });
 
   it("serves the design's SVG without its embedded metadata", async () => {
