@@ -1,6 +1,7 @@
 import { type Page, expect, test } from "@playwright/test";
 import en from "../messages/en.json";
 import { sql } from "./fixtures/db";
+import { zoneAtNoon } from "./fixtures/clock";
 import { resetKingdom, seedKingdom } from "./fixtures/kingdom";
 import { signInByEmail } from "./fixtures/mail";
 
@@ -24,7 +25,11 @@ async function event(kind: string, profile: string, payload: object) {
 }
 
 test.describe("kingdom history", () => {
+  // Reigns are seeded relative to the database clock, so which of them are "today" would depend on
+  // the hour the suite runs. The browser's zone puts this moment at local noon, and its clock stays on it.
+  test.use({ timezoneId: zoneAtNoon(new Date()) });
   test.beforeAll(() => seedKingdom());
+  test.beforeEach(({ page }) => page.clock.setFixedTime(new Date()));
 
   test("lists the season's reigns by day, sized by length", async ({ page }) => {
     await page.goto("/en/kingdom");
