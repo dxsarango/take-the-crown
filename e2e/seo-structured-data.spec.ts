@@ -37,8 +37,7 @@ test("the home page describes the website and the organization, in the page's la
       logo: { url: `${SITE}/icons/icon-512.png` },
       email: "hello@takethecrown.app",
     });
-    // No official accounts are configured yet: nothing is invented.
-    expect(organization).not.toHaveProperty("sameAs");
+    expect(organization.sameAs).toEqual(["https://x.com/takethecrownapp", "https://www.instagram.com/takethecrown.app/", "https://www.tiktok.com/@takethecrownapp"]);
   }
 });
 

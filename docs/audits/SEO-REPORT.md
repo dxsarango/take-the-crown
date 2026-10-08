@@ -49,7 +49,7 @@ The fixes are four stacked PRs, because they touch the same page files. Merge th
 
 ## Structured data
 
-- **`WebSite` and `Organization` — fixed (S8).** On the home page, in a `@graph`: name, URL per language, `inLanguage`, logo (512 px icon), and the contact email from the legal settings once it is set. `sameAs` comes from `OFFICIAL_PROFILES` in `lib/config/brand.ts`, which is empty: no account is invented (owner checklist).
+- **`WebSite` and `Organization` — fixed (S8).** On the home page, in a `@graph`: name, URL per language, `inLanguage`, logo (512 px icon), and the contact email from the legal settings once it is set. `sameAs` lists the official X, Instagram and TikTok accounts from `OFFICIAL_PROFILES` in `lib/config/brand.ts`.
 - **`BreadcrumbList` — fixed (S8)** on profiles (home → player), seasons (home → history → season) and the four legal pages.
 - **`ProfilePage` with a `Person` — fixed (S8).** Name, URL, the uploaded photo when there is one, `dateCreated`, and `sameAs` with only the links the page shows (the product link and the social links the player chose), https only, without repeats. Only for players who are indexed; a profile that is not gets none.
 - **`FAQPage` — fixed (S8).** Built from the questions the FAQ page shows, at no cost; do not expect a rich result.
@@ -135,7 +135,6 @@ Tools to open in the browser, with a live URL (a player's profile, a season, the
 - [ ] Google Search Console: add a **domain** property for `takethecrown.app` (DNS TXT record in Cloudflare), then Sitemaps → submit `https://takethecrown.app/sitemap.xml`; watch Pages (indexing), Core Web Vitals and Enhancements (breadcrumbs, profile page, FAQ).
 - [ ] Bing Webmaster Tools: import the site from Search Console and submit the same sitemap.
 - [ ] `/admin`: set the legal contact email (it becomes the `Organization` email in the structured data) and the effective date (it becomes the `lastmod` of the legal pages).
-- [ ] Official social accounts: when they exist, add their https URLs to `OFFICIAL_PROFILES` in `lib/config/brand.ts` (they become `sameAs`).
 - [ ] Cloudflare → Security → Bots: confirm Bot Fight Mode is off and that "Block AI bots" / AI Crawl Control does not block the crawlers `app/robots.ts` allows (or block them in both places); if Cloudflare's "Manage your robots.txt" is on, make sure it does not prepend rules that contradict ours. Run the `GPTBot`/`ClaudeBot` curl above.
 - [ ] Vercel → Domains: `www.takethecrown.app` redirects (308) to the apex; do not redirect `*.vercel.app` there (the app does it, crons excepted).
 - [ ] Decision: privacy-friendly analytics (Vercel Web Analytics or Plausible) for launch traffic. If you add one, update the privacy policy in both languages first.
