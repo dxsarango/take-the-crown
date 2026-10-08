@@ -6,6 +6,7 @@ import { sql } from "./fixtures/db";
 import { resetKingdom, seedKingdom } from "./fixtures/kingdom";
 import { clearMail, latestSignInLink, signInByEmail } from "./fixtures/mail";
 import { acceptDelivery } from "./fixtures/payment";
+import { SITE, SITE_HOST } from "./fixtures/site";
 
 const SCREENS = "test-results/screens";
 
@@ -138,7 +139,7 @@ test.describe("abuse limits", () => {
     test.skip(project() !== "desktop", "server behaviour");
     for (const next of ["//evil.example", "/\t/evil.example", "/\\evil.example", "https://evil.example"]) {
       const response = await request.get(`/auth/callback?next=${encodeURIComponent(next)}`, { maxRedirects: 0 });
-      expect(new URL(response.headers().location, "http://localhost:3000").host, next).toBe("localhost:3000");
+      expect(new URL(response.headers().location, SITE).host, next).toBe(SITE_HOST);
     }
   });
 });

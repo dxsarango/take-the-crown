@@ -3,6 +3,7 @@ import { expect, test } from "@playwright/test";
 import sharp from "sharp";
 import { sql } from "./fixtures/db";
 import { resetKingdom, seedKingdom } from "./fixtures/kingdom";
+import { SITE } from "./fixtures/site";
 
 test.describe.configure({ mode: "serial" });
 
@@ -124,16 +125,16 @@ test("link previews use the matching share card", async ({ page }) => {
   };
 
   const home = await meta("/es");
-  expect(home.image).toBe(`http://localhost:3000/og/challenge/${ids.challenge}?locale=es`);
+  expect(home.image).toBe(`${SITE}/og/challenge/${ids.challenge}?locale=es`);
   expect(home.twitter).toBe("summary_large_image");
   expect(home.twitterImage).toBe(home.image);
 
   const kenjiId = ids.achievement.split("_")[0];
-  expect((await meta("/en/u/kenji?card=regicide")).image).toBe(`http://localhost:3000/og/achievement/${kenjiId}_regicide?locale=en`);
-  expect((await meta("/en/u/kenji?card=duke")).image).toBe(`http://localhost:3000/og/rank/${kenjiId}_duke?locale=en`);
+  expect((await meta("/en/u/kenji?card=regicide")).image).toBe(`${SITE}/og/achievement/${kenjiId}_regicide?locale=en`);
+  expect((await meta("/en/u/kenji?card=duke")).image).toBe(`${SITE}/og/rank/${kenjiId}_duke?locale=en`);
   // A medal or rank the player does not have falls back to their latest reign, here a dethroning.
-  expect((await meta("/en/u/kenji?card=founder")).image).toBe(`http://localhost:3000/og/dethroned/${ids.dethronedLong}?locale=en`);
-  expect((await meta("/en/u/valeruiz")).image).toBe(`http://localhost:3000/og/victory/${ids.victory}?locale=en`);
+  expect((await meta("/en/u/kenji?card=founder")).image).toBe(`${SITE}/og/dethroned/${ids.dethronedLong}?locale=en`);
+  expect((await meta("/en/u/valeruiz")).image).toBe(`${SITE}/og/victory/${ids.victory}?locale=en`);
 
   const season = await meta("/en/seasons/genesis");
   expect(season.twitter).toBe("summary");
@@ -144,5 +145,5 @@ test("link previews use the matching share card", async ({ page }) => {
     "select r.profile_id, r.id from reigns r join profiles p on p.id = r.profile_id where p.name = 'theo_builds' and r.season_id = 0 order by r.duration_seconds desc limit 1",
   );
   await sql("update seasons set king_profile_id = $1 where id = 0", [theo.profile_id]);
-  expect((await meta("/en/seasons/genesis")).image).toBe(`http://localhost:3000/og/victory/${theo.id}?locale=en`);
+  expect((await meta("/en/seasons/genesis")).image).toBe(`${SITE}/og/victory/${theo.id}?locale=en`);
 });

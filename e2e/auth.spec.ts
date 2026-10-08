@@ -6,6 +6,7 @@ import { sql } from "./fixtures/db";
 import { resetKingdom, seedKingdom } from "./fixtures/kingdom";
 import { clearMail, latestSignInLink, signInByEmail } from "./fixtures/mail";
 import { acceptDelivery } from "./fixtures/payment";
+import { SITE, SITE_HOST } from "./fixtures/site";
 
 test.describe.configure({ mode: "serial" });
 test.beforeAll(() => seedKingdom());
@@ -87,7 +88,7 @@ test("hands Google sign-in to Supabase Auth with a PKCE challenge", async ({ pag
   expect(location.pathname).toBe("/auth/v1/authorize");
   expect(location.searchParams.get("provider")).toBe("google");
   expect(location.searchParams.get("code_challenge")).toBeTruthy();
-  expect(location.searchParams.get("redirect_to")).toBe("http://localhost:3000/auth/callback?next=%2Fen");
+  expect(location.searchParams.get("redirect_to")).toBe(`${SITE}/auth/callback?next=%2Fen`);
 });
 
 test("hands X sign-in to Supabase's OAuth 2.0 provider, asking for the email", async ({ page }) => {
@@ -152,7 +153,7 @@ test("refuses a session opened with a password", async ({ page, context, request
   const { error } = await supabase.auth.signInWithPassword({ email, password });
   expect(error).toBeNull();
   expect(jar.length).toBeGreaterThan(0);
-  await context.addCookies(jar.map(({ name, value }) => ({ name, value, url: "http://localhost:3000" })));
+  await context.addCookies(jar.map(({ name, value }) => ({ name, value, url: SITE })));
 
   const me = (await (await page.request.get("/api/me")).json()) as { viewer: unknown };
   expect(me.viewer).toBeNull();
@@ -170,7 +171,7 @@ test("comes back with an error when the callback fails", async ({ page }) => {
 test("never redirects outside the site after signing in", async ({ page }) => {
   const response = await page.request.get("/auth/callback?next=//evil.example", { maxRedirects: 0 });
   const location = new URL(response.headers().location);
-  expect(location.host).toBe("localhost:3000");
+  expect(location.host).toBe(SITE_HOST);
   expect(location.pathname).toBe("/");
 });
 
