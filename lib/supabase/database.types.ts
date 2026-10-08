@@ -310,13 +310,13 @@ isOneToOne: false
                   ]
                 },"profile_name_history": {
                   Row: {
-                    "name": string,"profile_id": string,"replaced_at": string
+                    "id": number,"name": string,"profile_id": string,"replaced_at": string
                   }
                   Insert: {
-                    "name": string,"profile_id": string,"replaced_at"?: string
+                    "id"?: never,"name": string,"profile_id": string,"replaced_at"?: string
                   }
                   Update: {
-                    "name"?: string,"profile_id"?: string,"replaced_at"?: string
+                    "id"?: never,"name"?: string,"profile_id"?: string,"replaced_at"?: string
                   }
                   Relationships: [
                     {
@@ -398,13 +398,13 @@ isOneToOne: false
                   ]
                 },"rate_limit_hits": {
                   Row: {
-                    "hit_at": string,"key": string
+                    "hit_at": string,"id": number,"key": string
                   }
                   Insert: {
-                    "hit_at"?: string,"key": string
+                    "hit_at"?: string,"id"?: never,"key": string
                   }
                   Update: {
-                    "hit_at"?: string,"key"?: string
+                    "hit_at"?: string,"id"?: never,"key"?: string
                   }
                   Relationships: [
                     
@@ -547,11 +547,17 @@ isOneToOne: false
                   ]
                 },"public_chronicle": {
                   Row: {
-                    "country_code": string | null,"duration_seconds": number | null,"end_reason": Database["public"]['Enums']["reign_end_reason"] | null,"ended_at": string | null,"from_country_code": string | null,"from_name": string | null,"from_profile_id": string | null,"id": number | null,"name": string | null,"profile_id": string | null,"season_id": number | null,"started_at": string | null,"to_country_code": string | null,"to_name": string | null,"to_profile_id": string | null
+                    "country_code": string | null,"duration_seconds": number | null,"end_reason": Database["public"]['Enums']["reign_end_reason"] | null,"ended_at": string | null,"from_country_code": string | null,"from_name": string | null,"from_profile_id": string | null,"id": number | null,"name": string | null,"profile_id": string | null,"reversed": boolean | null,"season_id": number | null,"started_at": string | null,"to_country_code": string | null,"to_name": string | null,"to_profile_id": string | null
                   }
                   Relationships: [
                     {
       foreignKeyName: "reigns_profile_id_fkey"
+      columns: ["profile_id"]
+isOneToOne: false
+      referencedRelation: "profile_stats"
+      referencedColumns: ["profile_id"]
+    },{
+      foreignKeyName: "reigns_profile_id_fkey"
       columns: ["from_profile_id"]
 isOneToOne: false
       referencedRelation: "profile_stats"
@@ -566,8 +572,8 @@ isOneToOne: false
       foreignKeyName: "reigns_profile_id_fkey"
       columns: ["profile_id"]
 isOneToOne: false
-      referencedRelation: "profile_stats"
-      referencedColumns: ["profile_id"]
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
     },{
       foreignKeyName: "reigns_profile_id_fkey"
       columns: ["from_profile_id"]
@@ -577,12 +583,6 @@ isOneToOne: false
     },{
       foreignKeyName: "reigns_profile_id_fkey"
       columns: ["to_profile_id"]
-isOneToOne: false
-      referencedRelation: "profiles"
-      referencedColumns: ["id"]
-    },{
-      foreignKeyName: "reigns_profile_id_fkey"
-      columns: ["profile_id"]
 isOneToOne: false
       referencedRelation: "profiles"
       referencedColumns: ["id"]
@@ -629,13 +629,7 @@ isOneToOne: false
                   Row: {
                     "country_code": string | null,"dethroned_by": string | null,"duration_seconds": number | null,"end_reason": Database["public"]['Enums']["reign_end_reason"] | null,"ended_at": string | null,"id": number | null,"link": string | null,"message": string | null,"name": string | null,"price_paid_cents": number | null,"profile_id": string | null,"reversed": boolean | null,"season_id": number | null,"started_at": string | null
                   }
-                  Insert: {
-                           "country_code"?: string | null,"dethroned_by"?: string | null,"duration_seconds"?: number | null,"end_reason"?: Database["public"]['Enums']["reign_end_reason"] | null,"ended_at"?: string | null,"id"?: number | null,"link"?: never,"message"?: never,"name"?: string | null,"price_paid_cents"?: number | null,"profile_id"?: string | null,"reversed"?: never,"season_id"?: number | null,"started_at"?: string | null
-                         }
-                        Update: {
-                           "country_code"?: string | null,"dethroned_by"?: string | null,"duration_seconds"?: number | null,"end_reason"?: Database["public"]['Enums']["reign_end_reason"] | null,"ended_at"?: string | null,"id"?: number | null,"link"?: never,"message"?: never,"name"?: string | null,"price_paid_cents"?: number | null,"profile_id"?: string | null,"reversed"?: never,"season_id"?: number | null,"started_at"?: string | null
-                         }
-                        Relationships: [
+                  Relationships: [
                     {
       foreignKeyName: "reigns_dethroned_by_fkey"
       columns: ["dethroned_by"]
