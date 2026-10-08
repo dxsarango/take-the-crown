@@ -156,6 +156,22 @@ test.describe("season end", () => {
     await expect(page.getByRole("link", { name: en.realm.goThrone }).filter({ visible: true })).toBeVisible();
   });
 
+  test("names the payer of the peak price only when the player shows what they spent", async ({ page }) => {
+    await sql("update reigns set price_paid_cents = 4200 where season_id = 0 and name = 'theo_builds'");
+    const paidBy = async () => {
+      await page.goto("/en/seasons/genesis");
+      await expect(shown(page, "$42")).toBeVisible();
+      return page.getByText(/^Paid by /).filter({ visible: true });
+    };
+    // Prices of players who keep their total spent private are not public: the record has no name.
+    await sql("update profiles set show_total_spent = false");
+    await expect(await paidBy()).toHaveCount(0);
+
+    await sql("update profiles set show_total_spent = true where name = 'theo_builds'");
+    await expect((await paidBy()).first()).toContainText("Paid by theo_builds");
+    await sql("update reigns set price_paid_cents = 500 where season_id = 0 and name = 'theo_builds'");
+  });
+
   test("reminds a signed-in player when the next season starts", async ({ page }) => {
     await page.goto("/en/seasons/frost");
     await expect(shown(page, en.realm.leading)).toBeVisible();

@@ -108,6 +108,8 @@ export async function fetchProfilePage(db: PublicClient, profileId: string, now 
           count: "exact",
         })
         .eq("profile_id", profileId)
+        // A reversed reign counts toward nothing, so it is not numbered or counted here (the kingdom history marks it).
+        .eq("reversed", false)
         .order("started_at", { ascending: false })
         .limit(CHRONICLE_LIMIT),
       db.from("profile_achievements").select("achievement_code, earned_at, season_id").eq("profile_id", profileId),

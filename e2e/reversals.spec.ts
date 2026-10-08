@@ -58,6 +58,10 @@ test("a refund after delivery takes the throne back and marks the reign in the h
   await expect(page.getByText(en.realm.reversed, { exact: true }).filter({ visible: true }).first()).toBeVisible();
   await expect(page.getByText("Mine now")).toHaveCount(0);
   await page.screenshot({ path: `${SCREENS}/kingdom-reversed-desktop.png` });
+
+  // The player's own chronicle does not count or number a reversed reign.
+  await page.goto("/en/u/refunded_king");
+  await expect(page.getByText(en.profile.histNone).filter({ visible: true }).first()).toBeVisible();
 });
 
 test("a chargeback reverses the reign, suspends the buyer and shows in the admin", async ({ page, request }) => {
