@@ -12,13 +12,27 @@ export function xmlEscape(text: string): string {
   return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&apos;");
 }
 
-const day = (iso: string) => new Date(iso).toISOString();
+/** A `lastmod` is never later than `now`: a date still to come (a season or a legal text that takes effect later) cannot be the day a page last changed. */
+const day = (iso: string, now: Date) => new Date(Math.min(new Date(iso).getTime(), now.getTime())).toISOString();
+
+/** The time, if it has already happened; null otherwise. */
+export function notAfter(time: string | null | undefined, now: Date): string | null {
+  return time && new Date(time).getTime() <= now.getTime() ? time : null;
+}
+
+/**
+ * When the legal pages last changed: the last settings change, or the date the texts take effect
+ * once that date has come. An effective date still ahead says nothing about the page.
+ */
+export function legalLastmod(config: { updated_at?: string | null; legal_effective_date?: string | null } | null | undefined, now: Date): string | null {
+  return latest(notAfter(config?.updated_at, now), notAfter(config?.legal_effective_date, now));
+}
 
 /**
  * A sitemap file. Each page is listed once per language, and each entry names every version of
  * the page, itself included, plus x-default: the same set the page's own tags carry.
  */
-export function urlsetXml(site: string, pages: SitemapPage[]): string {
+export function urlsetXml(site: string, pages: SitemapPage[], now = new Date()): string {
   const at = (locale: string, route: string) => `${site}/${locale}${route}`;
   const entries = pages.flatMap(({ route, lastmod }) =>
     routing.locales.map((locale) => {
@@ -26,16 +40,16 @@ export function urlsetXml(site: string, pages: SitemapPage[]): string {
         ...routing.locales.map((l) => `<xhtml:link rel="alternate" hreflang="${l}" href="${xmlEscape(at(l, route))}"/>`),
         `<xhtml:link rel="alternate" hreflang="x-default" href="${xmlEscape(at(routing.defaultLocale, route))}"/>`,
       ];
-      return `<url><loc>${xmlEscape(at(locale, route))}</loc>${lastmod ? `<lastmod>${day(lastmod)}</lastmod>` : ""}${links.join("")}</url>`;
+      return `<url><loc>${xmlEscape(at(locale, route))}</loc>${lastmod ? `<lastmod>${day(lastmod, now)}</lastmod>` : ""}${links.join("")}</url>`;
     }),
   );
   return `${XML}<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n${entries.join("\n")}\n</urlset>\n`;
 }
 
 /** The index that points to the files of each type. */
-export function sitemapIndexXml(site: string, files: { path: string; lastmod?: string | null }[]): string {
+export function sitemapIndexXml(site: string, files: { path: string; lastmod?: string | null }[], now = new Date()): string {
   const entries = files.map(
-    (f) => `<sitemap><loc>${xmlEscape(`${site}${f.path}`)}</loc>${f.lastmod ? `<lastmod>${day(f.lastmod)}</lastmod>` : ""}</sitemap>`,
+    (f) => `<sitemap><loc>${xmlEscape(`${site}${f.path}`)}</loc>${f.lastmod ? `<lastmod>${day(f.lastmod, now)}</lastmod>` : ""}</sitemap>`,
   );
   return `${XML}<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${entries.join("\n")}\n</sitemapindex>\n`;
 }

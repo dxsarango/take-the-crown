@@ -3,7 +3,7 @@ import { unstable_cache } from "next/cache";
 import { isFormerName } from "@/lib/game/former";
 import { HOME_TAG } from "@/lib/home/cache";
 import { fetchSeasons } from "@/lib/realm/data";
-import { latest, type SitemapPage } from "@/lib/seo-sitemap";
+import { latest, legalLastmod, notAfter, type SitemapPage } from "@/lib/seo-sitemap";
 import { publicClient } from "@/lib/supabase/public";
 import { serviceClient } from "@/lib/supabase/service";
 
@@ -47,7 +47,8 @@ async function readSitemapSource(): Promise<SitemapSource> {
     if (r.profile_id) byProfile.set(r.profile_id, latest(byProfile.get(r.profile_id), when));
   }
 
-  const legalChanged = latest(config.data?.updated_at, config.data?.legal_effective_date);
+  const now = new Date();
+  const legalChanged = legalLastmod(config.data, now);
   return {
     statics: [
       { route: "", lastmod: overall },
@@ -55,7 +56,7 @@ async function readSitemapSource(): Promise<SitemapSource> {
       { route: "/hall-of-fame", lastmod: overall },
       ...LEGAL.map((route) => ({ route, lastmod: legalChanged })),
     ],
-    seasons: seasons.filter((s) => s.id <= currentId).map((s) => ({ route: `/seasons/${s.slug}`, lastmod: latest(bySeason.get(s.id), s.startsAt) })),
+    seasons: seasons.filter((s) => s.id <= currentId).map((s) => ({ route: `/seasons/${s.slug}`, lastmod: latest(bySeason.get(s.id), notAfter(s.startsAt, now)) })),
     // Players who have reigned and are not suspended or deleted: the same rule as their page's robots tag.
     profiles: people
       .filter((p) => !p.is_banned && !isFormerName(p.name) && byProfile.has(p.id))
