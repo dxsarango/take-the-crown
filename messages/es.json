@@ -96,7 +96,18 @@
     "legal": "Reglas y legal",
     "soon": "Muy pronto",
     "soonNote": "Tomar la corona se abre el día del lanzamiento. Todo lo demás ya está abierto.",
-    "adminTest": "Prelanzamiento · solo los admins pueden tomar la corona, con pagos de prueba."
+    "adminTest": "Prelanzamiento · solo los admins pueden tomar la corona, con pagos de prueba.",
+    "about": {
+      "title": "Cómo funciona",
+      "what": "{brand} tiene una sola corona. Quien paga el precio del trono se convierte en rey, y su nombre, retrato, mensaje y enlace se quedan en esta página hasta que otra persona pague para tomar la corona.",
+      "price": "El precio sube cada vez que la corona cambia de manos y baja {decay} cada hora mientras nadie compra, hasta un mínimo de {floor}. El precio que ves es el que pagas; en el pago se pueden añadir impuestos.",
+      "get": "Obtienes tu lugar en el trono mientras lo sostengas y un registro permanente en tu perfil: tus reinados, logros y rango. No hay premios ni pagos. Pagas por visibilidad y gloria.",
+      "linksLabel": "Más información",
+      "rules": "Leer las reglas",
+      "faq": "Preguntas y respuestas",
+      "history": "Historia del reino",
+      "hof": "Salón de la fama"
+    }
   },
   "homeStates": {
     "signin": "Iniciar sesión",

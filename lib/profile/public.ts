@@ -34,6 +34,7 @@ export type Collectible = {
   status: "earned" | "open" | "missed" | "upcoming";
   startsAt: string;
   endsAt: string;
+  slug: string;
 };
 
 export type RivalSummary = {
@@ -196,6 +197,7 @@ export async function fetchProfilePage(db: PublicClient, profileId: string, now 
         status,
         startsAt: s.starts_at,
         endsAt: s.ends_at,
+        slug: s.slug,
       };
     })
     // Past and current seasons show their frame; the next one is a mystery card.

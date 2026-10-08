@@ -12,7 +12,7 @@ import type { HomeData } from "@/lib/home/data";
 import { heroState } from "@/lib/home/hero";
 import { Coronation } from "./coronation";
 import { Hero, type HomeNotice, KingMessage } from "./hero";
-import { Feed, Footer, HallOfFamePreview, Succession } from "./sections";
+import { About, Feed, Footer, HallOfFamePreview, Succession } from "./sections";
 import { ThroneScene } from "./throne-scene";
 import { useLiveHome, useServerNow } from "./use-live-home";
 import { PlayerName } from "@/components/player-name";
@@ -173,7 +173,7 @@ export function HomeView({ initial }: { initial: HomeData }) {
 
   return (
     <div className="flex min-h-dvh flex-col bg-crown-ink">
-      <TopBar season={data.season} now={now} />
+      <TopBar season={data.season} now={now} heading />
       <main className="flex-1">
         {crowning ? (
           <Coronation
@@ -203,6 +203,7 @@ export function HomeView({ initial }: { initial: HomeData }) {
             <HallOfFamePreview hall={data.hallOfFame} season={season} />
             <Feed items={data.feed} now={now} />
           </div>
+          <About crown={data.crown} season={data.season} />
         </div>
       </main>
       <Footer season={season} now={now} />
