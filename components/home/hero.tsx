@@ -47,7 +47,7 @@ function KingName({ king, size }: { king: King; size: "mobile" | "desktop" }) {
   const rank = useTranslations("rank");
   return (
     <div className={`flex flex-wrap items-center ${size === "mobile" ? "gap-2.5" : "gap-3"}`}>
-      <h1 className={size === "mobile" ? "text-20 font-bold" : "text-28 leading-tight font-bold"}><PlayerName name={king.name} /></h1>
+      <h2 className={size === "mobile" ? "text-20 font-bold" : "text-28 leading-tight font-bold"}><PlayerName name={king.name} /></h2>
       <Flag code={king.countryCode} className="shadow-[0_0_0_2px_var(--crown-velvet)]" />
       <RankTag rank={king.rank} label={rank(king.rank)} />
     </div>
@@ -262,7 +262,7 @@ export function Hero({ king, crown, state, season, notice, onTake }: Props) {
           </>
         ) : (
           <div className="flex flex-col gap-1.5 pt-1 pb-2">
-            <h1 className="text-28 leading-[1.15] font-bold">{states("empty1")}</h1>
+            <h2 className="text-28 leading-[1.15] font-bold">{states("empty1")}</h2>
             <p className="text-16 leading-body text-crown-muted">{states("empty2", { n: season })}</p>
           </div>
         )}
@@ -300,7 +300,7 @@ export function Hero({ king, crown, state, season, notice, onTake }: Props) {
             </>
           ) : (
             <>
-              <h1 className="max-w-[460px] text-40 leading-tight font-bold">{states("empty1")}</h1>
+              <h2 className="max-w-[460px] text-40 leading-tight font-bold">{states("empty1")}</h2>
               <p className="text-20 leading-snug font-medium text-crown-muted">{states("empty2", { n: season })}</p>
             </>
           )}

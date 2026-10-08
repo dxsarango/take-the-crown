@@ -18,7 +18,7 @@ const NAV = [
 ] as const;
 export type TopBarSection = (typeof NAV)[number]["key"];
 
-export function TopBar({ season, now, section }: { season: Season; now: number; section?: TopBarSection }) {
+export function TopBar({ season, now, section, heading }: { season: Season; now: number; section?: TopBarSection; heading?: boolean }) {
   const t = useTranslations("season");
   const home = useTranslations("home");
   const realm = useTranslations("realm");
@@ -30,9 +30,16 @@ export function TopBar({ season, now, section }: { season: Season; now: number; 
   return (
     <header className="flex h-14 items-center justify-between gap-2 bg-crown-velvet pr-3 pl-4 shadow-bar-bottom lg:h-18 lg:gap-6 lg:px-12">
       <div className="flex min-w-0 flex-col gap-[3px] lg:flex-row lg:items-center lg:gap-6">
-        <Link href="/" className="font-pixel text-20 leading-none font-bold whitespace-nowrap lg:text-28">
-          {BRAND_NAME}
-        </Link>
+        {heading ? (
+          // The home page has no other title: the king's name below is a section heading.
+          <h1 className="font-pixel text-20 leading-none font-bold whitespace-nowrap lg:text-28">
+            <Link href="/">{BRAND_NAME}</Link>
+          </h1>
+        ) : (
+          <Link href="/" className="font-pixel text-20 leading-none font-bold whitespace-nowrap lg:text-28">
+            {BRAND_NAME}
+          </Link>
+        )}
         <div className="text-12 whitespace-nowrap text-crown-muted lg:hidden">{t("short", { n: season.id, days })}</div>
         {section && (
           <nav aria-label={realm("tabsLabel")} className="hidden h-18 gap-7 lg:flex">

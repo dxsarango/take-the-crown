@@ -10,6 +10,7 @@ import { TopBar } from "@/components/top-bar";
 import { Link } from "@/i18n/navigation";
 import type { Locale } from "@/i18n/routing";
 import { MEDAL_KEY, type AchievementCode } from "@/lib/game/achievements";
+import { isFormerName } from "@/lib/game/former";
 import { priceAt } from "@/lib/game/price";
 import { RANKS, type Rank } from "@/lib/game/rank";
 import { clockParts, daysLeft, displayLink, formatDuration, formatPercent, formatPrice } from "@/lib/format";
@@ -680,7 +681,15 @@ function Rival({ data, own }: { data: ProfilePage; own: boolean }) {
           <div className="flex w-22 flex-col items-center gap-2">
             <Portrait avatar={rival.avatar} rank={rival.rank} season={data.season.id} crown={false} scale={2} />
             <div className="flex items-center gap-1">
-              <div className="max-w-16 truncate text-12 font-bold"><PlayerName name={rival.name} /></div>
+              <div className="max-w-16 truncate text-12 font-bold">
+                {isFormerName(rival.name) ? (
+                  <PlayerName name={rival.name} />
+                ) : (
+                  <Link href={`/u/${rival.name.toLowerCase()}`} className="hover:underline">
+                    {rival.name}
+                  </Link>
+                )}
+              </div>
               <Flag code={rival.countryCode} />
             </div>
           </div>
@@ -731,7 +740,15 @@ function Collectibles({ data, own }: { data: ProfilePage; own: boolean }) {
           return (
             <div key={c.seasonId} className="flex min-w-0 flex-col gap-2">
               <div className={`flex h-28 items-center justify-center ${v.box}`}>{v.art}</div>
-              <div className={`text-14 leading-tight font-bold ${v.muted ? "text-crown-muted" : ""}`}>{v.name}</div>
+              <div className={`text-14 leading-tight font-bold ${v.muted ? "text-crown-muted" : ""}`}>
+                {c.status === "upcoming" ? (
+                  v.name
+                ) : (
+                  <Link href={`/seasons/${c.slug}`} className="hover:underline">
+                    {v.name}
+                  </Link>
+                )}
+              </div>
               <div className="text-12 leading-snug text-crown-muted">{v.sub}</div>
             </div>
           );

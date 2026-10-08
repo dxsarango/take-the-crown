@@ -96,7 +96,18 @@
     "legal": "Rules and legal",
     "soon": "Launching soon",
     "soonNote": "Taking the crown opens on launch day. Everything else is already open.",
-    "adminTest": "Prelaunch · only admins can take the crown, with test payments."
+    "adminTest": "Prelaunch · only admins can take the crown, with test payments.",
+    "about": {
+      "title": "How it works",
+      "what": "{brand} has one crown. Whoever pays the price on the throne becomes king, and their name, portrait, message and link stay on this page until someone else pays to take the crown.",
+      "price": "The price rises every time the crown changes hands, and drops {decay} every hour while nobody buys, down to a floor of {floor}. The price you see is the price you pay; taxes may be added at checkout.",
+      "get": "You get your place on the throne for as long as you hold it, and a permanent record on your profile: your reigns, achievements and rank. There are no prizes or payouts. You pay for visibility and glory.",
+      "linksLabel": "Learn more",
+      "rules": "Read the rules",
+      "faq": "Questions and answers",
+      "history": "History of the realm",
+      "hof": "Hall of fame"
+    }
   },
   "homeStates": {
     "signin": "Sign in",
