@@ -3,7 +3,7 @@ import { revalidatePath, revalidateTag, unstable_cache } from "next/cache";
 import { publicClient } from "@/lib/supabase/public";
 import { fetchHomeData } from "./data";
 
-const HOME_TAG = "home";
+export const HOME_TAG = "home";
 
 /**
  * The home page renders per request (its CSP nonce is per request), so its data is cached
