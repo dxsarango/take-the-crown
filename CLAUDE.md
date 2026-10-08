@@ -63,4 +63,7 @@ Next is patched (`patches/next@*.patch`, pnpm `patchedDependencies`): review the
 - Small, atomic commits that each build and pass tests. Do not mix unrelated changes. Never commit secrets or `.env` files.
 - Merge to `main` through a pull request with a conventional title and a short description of what changed and how it was tested. Keep history linear (rebase before merging).
 - Tag releases on `main` with semantic versions, starting at `v0.1.0` for launch.
-- Commit messages, commit trailers, PR titles and descriptions, and branch names must not mention or suggest AI assistance or any AI tool. No `Co-Authored-By` trailers, no "Generated with" lines, no session links, no signatures. The history must read like any developer's normal work.
+- Commit messages, commit trailers, PR titles and descriptions, and branch names must not mention or suggest AI assistance or any AI tool. No `Co-Authored-By` trailers, no "Generated with" lines, no session links, no signatures. The history must read like any developer's normal work.- When a task produces several PRs, keep shared docs (`docs/PROGRESS.md`, `docs/SPEC.md`, `docs/DEPLOY.md`) out of the feature PRs when possible and record those updates in the last PR of the series.
+- After a PR is merged, rebase every other open PR on the updated `main` and resolve conflicts. If only docs conflicted, run typecheck and lint; otherwise run typecheck, lint and the full unit and database suites, plus the e2e specs for the areas the PR touches. Push with `--force-with-lease` and wait for the GitHub checks. Never force push `main`.
+- If two open PRs add migrations, renumber the later one so they never collide.
+- In every final report, list the open PRs in the order they should be merged.
