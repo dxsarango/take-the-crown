@@ -276,16 +276,21 @@ export async function fetchSeasonEnd(db: PublicClient, slug: string): Promise<Se
       .select("profile_id, price_paid_cents, started_at")
       .eq("season_id", season.id)
       .eq("reversed", false)
-      .order("price_paid_cents", { ascending: false })
+      // Players who keep their total spent private have no price in the view: they sort last.
+      .order("price_paid_cents", { ascending: false, nullsFirst: false })
       .limit(1),
     db.from("app_config").select("floor_cents").single(),
   ]);
   const board = must(boardRes, "leaderboard")
     .filter((b) => b.profile_id)
     .sort((a, b) => (b.reign_seconds ?? 0) - (a.reign_seconds ?? 0));
+  // The peak price is a season total; it names a player only when that player's price is public.
+  const peakRow = peakRes.data?.[0];
+  const peakNamed =
+    peakRow && peakRow.price_paid_cents === summary.peakPriceCents ? peakRes : { data: [{ profile_id: null, started_at: null }] };
   const ids = [
     ...board.slice(0, 3).map((b) => b.profile_id!),
-    ...[longestRes, shortestRes, peakRes].flatMap((r) => (r.data?.[0]?.profile_id ? [r.data[0].profile_id] : [])),
+    ...[longestRes, shortestRes, peakNamed].flatMap((r) => (r.data?.[0]?.profile_id ? [r.data[0].profile_id] : [])),
     ...(season.kingProfileId ? [season.kingProfileId] : []),
   ];
   const people = await fetchPeople(db, ids);
@@ -321,7 +326,7 @@ export async function fetchSeasonEnd(db: PublicClient, slug: string): Promise<Se
     // Records name who set them, so they come from finished reigns.
     longest: record(longestRes, longestRes.data?.[0]?.duration_seconds ?? null),
     shortest: record(shortestRes, shortestRes.data?.[0]?.duration_seconds ?? null),
-    peak: record(peakRes, summary.peakPriceCents),
+    peak: record(peakNamed, summary.peakPriceCents),
     floorCents: must(configRes, "config").floor_cents,
     medalCode: season.exclusiveAchievement,
   };
