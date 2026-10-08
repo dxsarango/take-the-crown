@@ -154,6 +154,7 @@ export type SaveOutcome =
   | { ok: false; error: "rejected"; field: "name" | "link"; reason: ModerationReason }
   | { ok: false; error: "moderation_unavailable" }
   | { ok: false; error: "rate_limited" }
+  | { ok: false; error: "suspended" }
   | { ok: false; error: "failed" };
 
 /** Maps an update_profile error to the field it concerns. */

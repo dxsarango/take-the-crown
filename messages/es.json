@@ -543,6 +543,8 @@
     "bModWhy": "Nuestra revisión de contenido no respondió. No se guardó nada. Inténtalo de nuevo en un minuto.",
     "bLimitTitle": "Demasiados guardados por ahora",
     "bLimitWhy": "Has guardado muchas veces en la última hora. No se guardó nada. Inténtalo más tarde.",
+    "bSuspTitle": "Esta cuenta está suspendida",
+    "bSuspWhy": "Las cuentas suspendidas no pueden cambiar su perfil. No se guardó nada.",
     "upErrLimited": "Subiste muchas imágenes en la última hora. Vuelve a intentarlo más tarde.",
     "secDelete": "Eliminar cuenta",
     "delHelp": "Puedes eliminar tu cuenta cuando quieras. No se puede deshacer.",

@@ -543,6 +543,8 @@
     "bModWhy": "Our content check didn't answer. Nothing was saved. Try again in a minute.",
     "bLimitTitle": "Too many saves for now",
     "bLimitWhy": "You've saved a lot in the last hour. Nothing was saved. Try again later.",
+    "bSuspTitle": "This account is suspended",
+    "bSuspWhy": "Suspended accounts can't change their profile. Nothing was saved.",
     "upErrLimited": "You've uploaded a lot of images in the last hour. Try again later.",
     "secDelete": "Delete account",
     "delHelp": "You can delete your account at any time. This can't be undone.",

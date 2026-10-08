@@ -178,6 +178,21 @@ test("uploads a photo, shows it pixelated or as is, and keeps it after saving", 
   await expect(page.locator(`img[src*="${row.avatar_path}/original.webp"]`).first()).toBeAttached();
 });
 
+test("a suspended account is signed out and cannot save its profile", async ({ page }) => {
+  await openAs(page, NEWCOMER.email);
+  await sql("update profiles set is_banned = true where name = $1", [NEWCOMER.name]);
+  // The session ended with the suspension.
+  expect((await page.request.patch("/api/profile", { data: {} })).status()).toBe(401);
+
+  // Signing in again works, but nothing can be saved.
+  await openAs(page, NEWCOMER.email);
+  await page.getByLabel(ep.linkL, { exact: true }).fill("https://maruprints.cl/shop");
+  await saveButton(page).click();
+  await expect(shown(page, ep.bSuspTitle)).toBeVisible();
+  const [row] = await sql("select main_link from profiles where name = $1", [NEWCOMER.name]);
+  expect(row.main_link).toBe("https://maruprints.cl");
+});
+
 test("refuses uploads without a session", async ({ page }) => {
   const response = await page.request.post("/api/profile/avatar", { multipart: { file: { name: "a.png", mimeType: "image/png", buffer: Buffer.from("x") } } });
   expect(response.status()).toBe(401);
