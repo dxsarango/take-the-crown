@@ -14,6 +14,7 @@ import { priceAt } from "@/lib/game/price";
 import { RANKS, type Rank } from "@/lib/game/rank";
 import { clockParts, daysLeft, displayLink, formatDuration, formatPercent, formatPrice } from "@/lib/format";
 import type { ChronicleEntry, Collectible, ProfilePage } from "@/lib/profile/public";
+import { safeHttpsUrl } from "@/lib/links";
 import { socialLabel } from "@/lib/profile/socials";
 import { Medal, SeasonFrame, Segments, SocialIcon, figureParts, rarityColor, roman } from "./parts";
 import { PlayerName, usePlayerName } from "@/components/player-name";
@@ -97,10 +98,11 @@ function SecondaryLink({ href, children, className }: { href: "/settings/profile
 function Socials({ data, own, size }: { data: ProfilePage; own: boolean; size: "mobile" | "desktop" }) {
   const t = useTranslations("profile");
   const social = useTranslations("social");
-  if (data.socials.length) {
+  const socials = data.socials.filter(({ url }) => safeHttpsUrl(url));
+  if (socials.length) {
     return (
       <ul aria-label={t("socials")} className={`flex flex-wrap gap-2 ${size === "desktop" ? "justify-end" : ""}`}>
-        {data.socials.map(({ key, url }) => (
+        {socials.map(({ key, url }) => (
           <li key={key}>
           <a
             href={url}
@@ -162,14 +164,15 @@ function Header({ data, own }: { data: ProfilePage; own: boolean }) {
   const common = useTranslations("common");
   const { date } = useFormats();
   const joined = t("joined", { date: date(data.joinedAt, true) });
-  const link = data.mainLink && (
+  const mainHref = safeHttpsUrl(data.mainLink);
+  const link = mainHref && (
     <a
-      href={data.mainLink}
+      href={mainHref}
       target="_blank"
       rel="sponsored ugc noopener"
       className="hit-area font-bold [overflow-wrap:anywhere] underline decoration-2 underline-offset-[5px] max-lg:text-16 lg:text-20 lg:underline-offset-[6px]"
     >
-      {displayLink(data.mainLink)}
+      {displayLink(mainHref)}
     </a>
   );
   const nameTags = (

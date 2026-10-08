@@ -7,6 +7,7 @@ import type { Locale } from "@/i18n/routing";
 import { clockParts, displayLink, formatCountdown, formatPercent, formatPrice } from "@/lib/format";
 import type { CrownState, King } from "@/lib/home/data";
 import { type HeroState, lockSegments } from "@/lib/home/hero";
+import { safeHttpsUrl } from "@/lib/links";
 import { ReportDialog } from "./report-dialog";
 import { PlayerName } from "@/components/player-name";
 import { useAuth } from "@/components/auth/auth-provider";
@@ -188,7 +189,8 @@ function ReportButton({ reignId }: { reignId: number }) {
 
 export function KingMessage({ king, size }: { king: King; size: "mobile" | "desktop" }) {
   const home = useTranslations("home");
-  if (!king.message && !king.link) return null;
+  const href = safeHttpsUrl(king.link);
+  if (!king.message && !href) return null;
   return (
     <>
       {king.message && (
@@ -197,14 +199,14 @@ export function KingMessage({ king, size }: { king: King; size: "mobile" | "desk
         </p>
       )}
       <div className={`flex items-center gap-3 ${size === "mobile" ? "justify-between" : "lg:gap-4"}`}>
-        {king.link ? (
+        {href ? (
           <a
-            href={king.link}
+            href={href}
             target="_blank"
             rel="sponsored ugc noopener"
             className={`hit-area font-bold underline decoration-crown-stone decoration-2 underline-offset-[5px] hover:decoration-crown-text ${size === "mobile" ? "text-14" : "text-16"}`}
           >
-            {displayLink(king.link)}
+            {displayLink(href)}
           </a>
         ) : (
           <span />
