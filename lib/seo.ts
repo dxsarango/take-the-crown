@@ -9,6 +9,18 @@ export function withBrand(title: string): string {
   return `${title} — ${BRAND_NAME}`;
 }
 
+/** Only players who have reigned and are not suspended get an indexable page: the rest would be thin. */
+export function isProfileIndexable(profile: { crowns: number; suspended: boolean }): boolean {
+  return profile.crowns > 0 && !profile.suspended;
+}
+
+/** The player was sent back from checkout: the page is the home page, not something to index. */
+export function isCheckoutReturn(searchParams: Record<string, string | string[] | undefined>): boolean {
+  return searchParams.lock !== undefined;
+}
+
+export const NOINDEX: NonNullable<Metadata["robots"]> = { index: false, follow: true };
+
 /**
  * The canonical URL and the hreflang set of a page. `route` is the path without its locale
  * ("" for the home page, "/kingdom"); `query` keeps a parameter that changes the content
