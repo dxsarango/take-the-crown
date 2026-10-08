@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { PAGES_PER_FILE, chunk, latest, sitemapIndexXml, urlsetXml, xmlEscape } from "@/lib/seo-sitemap";
+import { PAGES_PER_FILE, chunk, latest, legalLastmod, notAfter, sitemapIndexXml, urlsetXml, xmlEscape } from "@/lib/seo-sitemap";
 import { isCheckoutReturn, isProfileIndexable } from "@/lib/seo";
 
 const SITE = "https://takethecrown.app";
@@ -72,5 +72,60 @@ describe("indexing rules", () => {
     expect(isCheckoutReturn({ lock: "abc", cancelled: "1" })).toBe(true);
     expect(isCheckoutReturn({ card: "duke" })).toBe(false);
     expect(isCheckoutReturn({})).toBe(false);
+  });
+});
+
+describe("lastmod is never in the future", () => {
+  const now = new Date("2026-10-08T15:00:00Z");
+  const lastmods = (xml: string) => [...xml.matchAll(/<lastmod>([^<]*)<\/lastmod>/g)].map((m) => new Date(m[1]).getTime());
+
+  it("is cut at now in a sitemap file, whatever the page says", () => {
+    const pages = [
+      { route: "/rules", lastmod: "2026-10-27T00:00:00Z" },
+      { route: "/faq", lastmod: "2027-01-01T00:00:00Z" },
+      { route: "/terms", lastmod: "2026-10-08T15:00:00Z" },
+      { route: "/privacy", lastmod: "2026-09-01T00:00:00Z" },
+    ];
+    const dates = lastmods(urlsetXml(SITE, pages, now));
+    expect(dates).toHaveLength(8);
+    for (const date of dates) expect(date).toBeLessThanOrEqual(now.getTime());
+    expect(dates).toContain(now.getTime());
+    expect(dates).toContain(new Date("2026-09-01T00:00:00Z").getTime());
+  });
+
+  it("is cut at now in the index", () => {
+    const xml = sitemapIndexXml(SITE, [{ path: "/sitemaps/static.xml", lastmod: "2026-10-27T00:00:00Z" }, { path: "/sitemaps/seasons.xml", lastmod: "2026-10-01T00:00:00Z" }], now);
+    for (const date of lastmods(xml)) expect(date).toBeLessThanOrEqual(now.getTime());
+    expect(lastmods(xml)).toHaveLength(2);
+  });
+
+  it("holds for any mix of past and future dates", () => {
+    const day = 86_400_000;
+    const pages = Array.from({ length: 60 }, (_, i) => ({ route: `/u/p${i}`, lastmod: new Date(now.getTime() + (i - 30) * day * 7).toISOString() }));
+    for (const date of lastmods(urlsetXml(SITE, pages, now))) expect(date).toBeLessThanOrEqual(now.getTime());
+  });
+
+  it("only counts a date that has happened", () => {
+    expect(notAfter("2026-10-08T14:59:59Z", now)).toBe("2026-10-08T14:59:59Z");
+    expect(notAfter("2026-10-08T15:00:00Z", now)).toBe("2026-10-08T15:00:00Z");
+    expect(notAfter("2026-10-27T00:00:00Z", now)).toBeNull();
+    expect(notAfter(null, now)).toBeNull();
+  });
+
+  describe("legalLastmod", () => {
+    it("ignores an effective date that is still ahead and uses the last settings change", () => {
+      expect(legalLastmod({ updated_at: "2026-10-05T10:00:00Z", legal_effective_date: "2026-10-27" }, now)).toBe("2026-10-05T10:00:00Z");
+    });
+
+    it("uses the effective date once it has come, if it is the later of the two", () => {
+      expect(legalLastmod({ updated_at: "2026-10-05T10:00:00Z", legal_effective_date: "2026-10-07" }, now)).toBe("2026-10-07");
+      expect(legalLastmod({ updated_at: "2026-10-08T09:00:00Z", legal_effective_date: "2026-10-07" }, now)).toBe("2026-10-08T09:00:00Z");
+    });
+
+    it("has nothing to say when both are missing or ahead", () => {
+      expect(legalLastmod({ updated_at: null, legal_effective_date: "2026-10-27" }, now)).toBeNull();
+      expect(legalLastmod({ updated_at: "2027-01-01T00:00:00Z", legal_effective_date: null }, now)).toBeNull();
+      expect(legalLastmod(null, now)).toBeNull();
+    });
   });
 });

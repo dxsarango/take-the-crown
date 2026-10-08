@@ -49,6 +49,25 @@ test.describe("sitemaps", () => {
     expect((await request.get("/sitemaps/nope.xml")).status()).toBe(404);
   });
 
+  test("no lastmod is in the future, even with a legal date and a season still to come", async ({ request }) => {
+    await sql("update app_config set legal_effective_date = current_date + 19, updated_at = now() - interval '3 days'");
+    await sql("update seasons set starts_at = now() + interval '19 days' where id = 0");
+    const files = ["sitemap.xml", "sitemaps/static.xml", "sitemaps/seasons.xml", "sitemaps/profiles-1.xml"];
+    for (const file of files) {
+      const xml = await (await request.get("/" + file)).text();
+      const dates = [...xml.matchAll(/<lastmod>([^<]*)<[/]lastmod>/g)].map((m) => new Date(m[1]).getTime());
+      expect(dates.length, file).toBeGreaterThan(0);
+      for (const date of dates) expect(date, file).toBeLessThanOrEqual(Date.now());
+    }
+    // The legal pages carry the settings change, not the date the texts take effect.
+    const legal = await (await request.get("/sitemaps/static.xml")).text();
+    const rules = legal.split("<url>").find((e) => e.includes("/en/rules</loc>")) ?? "";
+    const stamp = new Date(/<lastmod>([^<]*)<[/]lastmod>/.exec(rules)?.[1] ?? "").getTime();
+    expect(Date.now() - stamp).toBeGreaterThan(2.9 * 86_400_000);
+    expect(Date.now() - stamp).toBeLessThan(3.1 * 86_400_000);
+    await seed();
+  });
+
   test("every listed URL is served, canonical to itself, and not noindex", async ({ request }) => {
     for (const file of ["static", "seasons", "profiles-1"]) {
       for (const url of locs(await (await request.get(`/sitemaps/${file}.xml`)).text())) {
