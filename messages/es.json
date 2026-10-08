@@ -721,8 +721,6 @@
     "mSubject": "{name} te quitó la corona",
     "mPreheader": "Recupérala por {price} antes de que suba el precio.",
     "mAlt": "Tu retrato junto al de {name}, el nuevo rey",
-    "metaProfile": "Los reinados, medallas y rivales de {name} en {brand}.",
-    "metaSeason": "Así fue {season} en {brand}: su rey, sus récords y su salón de la fama.",
     "cardAlt": "{name} en el trono",
     "rankLabel": "Nuevo rango",
     "rankTotal": "{time} en el trono en total"
@@ -1114,5 +1112,48 @@
     "retry": "Intentar de nuevo",
     "home": "Volver al trono",
     "crownAlt": "Una corona dorada"
+  },
+  "seo": {
+    "home": {
+      "title": "Compra la única corona de internet",
+      "description": "{brand} tiene una sola corona y un solo rey. Paga el precio del trono para tomarla y consérvala hasta que otro pague. El precio baja cada hora."
+    },
+    "kingdom": {
+      "title": "Historia del reino: todos los reinados",
+      "description": "Todos los reyes de {brand}, del más reciente al más antiguo: quién tomó la corona, cuánto la sostuvo y quién se la quitó. Explora cada temporada."
+    },
+    "hallOfFame": {
+      "title": "Salón de la fama: reinados más largos",
+      "description": "Los reyes de {brand} que más tiempo reinaron y más veces tomaron la corona, con los récords y el podio de cada temporada."
+    },
+    "rules": {
+      "title": "Reglas: cómo tomar, sostener y perder la corona",
+      "description": "Las reglas de {brand}: cómo funciona el precio, cómo empieza y termina un reinado, qué pasa si te destronan y cómo funcionan las temporadas y las medallas."
+    },
+    "faq": {
+      "title": "Preguntas: precios, pagos, reembolsos y reinados",
+      "description": "Respuestas a las preguntas frecuentes sobre {brand}: qué pagas, cómo baja el precio, cuánto dura un reinado, los reembolsos y los impuestos."
+    },
+    "terms": {
+      "title": "Términos del servicio: lo que aceptas",
+      "description": "Los términos del servicio de {brand}: qué compras al tomar la corona, pagos y reembolsos, reglas de contenido y cómo se puede suspender una cuenta."
+    },
+    "privacy": {
+      "title": "Privacidad: qué datos guardamos y por qué",
+      "description": "Cómo trata {brand} tus datos: qué recogemos cuando tomas la corona, quién los procesa, cuánto tiempo los guardamos y cómo borrar tu cuenta."
+    },
+    "season": {
+      "title": "Temporada {number}: {name}, rey y récords",
+      "description": "La temporada {number}, {name}, va del {start} al {end}. {state, select, ended {{king} fue coronado Rey de la Temporada. Mira los reinados, los récords y el salón de la fama.} held {{king} tiene la corona. Mira los reinados, los récords y el salón de la fama.} other {Mira los reinados, los récords y el salón de la fama de la temporada.}}"
+    },
+    "profile": {
+      "title": "{name}, {rank}",
+      "description": "{name} es {rank} en {brand}, con {crowns, plural, one {# reinado} other {# reinados}} y {duration} en el trono. Mira sus reinados, medallas y rivales.",
+      "descriptionNew": "{name} es un jugador de {brand}. Mira sus reinados, medallas y rivales."
+    },
+    "imageAlt": "La corona en el trono",
+    "kingdomSeason": {
+      "title": "Historia del reino, temporada {number}: {name}"
+    }
   }
 }

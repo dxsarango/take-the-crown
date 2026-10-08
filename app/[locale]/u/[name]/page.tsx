@@ -6,9 +6,12 @@ import { ProfileView } from "@/components/profile/profile-view";
 import { TimeZoneProvider } from "@/components/time-zone";
 import { redirect } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
-import { currentViewer } from "@/lib/auth/viewer";
 import { BRAND_NAME } from "@/lib/config/brand";
+import { currentViewer } from "@/lib/auth/viewer";
+import { formatDuration } from "@/lib/format";
+import { rankForSeconds } from "@/lib/game/rank";
 import { profileCard, shareMetadata } from "@/lib/og/metadata";
+import { withBrand } from "@/lib/seo";
 import { fetchProfilePage, profileIdForName } from "@/lib/profile/public";
 import { publicClient } from "@/lib/supabase/public";
 import { readerTimeZone } from "@/lib/time-zone.server";
@@ -21,18 +24,30 @@ export const dynamic = "force-dynamic";
 export async function generateMetadata({ params, searchParams }: PageProps<"/[locale]/u/[name]">): Promise<Metadata> {
   const { locale, name: raw } = await params;
   const name = decodeURIComponent(raw);
-  const title = `${name} · ${BRAND_NAME}`;
-  if (!hasLocale(routing.locales, locale)) return { title };
+  if (!hasLocale(routing.locales, locale)) return { title: withBrand(name) };
   const db = publicClient();
   const profileId = await profileIdForName(db, name);
-  if (!profileId) return { title };
+  if (!profileId) return { title: withBrand(name) };
   const { card } = await searchParams;
-  const share = await getTranslations({ locale, namespace: "share" });
+  const [t, share, rankT, common] = await Promise.all([
+    getTranslations({ locale, namespace: "seo" }),
+    getTranslations({ locale, namespace: "share" }),
+    getTranslations({ locale, namespace: "rank" }),
+    getTranslations({ locale, namespace: "common" }),
+  ]);
+  const { data: stats } = await db.from("profile_stats").select("crowns_taken, total_reign_seconds").eq("profile_id", profileId).maybeSingle();
+  const rank = rankT(rankForSeconds(stats?.total_reign_seconds ?? 0));
+  const crowns = stats?.crowns_taken ?? 0;
+  const units = { h: common("units.h"), m: common("units.m"), s: common("units.s") };
   return shareMetadata({
-    title,
-    description: share("metaProfile", { name, brand: BRAND_NAME }),
-    path: `/${locale}/u/${name.toLowerCase()}`,
+    title: withBrand(t("profile.title", { name, rank })),
+    description: crowns
+      ? t("profile.description", { brand: BRAND_NAME, name, rank, crowns, duration: formatDuration(Number(stats?.total_reign_seconds ?? 0), units) })
+      : t("profile.descriptionNew", { brand: BRAND_NAME, name }),
+    // The URL a former name or another capitalization lands on.
+    route: `/u/${name.toLowerCase()}`,
     locale,
+    // A shared card (?card=) changes the preview image, not the page: the canonical never carries it.
     card: await profileCard(db, profileId, typeof card === "string" ? card : undefined),
     alt: share("cardAlt", { name }),
   });

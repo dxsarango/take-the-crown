@@ -721,8 +721,6 @@
     "mSubject": "You were dethroned by {name}",
     "mPreheader": "Take it back for {price} before the price goes up.",
     "mAlt": "Your portrait next to {name}, the new king",
-    "metaProfile": "{name}'s reigns, medals and rivals on {brand}.",
-    "metaSeason": "How {season} went on {brand}: its king, records and hall of fame.",
     "cardAlt": "{name} on the throne",
     "rankLabel": "New rank",
     "rankTotal": "{time} on the throne in total"
@@ -1114,5 +1112,48 @@
     "retry": "Try again",
     "home": "Back to the throne",
     "crownAlt": "A golden crown"
+  },
+  "seo": {
+    "home": {
+      "title": "Buy the one crown on the internet",
+      "description": "{brand} has one crown and one king. Pay the price on the throne to take it and keep it until someone else pays. The price drops every hour."
+    },
+    "kingdom": {
+      "title": "History of the realm: every reign",
+      "description": "Every king of {brand}, newest first: who took the crown, how long they held it and who took it from them. Browse the history of each season."
+    },
+    "hallOfFame": {
+      "title": "Hall of fame: longest reigns and top kings",
+      "description": "The kings of {brand} who reigned the longest and took the crown the most times, with the records of every season."
+    },
+    "rules": {
+      "title": "Rules: how to take, hold and lose the crown",
+      "description": "The rules of {brand}: how the price works, how a reign starts and ends, what happens when you are dethroned, and how seasons and medals work."
+    },
+    "faq": {
+      "title": "FAQ: prices, payments, refunds and reigns",
+      "description": "Answers to the common questions about {brand}: what you are paying for, how the price drops, how long a reign lasts, refunds and taxes."
+    },
+    "terms": {
+      "title": "Terms of Service: what you agree to",
+      "description": "The terms of service of {brand}: what you buy when you take the crown, payments and refunds, content rules and how accounts can be suspended."
+    },
+    "privacy": {
+      "title": "Privacy Policy: what data we keep and why",
+      "description": "How {brand} handles your data: what we collect when you take the crown, who processes it, how long we keep it and how to delete your account."
+    },
+    "season": {
+      "title": "Season {number}: {name}, king and records",
+      "description": "Season {number}, {name}, runs from {start} to {end}. {state, select, ended {{king} was crowned King of the Season. See the reigns, records and hall of fame.} held {{king} holds the crown. See the reigns, records and hall of fame.} other {See the reigns, records and hall of fame of the season.}}"
+    },
+    "profile": {
+      "title": "{name}, {rank}",
+      "description": "{name} is a {rank} on {brand}, with {crowns, plural, one {# reign} other {# reigns}} and {duration} on the throne. See their reigns, medals and rivals.",
+      "descriptionNew": "{name} is a player on {brand}. See their reigns, medals and rivals."
+    },
+    "imageAlt": "The crown on the throne",
+    "kingdomSeason": {
+      "title": "History of the realm, season {number}: {name}"
+    }
   }
 }

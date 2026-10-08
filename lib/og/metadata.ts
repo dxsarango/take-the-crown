@@ -1,9 +1,10 @@
 import "server-only";
 import type { Metadata } from "next";
-import type { Locale } from "@/i18n/routing";
+import { type Locale, routing } from "@/i18n/routing";
 import { BRAND_NAME } from "@/lib/config/brand";
 import { isAchievementCode } from "@/lib/game/achievements";
 import { isRank } from "@/lib/game/rank";
+import { OG_LOCALE, alternatesFor } from "@/lib/seo";
 import type { PublicClient } from "@/lib/supabase/public";
 import { CARD_SIZES, type CardTemplate } from "./data";
 
@@ -14,24 +15,46 @@ export function cardPath(card: CardRef, locale: Locale, size: "og" | "story" = "
   return `/og/${card.template}/${encodeURIComponent(card.id)}?${params}`;
 }
 
-/** Open Graph and X card tags, with a share card as the image when the page has one. */
-export function shareMetadata(input: { title: string; description: string; path: string; locale: Locale; card: CardRef | null; alt: string }): Metadata {
+/** Pages without a dynamic share card preview with the crown icon. */
+const DEFAULT_IMAGE = { url: "/icons/icon-512.png", width: 512, height: 512 };
+
+/**
+ * Canonical URL, hreflang set, Open Graph and X card tags of an indexable page. The image is the
+ * page's share card when it has one, else the crown icon. `route` is the path without its locale.
+ */
+export function shareMetadata(input: {
+  title: string;
+  description: string;
+  route: string;
+  query?: string;
+  locale: Locale;
+  card: CardRef | null;
+  alt: string;
+}): Metadata {
+  const alternates = alternatesFor(input.locale, input.route, input.query);
   const images = input.card
     ? [{ url: cardPath(input.card, input.locale), width: CARD_SIZES.og.width, height: CARD_SIZES.og.height, alt: input.alt }]
-    : undefined;
+    : [{ ...DEFAULT_IMAGE, alt: input.alt }];
   return {
     title: input.title,
     description: input.description,
+    alternates,
     openGraph: {
       title: input.title,
       description: input.description,
-      url: input.path,
+      url: alternates.canonical as string,
       siteName: BRAND_NAME,
-      locale: input.locale === "es" ? "es_419" : "en_US",
+      locale: OG_LOCALE[input.locale],
+      alternateLocale: routing.locales.filter((l) => l !== input.locale).map((l) => OG_LOCALE[l]),
       type: "website",
       images,
     },
-    twitter: { card: images ? "summary_large_image" : "summary", title: input.title, description: input.description, images: images?.map((i) => i.url) },
+    twitter: {
+      card: input.card ? "summary_large_image" : "summary",
+      title: input.title,
+      description: input.description,
+      images: images.map((i) => i.url),
+    },
   };
 }
 

@@ -137,8 +137,9 @@ test("link previews use the matching share card", async ({ page }) => {
   expect((await meta("/en/u/valeruiz")).image).toBe(`${SITE}/og/victory/${ids.victory}?locale=en`);
 
   const season = await meta("/en/seasons/genesis");
+  // Without a king there is no card to show: the crown icon stands in.
   expect(season.twitter).toBe("summary");
-  expect(season.image).toBeNull();
+  expect(season.image).toBe(`${SITE}/icons/icon-512.png`);
 
   // Once the season has its king, the preview is that king's longest reign of the season.
   const [theo] = await sql<{ profile_id: string; id: string }>(
