@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { hasLocale } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
+import { JsonLdScript } from "@/components/json-ld";
 import { ProfileView } from "@/components/profile/profile-view";
 import { TimeZoneProvider } from "@/components/time-zone";
 import { permanentRedirect } from "@/i18n/navigation";
@@ -11,7 +12,9 @@ import { currentViewer } from "@/lib/auth/viewer";
 import { formatDuration } from "@/lib/format";
 import { rankForSeconds } from "@/lib/game/rank";
 import { profileCard, shareMetadata } from "@/lib/og/metadata";
+import { siteUrl } from "@/lib/site";
 import { NOINDEX, isProfileIndexable, withBrand } from "@/lib/seo";
+import { breadcrumbs, profilePage } from "@/lib/seo-jsonld";
 import { serviceClient } from "@/lib/supabase/service";
 import { fetchProfilePage, profileIdForName } from "@/lib/profile/public";
 import { publicClient } from "@/lib/supabase/public";
@@ -74,8 +77,38 @@ export default async function ProfilePage({ params }: PageProps<"/[locale]/u/[na
   const canonical = data.name.toLowerCase();
   if (name !== canonical) permanentRedirect({ href: `/u/${canonical}`, locale });
 
+  // The same rule as the robots tag: only a player who reigned and is not suspended is described to search engines.
+  const { data: flags } = await serviceClient().from("profiles").select("is_banned").eq("id", profileId).maybeSingle();
+  const indexable = isProfileIndexable({ crowns: data.stats.crowns, suspended: flags?.is_banned === true });
+  const site = siteUrl();
   return (
     <TimeZoneProvider timeZone={timeZone}>
+      {indexable && (
+        <>
+          <JsonLdScript
+            data={profilePage({
+              site,
+              locale,
+              route: `/u/${canonical}`,
+              name: data.name,
+              joinedAt: data.joinedAt,
+              image: data.avatar.image?.originalUrl ?? null,
+              // Only the links the page shows.
+              sameAs: [...data.socials.map((s) => s.url), data.mainLink],
+            })}
+          />
+          <JsonLdScript
+            data={breadcrumbs({
+              site,
+              locale,
+              trail: [
+                { name: BRAND_NAME, route: "" },
+                { name: data.name, route: `/u/${canonical}` },
+              ],
+            })}
+          />
+        </>
+      )}
       <ProfileView data={data} own={viewer?.profileId === profileId} />
     </TimeZoneProvider>
   );
