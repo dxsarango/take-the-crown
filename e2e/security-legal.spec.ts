@@ -44,7 +44,8 @@ test.describe("headers", () => {
     // Every script the server writes into the page carries the nonce; scripts those load later are
     // trusted through 'strict-dynamic'.
     const html = (await response?.text()) ?? "";
-    const tags = html.match(/<script[^>]*>/g) ?? [];
+    // Structured data blocks (JSON) are never executed, so the policy does not apply to them.
+    const tags = (html.match(/<script[^>]*>/g) ?? []).filter((tag) => !tag.includes('type="application/ld+json"'));
     expect(tags.length).toBeGreaterThan(0);
     for (const tag of tags) expect(tag).toContain(`nonce="${nonce}"`);
     await page.waitForLoadState("networkidle");
