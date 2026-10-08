@@ -9,10 +9,10 @@ import { BRAND_NAME } from "@/lib/config/brand";
 import { playerName } from "@/lib/game/former";
 import { cachedHomeData } from "@/lib/home/cache";
 import { shareMetadata } from "@/lib/og/metadata";
-import { withBrand } from "@/lib/seo";
+import { NOINDEX, isCheckoutReturn, withBrand } from "@/lib/seo";
 
 /** Link previews show the challenge card of the current king. */
-export async function generateMetadata({ params }: PageProps<"/[locale]">): Promise<Metadata> {
+export async function generateMetadata({ params, searchParams }: PageProps<"/[locale]">): Promise<Metadata> {
   const { locale } = await params;
   if (!hasLocale(routing.locales, locale)) return {};
   const t = await getTranslations({ locale, namespace: "seo" });
@@ -20,7 +20,7 @@ export async function generateMetadata({ params }: PageProps<"/[locale]">): Prom
   const common = await getTranslations({ locale, namespace: "common" });
   const { crown, king } = await cachedHomeData();
   const reignId = crown.currentReignId;
-  return shareMetadata({
+  const meta = shareMetadata({
     title: withBrand(t("home.title")),
     description: t("home.description", { brand: BRAND_NAME }),
     route: "",
@@ -28,6 +28,8 @@ export async function generateMetadata({ params }: PageProps<"/[locale]">): Prom
     card: reignId ? { template: "challenge", id: String(reignId) } : null,
     alt: share("cardAlt", { name: king ? playerName(king.name, common("formerKing")) : BRAND_NAME }),
   });
+  // Coming back from checkout (`?lock=`) shows the same page: keep it out of the index.
+  return isCheckoutReturn(await searchParams) ? { ...meta, robots: NOINDEX } : meta;
 }
 
 export default async function HomePage({ params }: PageProps<"/[locale]">) {
