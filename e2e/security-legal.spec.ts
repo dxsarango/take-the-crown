@@ -125,6 +125,17 @@ test.describe("abuse limits", () => {
     expect((await report(reigns[2].id)).status()).toBe(429);
   });
 
+  test("name availability checks are limited per IP, and malformed names cost nothing", async ({ request }) => {
+    test.skip(project() !== "desktop", "server behaviour");
+    await sql("update app_config set max_name_checks_per_ip_per_hour = 2");
+    await sql("delete from rate_limit_hits where key like 'name_check%'");
+    for (let i = 0; i < 5; i++) expect(await (await request.get("/api/names/availability?name=no")).json()).toEqual({ valid: false, available: false });
+    for (let i = 0; i < 2; i++) expect((await request.get(`/api/names/availability?name=free_name_${i}`)).status()).toBe(200);
+    const limited = await request.get("/api/names/availability?name=free_name_9");
+    expect(limited.status()).toBe(429);
+    expect(await limited.json()).toEqual({ error: "rate_limited" });
+  });
+
   test("cookie-authenticated routes refuse other origins", async ({ request }) => {
     test.skip(project() !== "desktop", "server behaviour");
     const evil = { origin: "https://evil.example" };

@@ -954,6 +954,7 @@
       "max_magic_links_per_hour": "Enlaces de inicio de sesión por IP y por correo por hora",
       "max_avatar_uploads_per_hour": "Subidas de avatar por jugador por hora",
       "max_reports_per_ip_per_hour": "Denuncias por IP por hora",
+      "max_name_checks_per_ip_per_hour": "Comprobaciones de nombre por IP por hora",
       "min_first_season_days": "Primera temporada más corta al lanzar (días)",
       "delete_reauth_seconds": "Antigüedad del inicio de sesión para eliminar una cuenta (segundos)",
       "refund_retry_base_seconds": "Primer reintento de un reembolso tras (segundos)",

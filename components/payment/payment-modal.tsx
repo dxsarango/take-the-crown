@@ -43,7 +43,7 @@ function useNameCheck(name: string): NameCheck {
     const timer = setTimeout(() => {
       setCheck("checking");
       fetch(`/api/names/availability?name=${encodeURIComponent(trimmed)}`)
-        .then((r) => r.json() as Promise<{ available: boolean }>)
+        .then((r) => (r.ok ? (r.json() as Promise<{ available: boolean }>) : Promise.reject(new Error("name check refused"))))
         .then((r) => !cancelled && setCheck(r.available ? "available" : "taken"))
         .catch(() => !cancelled && setCheck("idle"));
     }, 350);
