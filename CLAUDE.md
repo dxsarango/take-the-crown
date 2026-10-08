@@ -62,6 +62,9 @@ Next is patched (`patches/next@*.patch`, pnpm `patchedDependencies`): review the
 - Small, atomic commits that each build and pass tests. Do not mix unrelated changes. Never commit secrets or `.env` files.
 - Tag releases on `main` with semantic versions, starting at `v0.1.0` for launch.
 - Commit messages, commit trailers, PR titles and descriptions, and branch names must not mention or suggest AI assistance or any AI tool. No `Co-Authored-By` trailers, no "Generated with" lines, no session links, no signatures. The history must read like any developer's normal work.
+- Never stack PRs. Every PR targets main (base = main). If work depends on an unmerged PR, wait for it to merge, then branch from the updated main.
+- Before reporting a PR as ready, verify its base with `gh pr view <n> --json baseRefName`.
+- After any merge, verify the commits are on main with `git log origin/main`. A merge is not done until main has it.
 
 ## Branching and PRs
 
