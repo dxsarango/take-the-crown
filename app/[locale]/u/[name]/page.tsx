@@ -4,14 +4,15 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { ProfileView } from "@/components/profile/profile-view";
 import { TimeZoneProvider } from "@/components/time-zone";
-import { redirect } from "@/i18n/navigation";
+import { permanentRedirect } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
 import { BRAND_NAME } from "@/lib/config/brand";
 import { currentViewer } from "@/lib/auth/viewer";
 import { formatDuration } from "@/lib/format";
 import { rankForSeconds } from "@/lib/game/rank";
 import { profileCard, shareMetadata } from "@/lib/og/metadata";
-import { withBrand } from "@/lib/seo";
+import { NOINDEX, isProfileIndexable, withBrand } from "@/lib/seo";
+import { serviceClient } from "@/lib/supabase/service";
 import { fetchProfilePage, profileIdForName } from "@/lib/profile/public";
 import { publicClient } from "@/lib/supabase/public";
 import { readerTimeZone } from "@/lib/time-zone.server";
@@ -39,7 +40,8 @@ export async function generateMetadata({ params, searchParams }: PageProps<"/[lo
   const rank = rankT(rankForSeconds(stats?.total_reign_seconds ?? 0));
   const crowns = stats?.crowns_taken ?? 0;
   const units = { h: common("units.h"), m: common("units.m"), s: common("units.s") };
-  return shareMetadata({
+  const { data: flags } = await serviceClient().from("profiles").select("is_banned").eq("id", profileId).maybeSingle();
+  const meta = shareMetadata({
     title: withBrand(t("profile.title", { name, rank })),
     description: crowns
       ? t("profile.description", { brand: BRAND_NAME, name, rank, crowns, duration: formatDuration(Number(stats?.total_reign_seconds ?? 0), units) })
@@ -51,6 +53,7 @@ export async function generateMetadata({ params, searchParams }: PageProps<"/[lo
     card: await profileCard(db, profileId, typeof card === "string" ? card : undefined),
     alt: share("cardAlt", { name }),
   });
+  return isProfileIndexable({ crowns, suspended: flags?.is_banned === true }) ? meta : { ...meta, robots: NOINDEX };
 }
 
 export default async function ProfilePage({ params }: PageProps<"/[locale]/u/[name]">) {
@@ -69,7 +72,7 @@ export default async function ProfilePage({ params }: PageProps<"/[locale]/u/[na
 
   // Former names and other capitalizations land on the current, lowercased URL.
   const canonical = data.name.toLowerCase();
-  if (name !== canonical) redirect({ href: `/u/${canonical}`, locale });
+  if (name !== canonical) permanentRedirect({ href: `/u/${canonical}`, locale });
 
   return (
     <TimeZoneProvider timeZone={timeZone}>
