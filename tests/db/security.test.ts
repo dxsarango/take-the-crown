@@ -129,7 +129,7 @@ describe("privileges", () => {
         await expect(
           asRole(role, (client) => client.query(sql), { sub: randomUUID(), role }),
           `${role}: ${sql}`,
-        ).rejects.toThrow(/permission denied|cannot update column/);
+        ).rejects.toThrow(/permission denied|cannot update column|cannot update view/);
       }
       expect(await count("reigns", "message = 'hacked' or name = 'hacked'")).toBe(0);
     });
