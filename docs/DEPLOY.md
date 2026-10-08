@@ -119,7 +119,7 @@ Placeholders: `<ref>` is the Supabase project ref (the subdomain of its API URL)
    | `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | Turnstile site key |
    | `TURNSTILE_SECRET_KEY` | Turnstile secret key |
 
-4. **Settings → Domains:** add `takethecrown.app` and `www.takethecrown.app`, with `www` redirecting (308) to the apex. Create the DNS records Vercel shows in Cloudflare as **DNS only** (usually A `@` `76.76.21.21` and CNAME `www` `cname.vercel-dns.com`). Wait until both show "Valid Configuration" with a certificate.
+4. **Settings → Domains:** add `takethecrown.app` and `www.takethecrown.app`, with `www` redirecting (308) to the apex. Create the DNS records Vercel shows in Cloudflare as **DNS only** (usually A `@` `76.76.21.21` and CNAME `www` `cname.vercel-dns.com`). Wait until both show "Valid Configuration" with a certificate. Do not redirect the `*.vercel.app` domain here: the app does it (any host that is not `NEXT_PUBLIC_SITE_URL`'s goes to it with a 308, in production only), and lets `/api/cron/*` through on any host when the request carries `CRON_SECRET`, so the crons keep running.
 5. **Deployments:** redeploy production after the variables are set. `NEXT_PUBLIC_*` values are built into the pages.
 6. **Settings → Cron Jobs:** `/api/cron/moderation`, `/api/cron/notifications` and `/api/cron/refunds`, every minute (from `vercel.json`).
 7. **Settings → Billing → Spend Management:** set a spend amount with notifications (for example, $50 a month).
