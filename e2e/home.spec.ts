@@ -34,7 +34,7 @@ test("switches locale from the top bar", async ({ page }) => {
 test("shows the king, the live clock and the decaying price", async ({ page }) => {
   await seedKingdom();
   await page.goto("/en");
-  await expect(page.getByRole("heading", { level: 1, name: "valeruiz" }).filter({ visible: true }).first()).toBeVisible();
+  await expect(page.getByRole("heading", { level: 2, name: "valeruiz" }).filter({ visible: true }).first()).toBeVisible();
   await expect(page.getByText("Built a budget app for freelancers in Latam.").filter({ visible: true }).first()).toBeVisible();
   await expect(page.getByRole("button", { name: "Take the crown for $34" }).filter({ visible: true }).first()).toBeVisible();
   await expect(page.getByText("Dropping 2% every hour").filter({ visible: true }).first()).toBeVisible();
@@ -67,7 +67,7 @@ test("lists the line of succession, hall of fame and proclamations", async ({ pa
 test("shows the empty throne at the start of a season", async ({ page }) => {
   await seedKingdom({ empty: true });
   await page.goto("/en");
-  await expect(page.getByRole("heading", { level: 1, name: en.homeStates.empty1 }).filter({ visible: true }).first()).toBeVisible();
+  await expect(page.getByRole("heading", { level: 2, name: en.homeStates.empty1 }).filter({ visible: true }).first()).toBeVisible();
   await expect(page.getByText("Be the first king of Season 0.").filter({ visible: true }).first()).toBeVisible();
   await expect(page.getByRole("button", { name: "Take the empty throne for $5" }).filter({ visible: true }).first()).toBeVisible();
 });
