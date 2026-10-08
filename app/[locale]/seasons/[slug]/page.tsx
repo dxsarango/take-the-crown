@@ -8,21 +8,34 @@ import { routing } from "@/i18n/routing";
 import { BRAND_NAME } from "@/lib/config/brand";
 import { seasonCard, shareMetadata } from "@/lib/og/metadata";
 import { fetchSeasonEnd, fetchSeasons } from "@/lib/realm/data";
+import { withBrand } from "@/lib/seo";
 import { publicClient } from "@/lib/supabase/public";
 import { readerTimeZone } from "@/lib/time-zone.server";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/seasons/[slug]">): Promise<Metadata> {
   const { locale, slug } = await params;
-  const { seasons } = await fetchSeasons(publicClient());
+  const db = publicClient();
+  const { seasons, currentId } = await fetchSeasons(db);
   const season = seasons.find((s) => s.slug === slug);
   if (!season || !hasLocale(routing.locales, locale)) return {};
-  const share = await getTranslations({ locale, namespace: "share" });
+  const [t, share] = await Promise.all([getTranslations({ locale, namespace: "seo" }), getTranslations({ locale, namespace: "share" })]);
+  const king = season.kingProfileId ? (await db.from("profiles").select("name").eq("id", season.kingProfileId).maybeSingle()).data?.name : undefined;
+  const ended = season.closedAt !== null || season.id < currentId;
+  const date = new Intl.DateTimeFormat(locale, { dateStyle: "medium", timeZone: "UTC" });
   return shareMetadata({
-    title: `${season.name[locale]} · ${BRAND_NAME}`,
-    description: share("metaSeason", { season: season.name[locale], brand: BRAND_NAME }),
-    path: `/${locale}/seasons/${slug}`,
+    title: withBrand(t("season.title", { number: season.id, name: season.name[locale] })),
+    description: t("season.description", {
+      number: season.id,
+      name: season.name[locale],
+      start: date.format(new Date(season.startsAt)),
+      end: date.format(new Date(season.endsAt)),
+      state: king ? (ended ? "ended" : "held") : "other",
+      king: king ?? "",
+      brand: BRAND_NAME,
+    }),
+    route: `/seasons/${slug}`,
     locale,
-    card: await seasonCard(publicClient(), season.id, season.kingProfileId),
+    card: await seasonCard(db, season.id, season.kingProfileId),
     alt: share("cardAlt", { name: season.name[locale] }),
   });
 }
