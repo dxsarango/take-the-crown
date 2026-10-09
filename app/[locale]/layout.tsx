@@ -5,6 +5,7 @@ import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { AuthProvider } from "@/components/auth/auth-provider";
 import { TimeZoneCookie } from "@/components/time-zone";
+import { SpeedMeasurement } from "@/components/speed-insights";
 import { WebAnalytics } from "@/components/web-analytics";
 import { routing } from "@/i18n/routing";
 import { serverEnv } from "@/lib/env.server";
@@ -51,7 +52,12 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
           <AuthProvider season={seasonId}>{children}</AuthProvider>
           <TimeZoneCookie />
           {/* Only on the live site: previews and local runs are not visitors. */}
-          {process.env.VERCEL_ENV === "production" && <WebAnalytics />}
+          {process.env.VERCEL_ENV === "production" && (
+            <>
+              <WebAnalytics />
+              <SpeedMeasurement />
+            </>
+          )}
         </NextIntlClientProvider>
       </body>
     </html>

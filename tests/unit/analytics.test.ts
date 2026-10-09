@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { scrubAnalyticsEvent } from "@/lib/analytics";
+import { scrubAnalyticsEvent, scrubVitalsEvent } from "@/lib/analytics";
 
 const view = (url: string) => scrubAnalyticsEvent({ type: "pageview", url });
 
@@ -50,5 +50,32 @@ describe("scrubAnalyticsEvent", () => {
   it("sends nothing it cannot read", () => {
     expect(view("not a url")).toBeNull();
     expect(view("")).toBeNull();
+  });
+});
+
+describe("scrubVitalsEvent", () => {
+  const vital = (url: string, route?: string) => scrubVitalsEvent({ type: "vital", url, route });
+
+  it("keeps the path, the route template and the campaign tags", () => {
+    expect(vital("https://takethecrown.app/en/u/ana?utm_source=x", "/[locale]/u/[name]")).toEqual({
+      type: "vital",
+      url: "https://takethecrown.app/en/u/ana?utm_source=x",
+      route: "/[locale]/u/[name]",
+    });
+  });
+
+  it("drops what the address carries besides the campaign: checkout ids, emails, redirects, the fragment", () => {
+    expect(vital("https://takethecrown.app/en?lock=7f3c1b9e-0000-4000-8000-000000000000&email=ana%40example.com&login=%2Fen%2Fsettings&utm_medium=social#top")?.url).toBe(
+      "https://takethecrown.app/en?utm_medium=social",
+    );
+  });
+
+  it.each(["/en/admin", "/es/settings/profile?x=1", "/en/alerts/off?token=secret"])("does not measure the private page %s", (path) => {
+    expect(vital(`https://takethecrown.app${path}`)).toBeNull();
+  });
+
+  it("sends nothing it cannot read or that is not a vital", () => {
+    expect(vital("not a url")).toBeNull();
+    expect(scrubVitalsEvent({ type: "event" as "vital", url: "https://takethecrown.app/en" })).toBeNull();
   });
 });
