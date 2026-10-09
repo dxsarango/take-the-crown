@@ -124,8 +124,9 @@ test("link previews use the matching share card", async ({ page }) => {
     };
   };
 
+  // The home data is cached for 10 s, and the server may have rendered it before the kingdom was seeded.
+  await expect.poll(async () => (await meta("/es")).image, { timeout: 20_000 }).toBe(`${SITE}/og/challenge/${ids.challenge}?locale=es`);
   const home = await meta("/es");
-  expect(home.image).toBe(`${SITE}/og/challenge/${ids.challenge}?locale=es`);
   expect(home.twitter).toBe("summary_large_image");
   expect(home.twitterImage).toBe(home.image);
 
@@ -146,5 +147,6 @@ test("link previews use the matching share card", async ({ page }) => {
     "select r.profile_id, r.id from reigns r join profiles p on p.id = r.profile_id where p.name = 'theo_builds' and r.season_id = 0 order by r.duration_seconds desc limit 1",
   );
   await sql("update seasons set king_profile_id = $1 where id = 0", [theo.profile_id]);
-  expect((await meta("/en/seasons/genesis")).image).toBe(`${SITE}/og/victory/${theo.id}?locale=en`);
+  // The seasons are read through a 10 s cache.
+  await expect.poll(async () => (await meta("/en/seasons/genesis")).image, { timeout: 20_000 }).toBe(`${SITE}/og/victory/${theo.id}?locale=en`);
 });
