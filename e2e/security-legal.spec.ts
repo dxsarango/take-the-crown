@@ -194,6 +194,8 @@ test.describe("withdrawal acknowledgment", () => {
 test.describe("legal pages", () => {
   test("render the four pages in both languages with the game's numbers", async ({ page }) => {
     await sql("update app_config set legal_contact_email = 'legal@crown.test', legal_city = 'Loja', legal_effective_date = '2026-11-01'");
+    // The legal settings are read through a 10 s cache.
+    await expect.poll(async () => (await page.request.get("/es/terms")).text(), { timeout: 20_000 }).toContain("legal@crown.test");
     for (const [locale, messages, title] of [
       ["en", en, { rules: "Rules", faq: "FAQ", terms: "Terms of Service", privacy: "Privacy Policy" }],
       ["es", es, { rules: "Reglas", faq: "Preguntas frecuentes", terms: "Términos del servicio", privacy: "Política de privacidad" }],
