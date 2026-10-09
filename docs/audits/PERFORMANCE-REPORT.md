@@ -64,7 +64,7 @@ Statuses: **verified** (with the evidence), **fixed** (with the PR and its tests
 
 ## Load test
 
-Not run (production is off limits). There is no k6 plan in the repository yet, so the owner commands below include a starting script.
+Not run (production is off limits). The read-only plan is `scripts/load/read-only.k6.js` (owner checklist, step 6).
 
 - **Realtime limits for the plan** (Supabase documentation, Realtime limits): Free 200 concurrent connections and 100 messages/s; Pro 500 and 500; Pro without spend cap and Team 10,000 and 2,500; each project can be raised on request. One open home page is one connection. **Decide before launch**: a post that brings more than 500 simultaneous viewers saturates Pro with the spend cap on. What happens then is now graceful (30 s refresh through the CDN-cached route) rather than a frozen page, and the database cost of the refresh no longer scales with viewers (P2); but the live feel is lost, so the decision is the owner's: lift the cap on launch day, or accept the fallback.
 - **Database message throughput.** Realtime `postgres_changes` is delivered by one process per database and is the slowest delivery mode; the page listens to two tables (`crown_state` updates, `events` inserts) with no filter, so every event reaches every viewer. Achievement and rank events are inserted per player; at launch this is the volume to watch (message count in the Realtime dashboard).
@@ -93,22 +93,7 @@ Open: [#71](https://github.com/dxsarango/take-the-crown/pull/71) (INP, with this
 3. Run the **Supabase Performance Advisor** on the hosted project (Dashboard → Advisors → Performance). Expected: no unindexed foreign keys beyond `crown_state`, `achievements` and `admin_actions`; "unused index" notes are expected before traffic.
 4. **TTFB by region**: WebPageTest (Moto G, 4G) for `https://takethecrown.app/en` from three or more regions.
 5. **Decide the Realtime plan** (limits above) before launch day, and check **Settings → Realtime** on the project for the concurrent connection and messages-per-second ceilings.
-6. **Load test**, against production in prelaunch, from your machine, off-peak, with the Supabase and Vercel dashboards open. Starting script (`k6 run home-spike.js`):
-
-   ```js
-   import http from "k6/http";
-   import { check, sleep } from "k6";
-   export const options = {
-     stages: [{ duration: "1m", target: 200 }, { duration: "3m", target: 200 }, { duration: "1m", target: 0 }],
-     thresholds: { http_req_failed: ["rate<0.01"], http_req_duration: ["p(95)<800"] },
-   };
-   export default function () {
-     const home = http.get("https://takethecrown.app/en");
-     check(home, { ok: (r) => r.status === 200 });
-     http.get("https://takethecrown.app/api/home?v=w1");
-     sleep(5 + Math.random() * 10);
-   }
-   ```
+6. **Load test**, against production in prelaunch, from your machine, off-peak, with the Supabase and Vercel dashboards open: `k6 run -e PROFILE=<player name> scripts/load/read-only.k6.js`. Anonymous GETs only (home, `/api/home`, kingdom, a profile, a season), ramp to 200 virtual users in 2 minutes, hold 5, ramp down in 1; it fails above 1% errors or a p95 of 800 ms and aborts above 10% errors. The Cloudflare rate-limit rule only counts non-GET writes, so it does not match this traffic.
 
    Record error rate, p95 latency, Supabase CPU and connections, and Vercel function concurrency and duration. The page-view path should keep the database near idle (cached reads); if Supabase CPU moves, look at `pg_stat_statements` for which statement. A takeover under contention is the lock test in `tests/db/concurrency.test.ts`; a production run of it needs the test payment provider and is not recommended.
 7. **Realtime connections near the plan limit**: k6 has no Realtime support; use the Supabase Realtime inspector or a small script with `@supabase/supabase-js` opening N channels from your machine, and watch the Realtime dashboard.
