@@ -9,8 +9,7 @@ import { BRAND_NAME } from "@/lib/config/brand";
 import { shareMetadata } from "@/lib/og/metadata";
 import { withBrand } from "@/lib/seo";
 import { cachedSeasons } from "@/lib/home/cache";
-import { fetchHallOfFame } from "@/lib/realm/data";
-import { publicClient } from "@/lib/supabase/public";
+import { cachedHallOfFame } from "@/lib/realm/cache";
 import { readerTimeZone } from "@/lib/time-zone.server";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/hall-of-fame">): Promise<Metadata> {
@@ -32,11 +31,10 @@ export default async function HallOfFamePage({ params }: PageProps<"/[locale]/ha
   if (!hasLocale(routing.locales, locale)) notFound();
   setRequestLocale(locale);
 
-  const db = publicClient();
   const { seasons, currentId } = await cachedSeasons();
   const current = seasons.find((s) => s.id === currentId);
   if (!current) notFound();
-  const hall = await fetchHallOfFame(db, currentId);
+  const hall = await cachedHallOfFame(currentId);
   return (
     <TimeZoneProvider timeZone={await readerTimeZone()}>
       <HallView
