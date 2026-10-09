@@ -40,6 +40,9 @@ function useCrownShake(active: boolean): -1 | 0 | 1 {
 type Props = { season: number; king: King | null; locked: boolean };
 
 function Scene({ season, king, shift, size }: { season: number; king: King | null; shift: -1 | 0 | 1; size: ThroneSize }) {
+  // Both scenes are in the HTML and CSS hides one. A hidden image still downloads unless it is lazy;
+  // phones are the main audience, so the desktop scene waits to be shown and the phone one is the LCP.
+  const mobile = size === "mobile";
   const { width, height, scale } = THRONE_SIZES[size];
   const origin = portraitOrigin(width, height);
   return (
@@ -51,6 +54,8 @@ function Scene({ season, king, shift, size }: { season: number; king: King | nul
           width={width * scale}
           height={height * scale}
           alt=""
+          loading={mobile ? "eager" : "lazy"}
+          fetchPriority={mobile ? "high" : undefined}
           className="block [image-rendering:pixelated]"
         />
         {king && (
