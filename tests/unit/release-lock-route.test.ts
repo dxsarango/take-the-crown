@@ -2,9 +2,17 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 let sameOrigin = true;
 let rpcError: { message: string } | null = null;
+let lockStatus: string | null = "active";
 const rpc = vi.fn(async () => ({ error: rpcError }));
+const revalidateHome = vi.fn();
 vi.mock("@/lib/security/request", () => ({ sameOrigin: () => sameOrigin }));
-vi.mock("@/lib/supabase/service", () => ({ serviceClient: () => ({ rpc }) }));
+vi.mock("@/lib/home/cache", () => ({ revalidateHome: () => revalidateHome() }));
+vi.mock("@/lib/supabase/service", () => ({
+  serviceClient: () => ({
+    rpc,
+    from: () => ({ select: () => ({ eq: () => ({ maybeSingle: async () => ({ data: lockStatus ? { status: lockStatus } : null }) }) }) }),
+  }),
+}));
 
 const { POST } = await import("@/app/api/locks/[id]/release/route");
 
@@ -15,7 +23,9 @@ describe("POST /api/locks/[id]/release", () => {
   beforeEach(() => {
     sameOrigin = true;
     rpcError = null;
+    lockStatus = "active";
     rpc.mockClear();
+    revalidateHome.mockClear();
   });
 
   it("frees the lock with one database call and answers 204", async () => {
@@ -36,10 +46,22 @@ describe("POST /api/locks/[id]/release", () => {
     expect(finished).toBe(true);
   });
 
-  it("refuses another site without touching the database", async () => {
+  it("refreshes the home's cached lock state when a held lock is released", async () => {
+    await call(ID);
+    expect(revalidateHome).toHaveBeenCalledTimes(1);
+  });
+
+  it.each(["expired", "used", null])("leaves the cache alone for a lock that is %s", async (status) => {
+    lockStatus = status;
+    expect((await call(ID)).status).toBe(204);
+    expect(revalidateHome).not.toHaveBeenCalled();
+  });
+
+  it("refuses another site without touching the database or the cache", async () => {
     sameOrigin = false;
     expect((await call(ID)).status).toBe(403);
     expect(rpc).not.toHaveBeenCalled();
+    expect(revalidateHome).not.toHaveBeenCalled();
   });
 
   it("refuses an id that is not a uuid", async () => {
@@ -50,5 +72,6 @@ describe("POST /api/locks/[id]/release", () => {
   it("says so when the database fails, so the page does not think the crown is free", async () => {
     rpcError = { message: "down" };
     expect((await call(ID)).status).toBe(500);
+    expect(revalidateHome).not.toHaveBeenCalled();
   });
 });
