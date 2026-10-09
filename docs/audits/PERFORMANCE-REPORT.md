@@ -64,7 +64,23 @@ Statuses: **verified** (with the evidence), **fixed** (with the PR and its tests
 
 ## Load test
 
-Not run (production is off limits). The read-only plan is `scripts/load/read-only.k6.js` (owner checklist, step 6).
+The read-only plan is `scripts/load/read-only.k6.js` (owner checklist, step 6).
+
+**Run on 2026-10-09 against production in prelaunch** (owner's machine, through Cloudflare; anonymous GETs only; 200 virtual users, 2 min ramp, 5 min hold, 1 min down). **Passed.**
+
+| Route | p50 | p95 | p99 | Vercel p75 duration |
+|---|---|---|---|---|
+| All | 242 ms | 464 ms | 635 ms | |
+| `/en` | 245 ms | 390 ms | 584 ms | 71 ms |
+| `/api/home?v=` | 129 ms | 227 ms | 315 ms | 143 ms |
+| `/en/kingdom` | 279 ms | 433 ms | 639 ms | 126 ms |
+| `/en/u/<name>` | 406 ms | 607 ms | 780 ms | 247 ms |
+| `/en/seasons/genesis` | 336 ms | 508 ms | 710 ms | 174 ms |
+
+- 17,261 requests (35/s), 0 errors, 0 failed checks. One home request took 5.06 s, consistent with the 0.4% cold starts.
+- Vercel: 0% errors and timeouts, cold starts 0.4%, memory 256 MB of 2 GB, CPU throttle 5.5% (p75). `/api/home` ran 245 functions for about 5,750 requests: the CDN answered about 96% of them (P2 holds).
+- Supabase (Free plan): CPU 4%, memory 62%, peak connections 24 of 60, 0.02% errors. The API gateway count rose to about 75,000 requests in 24 hours, nearly all of them during the run: profile, season and kingdom pages read the database on every request (P14).
+- Client latency includes the round trip from the owner's machine to `iad1`; the Vercel column is the server's share.
 
 - **Realtime limits for the plan** (Supabase documentation, Realtime limits): Free 200 concurrent connections and 100 messages/s; Pro 500 and 500; Pro without spend cap and Team 10,000 and 2,500; each project can be raised on request. One open home page is one connection. **Decide before launch**: a post that brings more than 500 simultaneous viewers saturates Pro with the spend cap on. What happens then is now graceful (30 s refresh through the CDN-cached route) rather than a frozen page, and the database cost of the refresh no longer scales with viewers (P2); but the live feel is lost, so the decision is the owner's: lift the cap on launch day, or accept the fallback.
 - **Database message throughput.** Realtime `postgres_changes` is delivered by one process per database and is the slowest delivery mode; the page listens to two tables (`crown_state` updates, `events` inserts) with no filter, so every event reaches every viewer. Achievement and rank events are inserted per player; at launch this is the volume to watch (message count in the Realtime dashboard).
@@ -79,6 +95,7 @@ Not run (production is off limits). The read-only plan is `scripts/load/read-onl
 | P11 | `/api/home?v=` accepts any well-formed `v`, so a client can bypass the edge cache | Same exposure as before (the old path queried Supabase directly with the public key); add a rate limit rule in the Vercel firewall for `/api/home` if abused |
 | P12 | Home still ships about 412 KB gzip of JavaScript, of which the Supabase client is about 160 KB | The realtime client could be loaded after first paint on the home page too (a dynamic import inside `useLiveHome`); I left it because the page then renders from server data with no live feel for a moment, a product call |
 | P13 | `season_leaderboard`, `country_leaderboard` and `profile_stats` are views over all reigns | Materialise or cache only if production statements show them (see Database) |
+| P14 | Profile, season and kingdom pages read the database on every request (only the season list is cached). A profile view makes about ten PostgREST calls, and `generateMetadata` and the page repeat the name lookup and the ban check. The load test kept the database at 4% CPU, so this is cost and headroom, not a launch blocker | Cache the public profile and season data for 10–30 s with `unstable_cache` keyed by id and tagged for invalidation on takeover; keep the viewer-specific parts per request |
 
 ## Pull requests
 
