@@ -150,80 +150,33 @@ export type HallRow =
 
 export type HallScope = { tabs: Record<HallTab, HallRow[]> };
 
-type Board = { season_id: number | null; profile_id: string | null; crowns: number | null; longest_seconds: number | null; shortest_seconds: number | null };
-type CountryRow = { season_id: number | null; country_code: string | null; reign_seconds: number | null; kings: number | null };
+type HallRowRaw = { tab: string; profile_id: string | null; country_code: string | null; value: number; kings: number | null };
 
-function personRows(board: Board[], people: Map<string, Person>, pick: (b: Board[]) => number | null, order: 1 | -1): HallRow[] {
-  const byProfile = new Map<string, Board[]>();
-  for (const b of board) {
-    if (!b.profile_id) continue;
-    byProfile.set(b.profile_id, [...(byProfile.get(b.profile_id) ?? []), b]);
-  }
-  return [...byProfile.entries()]
-    .flatMap(([id, rows]) => {
-      const value = pick(rows);
-      const person = people.get(id);
-      return value === null || !person ? [] : [{ kind: "person" as const, person, value }];
-    })
-    .sort((a, b) => order * (b.value - a.value))
-    .slice(0, HALL_SIZE);
+function scopeRows(rows: HallRowRaw[], people: Map<string, Person>): HallScope {
+  const tab = (name: HallTab): HallRow[] =>
+    rows
+      .filter((r) => r.tab === name)
+      .flatMap((r): HallRow[] => {
+        if (name === "countries") return r.country_code ? [{ kind: "country", countryCode: r.country_code, value: r.value, kings: r.kings ?? 0 }] : [];
+        const person = r.profile_id ? people.get(r.profile_id) : undefined;
+        return person ? [{ kind: "person", person, value: r.value }] : [];
+      });
+  return { tabs: { longest: tab("longest"), most: tab("most"), shortest: tab("shortest"), countries: tab("countries") } };
 }
 
-function scopeRows(board: Board[], countries: CountryRow[], people: Map<string, Person>): HallScope {
-  const max = (rows: Board[], key: "longest_seconds" | "shortest_seconds", fn: (...v: number[]) => number) => {
-    const values = rows.map((r) => r[key]).filter((v): v is number => v !== null);
-    return values.length ? fn(...values) : null;
-  };
-  const byCountry = new Map<string, { value: number; kings: number }>();
-  for (const c of countries) {
-    if (!c.country_code) continue;
-    const prev = byCountry.get(c.country_code) ?? { value: 0, kings: 0 };
-    byCountry.set(c.country_code, { value: prev.value + (c.reign_seconds ?? 0), kings: prev.kings + (c.kings ?? 0) });
-  }
-  return {
-    tabs: {
-      longest: personRows(board, people, (r) => max(r, "longest_seconds", Math.max), 1),
-      most: personRows(board, people, (r) => r.reduce((sum, b) => sum + (b.crowns ?? 0), 0), 1),
-      shortest: personRows(board, people, (r) => max(r, "shortest_seconds", Math.min), -1),
-      countries: [...byCountry.entries()]
-        .map(([countryCode, v]) => ({ kind: "country" as const, countryCode, ...v }))
-        .sort((a, b) => b.value - a.value)
-        .slice(0, HALL_SIZE),
-    },
-  };
-}
-
-/** The four records for the current season and for all time. */
+/** The four records for the current season and for all time, ranked by the database. */
 export async function fetchHallOfFame(db: PublicClient, seasonId: number): Promise<{ season: HallScope; all: HallScope }> {
-  const [boardRes, countryRes, reignsRes] = await Promise.all([
-    db.from("season_leaderboard").select("season_id, profile_id, crowns, longest_seconds, shortest_seconds"),
-    db.from("country_leaderboard").select("season_id, country_code, reign_seconds, kings"),
-    // A player can reign for the same country in several seasons: count them once for all time.
-    db.from("public_reigns").select("profile_id, country_code").not("country_code", "is", null).eq("reversed", false),
+  const [seasonRes, allRes] = await Promise.all([
+    db.rpc("hall_of_fame", { p_season_id: seasonId, p_limit: HALL_SIZE }),
+    db.rpc("hall_of_fame", { p_limit: HALL_SIZE }),
   ]);
-  const board = must(boardRes, "leaderboard");
-  const countries = must(countryRes, "country leaderboard");
+  const season = must(seasonRes, "hall of fame") as HallRowRaw[];
+  const all = must(allRes, "hall of fame") as HallRowRaw[];
   const people = await fetchPeople(
     db,
-    board.flatMap((b) => (b.profile_id ? [b.profile_id] : [])),
+    [...season, ...all].flatMap((r) => (r.profile_id ? [r.profile_id] : [])),
   );
-  const all = scopeRows(board, countries, people);
-  const kings = new Map<string, Set<string>>();
-  for (const r of must(reignsRes, "reigns")) {
-    if (!r.country_code || !r.profile_id) continue;
-    kings.set(r.country_code, (kings.get(r.country_code) ?? new Set()).add(r.profile_id));
-  }
-  all.tabs.countries = all.tabs.countries.map((row) =>
-    row.kind === "country" ? { ...row, kings: kings.get(row.countryCode)?.size ?? row.kings } : row,
-  );
-  return {
-    season: scopeRows(
-      board.filter((b) => b.season_id === seasonId),
-      countries.filter((c) => c.season_id === seasonId),
-      people,
-    ),
-    all,
-  };
+  return { season: scopeRows(season, people), all: scopeRows(all, people) };
 }
 
 // ---------------------------------------------------------------------------
