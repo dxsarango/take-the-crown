@@ -142,6 +142,22 @@ test("a declined payment frees the crown at once and shows the payment error", a
   expect((await next.json()).ok).toBe(true);
 });
 
+// The home data the page embeds for its client code (messages carry the lock texts either way).
+const LOCKED_IN_PAGE = String.raw`\"isLocked\":true`;
+
+test("a released lock stops showing on the home page for the next visitor straight away", async ({ page, request }) => {
+  await seedKingdom();
+  const lock = await (await takeLock(page.request, buyer("holder").name)).json();
+  // The home page reads the lock through a 10 s cache: wait until it holds the locked state.
+  await expect
+    .poll(async () => (await (await request.get("/en")).text()).includes(LOCKED_IN_PAGE), { timeout: 20_000 })
+    .toBe(true);
+  const released = await request.post(`/api/locks/${lock.lockId}/release`);
+  expect(released.status()).toBe(204);
+  // The very next load, inside the cache window, shows the crown free.
+  expect(await (await request.get("/en")).text()).not.toContain(LOCKED_IN_PAGE);
+});
+
 test("coming back from a cancelled redirect checkout frees the crown at once", async ({ page }) => {
   await seedKingdom();
   const lock = await (await takeLock(page.request, buyer("redirected").name)).json();
