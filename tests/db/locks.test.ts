@@ -3,6 +3,7 @@ import {
   Player,
   createLock,
   expireLock,
+  pay,
   one,
   q,
   svc,
@@ -132,4 +133,47 @@ describe("create_price_lock", () => {
     await expect(createLock()).rejects.toThrow("season_closed");
   });
 
+});
+
+// A rejected, declined or cancelled payment frees the crown through release_price_lock, called
+// by POST /api/locks/[id]/release. These pin what that guarantees without any waiting: the
+// database changes in the call itself, so the answer to the request is the moment others can buy.
+describe("release_price_lock", () => {
+  it("frees the crown in the call itself, and again is harmless", async () => {
+    const lock = await createLock();
+    expect((await one<{ is_locked: boolean }>("select is_locked from public_crown_state")).is_locked).toBe(true);
+
+    await svc("select release_price_lock($1)", [lock.id]);
+    expect(await one("select active_lock_id, active_lock_expires_at from crown_state")).toEqual({ active_lock_id: null, active_lock_expires_at: null });
+    expect((await one<{ status: string }>("select status from price_locks where id = $1", [lock.id])).status).toBe("expired");
+    await expect(createLock()).resolves.toMatchObject({ status: "active" });
+
+    // A second release of the old lock must not free the new holder's lock.
+    const holder = await one<{ active_lock_id: string }>("select active_lock_id from crown_state");
+    await svc("select release_price_lock($1)", [lock.id]);
+    expect((await one<{ active_lock_id: string }>("select active_lock_id from crown_state")).active_lock_id).toBe(holder.active_lock_id);
+  });
+
+  it("does not undo a payment that already crowned the buyer", async () => {
+    const lock = await createLock();
+    expect(await pay(lock)).toBe("applied");
+    const before = await one("select current_reign_id, active_lock_id from crown_state");
+    await svc("select release_price_lock($1)", [lock.id]);
+    expect(await one("select current_reign_id, active_lock_id from crown_state")).toEqual(before);
+    expect((await one<{ status: string }>("select status from price_locks where id = $1", [lock.id])).status).not.toBe("expired");
+  });
+
+  it("leaves the crown consistent whichever of a payment and a release lands first", async () => {
+    for (let round = 0; round < 8; round++) {
+      const lock = await createLock();
+      const [result] = await Promise.all([pay(lock), svc("select release_price_lock($1)", [lock.id])]);
+      const state = await one<{ active_lock_id: string | null }>("select active_lock_id from crown_state");
+      expect(state.active_lock_id).toBeNull();
+      // Either the buyer was crowned, or the payment came after the release and is refunded: never both.
+      const reigns = await q("select 1 from reigns where payment_id = (select id from payments where lock_id = $1)", [lock.id]);
+      expect(reigns).toHaveLength(result === "applied" ? 1 : 0);
+      expect(["applied", "refund_pending"]).toContain(result);
+      expect((await q("select 1 from reigns where ended_at is null")).length).toBeLessThanOrEqual(1);
+    }
+  });
 });

@@ -116,17 +116,40 @@ test("moderation rejects before any lock exists", async ({ page }) => {
   await expect(page.getByText(en.payment.rejLinkLine)).toHaveCount(0);
 });
 
-test("a declined payment frees the crown and shows the payment error", async ({ page }) => {
+const RELEASE_URL = /[/]api[/]locks[/][0-9a-f-]{36}[/]release$/;
+const takeLock = (request: Page["request"], name: string) =>
+  request.post("/api/locks", { data: { name, email: `${name}@test.local`, locale: "en", acceptWithdrawal: true, turnstileToken: HUMAN_TOKEN } });
+
+// Waits for the release request itself, never for a number of seconds: how long the server takes
+// to answer the first call to a route (the dev server compiles it) says nothing about the lock.
+test("a declined payment frees the crown at once and shows the payment error", async ({ page }) => {
   await seedKingdom();
   await page.goto("/en");
   await openModal(page);
   await fillForm(page, buyer());
   await submit(page);
+  const released = page.waitForResponse((r) => r.request().method() === "POST" && RELEASE_URL.test(r.url()));
   await page.getByRole("button", { name: en.payment.test.decline }).filter({ visible: true }).click();
+  expect((await released).status()).toBe(204);
   await expect(dialog(page)).toHaveCount(0);
   await expect(visible(page, en.homeStates.payErr1)).toBeVisible();
   await expect(visible(page, en.homeStates.payErr2)).toBeVisible();
-  await expect.poll(async () => (await sql("select 1 from crown_state where active_lock_id is null")).length).toBe(1);
+  // The answer came after the database changed: no waiting, and the next buyer is not turned away.
+  expect(await sql("select 1 from crown_state where active_lock_id is null")).toHaveLength(1);
+  expect(await sql("select 1 from price_locks where status = 'active'")).toHaveLength(0);
+  const next = await takeLock(page.request, buyer("next").name);
+  expect(next.status()).toBe(200);
+  expect((await next.json()).ok).toBe(true);
+});
+
+test("coming back from a cancelled redirect checkout frees the crown at once", async ({ page }) => {
+  await seedKingdom();
+  const lock = await (await takeLock(page.request, buyer("redirected").name)).json();
+  expect(await sql("select 1 from crown_state where active_lock_id is not null")).toHaveLength(1);
+  const released = page.waitForResponse((r) => r.request().method() === "POST" && RELEASE_URL.test(r.url()));
+  await page.goto(`/en?lock=${lock.lockId}&cancelled=1`);
+  expect((await released).status()).toBe(204);
+  expect(await sql("select 1 from crown_state where active_lock_id is null")).toHaveLength(1);
 });
 
 test("an expired lock closes checkout and shows the current price", async ({ page }) => {
