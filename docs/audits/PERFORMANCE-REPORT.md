@@ -14,7 +14,7 @@ Statuses: **verified** (with the evidence), **fixed** (with the PR and its tests
 | P4 | Medium | Every public page ran its own database reads per request: the layout read the current season on every page, realm and legal pages read the season list twice (metadata and body), the home page and the legal pages read `app_config` | fixed, [#66](https://github.com/dxsarango/take-the-crown/pull/66) |
 | P5 | Medium | Phones downloaded the 121 KB desktop throne scene as well as their own 70 KB one: CSS hides one of the two scenes but a hidden `img` still downloads | fixed, [#69](https://github.com/dxsarango/take-the-crown/pull/69) |
 | P6 | Medium | `useServerNow` ticks every second in the top component of every page, so the whole page tree re-renders once a second (on the home page: the throne scene, every list, the footer), and it keeps ticking in a hidden tab. This is the INP risk the audit names | fixed, [#71](https://github.com/dxsarango/take-the-crown/pull/71) |
-| P7 | Medium | No real-user measurement of Core Web Vitals | owner (Speed Insights) |
+| P7 | Medium | No real-user measurement of Core Web Vitals | fixed in code, [#73](https://github.com/dxsarango/take-the-crown/pull/73); needs enabling in Vercel |
 | P8–P13 | Low | See "Low findings" | listed |
 
 ## Measure first
@@ -88,7 +88,7 @@ Open: [#71](https://github.com/dxsarango/take-the-crown/pull/71) (INP, with this
 
 ## Owner checklist
 
-1. Enable Vercel **Speed Insights** (decision: it adds a provider, so first update `docs/legal/privacy.*.md` to disclose it, as for Web Analytics). Until then there are no real-user Web Vitals.
+1. After [#73](https://github.com/dxsarango/take-the-crown/pull/73) merges: enable **Speed Insights** in the Vercel project (Speed Insights tab → Enable) and redeploy. The code, the scrubbing and the privacy policy update (both languages) are in that PR; until it is enabled there are no real-user Web Vitals.
 2. Run **PageSpeed Insights** (mobile) on a Vercel preview or the production URL for `/en`, `/es`, a profile, `/en/kingdom`, `/en/hall-of-fame` and a season page. Record score, LCP, INP, CLS, TTFB. Compare with the lab table above.
 3. Run the **Supabase Performance Advisor** on the hosted project (Dashboard → Advisors → Performance). Expected: no unindexed foreign keys beyond `crown_state`, `achievements` and `admin_actions`; "unused index" notes are expected before traffic.
 4. **TTFB by region**: WebPageTest (Moto G, 4G) for `https://takethecrown.app/en` from three or more regions.
