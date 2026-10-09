@@ -44,3 +44,66 @@ test("the sign-in dialog loads when it opens, not before", async ({ page }) => {
   await expect(page.getByRole("dialog")).toBeVisible();
   expect(scripts.length).toBeGreaterThan(before);
 });
+
+// The live clock re-renders only what shows it. React reports each commit to this hook; a
+// component is counted when it did work in the commit (dev builds keep component names).
+const COUNT_RENDERS = () => {
+  const counts: Record<string, number> = {};
+  (window as unknown as { __renders: Record<string, number> }).__renders = counts;
+  type Fiber = { child: Fiber | null; sibling: Fiber | null; flags: number; type: unknown; alternate: Fiber | null };
+  // A subtree React skipped keeps its old flags and the same child as its alternate: do not enter it.
+  const walk = (fiber: Fiber | null) => {
+    for (let f = fiber; f; f = f.sibling) {
+      const name = typeof f.type === "function" ? (f.type as { name?: string }).name : undefined;
+      if (name && f.alternate && f.flags & 1) counts[name] = (counts[name] ?? 0) + 1;
+      if (!f.alternate || f.child !== f.alternate.child) walk(f.child);
+    }
+  };
+  (window as unknown as Record<string, unknown>).__REACT_DEVTOOLS_GLOBAL_HOOK__ = {
+    supportsFiber: true,
+    renderers: new Map(),
+    inject: () => 1,
+    onScheduleFiberRoot: () => undefined,
+    onCommitFiberUnmount: () => undefined,
+    checkDCE: () => undefined,
+    onCommitFiberRoot: (_id: number, root: { current: Fiber }) => walk(root.current),
+  };
+};
+
+const renders = (page: Page) => page.evaluate(() => (window as unknown as { __renders: Record<string, number> }).__renders);
+const resetRenders = (page: Page) => page.evaluate(() => Object.keys((window as unknown as { __renders: object }).__renders).forEach((k) => delete (window as unknown as { __renders: Record<string, number> }).__renders[k]));
+
+test.describe("the live clock", () => {
+  test("ticks in the hero and nowhere else on the home page", async ({ page }) => {
+    await page.addInitScript(COUNT_RENDERS);
+    await page.goto("/en");
+    await page.waitForLoadState("networkidle");
+    await page.waitForTimeout(1500);
+    await resetRenders(page);
+    await page.waitForTimeout(4500);
+    const counts = await renders(page);
+    expect(counts.Hero ?? 0).toBeGreaterThanOrEqual(3);
+    for (const name of ["HomeView", "ThroneScene", "TopBar", "Feed", "Footer", "Succession", "HallOfFamePreview", "About"]) {
+      expect(counts[name] ?? 0, name).toBe(0);
+    }
+  });
+
+  test("stops while the tab is hidden and catches up when it is shown", async ({ page }) => {
+    await page.addInitScript(COUNT_RENDERS);
+    await page.goto("/en");
+    await page.waitForLoadState("networkidle");
+    const setVisibility = (state: "hidden" | "visible") =>
+      page.evaluate((s) => {
+        Object.defineProperty(document, "visibilityState", { configurable: true, get: () => s });
+        document.dispatchEvent(new Event("visibilitychange"));
+      }, state);
+    await setVisibility("hidden");
+    await page.waitForTimeout(500);
+    await resetRenders(page);
+    await page.waitForTimeout(3500);
+    expect((await renders(page)).Hero ?? 0).toBe(0);
+    await setVisibility("visible");
+    await page.waitForTimeout(2500);
+    expect((await renders(page)).Hero ?? 0).toBeGreaterThanOrEqual(2);
+  });
+});

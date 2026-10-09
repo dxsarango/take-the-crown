@@ -32,7 +32,7 @@ export function HallView({ current, next, manySeasons, hall, readAt }: Props) {
   const units = useTranslations("common.units");
   const messages = useMessages() as { country: Record<string, string> };
   const u = { h: units("h"), m: units("m"), s: units("s") };
-  const now = useServerNow(readAt);
+  const now = useServerNow(readAt, 60_000);
   const { day, locale } = useDates();
   const [scope, setScope] = useState<"season" | "all">("season");
   const [tab, setTab] = useState<HallTab>("longest");
