@@ -31,7 +31,7 @@ export const ANON_READABLE = [
 export const ANON_HIDDEN_COLUMNS = { profiles: ["user_id"], crown_state: ["active_lock_id"] };
 
 /** The only functions clients may call: pure price and rank math, and name lookup. None is security definer. */
-export const CLIENT_FUNCTIONS = ["current_price_cents", "price_at", "profile_id_for_name", "rank_for_seconds"];
+export const CLIENT_FUNCTIONS = ["current_price_cents", "hall_of_fame", "price_at", "profile_id_for_name", "rank_for_seconds"];
 
 /** Every table in the public schema has row level security on. */
 export async function rlsProblems(query) {

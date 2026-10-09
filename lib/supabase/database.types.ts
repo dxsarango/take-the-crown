@@ -856,6 +856,11 @@ isOneToOne: false
 "generate_profile_name":
 { Args: Record<PropertyKey, never>; Returns: string
                            },
+"hall_of_fame":
+{ Args: { "p_limit"?: number,"p_season_id"?: number }; Returns: {
+              "country_code": string,"kings": number,"profile_id": string,"tab": string,"value": number
+            }[]
+                           },
 "hide_reign_message":
 { Args: { "p_admin_profile_id": string,"p_reign_id": number }; Returns: undefined
                            },
