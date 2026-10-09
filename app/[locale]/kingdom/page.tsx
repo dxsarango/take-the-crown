@@ -9,8 +9,7 @@ import { BRAND_NAME } from "@/lib/config/brand";
 import { shareMetadata } from "@/lib/og/metadata";
 import { withBrand } from "@/lib/seo";
 import { cachedSeasons } from "@/lib/home/cache";
-import { fetchHistoryPage, fetchSeasonSummary } from "@/lib/realm/data";
-import { publicClient } from "@/lib/supabase/public";
+import { cachedKingdom } from "@/lib/realm/cache";
 import { readerTimeZone } from "@/lib/time-zone.server";
 
 export async function generateMetadata({ params, searchParams }: PageProps<"/[locale]/kingdom">): Promise<Metadata> {
@@ -38,14 +37,13 @@ export default async function KingdomPage({ params, searchParams }: PageProps<"/
   if (!hasLocale(routing.locales, locale)) notFound();
   setRequestLocale(locale);
 
-  const db = publicClient();
   const { seasons, currentId } = await cachedSeasons();
   const slug = (await searchParams).season;
   const selected = seasons.find((s) => (typeof slug === "string" ? s.slug === slug : s.id === currentId));
   // Seasons that have not started have no history yet.
   if (!selected || selected.id > currentId) notFound();
 
-  const [entries, summary] = await Promise.all([fetchHistoryPage(db, selected.id), fetchSeasonSummary(db, selected.id)]);
+  const { entries, summary } = await cachedKingdom(selected.id);
   return (
     <TimeZoneProvider timeZone={await readerTimeZone()}>
       <KingdomView
