@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { useLocale } from "next-intl";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { type ComponentProps, useCallback, useEffect, useRef, useState } from "react";
 import { announceReignUnlocks } from "@/components/achievements/unlock-toasts";
 import { useAuth } from "@/components/auth/auth-provider";
 import { type CheckoutReturn, type Draft, type PaymentResult, newAvatarSeed, releaseLock, takeDraft } from "@/components/payment/use-payment";
@@ -13,7 +13,7 @@ import { heroState } from "@/lib/home/hero";
 import { Hero, type HomeNotice, KingMessage } from "./hero";
 import { About, Feed, Footer, HallOfFamePreview, Succession } from "./sections";
 import { ThroneScene } from "./throne-scene";
-import { useServerNow } from "@/components/use-server-now";
+import { useServerClock, useServerNow } from "@/components/use-server-now";
 import { useLiveHome } from "./use-live-home";
 import { PlayerName } from "@/components/player-name";
 import { artSet } from "@/lib/art/seasons";
@@ -23,6 +23,26 @@ const loadPaymentModal = () => import("@/components/payment/payment-modal").then
 const loadCoronation = () => import("./coronation").then((m) => m.Coronation);
 const PaymentModal = dynamic(loadPaymentModal);
 const Coronation = dynamic(loadCoronation);
+
+type PaymentHostProps = Omit<ComponentProps<typeof PaymentModal>, "now" | "priceCents" | "lockSeconds" | "messageMax"> & {
+  readAt: string;
+  crown: HomeData["crown"];
+  kingStartedAt: string | null;
+};
+
+/** Owns the per-second reading for the open modal, so the page itself does not tick. */
+function PaymentHost({ readAt, crown, kingStartedAt, ...modal }: PaymentHostProps) {
+  const now = useServerNow(readAt);
+  return (
+    <PaymentModal
+      {...modal}
+      priceCents={heroState(crown, kingStartedAt, now).priceCents}
+      lockSeconds={crown.lockSeconds}
+      messageMax={crown.maxMessageLength}
+      now={now}
+    />
+  );
+}
 
 type Crowning = {
   key: string;
@@ -112,10 +132,11 @@ function takeParam(url: URL, key: string): boolean {
 
 export function HomeView({ initial }: { initial: HomeData }) {
   const { data: live, refresh } = useLiveHome(initial);
-  const now = useServerNow(initial.readAt);
+  // Minute-level readings (days left, "5m ago", the year); the seconds live in Hero and the modal.
+  const minute = useServerNow(initial.readAt, 60_000);
   const { shown: data, crowning, land, end, replay, celebrate } = useCoronation(live, refresh);
   const season = data.season.id;
-  const state = heroState(data.crown, data.king?.startedAt ?? null, now);
+  const locked = useServerClock(initial.readAt, (now) => heroState(data.crown, data.king?.startedAt ?? null, now).mode === "locked");
   const [modal, setModal] = useState<{ draft: Draft; detected: boolean; returning?: CheckoutReturn } | null>(null);
   const [notice, setNotice] = useState<HomeNotice | null>(null);
   const geo = useRef<string | null>(null);
@@ -184,7 +205,7 @@ export function HomeView({ initial }: { initial: HomeData }) {
 
   return (
     <div className="flex min-h-dvh flex-col bg-crown-ink">
-      <TopBar season={data.season} now={now} heading />
+      <TopBar season={data.season} now={minute} heading />
       <main className="flex-1">
         {crowning ? (
           <Coronation
@@ -197,12 +218,12 @@ export function HomeView({ initial }: { initial: HomeData }) {
             onEnd={end}
           />
         ) : (
-          <ThroneScene season={season} king={data.king} locked={state.mode === "locked"} />
+          <ThroneScene season={season} king={data.king} locked={locked} />
         )}
         <div aria-live="polite" className="sr-only">
           {data.king && <PlayerName name={data.king.name} />}
         </div>
-        <Hero king={data.king} crown={data.crown} state={state} season={season} notice={notice} onTake={openPayment} />
+        <Hero king={data.king} crown={data.crown} readAt={data.readAt} season={season} notice={notice} onTake={openPayment} />
         {data.king && (data.king.message || data.king.link) && (
           <div className="mx-4 flex flex-col gap-2.5 pt-4 pb-6 shadow-[var(--crown-bar-top)] lg:hidden">
             <KingMessage king={data.king} size="mobile" />
@@ -212,19 +233,18 @@ export function HomeView({ initial }: { initial: HomeData }) {
           <Succession reigns={data.succession} season={season} hasKing={data.king !== null} />
           <div className="mx-4 flex flex-col gap-6 py-6 shadow-[var(--crown-bar-top)] lg:mx-0 lg:grid lg:grid-cols-2 lg:items-start lg:gap-16 lg:pt-8 lg:pb-12">
             <HallOfFamePreview hall={data.hallOfFame} season={season} />
-            <Feed items={data.feed} now={now} />
+            <Feed items={data.feed} now={minute} />
           </div>
           <About crown={data.crown} season={data.season} />
         </div>
       </main>
-      <Footer season={season} now={now} />
+      <Footer season={season} now={minute} />
       {modal && (
-        <PaymentModal
+        <PaymentHost
+          readAt={initial.readAt}
+          crown={live.crown}
+          kingStartedAt={live.king?.startedAt ?? null}
           season={season}
-          priceCents={heroState(live.crown, live.king?.startedAt ?? null, now).priceCents}
-          lockSeconds={live.crown.lockSeconds}
-          messageMax={live.crown.maxMessageLength}
-          now={now}
           initial={modal.draft}
           returning={modal.returning ?? null}
           detectedCountry={modal.detected}

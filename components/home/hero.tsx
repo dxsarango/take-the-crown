@@ -6,11 +6,12 @@ import { DropArrow, Flag, Icon, RankTag } from "@/components/art";
 import type { Locale } from "@/i18n/routing";
 import { clockParts, displayLink, formatCountdown, formatPercent, formatPrice } from "@/lib/format";
 import type { CrownState, King } from "@/lib/home/data";
-import { type HeroState, lockSegments } from "@/lib/home/hero";
+import { type HeroState, heroState, lockSegments } from "@/lib/home/hero";
 import { safeHttpsUrl } from "@/lib/links";
 import { ReportDialog } from "./report-dialog";
 import { PlayerName } from "@/components/player-name";
 import { useAuth } from "@/components/auth/auth-provider";
+import { useServerNow } from "@/components/use-server-now";
 
 /** Shown after the buyer's own payment attempt fails or their lock runs out (design states 4 and 5). */
 export type HomeNotice = "payment_failed" | "lock_expired";
@@ -18,7 +19,8 @@ export type HomeNotice = "payment_failed" | "lock_expired";
 type Props = {
   king: King | null;
   crown: CrownState;
-  state: HeroState;
+  /** When the data was read: the clock starts from it. */
+  readAt: string;
   season: number;
   notice: HomeNotice | null;
   onTake: () => void;
@@ -236,7 +238,9 @@ function Notice({ notice, priceCents, locale }: { notice: HomeNotice; priceCents
   );
 }
 
-export function Hero({ king, crown, state, season, notice, onTake }: Props) {
+export function Hero({ king, crown, readAt, season, notice, onTake }: Props) {
+  // The only per-second render on the page: the clock, the price and the lock bar live here.
+  const state = heroState(crown, king?.startedAt ?? null, useServerNow(readAt));
   const locale = useLocale() as Locale;
   const { viewer } = useAuth();
   const closed = crown.prelaunch && !viewer?.isAdmin;

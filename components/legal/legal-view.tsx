@@ -102,7 +102,7 @@ function BlockView({ block }: { block: Block }): ReactNode {
 /** Rules, FAQ, terms and privacy: one reading column, the four pages linked at the top. */
 export function LegalView({ doc, blocks, season, readAt }: { doc: LegalDoc; blocks: Block[]; season: Season; readAt: string }) {
   const home = useTranslations("home");
-  const now = useServerNow(readAt);
+  const now = useServerNow(readAt, 60_000);
   return (
     <div className="flex min-h-dvh flex-col bg-crown-ink">
       <TopBar season={season} now={now} />
