@@ -16,6 +16,7 @@ Statuses: **verified** (with the evidence), **fixed** (with the PR and its tests
 | P6 | Medium | `useServerNow` ticks every second in the top component of every page, so the whole page tree re-renders once a second (on the home page: the throne scene, every list, the footer), and it keeps ticking in a hidden tab. This is the INP risk the audit names | fixed, [#71](https://github.com/dxsarango/take-the-crown/pull/71) |
 | P7 | Medium | No real-user measurement of Core Web Vitals | fixed in code, [#73](https://github.com/dxsarango/take-the-crown/pull/73); needs enabling in Vercel |
 | P8–P13 | Low | See "Low findings" | listed |
+| P14 | Medium | Profile, season and kingdom pages read the database on every request (only the season list was cached): about ten PostgREST calls per profile view, with the name lookup and ban check repeated by `generateMetadata`. Found by the load test | fixed, [#78](https://github.com/dxsarango/take-the-crown/pull/78): their reads go through the tagged data cache (10 s), dropped by every app write that changes them; rollover and live achievements (pg_cron) show within 10 s |
 
 ## Measure first
 
@@ -79,7 +80,7 @@ The read-only plan is `scripts/load/read-only.k6.js` (owner checklist, step 6).
 
 - 17,261 requests (35/s), 0 errors, 0 failed checks. One home request took 5.06 s, consistent with the 0.4% cold starts.
 - Vercel: 0% errors and timeouts, cold starts 0.4%, memory 256 MB of 2 GB, CPU throttle 5.5% (p75). `/api/home` ran 245 functions for about 5,750 requests: the CDN answered about 96% of them (P2 holds).
-- Supabase (Free plan): CPU 4%, memory 62%, peak connections 24 of 60, 0.02% errors. The API gateway count rose to about 75,000 requests in 24 hours, nearly all of them during the run: profile, season and kingdom pages read the database on every request (P14).
+- Supabase (Free plan): CPU 4%, memory 62%, peak connections 24 of 60, 0.02% errors. The API gateway count rose to about 75,000 requests in 24 hours, nearly all of them during the run: profile, season and kingdom pages read the database on every request (P14, since fixed).
 - Client latency includes the round trip from the owner's machine to `iad1`; the Vercel column is the server's share.
 
 - **Realtime limits for the plan** (Supabase documentation, Realtime limits): Free 200 concurrent connections and 100 messages/s; Pro 500 and 500; Pro without spend cap and Team 10,000 and 2,500; each project can be raised on request. One open home page is one connection. **Decide before launch**: a post that brings more than 500 simultaneous viewers saturates Pro with the spend cap on. What happens then is now graceful (30 s refresh through the CDN-cached route) rather than a frozen page, and the database cost of the refresh no longer scales with viewers (P2); but the live feel is lost, so the decision is the owner's: lift the cap on launch day, or accept the fallback.
@@ -95,7 +96,6 @@ The read-only plan is `scripts/load/read-only.k6.js` (owner checklist, step 6).
 | P11 | `/api/home?v=` accepts any well-formed `v`, so a client can bypass the edge cache | Same exposure as before (the old path queried Supabase directly with the public key); add a rate limit rule in the Vercel firewall for `/api/home` if abused |
 | P12 | Home still ships about 412 KB gzip of JavaScript, of which the Supabase client is about 160 KB | The realtime client could be loaded after first paint on the home page too (a dynamic import inside `useLiveHome`); I left it because the page then renders from server data with no live feel for a moment, a product call |
 | P13 | `season_leaderboard`, `country_leaderboard` and `profile_stats` are views over all reigns | Materialise or cache only if production statements show them (see Database) |
-| P14 | Profile, season and kingdom pages read the database on every request (only the season list is cached). A profile view makes about ten PostgREST calls, and `generateMetadata` and the page repeat the name lookup and the ban check. The load test kept the database at 4% CPU, so this is cost and headroom, not a launch blocker | Cache the public profile and season data for 10–30 s with `unstable_cache` keyed by id and tagged for invalidation on takeover; keep the viewer-specific parts per request |
 
 ## Pull requests
 

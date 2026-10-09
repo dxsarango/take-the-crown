@@ -2,6 +2,7 @@ import pg from "pg";
 import { traitsFromUsername } from "../../design/lib/avatar-lib.js";
 import { DB_URL } from "../../tests/db/db-url";
 import { applyDevSeed, resetToSeed } from "../../tests/db/reset";
+import { dropPublicCache } from "./cache";
 
 // Local database fixtures for UI tests. Rows are inserted directly: the game logic itself is
 // covered by the database suite, and screenshots need exact names, durations and ranks.
@@ -47,6 +48,7 @@ async function withClient<T>(fn: (client: pg.Client) => Promise<T>): Promise<T> 
     return await fn(client);
   } finally {
     await client.end();
+    await dropPublicCache();
   }
 }
 

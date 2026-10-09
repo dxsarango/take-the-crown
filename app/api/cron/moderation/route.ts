@@ -46,6 +46,6 @@ export async function GET(request: Request) {
     counts[approved ? "approved" : "rejected"] += 1;
   }
 
-  if (counts.approved > 0) revalidateHome();
+  if (counts.approved + counts.rejected > 0) revalidateHome();
   return Response.json({ ok: true, ...counts });
 }

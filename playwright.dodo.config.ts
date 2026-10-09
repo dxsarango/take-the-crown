@@ -9,6 +9,8 @@ if (existsSync(".env.local")) process.loadEnvFile(".env.local");
 
 const port = 3100;
 const baseURL = `http://localhost:${port}`;
+// Workers inherit it: fixtures that write to the database drop the app's cache there (e2e/fixtures/cache.ts).
+process.env.E2E_BASE_URL = baseURL;
 
 export default defineConfig({
   testDir: "./e2e-dodo",
