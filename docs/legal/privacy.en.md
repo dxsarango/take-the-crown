@@ -20,6 +20,8 @@ Dario Sarango, natural person residing in Ecuador, is the data controller. Conta
 
 **Visit statistics.** We count visits with Vercel Web Analytics. It sets no cookies and stores nothing on your device: it identifies a visitor with a hash created from the request, which is discarded after 24 hours, so it cannot follow you from one day to the next or across other websites. For each page view it records the time, the page address, the page you came from, your approximate location (country, region and city), your browser, your operating system and your device type. Before it is sent, we remove from the address everything after the question mark except campaign tags (the ones that start with utm_), so nothing about your account, a payment or your email reaches it. We do not measure the admin area, your settings or your alerts, and we send no custom events.
 
+**Page speed.** We measure how fast pages load and respond with Vercel Speed Insights. It also sets no cookies and stores nothing on your device, and Vercel documents that it cannot follow a visit from one page to the next or identify you. For each page load it records the page address (cleaned as described above) and the page template, the loading, responsiveness and layout-stability times your browser reports, the element that took longest to appear, your connection speed class (for example 4g), your browser, your operating system, your device type and your country. We do not measure the same private pages.
+
 **Communications.** Emails we send you and whether they were delivered.
 
 ## 3. What is public
@@ -34,7 +36,7 @@ The game is public by design. Your public name, avatar, country, main link, soci
 | Moderating content, preventing fraud, abuse and bot activity, and securing the Service | Legitimate interest |
 | Sending dethroned alerts (you can turn them off) | Performance of the contract and legitimate interest |
 | Sending price-drop and season-start alerts | Your consent, which you can withdraw at any time |
-| Counting visits, without cookies or profiles, to understand how the Service is found and used | Legitimate interest |
+| Counting visits and measuring page speed, without cookies or profiles, to understand how the Service is found and used and to keep it fast | Legitimate interest |
 | Keeping payment records | Legal obligation |
 
 We do not sell your data, use it for advertising or build advertising profiles.
@@ -48,7 +50,7 @@ Names, messages and links are checked by automated rules and by an AI model prov
 We use service providers that process data on our behalf, under contracts that protect it:
 
 - Supabase: database, authentication and file storage.
-- Vercel: hosting and visit statistics (Vercel Web Analytics).
+- Vercel: hosting, visit statistics (Vercel Web Analytics) and page speed (Vercel Speed Insights).
 - Cloudflare: content delivery, security and bot protection.
 - Resend: sending emails.
 - Anthropic: automated content moderation.
@@ -77,7 +79,7 @@ You can also file a complaint with Ecuador's Superintendency of Personal Data Pr
 
 ## 10. Cookies
 
-We only use cookies that are strictly necessary for the Service to work: your session, your language, your time zone and bot protection. We do not use advertising cookies. The visit statistics described in section 2 use no cookies and store nothing on your device.
+We only use cookies that are strictly necessary for the Service to work: your session, your language, your time zone and bot protection. We do not use advertising cookies. The visit statistics and page speed measurements described in section 2 use no cookies and store nothing on your device.
 
 ## 11. Children
 
