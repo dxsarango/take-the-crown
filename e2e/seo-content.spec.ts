@@ -66,14 +66,16 @@ test.describe("a profile", () => {
 });
 
 test.describe("the privacy policy", () => {
-  test("discloses the visit statistics in both languages", async ({ request }) => {
+  test("discloses the visit statistics and the page speed measurement in both languages", async ({ request }) => {
     const en = text(await (await request.get("/en/privacy")).text());
     expect(en).toContain("Vercel Web Analytics");
     expect(en).toContain("sets no cookies and stores nothing on your device");
-    expect(en).toContain("We do not use advertising cookies. The visit statistics described in section 2 use no cookies");
+    expect(en).toContain("Vercel Speed Insights");
+    expect(en).toContain("We do not use advertising cookies. The visit statistics and page speed measurements described in section 2 use no cookies");
     const es = text(await (await request.get("/es/privacy")).text());
     expect(es).toContain("Vercel Web Analytics");
     expect(es).toContain("No usa cookies ni guarda nada en tu dispositivo");
-    expect(es).toContain("No usamos cookies de publicidad.");
+    expect(es).toContain("Vercel Speed Insights");
+    expect(es).toContain("No usamos cookies de publicidad. Las estadísticas de visitas y las mediciones de velocidad descritas en la sección 2 no usan cookies");
   });
 });
