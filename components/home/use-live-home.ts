@@ -6,6 +6,8 @@ import { snapshotVersion } from "@/lib/home/snapshot";
 import { publicClient } from "@/lib/supabase/public";
 
 const REFETCH_DEBOUNCE_MS = 300;
+/** While realtime is down (plan limit reached, network trouble), look again this often. */
+const FALLBACK_REFRESH_MS = 30_000;
 
 /**
  * Home data kept live: refetched whenever the crown changes or an event is published, and on
@@ -34,6 +36,7 @@ export function useLiveHome(initial: HomeData): { data: HomeData; refresh: () =>
     };
     refetchRef.current = refetch;
 
+    let fallback: ReturnType<typeof setInterval> | undefined;
     const onChange = (change: { commit_timestamp?: string }) => refetch(change.commit_timestamp);
     const channel = db
       .channel("home")
@@ -41,11 +44,21 @@ export function useLiveHome(initial: HomeData): { data: HomeData; refresh: () =>
       .on("postgres_changes", { event: "INSERT", schema: "public", table: "events" }, onChange)
       .subscribe((status) => {
         // Catch up on anything missed between the page render and the subscription.
-        if (status === "SUBSCRIBED") refetch();
+        if (status === "SUBSCRIBED") {
+          clearInterval(fallback);
+          fallback = undefined;
+          refetch();
+        } else if (status === "CHANNEL_ERROR" || status === "TIMED_OUT") {
+          // The snapshot route is cached at the edge, so many pages in this state cost one read.
+          fallback ??= setInterval(() => {
+            if (document.visibilityState === "visible") refetch();
+          }, FALLBACK_REFRESH_MS);
+        }
       });
 
     return () => {
       clearTimeout(timer);
+      clearInterval(fallback);
       void db.removeChannel(channel);
     };
   }, []);
