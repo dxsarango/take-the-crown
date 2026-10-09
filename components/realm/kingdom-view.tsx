@@ -4,7 +4,7 @@ import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { Flag, Portrait, RankTag } from "@/components/art";
 import { Footer } from "@/components/home/sections";
-import { useServerNow } from "@/components/home/use-live-home";
+import { useServerNow } from "@/components/use-server-now";
 import { TopBar } from "@/components/top-bar";
 import { Link } from "@/i18n/navigation";
 import { formatClock, formatDuration } from "@/lib/format";

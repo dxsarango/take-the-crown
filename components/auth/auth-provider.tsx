@@ -1,11 +1,14 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { type ReactNode, createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { type AuthError, isAuthError } from "@/lib/auth/next";
 import type { AvatarSource } from "@/lib/art/avatar";
 import type { ViewerSummary } from "@/lib/profile/viewer";
-import { UnlockToasts } from "@/components/achievements/unlock-toasts";
-import { LoginDialog } from "./login-dialog";
+
+// Neither is on screen when a page loads: keep them, and the realtime client behind the toasts, out of the first bundle.
+const LoginDialog = dynamic(() => import("./login-dialog").then((m) => m.LoginDialog));
+const UnlockToasts = dynamic(() => import("@/components/achievements/unlock-toasts").then((m) => m.UnlockToasts));
 
 export type LoginRequest = {
   /** "afterPayment" greets a buyer who was just crowned (SCREENS §9.2). */

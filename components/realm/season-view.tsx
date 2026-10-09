@@ -5,7 +5,7 @@ import { useState } from "react";
 import { Flag, Icon } from "@/components/art";
 import { useAuth } from "@/components/auth/auth-provider";
 import { Footer } from "@/components/home/sections";
-import { useServerNow } from "@/components/home/use-live-home";
+import { useServerNow } from "@/components/use-server-now";
 import { TopBar } from "@/components/top-bar";
 import { Link } from "@/i18n/navigation";
 import { formatClock, formatDuration, formatDurationPrecise, formatPrice } from "@/lib/format";
