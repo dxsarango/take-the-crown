@@ -91,7 +91,10 @@ test("updates live when the crown changes hands", async ({ page }) => {
   await seedKingdom();
   await page.goto("/en");
   await expect(page.getByText(en.homeStates.someone)).toHaveCount(0);
+  // The refresh goes through the cached snapshot route, not straight to the database.
+  const snapshot = page.waitForResponse((r) => new URL(r.url()).pathname === "/api/home" && r.status() === 200);
   await seedKingdom({ lockSecondsLeft: 200 });
+  expect((await snapshot).headers()["cache-control"]).toContain("s-maxage=30");
   await expect(page.getByText(en.homeStates.someone).filter({ visible: true }).first()).toBeVisible({ timeout: 10_000 });
 });
 
