@@ -3,7 +3,7 @@
 import { useLocale, useTranslations } from "next-intl";
 import { type ReactNode, useState } from "react";
 import { Flag, Icon, Portrait, RankTag } from "@/components/art";
-import { useServerNow } from "@/components/home/use-live-home";
+import { useServerNow } from "@/components/use-server-now";
 import { Footer } from "@/components/home/sections";
 import { useDisplayTimeZone } from "@/components/time-zone";
 import { TopBar } from "@/components/top-bar";

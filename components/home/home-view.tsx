@@ -1,22 +1,28 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useLocale } from "next-intl";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { announceReignUnlocks } from "@/components/achievements/unlock-toasts";
 import { useAuth } from "@/components/auth/auth-provider";
-import { PaymentModal } from "@/components/payment/payment-modal";
 import { type CheckoutReturn, type Draft, type PaymentResult, newAvatarSeed, releaseLock, takeDraft } from "@/components/payment/use-payment";
 import { TopBar } from "@/components/top-bar";
 import type { Monarch } from "@/lib/art/coronation";
 import type { HomeData } from "@/lib/home/data";
 import { heroState } from "@/lib/home/hero";
-import { Coronation } from "./coronation";
 import { Hero, type HomeNotice, KingMessage } from "./hero";
 import { About, Feed, Footer, HallOfFamePreview, Succession } from "./sections";
 import { ThroneScene } from "./throne-scene";
-import { useLiveHome, useServerNow } from "./use-live-home";
+import { useServerNow } from "@/components/use-server-now";
+import { useLiveHome } from "./use-live-home";
 import { PlayerName } from "@/components/player-name";
 import { artSet } from "@/lib/art/seasons";
+
+// Both open on a click or a realtime message, never at load: split off and fetched once the page is idle.
+const loadPaymentModal = () => import("@/components/payment/payment-modal").then((m) => m.PaymentModal);
+const loadCoronation = () => import("./coronation").then((m) => m.Coronation);
+const PaymentModal = dynamic(loadPaymentModal);
+const Coronation = dynamic(loadCoronation);
 
 type Crowning = {
   key: string;
@@ -116,6 +122,11 @@ export function HomeView({ initial }: { initial: HomeData }) {
   const prelaunchAtLoad = useRef(initial.crown.prelaunch);
   const { viewer, openLogin } = useAuth();
   const locale = useLocale();
+
+  useEffect(() => {
+    const id = window.setTimeout(() => void Promise.all([loadPaymentModal(), loadCoronation()]), 1500);
+    return () => window.clearTimeout(id);
+  }, []);
 
   // The server sets data-season on <html>; keep it in step when a season rolls over live.
   useEffect(() => {

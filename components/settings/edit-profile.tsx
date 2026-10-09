@@ -7,7 +7,7 @@ import { Arrow, Flag, Icon, Portrait, RankTag } from "@/components/art";
 import { useHumanCheck } from "@/components/security/human-check";
 import { DeleteAccount } from "@/components/settings/delete-account";
 import { useAuth } from "@/components/auth/auth-provider";
-import { useServerNow } from "@/components/home/use-live-home";
+import { useServerNow } from "@/components/use-server-now";
 import { Medal, SocialIcon, rarityColor } from "@/components/profile/parts";
 import { TopBar } from "@/components/top-bar";
 import { Link, usePathname, useRouter } from "@/i18n/navigation";

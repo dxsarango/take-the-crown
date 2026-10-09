@@ -3,7 +3,7 @@
 import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";
 import { Footer } from "@/components/home/sections";
-import { useServerNow } from "@/components/home/use-live-home";
+import { useServerNow } from "@/components/use-server-now";
 import { TopBar } from "@/components/top-bar";
 import { Link } from "@/i18n/navigation";
 import type { Season } from "@/lib/home/data";
