@@ -26,6 +26,8 @@ async function blocks(request: import("@playwright/test").APIRequestContext, url
 const types = (data: Block[]) => data.map((d) => d["@type"] ?? "@graph");
 
 test("the home page describes the website and the organization, in the page's language", async ({ request }) => {
+  // The contact email is read through a 10 s cache that earlier specs may have filled.
+  await expect.poll(async () => JSON.stringify((await blocks(request, "/en")).data), { timeout: 20_000 }).toContain("hello@takethecrown.app");
   for (const locale of ["en", "es"]) {
     const { data } = await blocks(request, `/${locale}`);
     expect(types(data)).toEqual(["@graph"]);

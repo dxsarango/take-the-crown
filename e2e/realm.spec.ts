@@ -49,11 +49,13 @@ test.describe("kingdom history", () => {
       insert into reigns (season_id, profile_id, price_paid_cents, name, country_code, started_at, ended_at, end_reason)
       select 0, p.id, 500, p.name, p.country_code, now() - make_interval(hours => 500 + g), now() - make_interval(hours => 500 + g) + interval '5 minutes', 'dethroned'
       from profiles p, generate_series(1, 10) g where p.name = 'jules'`);
+    // The button is server-rendered: a click before hydration has no handler yet. The clock asks
+    // the server for the time as soon as the page hydrates.
+    const hydrated = page.waitForResponse((r) => new URL(r.url()).pathname === "/api/time");
     await page.goto("/en/kingdom");
     const entries = page.getByTestId("history-entry");
     await expect(entries).toHaveCount(30);
-    // The button is server-rendered: a click before hydration has no handler yet.
-    await page.waitForLoadState("networkidle");
+    await hydrated;
     await page.getByRole("button", { name: en.realm.earlier }).filter({ visible: true }).click();
     await expect(entries).toHaveCount(35);
     await expect(page.getByRole("button", { name: en.realm.earlier })).toHaveCount(0);
