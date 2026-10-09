@@ -86,8 +86,11 @@ test.describe("indexable pages", () => {
 
   test("a season's history is its own page, and an ignored parameter is not", async ({ request }) => {
     await seedKingdom({ season: 1 });
+    // The pages read the current season through a 10 s cache.
+    await expect
+      .poll(async () => (await tags(await (await request.get("/en/kingdom?season=genesis")).text())).canonical, { timeout: 20_000 })
+      .toBe(`${SITE}/en/kingdom?season=genesis`);
     const past = await tags(await (await request.get("/en/kingdom?season=genesis")).text());
-    expect(past.canonical).toBe(`${SITE}/en/kingdom?season=genesis`);
     expect(past.title).toBe("History of the realm, season 0: Genesis — Take the Crown");
     const current = await tags(await (await request.get("/en/kingdom?season=frost&utm=x")).text());
     expect(current.canonical).toBe(`${SITE}/en/kingdom`);

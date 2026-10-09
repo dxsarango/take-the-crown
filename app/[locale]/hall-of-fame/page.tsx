@@ -8,7 +8,8 @@ import { routing } from "@/i18n/routing";
 import { BRAND_NAME } from "@/lib/config/brand";
 import { shareMetadata } from "@/lib/og/metadata";
 import { withBrand } from "@/lib/seo";
-import { fetchHallOfFame, fetchSeasons } from "@/lib/realm/data";
+import { cachedSeasons } from "@/lib/home/cache";
+import { fetchHallOfFame } from "@/lib/realm/data";
 import { publicClient } from "@/lib/supabase/public";
 import { readerTimeZone } from "@/lib/time-zone.server";
 
@@ -32,7 +33,7 @@ export default async function HallOfFamePage({ params }: PageProps<"/[locale]/ha
   setRequestLocale(locale);
 
   const db = publicClient();
-  const { seasons, currentId } = await fetchSeasons(db);
+  const { seasons, currentId } = await cachedSeasons();
   const current = seasons.find((s) => s.id === currentId);
   if (!current) notFound();
   const hall = await fetchHallOfFame(db, currentId);

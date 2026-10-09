@@ -8,7 +8,8 @@ import { TimeZoneProvider } from "@/components/time-zone";
 import { routing } from "@/i18n/routing";
 import { BRAND_NAME } from "@/lib/config/brand";
 import { seasonCard, shareMetadata } from "@/lib/og/metadata";
-import { fetchSeasonEnd, fetchSeasons } from "@/lib/realm/data";
+import { cachedSeasons } from "@/lib/home/cache";
+import { fetchSeasonEnd } from "@/lib/realm/data";
 import { siteUrl } from "@/lib/site";
 import { withBrand } from "@/lib/seo";
 import { breadcrumbs } from "@/lib/seo-jsonld";
@@ -18,7 +19,7 @@ import { readerTimeZone } from "@/lib/time-zone.server";
 export async function generateMetadata({ params }: PageProps<"/[locale]/seasons/[slug]">): Promise<Metadata> {
   const { locale, slug } = await params;
   const db = publicClient();
-  const { seasons, currentId } = await fetchSeasons(db);
+  const { seasons, currentId } = await cachedSeasons();
   const season = seasons.find((s) => s.slug === slug);
   if (!season || !hasLocale(routing.locales, locale)) return {};
   const [t, share] = await Promise.all([getTranslations({ locale, namespace: "seo" }), getTranslations({ locale, namespace: "share" })]);
@@ -49,7 +50,7 @@ export default async function SeasonPage({ params }: PageProps<"/[locale]/season
   setRequestLocale(locale);
 
   const db = publicClient();
-  const [data, { seasons, currentId }] = await Promise.all([fetchSeasonEnd(db, slug), fetchSeasons(db)]);
+  const [data, { seasons, currentId }] = await Promise.all([fetchSeasonEnd(db, slug), cachedSeasons()]);
   // Only seasons that have started have a page.
   const current = seasons.find((s) => s.id === currentId);
   if (!data || !current) notFound();

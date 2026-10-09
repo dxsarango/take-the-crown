@@ -9,9 +9,8 @@ import { JsonLdScript } from "@/components/json-ld";
 import { BRAND_NAME, OFFICIAL_PROFILES } from "@/lib/config/brand";
 import { siteUrl } from "@/lib/site";
 import { siteAndOrganization } from "@/lib/seo-jsonld";
-import { serviceClient } from "@/lib/supabase/service";
 import { playerName } from "@/lib/game/former";
-import { cachedHomeData } from "@/lib/home/cache";
+import { cachedContactEmail, cachedHomeData } from "@/lib/home/cache";
 import { shareMetadata } from "@/lib/og/metadata";
 import { NOINDEX, isCheckoutReturn, withBrand } from "@/lib/seo";
 
@@ -43,7 +42,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
 
   // Rendered per request for the CSP nonce; the data comes from the cache.
   await connection();
-  const [data, { data: config }] = await Promise.all([cachedHomeData(), serviceClient().from("app_config").select("legal_contact_email").single()]);
+  const [data, contactEmail] = await Promise.all([cachedHomeData(), cachedContactEmail()]);
   return (
     <>
       <JsonLdScript
@@ -51,7 +50,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
           site: siteUrl(),
           locale,
           brand: BRAND_NAME,
-          contactEmail: config?.legal_contact_email ?? null,
+          contactEmail: contactEmail,
           sameAs: OFFICIAL_PROFILES,
         })}
       />

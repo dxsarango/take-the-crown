@@ -8,7 +8,8 @@ import { routing } from "@/i18n/routing";
 import { BRAND_NAME } from "@/lib/config/brand";
 import { shareMetadata } from "@/lib/og/metadata";
 import { withBrand } from "@/lib/seo";
-import { fetchHistoryPage, fetchSeasonSummary, fetchSeasons } from "@/lib/realm/data";
+import { cachedSeasons } from "@/lib/home/cache";
+import { fetchHistoryPage, fetchSeasonSummary } from "@/lib/realm/data";
 import { publicClient } from "@/lib/supabase/public";
 import { readerTimeZone } from "@/lib/time-zone.server";
 
@@ -16,7 +17,7 @@ export async function generateMetadata({ params, searchParams }: PageProps<"/[lo
   const { locale } = await params;
   if (!hasLocale(routing.locales, locale)) return {};
   const t = await getTranslations({ locale, namespace: "seo" });
-  const { seasons, currentId } = await fetchSeasons(publicClient());
+  const { seasons, currentId } = await cachedSeasons();
   const slug = (await searchParams).season;
   // Each season's history is its own page; the current one is the page without a parameter.
   const other = typeof slug === "string" ? seasons.find((s) => s.slug === slug && s.id !== currentId && s.id < currentId) : undefined;
@@ -38,7 +39,7 @@ export default async function KingdomPage({ params, searchParams }: PageProps<"/
   setRequestLocale(locale);
 
   const db = publicClient();
-  const { seasons, currentId } = await fetchSeasons(db);
+  const { seasons, currentId } = await cachedSeasons();
   const slug = (await searchParams).season;
   const selected = seasons.find((s) => (typeof slug === "string" ? s.slug === slug : s.id === currentId));
   // Seasons that have not started have no history yet.

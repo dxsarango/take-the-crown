@@ -9,11 +9,10 @@ import { routing } from "@/i18n/routing";
 import { BRAND_NAME } from "@/lib/config/brand";
 import { type LegalDoc, legalDoc } from "@/lib/legal/docs";
 import { shareMetadata } from "@/lib/og/metadata";
-import { fetchSeasons } from "@/lib/realm/data";
+import { cachedSeasons } from "@/lib/home/cache";
 import { siteUrl } from "@/lib/site";
 import { withBrand } from "@/lib/seo";
 import { breadcrumbs, faqPage, questionsOf } from "@/lib/seo-jsonld";
-import { publicClient } from "@/lib/supabase/public";
 
 type Props = { params: Promise<{ locale: string }> };
 
@@ -38,7 +37,7 @@ export async function LegalPage({ doc, params }: Props & { doc: LegalDoc }) {
   setRequestLocale(locale);
   // Per request: the CSP nonce, and the legal details and rules as the admin last set them.
   await connection();
-  const [blocks, { seasons, currentId }] = await Promise.all([legalDoc(doc, locale), fetchSeasons(publicClient())]);
+  const [blocks, { seasons, currentId }] = await Promise.all([legalDoc(doc, locale), cachedSeasons()]);
   const season = seasons.find((s) => s.id === currentId);
   if (!season) notFound();
   const site = siteUrl();

@@ -1,6 +1,7 @@
 import "server-only";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
+import { unstable_cache } from "next/cache";
 import type { Locale } from "@/i18n/routing";
 import { BRAND_NAME } from "@/lib/config/brand";
 import { serverEnv } from "@/lib/env.server";
@@ -13,7 +14,9 @@ export { LEGAL_DOCS, type LegalDoc } from "./docs-list";
 
 const DIR = path.join(process.cwd(), "docs", "legal");
 
-async function legalConfig() {
+const legalConfig = unstable_cache(readLegalConfig, ["legal-config"], { revalidate: 60 });
+
+async function readLegalConfig() {
   const { data, error } = await publicClient()
     .from("app_config")
     .select(
