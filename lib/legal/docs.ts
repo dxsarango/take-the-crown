@@ -14,7 +14,7 @@ export { LEGAL_DOCS, type LegalDoc } from "./docs-list";
 
 const DIR = path.join(process.cwd(), "docs", "legal");
 
-const legalConfig = unstable_cache(readLegalConfig, ["legal-config"], { revalidate: 60 });
+const legalConfig = unstable_cache(readLegalConfig, ["legal-config"], { revalidate: 10 });
 
 async function readLegalConfig() {
   const { data, error } = await publicClient()

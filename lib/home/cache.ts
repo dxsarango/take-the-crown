@@ -31,5 +31,5 @@ export const cachedContactEmail = unstable_cache(
     return data?.legal_contact_email ?? null;
   },
   ["legal-contact-email"],
-  { revalidate: 60 },
+  { revalidate: 10 },
 );

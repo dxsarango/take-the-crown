@@ -69,6 +69,8 @@ test.describe("sitemaps", () => {
   });
 
   test("every listed URL is served, canonical to itself, and not noindex", async ({ request }) => {
+    // The first request to each kind of page compiles it in the dev server.
+    test.setTimeout(120_000);
     for (const file of ["static", "seasons", "profiles-1"]) {
       for (const url of locs(await (await request.get(`/sitemaps/${file}.xml`)).text())) {
         const response = await request.get(url, { maxRedirects: 0 });
