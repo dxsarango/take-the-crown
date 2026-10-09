@@ -1,6 +1,7 @@
 import pg from "pg";
 import { DB_URL } from "../../tests/db/db-url";
 import { seedKingdom } from "./kingdom";
+import { dropPublicCache } from "./cache";
 
 // The two profiles of design/prototypes/Perfil.dc.html on top of the throne room fixture:
 // priya_ships, a veteran Duke with a rivalry, and maru.jpg, a new player dethroned after 11 s.
@@ -17,6 +18,7 @@ async function withClient<T>(fn: (client: pg.Client) => Promise<T>): Promise<T> 
     return await fn(client);
   } finally {
     await client.end();
+    await dropPublicCache();
   }
 }
 

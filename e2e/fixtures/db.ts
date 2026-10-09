@@ -1,5 +1,6 @@
 import pg from "pg";
 import { DB_URL } from "../../tests/db/db-url";
+import { dropPublicCache } from "./cache";
 
 /** One-off queries against the local database from e2e tests. */
 export async function sql<T extends pg.QueryResultRow = pg.QueryResultRow>(text: string, params: unknown[] = []): Promise<T[]> {
@@ -9,5 +10,6 @@ export async function sql<T extends pg.QueryResultRow = pg.QueryResultRow>(text:
     return (await client.query<T>(text, params)).rows;
   } finally {
     await client.end();
+    await dropPublicCache();
   }
 }
