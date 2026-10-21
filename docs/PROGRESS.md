@@ -4,7 +4,7 @@ Checklist for the build order in `docs/SPEC.md` §17. A milestone is done when i
 
 ## Pending verification
 
-- [ ] **Live moderation suite (`pnpm test:moderation`) has never run against the real model.** It stays skipped until the Anthropic account has credits (it reads `ANTHROPIC_API_KEY` from the shell, `.env.local` or `.env`; before that fix it skipped even with the key in `.env.local`, because Vitest does not load env files into `process.env`); all cases, especially the manipulation ones, must pass before launch (see the deployment checklist).
+- [x] **Live moderation suite (`pnpm test:moderation`)** passes against the real model with credits on the Anthropic account (owner, 2026-10-21).
 
 ## Decisions
 
@@ -88,14 +88,30 @@ Conflicts between the design handoff (`/design`), the spec and the migrations, a
 
 The ordered production procedure, with the exact values per dashboard and the plan for each service, is `docs/DEPLOY.md`. Open items across environments:
 
-- [ ] Production in prelaunch (`docs/DEPLOY.md` steps 1–7): Cloudflare, Resend, Supabase (migrations pushed without the seed, pg_cron, auth URLs, SMTP through Resend, bilingual sign-in template), Google and X OAuth, Vercel Pro with every variable, `pnpm check:deploy` passing
-- [ ] First admin, then the legal details in `/admin` (contact `hola@takethecrown.app` through Cloudflare Email Routing); lawyer review of `docs/legal` before launch
-- [ ] Before launch: Anthropic credits and `pnpm test:moderation` passing against the real model (all cases, especially the manipulation ones); a separate production key in the take-the-crown workspace with a monthly spending limit; auto-reload with a low threshold
+- [x] Production in prelaunch (`docs/DEPLOY.md` steps 1–8): Cloudflare, Resend, Supabase (migrations pushed without the seed, pg_cron, auth URLs, SMTP through Resend, bilingual sign-in template), Google and X OAuth, Vercel Pro with every variable, `pnpm check:deploy` passing
+- [x] First admin, then the legal details in `/admin` (contact `hola@takethecrown.app` through Cloudflare Email Routing); lawyer review of `docs/legal` done, no placeholders left on takethecrown.app (owner, 2026-10-21)
+- [x] Anthropic credits and `pnpm test:moderation` passing against the real model
+- [ ] Before launch: a separate production key in the take-the-crown workspace with a monthly spending limit; auto-reload with a low threshold (confirm it is set)
 - [ ] Before launch: Supabase Pro (backups, no pausing) and Resend Pro (over 100 emails a day); Cloudflare Pro recommended
-- [ ] Before launch: Dodo in live mode (`DODO_MODE=live` with the live key, product and webhook secret); test payments only run locally or in prelaunch
+- [x] Dodo account verified and live mode configured (`DODO_MODE=live` with the live key, product and webhook secret; DEPLOY step 8); test payments only run locally or in prelaunch
 - [ ] Before each provisional season starts (the admin is emailed 30 days ahead): its final name and art, set with `name_final` / `art_final` in a migration
 - [ ] Uptime monitor on `/api/health` (`docs/DEPLOY.md` step 7), and `pnpm check:deploy` with `CHECK_DATABASE_URL` after every migration push (row level security and the anon read allowlist)
 - [ ] HSTS is sent with `includeSubDomains`: every subdomain of the production domain must serve HTTPS
+
+## Launch checklist (target: launch 2026-10-27, work done by 2026-10-25)
+
+State on 2026-10-21. Migrations through `0033` are on production; `pnpm check:deploy` passed earlier and runs again before launch.
+
+- [ ] Supabase Pro (backups, no pausing) and, with it, Authentication → Sessions: time-box `0`, inactivity timeout `720` hours
+- [ ] Resend Pro (over 100 emails a day)
+- [ ] Real payment and refund on the live Dodo mode (see Milestone 10b)
+- [ ] Decide Realtime for launch day: Pro with the spend cap holds about 500 simultaneous viewers, beyond that pages refresh every 30 s; lifting the cap on 2026-10-27 gives up to 10,000 (owner's decision, performance report)
+- [ ] `pnpm check:deploy` with `CHECK_DATABASE_URL`, no FAIL lines
+- [ ] Owner checklists in `docs/audits/SECURITY-REPORT.md`, `SEO-REPORT.md` and `PERFORMANCE-REPORT.md` (Cloudflare TLS and DNSSEC, Supabase advisors and redirect URLs, uptime monitor, error alerts, Search Console, Speed Insights, PageSpeed, k6, 2FA everywhere)
+- [ ] Rehearse `/admin` → Launch with the date preview, then freeze changes
+- [ ] Launch on 2026-10-27 and tag `v0.1.0`
+
+Not blocking the launch: final Frost art (Genesis runs to 2026-12-01; admins are emailed 30 days ahead), staging, TypeScript 6 (Dependabot #44, a major: not before launch without asking).
 
 ## Pre-production
 
@@ -200,7 +216,7 @@ The ordered production procedure, with the exact values per dashboard and the pl
 - [x] `PATCH /api/profile` (zod, shared validation, moderation, errors mapped to fields) and `POST /api/profile/avatar` (real type check with sharp, 5 MB, original ≤ 512 px WebP, 32×32 nearest neighbor quantized to the core palette, stored under `<profile>/<upload>`)
 - [x] Uploaded avatars everywhere a portrait is drawn (throne, lists, profile, coronation), with the season crown on top
 - [x] Tests: db (`update_profile`, bucket, chronicle, rivalries, privileges), unit (social links, form validation, image processing), e2e (magic-link sign-in and guest claim, provider off, callback errors, open redirects, settings redirect, sign out, signed-in and guest payments, profile views and redirects, privacy, every edit profile state, upload, language), screenshots at 390 and 1440 in en and es
-- [ ] Google and X OAuth apps: waiting for the product owner (redirect URLs and scopes in the M5 report); everything else runs on magic links locally
+- [x] Google and X OAuth apps: configured in production with `docs/DEPLOY.md` step 4 (owner)
 
 ## Milestone 6 — Achievements UI, kingdom, hall of fame, season end
 
@@ -268,7 +284,7 @@ The ordered production procedure, with the exact values per dashboard and the pl
 - [x] `robots.txt`, `sitemap.xml`, Vercel region `iad1` next to Supabase East US
 - [x] `pnpm secrets:generate` (run by the owner, values never shared) and `pnpm check:deploy <url>` (outside-in check of headers, CSP, prelaunch state, legal pages, crons, limits)
 - [x] `docs/DEPLOY.md`: ordered per-dashboard steps with exact values, and which plans suffice for prelaunch
-- [ ] Owner: create the accounts and follow `docs/DEPLOY.md`
+- [x] Owner: create the accounts and follow `docs/DEPLOY.md` (steps 1–8 done, 2026-10-21)
 - [x] Season continuity (migration `0021`): provisional seasons 2–11 (January–October 2027), Day of the Dead at id 12, rollover to the season starting exactly at the end or a one-month extension with an admin email, admin email 30 days before a season without final name or art (`season-readiness` cron)
 - [x] Tests: db (prelaunch locks, launch plan and launch, season order, seasonal achievements, extension instead of closing, readiness emails), unit (art sets, Frost fallback), e2e (visitors see "Launching soon" in en/es, server refuses, admin takes the crown with the test provider, launch preview with a stretched Genesis), screenshots at 390 and 1440
 
@@ -314,6 +330,7 @@ The ordered production procedure, with the exact values per dashboard and the pl
 - [ ] Owner: the checklist at the end of `docs/audits/SEO-REPORT.md`
 - [ ] Owner: the checklist at the end of `docs/audits/SECURITY-REPORT.md`
 - [ ] Staging environment (separate Supabase project, Vercel preview variables)
-- [ ] Dodo account verification, live product and webhook; one small real payment and refund
+- [x] Dodo account verification, live product and webhook
+- [ ] One small real payment and its refund from `/admin` (proves the live path; the payment stays on record at launch, its reign is deleted)
 - [ ] Final art for Frost (scene, crown, frame, `frostbound` medal) from the design
 - [ ] Launch from `/admin` and tag `v0.1.0`
