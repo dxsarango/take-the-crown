@@ -25,7 +25,8 @@
     "check:bundle": "node scripts/check-bundle.mjs",
     "e2e:dodo": "node scripts/e2e-preflight.mjs --dodo && playwright test --config playwright.dodo.config.ts",
     "e2e:prod": "node scripts/e2e-preflight.mjs && playwright test --config playwright.prod.config.ts",
-    "check:db": "node scripts/database-checks.mjs"
+    "check:db": "node scripts/database-checks.mjs",
+    "record:videos": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/record/index.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.135.0",

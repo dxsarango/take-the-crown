@@ -35,6 +35,7 @@ Next is patched (`patches/next@*.patch`, pnpm `patchedDependencies`): review the
 - `pnpm test` — unit and database tests
 - `pnpm e2e` — Playwright with the `test` payment provider
 - `supabase start` / `supabase db reset` — local database
+- `pnpm record:videos` — launch videos from a local production build (`scripts/record`); needs `supabase start`, writes to `../take-the-crown-videos/public/recordings`
 
 ## Working rules
 
