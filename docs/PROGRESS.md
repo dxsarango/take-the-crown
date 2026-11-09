@@ -332,6 +332,6 @@ Not blocking the launch: final Frost art (Genesis runs to 2026-12-01; admins are
 - [ ] Staging environment (separate Supabase project, Vercel preview variables)
 - [x] Dodo account verification
 - [x] Dodo live product and live webhook endpoint
-- [x] One small real payment (2026-11-09): crown applied. Its refund is pending: Dodo answers INSUFFICIENT_WALLET_FUNDS while the available balance ($4.32 after fees) is below the $5.00 refund; it retries on its own once the balance covers it. Dodo refunds come out of the wallet and the fee of a refunded payment is not returned, so keep a float for launch-day refunds
+- [x] One small real payment (2026-11-09): crown applied through the live webhook. Its refund was refused by Dodo (INSUFFICIENT_WALLET_FUNDS: $4.32 available after fees, $5.00 needed) and then cancelled on purpose: the payment is back to applied and stays on record, its reign is deleted at launch. Dodo refunds come out of the wallet and the fee of a refunded payment is not returned, so keep a float for refunds after launch
 - [ ] Final art for Frost (scene, crown, frame, `frostbound` medal) from the design
 - [ ] Launch from `/admin` and tag `v0.1.0`
