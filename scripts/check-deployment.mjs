@@ -5,6 +5,7 @@
 
 import { findSecrets } from "./bundle-secrets.mjs";
 import { checkDatabase } from "./database-checks.mjs";
+import { executableScripts } from "./csp-scripts.mjs";
 import { countryReport } from "./geo-report.mjs";
 
 const base = new URL(process.argv[2] ?? "https://takethecrown.app");
@@ -49,7 +50,7 @@ await check("home page", async () => {
 
   const csp = response.headers.get("content-security-policy") ?? "";
   const nonce = /'nonce-([^']+)'/.exec(csp)?.[1];
-  const scripts = home.match(/<script[^>]*>/g) ?? [];
+  const scripts = executableScripts(home);
   if (!nonce || !csp.includes("'strict-dynamic'") || /script-src[^;]*'unsafe-inline'/.test(csp)) report("FAIL", "strict CSP", csp || "missing");
   else if (scripts.some((tag) => !tag.includes(`nonce="${nonce}"`))) report("FAIL", "strict CSP", "a script without the nonce");
   else if (csp.includes("'unsafe-eval'")) report("FAIL", "strict CSP", "unsafe-eval: a development build is deployed");
