@@ -93,7 +93,7 @@ The ordered production procedure, with the exact values per dashboard and the pl
 - [x] Anthropic credits and `pnpm test:moderation` passing against the real model
 - [ ] Before launch: a separate production key in the take-the-crown workspace with a monthly spending limit; auto-reload with a low threshold (confirm it is set)
 - [ ] Before launch: Supabase Pro (backups, no pausing) and Resend Pro (over 100 emails a day); Cloudflare Pro recommended
-- [ ] Dodo live mode in production (corrected 2026-11-08: no live product exists yet). Create the live Pay What You Want product ($5.00 minimum) and the live webhook endpoint, then set `DODO_MODE=live`, `DODO_API_KEY`, `DODO_PRODUCT_ID` and `DODO_WEBHOOK_SECRET` on Vercel and redeploy (DEPLOY step 8). Launch is refused until then
+- [x] Dodo live mode in production (2026-11-09): live product (Pay What You Want, $5.00 minimum), live webhook and API key set on Vercel; one real $5 payment crowned the buyer through the live webhook
 - [ ] Before each provisional season starts (the admin is emailed 30 days ahead): its final name and art, set with `name_final` / `art_final` in a migration
 - [ ] Uptime monitor on `/api/health` (`docs/DEPLOY.md` step 7), and `pnpm check:deploy` with `CHECK_DATABASE_URL` after every migration push (row level security and the anon read allowlist)
 - [ ] HSTS is sent with `includeSubDomains`: every subdomain of the production domain must serve HTTPS
@@ -331,7 +331,7 @@ Not blocking the launch: final Frost art (Genesis runs to 2026-12-01; admins are
 - [ ] Owner: the checklist at the end of `docs/audits/SECURITY-REPORT.md`
 - [ ] Staging environment (separate Supabase project, Vercel preview variables)
 - [x] Dodo account verification
-- [ ] Dodo live product and live webhook endpoint (see the deployment checklist)
-- [ ] One small real payment and its refund from `/admin` (proves the live path; the payment stays on record at launch, its reign is deleted)
+- [x] Dodo live product and live webhook endpoint
+- [x] One small real payment (2026-11-09): crown applied. Its refund is pending: Dodo answers INSUFFICIENT_WALLET_FUNDS while the available balance ($4.32 after fees) is below the $5.00 refund; it retries on its own once the balance covers it. Dodo refunds come out of the wallet and the fee of a refunded payment is not returned, so keep a float for launch-day refunds
 - [ ] Final art for Frost (scene, crown, frame, `frostbound` medal) from the design
 - [ ] Launch from `/admin` and tag `v0.1.0`
