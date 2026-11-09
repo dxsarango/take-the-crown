@@ -93,7 +93,7 @@ The ordered production procedure, with the exact values per dashboard and the pl
 - [x] Anthropic credits and `pnpm test:moderation` passing against the real model
 - [ ] Before launch: a separate production key in the take-the-crown workspace with a monthly spending limit; auto-reload with a low threshold (confirm it is set)
 - [ ] Before launch: Supabase Pro (backups, no pausing) and Resend Pro (over 100 emails a day); Cloudflare Pro recommended
-- [x] Dodo account verified and live mode configured (`DODO_MODE=live` with the live key, product and webhook secret; DEPLOY step 8); test payments only run locally or in prelaunch
+- [ ] Dodo live mode in production (corrected 2026-11-08: no live product exists yet). Create the live Pay What You Want product ($5.00 minimum) and the live webhook endpoint, then set `DODO_MODE=live`, `DODO_API_KEY`, `DODO_PRODUCT_ID` and `DODO_WEBHOOK_SECRET` on Vercel and redeploy (DEPLOY step 8). Launch is refused until then
 - [ ] Before each provisional season starts (the admin is emailed 30 days ahead): its final name and art, set with `name_final` / `art_final` in a migration
 - [ ] Uptime monitor on `/api/health` (`docs/DEPLOY.md` step 7), and `pnpm check:deploy` with `CHECK_DATABASE_URL` after every migration push (row level security and the anon read allowlist)
 - [ ] HSTS is sent with `includeSubDomains`: every subdomain of the production domain must serve HTTPS
@@ -330,7 +330,8 @@ Not blocking the launch: final Frost art (Genesis runs to 2026-12-01; admins are
 - [ ] Owner: the checklist at the end of `docs/audits/SEO-REPORT.md`
 - [ ] Owner: the checklist at the end of `docs/audits/SECURITY-REPORT.md`
 - [ ] Staging environment (separate Supabase project, Vercel preview variables)
-- [x] Dodo account verification, live product and webhook
+- [x] Dodo account verification
+- [ ] Dodo live product and live webhook endpoint (see the deployment checklist)
 - [ ] One small real payment and its refund from `/admin` (proves the live path; the payment stays on record at launch, its reign is deleted)
 - [ ] Final art for Frost (scene, crown, frame, `frostbound` medal) from the design
 - [ ] Launch from `/admin` and tag `v0.1.0`
