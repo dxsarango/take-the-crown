@@ -80,6 +80,7 @@ Defined in `supabase/migrations` (`0001_init.sql` plus later migrations). Key po
 - `profile_name_history` (public): former names, reserved for their owner and redirected to the current profile.
 - `profile_private` (owner-only): email, locale, admin flag and alerts: `alerts_dethroned`, `alerts_price_below_cents`, `alerts_season_start`.
 - `events`: public feed and realtime source. `notifications`: outbox for emails.
+- `reign_hails` (private): who hailed which reign (`p:<profile id>` for a signed-in player, `d:<hash of a browser cookie>` for anyone else, plus a hash of the address, cleared after 90 days). `reign_hail_counts` (public, realtime): the number of hails per reign. `hail_reign()` hails the current reign only, once per account or browser, a king cannot hail themselves, and an address without accounts is capped per reign (`max_anonymous_hails_per_ip_per_reign`).
 - Public views: `public_crown_state`, `public_reigns` (hides moderated messages), `profile_stats` (with rank), `achievement_stats`, `season_leaderboard`, `country_leaderboard`.
 
 Write access: none for `anon`/`authenticated`. They have `SELECT` on public tables and views only (plus their own `profile_private` row) and cannot execute any `security definer` function. All writes go through Next.js server code using the service role and the SQL functions. Never reimplement takeover logic in TypeScript.
@@ -141,6 +142,7 @@ API and assets:
 | `POST /api/locks/[id]/release` | Release own lock |
 | `POST /api/webhooks/[provider]` | Payment webhooks (`dodo`, or `test` locally) |
 | `POST /api/reports` | Report the current king's message |
+| `POST /api/hails` | Hail the current king: free, no account needed (Turnstile, `max_hails_per_ip_per_hour`, one per account or browser per reign) |
 | `GET /api/names/availability?name=` | Live public name check |
 | `GET /api/geo` | Country from `cf-ipcountry` for the payment modal |
 | `GET /auth/callback` | Magic link / OAuth return: session, claim or create profile |
@@ -167,7 +169,7 @@ API and assets:
 
 ## 6. Realtime and time
 
-- Subscribe to `crown_state` updates and `events` inserts. On change, refetch `public_crown_state` and the current reign.
+- Subscribe to `crown_state` updates and `events` inserts. On change, refetch `public_crown_state` and the current reign. The hail count of the current reign is a separate subscription to `reign_hail_counts`: the new count arrives in the change, with no refetch.
 - Timers and the live price are computed on the client from server timestamps. On load the client calls `GET /api/time` and takes the offset between the server clock and the midpoint of the round trip (millisecond precision, unlike the `Date` header), then applies it everywhere. A lock expiring needs no event: the client drops the lock state when its countdown reaches zero.
 - Home is rendered with ISR (short revalidate) and hydrated with realtime, so traffic spikes hit the CDN, not the database.
 
@@ -234,8 +236,8 @@ Checkout terms shown before paying: payments are final; buyers pay for visibilit
 
 ## 11. Security and abuse
 
-- Cloudflare proxy with WAF, bot protection and rate limiting on `/api/*`. Turnstile (invisible unless Cloudflare asks for an interaction) on lock creation and profile saves; tokens are checked server-side for the same action.
-- App-level hourly limits from `app_config`: locks and moderation calls per IP, profile saves and avatar uploads per player, sign-in links per IP and per email, reports per IP.
+- Cloudflare proxy with WAF, bot protection and rate limiting on `/api/*`. Turnstile (invisible unless Cloudflare asks for an interaction) on lock creation, profile saves and hails (loaded only when the visitor taps the hail button); tokens are checked server-side for the same action.
+- App-level hourly limits from `app_config`: locks and moderation calls per IP, profile saves and avatar uploads per player, sign-in links per IP and per email, reports and hails per IP.
 - Client IPs come from Vercel's headers; Cloudflare's `cf-connecting-ip` and `cf-ipcountry` count only with the `x-origin-secret` header a Cloudflare Transform Rule adds (`CLOUDFLARE_ORIGIN_SECRET`).
 - Cookie-authenticated API routes refuse requests whose `Origin` is another site. Sign-in redirects (`next`) only go to same-site paths.
 - The test stand-ins for payments, email and moderation refuse to run on any Vercel deployment.
