@@ -22,6 +22,7 @@ export const ANON_READABLE = [
   "public_reigns",
   "public_rivalries",
   "rank_ups",
+  "reign_hail_counts",
   "season_leaderboard",
   "season_stats",
   "seasons",
