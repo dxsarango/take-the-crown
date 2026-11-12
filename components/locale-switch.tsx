@@ -3,11 +3,14 @@
 import { useLocale, useTranslations } from "next-intl";
 import { Link, usePathname } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
+import { isShortRoute } from "@/lib/short-routes";
 
 export function LocaleSwitch() {
   const t = useTranslations("app");
   const current = useLocale();
-  const pathname = usePathname();
+  const path = usePathname();
+  // A short route (`/7`) is the home page under another address: switching language goes to the home.
+  const pathname = isShortRoute(path) ? "/" : path;
 
   return (
     <nav aria-label={t("language")} className="flex gap-0.5 bg-crown-ink p-0.5 lg:gap-1 lg:p-1">

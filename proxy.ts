@@ -5,6 +5,7 @@ import { routing } from "./i18n/routing";
 import { publicEnv } from "./lib/env";
 import { canonicalRedirect, enforcesCanonicalHost } from "./lib/security/canonical-host";
 import { contentSecurityPolicy, newNonce } from "./lib/security/csp";
+import { isShortRoute, shortRouteLocale } from "./lib/short-routes";
 import { sessionCookieOptions } from "./lib/supabase/cookies";
 
 const intl = createMiddleware(routing);
@@ -59,7 +60,18 @@ export default async function proxy(request: NextRequest) {
     await supabase.auth.getUser();
   }
 
-  const response = intl(request);
+  // A short route serves the localized home under its own address, so the measurement sees the path.
+  // The copy is kept out of the index (the home page is the canonical one).
+  const response = isShortRoute(request.nextUrl.pathname)
+    ? NextResponse.rewrite(
+        new URL(
+          `/${shortRouteLocale({ cookie: request.cookies.get("NEXT_LOCALE")?.value, acceptLanguage: request.headers.get("accept-language") })}`,
+          request.url,
+        ),
+        { request: { headers: request.headers } },
+      )
+    : intl(request);
+  if (isShortRoute(request.nextUrl.pathname)) response.headers.set("X-Robots-Tag", "noindex");
   response.headers.set("Content-Security-Policy", csp);
   for (const { name, value, options } of refreshed) response.cookies.set(name, value, options);
   return response;
