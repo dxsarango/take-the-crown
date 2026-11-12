@@ -335,3 +335,10 @@ Not blocking the launch: final Frost art (Genesis runs to 2026-12-01; admins are
 - [x] One small real payment (2026-11-09): crown applied through the live webhook. Its refund was refused by Dodo (INSUFFICIENT_WALLET_FUNDS: $4.32 available after fees, $5.00 needed) and then cancelled on purpose: the payment is back to applied and stays on record, its reign is deleted at launch. Dodo refunds come out of the wallet and the fee of a refunded payment is not returned, so keep a float for refunds after launch
 - [ ] Final art for Frost (scene, crown, frame, `frostbound` medal) from the design
 - [ ] Launch from `/admin` and tag `v0.1.0`
+
+## Milestone 11 — TikTok-first landing (step 1; plan in `docs/IDEAS.md`)
+
+- [x] Short routes `/<n>` (one per video): the proxy serves the localized home under that address (language from the saved choice, then `Accept-Language`), `X-Robots-Tag: noindex`; Vercel Web Analytics already reports the path; the language switch from a short route goes to the home; tests (unit for the route and the language choice, e2e)
+- [x] Home for a first-time visitor: "One crown. One king at a time." block with a link to "How it works", proclamations moved above the line of succession (en/es); e2e
+- [ ] Verified on the real page at 390 and 1440 px (screenshots) and the e2e suite run: blocked while another project's local Supabase holds ports 54321/54322
+- [ ] Step 2 ("Hail the king") waits for the traffic numbers
