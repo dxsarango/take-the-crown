@@ -340,5 +340,5 @@ Not blocking the launch: final Frost art (Genesis runs to 2026-12-01; admins are
 
 - [x] Short routes `/<n>` (one per video): the proxy serves the localized home under that address (language from the saved choice, then `Accept-Language`), `X-Robots-Tag: noindex`; Vercel Web Analytics already reports the path; the language switch from a short route goes to the home; tests (unit for the route and the language choice, e2e)
 - [x] Home for a first-time visitor: "One crown. One king at a time." block with a link to "How it works", proclamations moved above the line of succession (en/es); e2e
-- [ ] Verified on the real page at 390 and 1440 px (screenshots) and the e2e suite run: blocked while another project's local Supabase holds ports 54321/54322
+- [x] Verified on the real page at 390 and 1440 px (the action stays in the first screen at 390) and with the e2e suite for the home page and the short routes, against the local stack
 - [ ] Step 2 ("Hail the king") waits for the traffic numbers
