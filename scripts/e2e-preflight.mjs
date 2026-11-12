@@ -11,9 +11,9 @@ import { chromium } from "@playwright/test";
 if (existsSync(".env.local")) process.loadEnvFile(".env.local");
 
 const dodo = process.argv.includes("--dodo");
-const DB_URL = process.env.SUPABASE_DB_URL ?? "postgresql://postgres:postgres@127.0.0.1:54322/postgres";
-const SUPABASE_API = "http://127.0.0.1:54321";
-const MAILPIT = "http://127.0.0.1:54324";
+const DB_URL = process.env.SUPABASE_DB_URL ?? "postgresql://postgres:postgres@127.0.0.1:55322/postgres";
+const SUPABASE_API = "http://127.0.0.1:55321";
+const MAILPIT = "http://127.0.0.1:55324";
 // playwright.dodo.config.ts serves the app here; the tunnel must forward to it.
 const DODO_PORT = 3100;
 const PRODUCTION_HOSTS = new Set(["takethecrown.app", "www.takethecrown.app"]);
@@ -29,15 +29,15 @@ async function checkSupabase() {
     const { rows } = await client.query("select to_regclass('public.crown_state') is not null as migrated");
     if (!rows[0].migrated) fail("The local database has no schema", "Run `supabase db reset`.");
   } catch {
-    return fail("Local Supabase database is not reachable (127.0.0.1:54322)", "Start Docker Desktop, then run `supabase start`.");
+    return fail("Local Supabase database is not reachable (127.0.0.1:55322)", "Start Docker Desktop, then run `supabase start`.");
   } finally {
     await client.end().catch(() => undefined);
   }
   const auth = await fetch(`${SUPABASE_API}/auth/v1/health`, { signal: timeout(3000) }).catch(() => null);
-  if (!auth) fail("Local Supabase API is not reachable (127.0.0.1:54321)", "Run `supabase start`.");
+  if (!auth) fail("Local Supabase API is not reachable (127.0.0.1:55321)", "Run `supabase start`.");
   // Sign-in tests read magic links from Mailpit.
   const mail = await fetch(`${MAILPIT}/api/v1/info`, { signal: timeout(3000) }).catch(() => null);
-  if (!mail?.ok) fail("Mailpit is not reachable (127.0.0.1:54324)", "Run `supabase start` (it starts Mailpit).");
+  if (!mail?.ok) fail("Mailpit is not reachable (127.0.0.1:55324)", "Run `supabase start` (it starts Mailpit).");
 }
 
 function checkBrowsers() {

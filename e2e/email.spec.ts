@@ -8,7 +8,7 @@ import { resetKingdom, seedKingdom } from "./fixtures/kingdom";
 import { clearMail } from "./fixtures/mail";
 import { acceptDelivery } from "./fixtures/payment";
 
-const MAILPIT = "http://127.0.0.1:54324/api/v1";
+const MAILPIT = "http://127.0.0.1:55324/api/v1";
 const SCREENS = "test-results/screens";
 
 type Message = { ID: string; Subject: string; HTML: string; Text: string; To: { Address: string }[] };

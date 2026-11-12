@@ -34,7 +34,7 @@ Next is patched (`patches/next@*.patch`, pnpm `patchedDependencies`): review the
 - `pnpm dev` — app
 - `pnpm test` — unit and database tests
 - `pnpm e2e` — Playwright with the `test` payment provider
-- `supabase start` / `supabase db reset` — local database
+- `supabase start` / `supabase db reset` — local database (ports 553xx, the defaults plus 1000, so it can run beside another project's Supabase; never change them back)
 
 ## Working rules
 

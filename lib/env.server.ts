@@ -19,7 +19,7 @@ const schema = z.object({
   EMAIL_PROVIDER: z.enum(["resend", "test"]).default("resend"),
   RESEND_API_KEY: z.string().optional(),
   EMAIL_FROM: z.string().optional(),
-  MAILPIT_URL: z.url().default("http://127.0.0.1:54324"),
+  MAILPIT_URL: z.url().default("http://127.0.0.1:55324"),
   // Signs the "turn off alerts" links in emails.
   EMAIL_LINK_SECRET: z.string().min(32).optional(),
   // Dodo Payments: test and live modes have separate keys, products and webhooks.
