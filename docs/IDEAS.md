@@ -10,6 +10,17 @@ Post-launch backlog. Nothing here is scheduled. Each idea needs a spec update an
 
 ## Phase 1: after launch
 
+### TikTok-first landing
+Decided 2026-11-11: the game got no traction from a cold launch, but the TikTok account gets about 500 views per video. Improve the site for that audience before posting more content. TikTok links are plain text (no clickable link, and a business account needs a company), so visitors type the address.
+
+Step 1, landing and attribution (one PR):
+- Home above the fold understood in 5 seconds: the king (avatar, name), live reign counter, current takeover price from the SQL pricing function, one call to action, and a live feed of recent takeovers. Viewable without signing up; mobile first and light, for TikTok's in-app browser.
+- One short route per video (`/7`, `/8`, …) that serves the home page. Vercel Web Analytics (already live, path kept) reports visits per route: no custom table, no new dependency. Check the routes do not collide with profile or season paths.
+
+Step 2, free entry for spectators: ship "Hail the king" below, and decide whether TikTok viewers may hail without an account (Turnstile and IP rate limit) or only signed-in users. Boo or dislike reactions are not an option (see Never).
+
+How we judge it: visits per video route, hails and new accounts, payments. Traffic without payments points at the offer; no traffic points at distribution.
+
 ### Sign out of all devices
 A button in edit profile that ends every session of the account (`signOut({ scope: "global" })`). Today sign-out ends only the current device. Build it if players ask. From the security audit (L6).
 

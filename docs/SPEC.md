@@ -122,6 +122,7 @@ Pages (all under `/[locale]`):
 | Route | Screen |
 |---|---|
 | `/` | Throne room (home) |
+| `/<n>` (1–4 digits) | The home page under a short address, one per social video, so the page view measurement tells the videos apart; `noindex` |
 | `/u/[name]` | Public profile (lowercased; former names redirect) |
 | `/settings/profile` | Edit profile (auth) |
 | `/kingdom` | Kingdom history, filter by season |
