@@ -14,7 +14,7 @@ Dario Sarango, persona natural residente en Ecuador, es el responsable del trata
 
 **Compras.** Correo, importe, moneda, hora y el contenido que envías con la compra (nombre, mensaje, enlace, país, hora local). Los datos de pago, como el número de tarjeta, los recopila {{PAYMENT_PROVIDER}}, nunca nosotros.
 
-**Actividad en el juego.** Reinados, duraciones, precios pagados, logros, rangos, temporadas y denuncias que envías.
+**Actividad en el juego.** Reinados, duraciones, precios pagados, logros, rangos, temporadas, denuncias que envías y las aclamaciones que das al rey. Una aclamación se guarda con un identificador de tu cuenta o, si no has iniciado sesión, con un hash de un identificador aleatorio guardado en tu navegador, para que cada persona aclame un reinado una sola vez.
 
 **Datos técnicos.** Tu dirección IP se usa en tiempo real por seguridad y para sugerir tu país. Solo la almacenamos como un hash irreversible con sal, usado para limitar abusos. También tratamos registros de solicitudes, tipo de navegador y tu zona horaria.
 
@@ -68,7 +68,7 @@ Nuestros proveedores pueden tratar datos fuera de Ecuador y de tu país, incluid
 - Datos de cuenta y perfil: mientras exista tu cuenta.
 - Historial de reinados: forma parte del registro público del juego. Si eliminas tu cuenta, tus reinados permanecen sin tu nombre, avatar, mensaje ni enlace.
 - Registros de pagos: el tiempo que exijan las leyes tributarias y contables.
-- Hashes de IP y registros de abuso: hasta 90 días, salvo que sean necesarios para una investigación en curso.
+- Hashes de IP y registros de abuso (incluido el hash de dirección guardado con una aclamación): hasta 90 días, salvo que sean necesarios para una investigación en curso.
 - Correos enviados y registros: hasta 90 días.
 
 ## 9. Tus derechos
@@ -79,7 +79,7 @@ También puedes presentar una reclamación ante la Superintendencia de Protecci�
 
 ## 10. Cookies
 
-Solo usamos cookies estrictamente necesarias para que el Servicio funcione: tu sesión, tu idioma, tu zona horaria y la protección contra bots. No usamos cookies de publicidad. Las estadísticas de visitas y las mediciones de velocidad descritas en la sección 2 no usan cookies ni guardan nada en tu dispositivo.
+Solo usamos cookies estrictamente necesarias para que el Servicio funcione: tu sesión, tu idioma, tu zona horaria, la protección contra bots y, si aclamas al rey sin cuenta, un identificador aleatorio que recuerda que tu navegador ya aclamó (caduca a los 13 meses aproximadamente). No usamos cookies de publicidad. Las estadísticas de visitas y las mediciones de velocidad descritas en la sección 2 no usan cookies ni guardan nada en tu dispositivo.
 
 ## 11. Menores
 
