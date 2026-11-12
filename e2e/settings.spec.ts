@@ -170,7 +170,7 @@ test("uploads a photo, shows it pixelated or as is, and keeps it after saving", 
   expect(row.avatar_mode).toBe("upload");
   expect(row.avatar_pixelated).toBe(false);
   for (const file of ["original.webp", "pixel.png"]) {
-    const response = await page.request.get(`http://127.0.0.1:54321/storage/v1/object/public/avatars/${row.avatar_path}/${file}`);
+    const response = await page.request.get(`http://127.0.0.1:55321/storage/v1/object/public/avatars/${row.avatar_path}/${file}`);
     expect(response.status(), file).toBe(200);
   }
 

@@ -2,7 +2,7 @@ import { type Page, expect } from "@playwright/test";
 import { sql } from "./db";
 
 // Local Supabase sends auth email to Mailpit.
-const MAILPIT = "http://127.0.0.1:54324/api/v1";
+const MAILPIT = "http://127.0.0.1:55324/api/v1";
 
 /** The newest sign-in link emailed to this address. */
 export async function latestSignInLink(email: string): Promise<string> {

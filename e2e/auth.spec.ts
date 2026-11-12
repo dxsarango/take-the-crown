@@ -70,7 +70,7 @@ test("starts Google and X sign-in, and explains when a provider is off", async (
   await expect(loginDialog(page).getByRole("link", { name: en.login.x })).toHaveAttribute("href", "/auth/sign-in/x?next=%2Fen");
 
   // X stays off in the local stack until its OAuth app exists.
-  const probe = await page.request.get("http://127.0.0.1:54321/auth/v1/authorize?provider=x", { maxRedirects: 0 });
+  const probe = await page.request.get("http://127.0.0.1:55321/auth/v1/authorize?provider=x", { maxRedirects: 0 });
   test.skip(probe.status() === 302, "X (OAuth 2.0) is enabled in local Supabase");
   await loginDialog(page).getByRole("link", { name: en.login.x }).click();
   await page.waitForURL(/\/en$/);
@@ -78,7 +78,7 @@ test("starts Google and X sign-in, and explains when a provider is off", async (
 });
 
 test("hands Google sign-in to Supabase Auth with a PKCE challenge", async ({ page }) => {
-  const settings = await (await page.request.get("http://127.0.0.1:54321/auth/v1/settings", {
+  const settings = await (await page.request.get("http://127.0.0.1:55321/auth/v1/settings", {
     headers: { apikey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "" },
   })).json();
   test.skip(settings.external?.google !== true, "Google is not enabled in local Supabase");
@@ -94,7 +94,7 @@ test("hands Google sign-in to Supabase Auth with a PKCE challenge", async ({ pag
 test("hands X sign-in to Supabase's OAuth 2.0 provider, asking for the email", async ({ page }) => {
   // Runs when the local stack has X on (`[auth.external.x]`, any client id): Supabase's authorize
   // endpoint redirects to X only for an enabled provider.
-  const probe = await page.request.get("http://127.0.0.1:54321/auth/v1/authorize?provider=x", { maxRedirects: 0 });
+  const probe = await page.request.get("http://127.0.0.1:55321/auth/v1/authorize?provider=x", { maxRedirects: 0 });
   test.skip(probe.status() !== 302, "X (OAuth 2.0) is not enabled in local Supabase");
 
   const start = await page.request.get("/auth/sign-in/x?next=%2Fen", { maxRedirects: 0 });
@@ -110,7 +110,7 @@ test("hands X sign-in to Supabase's OAuth 2.0 provider, asking for the email", a
 
 test("a password someone set through Supabase's sign-up API stops working once the owner signs in", async ({ page, request }) => {
   // The app has no password sign-in, but Supabase's sign-up API is open to anyone with the anon key.
-  const auth = "http://127.0.0.1:54321/auth/v1";
+  const auth = "http://127.0.0.1:55321/auth/v1";
   const headers = { apikey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "", "content-type": "application/json" };
   const email = "hijack.target@test.local";
   const password = "chosen-by-someone-else";
@@ -134,7 +134,7 @@ test("a password someone set through Supabase's sign-up API stops working once t
 });
 
 test("refuses a session opened with a password", async ({ page, context, request }) => {
-  const auth = "http://127.0.0.1:54321/auth/v1";
+  const auth = "http://127.0.0.1:55321/auth/v1";
   const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "";
   const email = "password.session@test.local";
   const password = "chosen-by-someone-else";
@@ -142,7 +142,7 @@ test("refuses a session opened with a password", async ({ page, context, request
 
   // The same cookies a browser would hold after signing in with that password.
   const jar: { name: string; value: string }[] = [];
-  const supabase = createServerClient("http://127.0.0.1:54321", anonKey, {
+  const supabase = createServerClient("http://127.0.0.1:55321", anonKey, {
     cookies: {
       getAll: () => jar,
       setAll: (list: { name: string; value: string }[]) => {
