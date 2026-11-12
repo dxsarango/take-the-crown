@@ -11,7 +11,7 @@ import type { Monarch } from "@/lib/art/coronation";
 import type { HomeData } from "@/lib/home/data";
 import { heroState } from "@/lib/home/hero";
 import { Hero, type HomeNotice, KingMessage } from "./hero";
-import { About, Feed, Footer, HallOfFamePreview, Succession } from "./sections";
+import { About, Feed, Footer, HallOfFamePreview, Pitch, Succession } from "./sections";
 import { ThroneScene } from "./throne-scene";
 import { useServerClock, useServerNow } from "@/components/use-server-now";
 import { useLiveHome } from "./use-live-home";
@@ -230,11 +230,12 @@ export function HomeView({ initial }: { initial: HomeData }) {
           </div>
         )}
         <div className="lg:px-18">
-          <Succession reigns={data.succession} season={season} hasKing={data.king !== null} />
+          <Pitch />
           <div className="mx-4 flex flex-col gap-6 py-6 shadow-[var(--crown-bar-top)] lg:mx-0 lg:grid lg:grid-cols-2 lg:items-start lg:gap-16 lg:pt-8 lg:pb-12">
-            <HallOfFamePreview hall={data.hallOfFame} season={season} />
             <Feed items={data.feed} now={minute} />
+            <HallOfFamePreview hall={data.hallOfFame} season={season} />
           </div>
+          <Succession reigns={data.succession} season={season} hasKing={data.king !== null} />
           <About crown={data.crown} season={data.season} />
         </div>
       </main>
