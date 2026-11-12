@@ -97,6 +97,11 @@
     "soon": "Launching soon",
     "soonNote": "Taking the crown opens on launch day. Everything else is already open.",
     "adminTest": "Prelaunch · only admins can take the crown, with test payments.",
+    "pitch": {
+      "title": "One crown. One king at a time.",
+      "body": "Pay to take the throne and hold it until someone else does. Your glory is the time you reign.",
+      "link": "How it works"
+    },
     "about": {
       "title": "How it works",
       "what": "{brand} has one crown. Whoever pays the price on the throne becomes king, and their name, portrait, message and link stay on this page until someone else pays to take the crown.",

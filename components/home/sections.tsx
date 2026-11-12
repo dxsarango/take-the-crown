@@ -31,6 +31,26 @@ function Empty({ children }: { children: ReactNode }) {
   return <p className="text-14 text-crown-muted">{children}</p>;
 }
 
+/** What the game is in two lines, for a visitor who has never seen it; the long version is "How it works". */
+export function Pitch() {
+  const t = useTranslations("home.pitch");
+  return (
+    <section aria-labelledby="pitch-title" className={`${SECTION} gap-3 py-6 lg:gap-4 lg:pt-8 lg:pb-6`}>
+      <div className="flex items-center gap-3">
+        {/* eslint-disable-next-line @next/next/no-img-element -- pixel art must not be resampled by next/image */}
+        <img src="/art/crowns/icon-16.svg" width={32} height={32} alt="" className="block flex-none [image-rendering:pixelated]" />
+        <h2 id="pitch-title" className="text-20 font-bold">
+          {t("title")}
+        </h2>
+      </div>
+      <p className="max-w-[440px] text-16 leading-body text-pretty text-crown-muted">{t("body")}</p>
+      <a href="#about" className="hit-area self-start text-14 font-bold underline decoration-crown-stone decoration-2 underline-offset-[5px] hover:decoration-crown-text">
+        {t("link")}
+      </a>
+    </section>
+  );
+}
+
 /** Past reigns only: the current king is on the throne above, not in the line. */
 export function Succession({ reigns, season, hasKing }: { reigns: PastReign[]; season: number; hasKing: boolean }) {
   const t = useTranslations("home");
@@ -208,7 +228,7 @@ export function About({ crown, season }: { crown: CrownState; season: Season }) 
   const locale = useLocale() as Locale;
   const link = "hit-area text-14 text-crown-muted underline underline-offset-4 hover:text-crown-text";
   return (
-    <section aria-labelledby="about-title" className={`${SECTION} gap-3.5 py-6 lg:gap-5 lg:pt-8 lg:pb-12`}>
+    <section id="about" aria-labelledby="about-title" className={`${SECTION} gap-3.5 py-6 lg:gap-5 lg:pt-8 lg:pb-12`}>
       <h2 id="about-title" className="text-20 font-bold">
         {t("title")}
       </h2>

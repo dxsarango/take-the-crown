@@ -141,3 +141,16 @@ for (const [state, options] of [
     await page.screenshot({ path: `test-results/screens/home-${state}-${testInfo.project.name}.png` });
   });
 }
+
+test("tells a first-time visitor what the game is, with the live proclamations above the line of succession", async ({ page }) => {
+  await seedKingdom();
+  await page.goto("/en");
+  await expect(page.getByRole("heading", { name: en.home.pitch.title })).toBeVisible();
+  await expect(page.getByText(en.home.pitch.body)).toBeVisible();
+  const proclamations = await page.getByRole("heading", { name: en.home.live }).boundingBox();
+  const succession = await page.getByRole("heading", { name: en.home.succession }).boundingBox();
+  expect(proclamations && succession && proclamations.y < succession.y).toBe(true);
+  await page.getByRole("link", { name: en.home.pitch.link }).click();
+  await expect(page).toHaveURL(/#about$/);
+  await expect(page.getByRole("heading", { name: en.home.about.title })).toBeInViewport();
+});

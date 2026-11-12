@@ -97,6 +97,11 @@
     "soon": "Muy pronto",
     "soonNote": "Tomar la corona se abre el día del lanzamiento. Todo lo demás ya está abierto.",
     "adminTest": "Prelanzamiento · solo los admins pueden tomar la corona, con pagos de prueba.",
+    "pitch": {
+      "title": "Una corona. Un rey a la vez.",
+      "body": "Paga para tomar el trono y consérvalo hasta que otra persona lo tome. Tu gloria es el tiempo que reinas.",
+      "link": "Cómo funciona"
+    },
     "about": {
       "title": "Cómo funciona",
       "what": "{brand} tiene una sola corona. Quien paga el precio del trono se convierte en rey, y su nombre, retrato, mensaje y enlace se quedan en esta página hasta que otra persona pague para tomar la corona.",
