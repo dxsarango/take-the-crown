@@ -151,6 +151,7 @@ describe("DodoProvider", () => {
       lockId: LOCK,
       priceCents: 3400,
       email: "nadia@example.com",
+      country: "EC",
       locale: "es",
       successUrl: "https://takethecrown.app/es?lock=x",
       cancelUrl: "https://takethecrown.app/es?lock=x&cancelled=1",
@@ -162,11 +163,27 @@ describe("DodoProvider", () => {
     expect(JSON.parse(init.body as string)).toEqual({
       product_cart: [{ product_id: "pdt_test_crown", quantity: 1, amount: 3400 }],
       customer: { email: "nadia@example.com" },
+      billing_address: { country: "EC" },
       billing_currency: "USD",
       return_url: "https://takethecrown.app/es?lock=x",
       cancel_url: "https://takethecrown.app/es?lock=x&cancelled=1",
       metadata: { lock_id: LOCK },
     });
+  });
+
+  it("leaves the billing address out when the buyer has no country", async () => {
+    fetchMock.mockResolvedValue(Response.json({ session_id: "cks_2", checkout_url: "https://test.checkout.dodopayments.com/session/cks_2" }));
+    await provider().createCheckout({
+      lockId: LOCK,
+      priceCents: 500,
+      email: "nadia@example.com",
+      country: null,
+      locale: "en",
+      successUrl: "https://takethecrown.app/en?lock=x",
+      cancelUrl: "https://takethecrown.app/en?lock=x&cancelled=1",
+    });
+    const [, init] = fetchMock.mock.calls[0] as [string, RequestInit];
+    expect(JSON.parse(init.body as string)).not.toHaveProperty("billing_address");
   });
 
   it("talks to the live API in live mode", async () => {
