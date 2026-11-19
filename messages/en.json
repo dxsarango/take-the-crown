@@ -279,7 +279,7 @@
       "impersonation": "It pretends to be someone else.",
       "personal_data": "It shares personal details like a phone number or an address.",
       "spam": "It reads as spam.",
-      "manipulation": "It tries to give instructions to our content check.",
+      "manipulation": "It has markup or labels we can't allow, like < > or SYSTEM:. Remove them and try again.",
       "blocked_name": "That name uses a word we don't allow in public names."
     },
     "pendingReview": "Your message will appear after a short review.",

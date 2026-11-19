@@ -11,7 +11,9 @@ import { portraitPixels } from "@/lib/art/portrait";
 import { portraitOrigin, seasonScene } from "@/lib/art/scenes";
 import { COUNTRY_CODES, countryName } from "@/lib/countries";
 import { displayLink, formatCountdown, formatPrice } from "@/lib/format";
-import { NAME_PATTERN, normalizeLink } from "@/lib/locks/input";
+import { NAME_PATTERN, isHttpsUrl, normalizeLink } from "@/lib/locks/input";
+import { isManipulation, isManipulativeLink } from "@/lib/moderation/manipulation";
+import { linkProblem, messageProblem } from "@/lib/moderation/rules";
 import type { LockFailure, LockField } from "@/lib/locks/outcome";
 import type { ModerationReason } from "@/lib/moderation/reasons";
 import type { Rank } from "@/lib/game/rank";
@@ -271,8 +273,26 @@ export function PaymentModal({ season, priceCents, lockSeconds, messageMax, now,
   const rank: Rank = viewer?.rank ?? "peasant";
   const link = draft.link.trim() ? displayLink(normalizeLink(draft.link)) : "";
 
+  // What the fixed rules already say about a field once the buyer leaves it, so a problem shows
+  // there and not only after pay is pressed. The server still decides.
+  const [localProblem, setLocalProblem] = useState<{ link?: "invalid" | ModerationReason; message?: ModerationReason }>({});
+  const checkLink = () => {
+    const value = draft.link.trim();
+    if (!value) return setLocalProblem((p) => ({ ...p, link: undefined }));
+    const link = normalizeLink(value);
+    setDraft((d) => ({ ...d, link: value.replace(/^http:\/\//i, "https://") }));
+    const problem = !isHttpsUrl(link) ? "invalid" : isManipulativeLink(link) ? "manipulation" : linkProblem(link);
+    setLocalProblem((p) => ({ ...p, link: problem ?? undefined }));
+  };
+  const checkMessage = () => {
+    const value = draft.message.trim();
+    const problem = value ? (isManipulation(value) ? "manipulation" : messageProblem(value)) : null;
+    setLocalProblem((p) => ({ ...p, message: problem ?? undefined }));
+  };
+
   const update = (field: keyof Draft, value: string | null) => {
     setDraft((d) => ({ ...d, [field]: value }));
+    if (field === "link" || field === "message") setLocalProblem((p) => ({ ...p, [field]: undefined }));
     if (field === "link" || field === "message" || field === "name" || field === "email") clearFailure(field);
   };
 
@@ -317,6 +337,8 @@ export function PaymentModal({ season, priceCents, lockSeconds, messageMax, now,
   const linkLine = () => {
     if (failure?.error === "moderation_rejected" && failure.field === "link") return <FieldError>{rejection("link", failure.reason).line}</FieldError>;
     if (failure?.error === "invalid_input" && failure.fields.includes("link")) return <FieldError>{editProfile("linkBad")}</FieldError>;
+    if (localProblem.link === "invalid") return <FieldError>{editProfile("linkBad")}</FieldError>;
+    if (localProblem.link) return <FieldError>{rejection("link", localProblem.link).line}</FieldError>;
     return <div className="text-12 text-crown-muted">{t("linkHelp")}</div>;
   };
 
@@ -443,10 +465,11 @@ export function PaymentModal({ season, priceCents, lockSeconds, messageMax, now,
         id={`pay-${size}-link`}
         value={draft.link}
         onChange={(e) => update("link", e.target.value.slice(0, 80))}
+        onBlur={checkLink}
         maxLength={80}
         inputMode="url"
         placeholder={t("linkPh")}
-        className={inputClass(fieldBad("link"))}
+        className={inputClass(fieldBad("link") || localProblem.link !== undefined)}
       />
       {linkLine()}
     </div>
@@ -466,19 +489,22 @@ export function PaymentModal({ season, priceCents, lockSeconds, messageMax, now,
         id={`pay-${size}-message`}
         value={draft.message}
         onChange={(e) => update("message", e.target.value.replace(/\n/g, " ").slice(0, messageMax))}
+        onBlur={checkMessage}
         maxLength={messageMax}
         rows={2}
         placeholder={t("msgPh")}
         className={`h-20 w-full resize-none bg-crown-velvet px-4 py-3.5 text-16 leading-snug placeholder:text-crown-muted ${
-          fieldBad("message") ? "shadow-inset-field-error" : "shadow-inset-field"
+          fieldBad("message") || localProblem.message ? "shadow-inset-field-error" : "shadow-inset-field"
         }`}
       />
       <div className="flex h-1 gap-0.5" aria-hidden>
         <span className="bg-crown-muted" style={{ flex: draft.message.length }} />
         <span className="bg-crown-hall" style={{ flex: messageMax - draft.message.length }} />
       </div>
-      {fieldBad("message") && (
+      {fieldBad("message") ? (
         <FieldError>{failure?.error === "moderation_rejected" ? rejection("message", failure.reason).line : t("rejMsgLine")}</FieldError>
+      ) : (
+        localProblem.message && <FieldError>{rejection("message", localProblem.message).line}</FieldError>
       )}
     </div>
   );

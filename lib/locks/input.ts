@@ -3,14 +3,14 @@ import { z } from "zod";
 export const NAME_PATTERN = /^[A-Za-z0-9._-]{3,24}$/;
 export const LINK_MAX_LENGTH = 200;
 
-/** "turno.app" → "https://turno.app". Anything that is not https ends up invalid. */
+/** "turno.app" → "https://turno.app", "http://turno.app" → "https://turno.app". Any other scheme ends up invalid. */
 export function normalizeLink(raw: string): string {
-  const value = raw.trim();
+  const value = raw.trim().replace(/^http:\/\//i, "https://");
   if (!value) return "";
   return /^[a-z][a-z0-9+.-]*:/i.test(value) ? value : `https://${value}`;
 }
 
-function isHttpsUrl(value: string): boolean {
+export function isHttpsUrl(value: string): boolean {
   try {
     const url = new URL(value);
     return url.protocol === "https:" && url.hostname.includes(".") && !/\s/.test(value);
