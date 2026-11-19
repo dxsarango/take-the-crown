@@ -141,6 +141,7 @@ export class DodoProvider implements PaymentProvider {
         body: {
           product_cart: [{ product_id: this.config.productId, quantity: 1, amount: input.priceCents }],
           customer: { email: input.email },
+          ...(input.country ? { billing_address: { country: input.country } } : {}),
           billing_currency: "USD",
           return_url: input.successUrl,
           cancel_url: input.cancelUrl,

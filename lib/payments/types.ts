@@ -15,6 +15,8 @@ export type CheckoutInput = {
   lockId: string;
   priceCents: number;
   email: string;
+  /** The buyer's country (ISO alpha-2), so the provider's page opens on it and taxes follow it. */
+  country?: string | null;
   locale: string;
   successUrl: string;
   /** Where the buyer lands after backing out of a redirect checkout. */

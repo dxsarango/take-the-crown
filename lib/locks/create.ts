@@ -105,6 +105,7 @@ export async function createLock(body: unknown, ip: string): Promise<LockOutcome
       lockId: lock.id,
       priceCents: lock.price_cents,
       email: buyer.email,
+      country: input.country,
       locale: input.locale,
       successUrl: `${serverEnv().NEXT_PUBLIC_SITE_URL}/${input.locale}?lock=${lock.id}`,
       cancelUrl: `${serverEnv().NEXT_PUBLIC_SITE_URL}/${input.locale}?lock=${lock.id}&cancelled=1`,
