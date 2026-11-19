@@ -6,6 +6,33 @@ import { latestSignInLink } from "./fixtures/mail";
 import { resetKingdom, seedKingdom } from "./fixtures/kingdom";
 import { HUMAN_TOKEN, acceptDelivery } from "./fixtures/payment";
 
+test("link and message problems show when the buyer leaves the field", async ({ page }) => {
+  await seedKingdom();
+  await page.goto("/en");
+  await openModal(page);
+  const field = (label: string) => dialog(page).getByLabel(label, { exact: true }).filter({ visible: true });
+
+  // http is upgraded in place, with no error.
+  await field(en.payment.linkL).fill("http://example.com");
+  await field(en.payment.msgL).focus();
+  await expect(field(en.payment.linkL)).toHaveValue("https://example.com");
+  await expect(page.getByText(en.editProfile.linkBad)).toHaveCount(0);
+
+  // Something that is not a web address is called out at once, not after Pay.
+  await field(en.payment.linkL).fill("not a link");
+  await field(en.payment.msgL).focus();
+  await expect(visible(page, en.editProfile.linkBad)).toBeVisible();
+
+  // Markup in the message is named as such, without accusing the buyer.
+  await field(en.payment.msgL).fill("Zoë's <b>Co</b>");
+  await field(en.payment.linkL).focus();
+  await expect(visible(page, en.payment.rejMsgLineOther)).toBeVisible();
+  await field(en.payment.msgL).fill("Zoë's \"café\" & Co");
+  await field(en.payment.linkL).focus();
+  await expect(page.getByText(en.payment.rejMsgLineOther)).toHaveCount(0);
+});
+
+
 test.afterAll(resetKingdom);
 
 const visible = (page: Page, text: string | RegExp) => page.getByText(text).filter({ visible: true }).first();

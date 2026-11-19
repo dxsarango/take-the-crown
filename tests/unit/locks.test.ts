@@ -14,6 +14,13 @@ describe("lock request", () => {
     expect(normalizeLink("")).toBe("");
   });
 
+  it("upgrades http to https instead of refusing it", () => {
+    expect(normalizeLink("http://example.com")).toBe("https://example.com");
+    expect(normalizeLink(" HTTP://example.com/a ")).toBe("https://example.com/a");
+    expect(lockRequestSchema.parse({ ...valid, link: "http://example.com" }).link).toBe("https://example.com");
+    expect(lockRequestSchema.safeParse({ ...valid, link: "ftp://example.com" }).success).toBe(false);
+  });
+
   it("accepts a minimal guest request", () => {
     const parsed = lockRequestSchema.parse(valid);
     expect(parsed).toMatchObject({ name: "nadia.builds", link: null, message: null, country: null });
@@ -29,7 +36,7 @@ describe("lock request", () => {
     [{ name: "ab" }, "name"],
     [{ name: "has space" }, "name"],
     [{ email: "nope" }, "email"],
-    [{ link: "http://turno.app" }, "link"],
+    [{ link: "ftp://turno.app" }, "link"],
     [{ link: "javascript:alert(1)" }, "link"],
     [{ link: "localhost" }, "link"],
     [{ country: "ecuador" }, "country"],

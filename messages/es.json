@@ -279,7 +279,7 @@
       "impersonation": "Se hace pasar por otra persona.",
       "personal_data": "Comparte datos personales como un teléfono o una dirección.",
       "spam": "Parece spam.",
-      "manipulation": "Intenta dar instrucciones a nuestra revisión de contenido.",
+      "manipulation": "Tiene marcas o etiquetas que no permitimos, como < > o SYSTEM:. Quítalas e inténtalo de nuevo.",
       "blocked_name": "Ese nombre usa una palabra que no permitimos en nombres públicos."
     },
     "pendingReview": "Tu mensaje aparecerá tras una breve revisión.",

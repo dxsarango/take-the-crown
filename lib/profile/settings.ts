@@ -53,7 +53,7 @@ const WEB_ADDRESS = /^(https?:\/\/)?([a-z0-9-]+\.)+[a-z]{2,}(\/\S*)?$/i;
 export function mainLinkUrl(raw: string): string | null {
   const value = raw.trim();
   if (!value) return null;
-  return normalizeLink(value.replace(/^http:\/\//i, "https://"));
+  return normalizeLink(value);
 }
 
 export type FieldProblem =
