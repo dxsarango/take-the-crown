@@ -2,6 +2,7 @@ import { rankForSeconds } from "@/lib/game/rank";
 import type { Person, Season } from "@/lib/home/data";
 import { avatarSource } from "@/lib/profile/avatar";
 import type { PublicClient } from "@/lib/supabase/public";
+import type { LiveReign } from "./hall-live";
 
 export const HISTORY_PAGE = 30;
 const HALL_SIZE = 10;
@@ -164,19 +165,25 @@ function scopeRows(rows: HallRowRaw[], people: Map<string, Person>): HallScope {
   return { tabs: { longest: tab("longest"), most: tab("most"), shortest: tab("shortest"), countries: tab("countries") } };
 }
 
+export type HallOfFame = { season: HallScope; all: HallScope; live: LiveReign | null; readAt: string };
+
 /** The four records for the current season and for all time, ranked by the database. */
-export async function fetchHallOfFame(db: PublicClient, seasonId: number): Promise<{ season: HallScope; all: HallScope }> {
-  const [seasonRes, allRes] = await Promise.all([
+export async function fetchHallOfFame(db: PublicClient, seasonId: number): Promise<HallOfFame> {
+  const [seasonRes, allRes, liveRes] = await Promise.all([
     db.rpc("hall_of_fame", { p_season_id: seasonId, p_limit: HALL_SIZE }),
     db.rpc("hall_of_fame", { p_limit: HALL_SIZE }),
+    db.from("public_reigns").select("profile_id, country_code, started_at").is("ended_at", null).eq("reversed", false).limit(1),
   ]);
+  const liveRow = liveRes.data?.[0];
+  const live: LiveReign | null =
+    liveRow?.profile_id && liveRow.started_at ? { profileId: liveRow.profile_id, countryCode: liveRow.country_code, startedAt: liveRow.started_at } : null;
   const season = must(seasonRes, "hall of fame") as HallRowRaw[];
   const all = must(allRes, "hall of fame") as HallRowRaw[];
   const people = await fetchPeople(
     db,
     [...season, ...all].flatMap((r) => (r.profile_id ? [r.profile_id] : [])),
   );
-  return { season: scopeRows(season, people), all: scopeRows(all, people) };
+  return { season: scopeRows(season, people), all: scopeRows(all, people), live, readAt: new Date().toISOString() };
 }
 
 // ---------------------------------------------------------------------------

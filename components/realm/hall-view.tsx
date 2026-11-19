@@ -9,7 +9,8 @@ import { TopBar } from "@/components/top-bar";
 import { Link } from "@/i18n/navigation";
 import { countryName } from "@/lib/countries";
 import { formatDuration, formatDurationPrecise } from "@/lib/format";
-import { HALL_TABS, type HallRow, type HallScope, type HallTab, type SeasonInfo } from "@/lib/realm/data";
+import { HALL_TABS, type HallOfFame, type HallRow, type HallTab, type SeasonInfo } from "@/lib/realm/data";
+import { withLiveReign } from "@/lib/realm/hall-live";
 import { segmentClass, useDates } from "./common";
 import { Podium, type PodiumSpot } from "./podium";
 import { usePlayerName } from "@/components/player-name";
@@ -20,7 +21,7 @@ type Props = {
   next: SeasonInfo | null;
   /** More than one season has started, so all time differs from this season. */
   manySeasons: boolean;
-  hall: { season: HallScope; all: HallScope };
+  hall: HallOfFame;
   readAt: string;
 };
 
@@ -37,7 +38,7 @@ export function HallView({ current, next, manySeasons, hall, readAt }: Props) {
   const [scope, setScope] = useState<"season" | "all">("season");
   const [tab, setTab] = useState<HallTab>("longest");
   const tabIndex = HALL_TABS.indexOf(tab);
-  const rows = hall[scope].tabs[tab];
+  const rows = withLiveReign(hall[scope], hall.live, now, Date.parse(hall.readAt)).tabs[tab];
 
   const value = (row: HallRow) => {
     if (tab === "most") return String(row.value);
