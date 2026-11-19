@@ -10,6 +10,7 @@ import { TopBar } from "@/components/top-bar";
 import type { Monarch } from "@/lib/art/coronation";
 import type { HomeData } from "@/lib/home/data";
 import { heroState } from "@/lib/home/hero";
+import { HailPanel } from "./hail";
 import { Hero, type HomeNotice, KingMessage } from "./hero";
 import { About, Feed, Footer, HallOfFamePreview, Pitch, Succession } from "./sections";
 import { ThroneScene } from "./throne-scene";
@@ -224,9 +225,10 @@ export function HomeView({ initial }: { initial: HomeData }) {
           {data.king && <PlayerName name={data.king.name} />}
         </div>
         <Hero king={data.king} crown={data.crown} readAt={data.readAt} season={season} notice={notice} onTake={openPayment} />
-        {data.king && (data.king.message || data.king.link) && (
+        {data.king && (
           <div className="mx-4 flex flex-col gap-2.5 pt-4 pb-6 shadow-[var(--crown-bar-top)] lg:hidden">
             <KingMessage king={data.king} size="mobile" />
+            <HailPanel key={data.king.reignId} king={data.king} />
           </div>
         )}
         <div className="lg:px-18">

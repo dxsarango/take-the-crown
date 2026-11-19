@@ -8,6 +8,7 @@ import { clockParts, displayLink, formatCountdown, formatPercent, formatPrice } 
 import type { CrownState, King } from "@/lib/home/data";
 import { type HeroState, heroState, lockSegments } from "@/lib/home/hero";
 import { safeHttpsUrl } from "@/lib/links";
+import { HailPanel } from "./hail";
 import { ReportDialog } from "./report-dialog";
 import { PlayerName } from "@/components/player-name";
 import { useAuth } from "@/components/auth/auth-provider";
@@ -301,6 +302,7 @@ export function Hero({ king, crown, readAt, season, notice, onTake }: Props) {
             <>
               <KingName king={king} size="desktop" />
               <KingMessage king={king} size="desktop" />
+              <HailPanel key={king.reignId} king={king} />
             </>
           ) : (
             <>

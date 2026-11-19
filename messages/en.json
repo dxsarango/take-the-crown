@@ -97,6 +97,19 @@
     "soon": "Launching soon",
     "soonNote": "Taking the crown opens on launch day. Everything else is already open.",
     "adminTest": "Prelaunch · only admins can take the crown, with test payments.",
+    "hail": {
+      "button": "Long live the king!",
+      "sending": "Hailing…",
+      "done": "You hailed the king",
+      "count": "{count, plural, =0 {No hails yet this reign} one {# hail this reign} other {# hails this reign}}",
+      "countLabel": "Hails received this reign",
+      "limit": "Too many hails from this connection. Try again later.",
+      "rate": "Too many tries. Wait a little and try again.",
+      "human": "We couldn't check that you are human. Try again.",
+      "ended": "This reign just ended. The new king can be hailed.",
+      "self": "A king can't hail themselves.",
+      "error": "Something went wrong. Try again."
+    },
     "pitch": {
       "title": "One crown. One king at a time.",
       "body": "Pay to take the throne and hold it until someone else does. Your glory is the time you reign.",

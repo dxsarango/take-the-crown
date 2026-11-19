@@ -14,7 +14,7 @@ Dario Sarango, natural person residing in Ecuador, is the data controller. Conta
 
 **Purchases.** Email, amount, currency, time, and the content you submit with the purchase (name, message, link, country, local hour). Payment details such as card numbers are collected by {{PAYMENT_PROVIDER}}, never by us.
 
-**Game activity.** Reigns, durations, prices paid, achievements, ranks, seasons and reports you submit.
+**Game activity.** Reigns, durations, prices paid, achievements, ranks, seasons, reports you submit and the hails you give the king. A hail is stored with an identifier of your account, or, if you are not signed in, with a hash of a random identifier kept in your browser, so that each person hails a reign once.
 
 **Technical data.** Your IP address is used in real time for security and to suggest your country. We only store it as a salted, irreversible hash, used to limit abuse. We also process request logs, browser type and your time zone.
 
@@ -68,7 +68,7 @@ Our providers may process data outside Ecuador and outside your country, includi
 - Account and profile data: while your account exists.
 - Reign history: it is part of the game's public record. If you delete your account, your reigns remain without your name, avatar, message or link.
 - Payment records: for as long as tax and accounting laws require.
-- IP hashes and abuse records: up to 90 days, unless needed for an ongoing investigation.
+- IP hashes and abuse records (including the address hash stored with a hail): up to 90 days, unless needed for an ongoing investigation.
 - Emails sent and logs: up to 90 days.
 
 ## 9. Your rights
@@ -79,7 +79,7 @@ You can also file a complaint with Ecuador's Superintendency of Personal Data Pr
 
 ## 10. Cookies
 
-We only use cookies that are strictly necessary for the Service to work: your session, your language, your time zone and bot protection. We do not use advertising cookies. The visit statistics and page speed measurements described in section 2 use no cookies and store nothing on your device.
+We only use cookies that are strictly necessary for the Service to work: your session, your language, your time zone, bot protection and, if you hail the king without an account, a random identifier that remembers that your browser already hailed (it expires after about 13 months). We do not use advertising cookies. The visit statistics and page speed measurements described in section 2 use no cookies and store nothing on your device.
 
 ## 11. Children
 

@@ -342,3 +342,12 @@ Not blocking the launch: final Frost art (Genesis runs to 2026-12-01; admins are
 - [x] Home for a first-time visitor: "One crown. One king at a time." block with a link to "How it works", proclamations moved above the line of succession (en/es); e2e
 - [x] Verified on the real page at 390 and 1440 px (the action stays in the first screen at 390) and with the e2e suite for the home page and the short routes, against the local stack
 - [ ] Step 2 ("Hail the king") waits for the traffic numbers
+
+## Milestone 12 — Hail the king (step 2 of the TikTok-first plan)
+
+- [x] Migration `0035`: `reign_hails` (private) and `reign_hail_counts` (public, realtime), `hail_reign()`, limits in `app_config`, address hashes of hails cleared after 90 days; tests (db: once per device or account, own reign, over reign, per-address cap, concurrency, client privileges, retention)
+- [x] `POST /api/hails`: no account needed, browser cookie id (hashed) or account as the hailer key, Turnstile (loaded only on tap), hourly limit per address; tests (unit)
+- [x] Throne UI: "Long live the king!" secondary button with the pixel crown, live count (en/es), done and error states, hidden for the king; the home data carries the count; tests (e2e: hail and remember, live count, per-address limit, Spanish; screenshots at 390 and 1440)
+- [x] Privacy policy (en/es): hails, the browser identifier and the address hash retention; `SPEC.md` and `IDEAS.md` updated
+- [ ] Owner: push migration `0035` to production before merging; tell the payment provider about the hail reaction (docs/IDEAS.md, payment provider policy)
+- [ ] Later: profile total of hails received, hall of fame "People's King", achievements (Beloved, People's King, Loyal subject; they need medal art from the design)

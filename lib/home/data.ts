@@ -41,6 +41,8 @@ export type Season = {
 
 export type King = Person & {
   reignId: number;
+  /** Hails this reign has received so far; the page keeps it live. */
+  hails: number;
   message: string | null;
   link: string | null;
   startedAt: string;
@@ -163,10 +165,17 @@ export async function fetchHomeData(db: PublicClient, now = new Date()): Promise
 
   const current = reigns.find((r) => r.id !== null && r.id === crownRow.current_reign_id);
   const currentReign = current ? asReign(current) : null;
+  const hailsRes =
+    crownRow.current_reign_id === null
+      ? null
+      : await db.from("reign_hail_counts").select("hails").eq("reign_id", crownRow.current_reign_id).maybeSingle();
+  if (hailsRes?.error) throw new Error(`Failed to load hails: ${hailsRes.error.message}`);
+  const hails = hailsRes?.data?.hails ?? 0;
   const king: King | null =
     current && currentReign
       ? {
           ...currentReign,
+          hails,
           message: current.message,
           link: current.link,
           startedAt: current.started_at ?? now.toISOString(),

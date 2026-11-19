@@ -69,13 +69,13 @@ isOneToOne: false
                   ]
                 },"app_config": {
                   Row: {
-                    "admin_reauth_seconds": number,"admin_session_seconds": number,"decay_bps_per_hour": number,"delete_reauth_seconds": number,"floor_cents": number,"id": boolean,"late_payment_grace_seconds": number,"legal_city": string | null,"legal_contact_email": string | null,"legal_effective_date": string | null,"legal_payment_provider": string | null,"lock_seconds": number,"max_avatar_uploads_per_hour": number,"max_email_attempts": number,"max_locks_per_ip_per_hour": number,"max_magic_links_per_hour": number,"max_message_length": number,"max_moderations_per_ip_per_hour": number,"max_name_checks_per_ip_per_hour": number,"max_profile_saves_per_hour": number,"max_reports_per_ip_per_hour": number,"min_first_season_days": number,"name_change_days": number,"paused": boolean,"prelaunch": boolean,"refund_alert_interval_seconds": number,"refund_retry_base_seconds": number,"refund_retry_max_seconds": number,"season_ready_alert_days": number,"step_bps": number,"updated_at": string
+                    "admin_reauth_seconds": number,"admin_session_seconds": number,"decay_bps_per_hour": number,"delete_reauth_seconds": number,"floor_cents": number,"id": boolean,"late_payment_grace_seconds": number,"legal_city": string | null,"legal_contact_email": string | null,"legal_effective_date": string | null,"legal_payment_provider": string | null,"lock_seconds": number,"max_anonymous_hails_per_ip_per_reign": number,"max_avatar_uploads_per_hour": number,"max_email_attempts": number,"max_hails_per_ip_per_hour": number,"max_locks_per_ip_per_hour": number,"max_magic_links_per_hour": number,"max_message_length": number,"max_moderations_per_ip_per_hour": number,"max_name_checks_per_ip_per_hour": number,"max_profile_saves_per_hour": number,"max_reports_per_ip_per_hour": number,"min_first_season_days": number,"name_change_days": number,"paused": boolean,"prelaunch": boolean,"refund_alert_interval_seconds": number,"refund_retry_base_seconds": number,"refund_retry_max_seconds": number,"season_ready_alert_days": number,"step_bps": number,"updated_at": string
                   }
                   Insert: {
-                    "admin_reauth_seconds"?: number,"admin_session_seconds"?: number,"decay_bps_per_hour"?: number,"delete_reauth_seconds"?: number,"floor_cents"?: number,"id"?: boolean,"late_payment_grace_seconds"?: number,"legal_city"?: string | null,"legal_contact_email"?: string | null,"legal_effective_date"?: string | null,"legal_payment_provider"?: string | null,"lock_seconds"?: number,"max_avatar_uploads_per_hour"?: number,"max_email_attempts"?: number,"max_locks_per_ip_per_hour"?: number,"max_magic_links_per_hour"?: number,"max_message_length"?: number,"max_moderations_per_ip_per_hour"?: number,"max_name_checks_per_ip_per_hour"?: number,"max_profile_saves_per_hour"?: number,"max_reports_per_ip_per_hour"?: number,"min_first_season_days"?: number,"name_change_days"?: number,"paused"?: boolean,"prelaunch"?: boolean,"refund_alert_interval_seconds"?: number,"refund_retry_base_seconds"?: number,"refund_retry_max_seconds"?: number,"season_ready_alert_days"?: number,"step_bps"?: number,"updated_at"?: string
+                    "admin_reauth_seconds"?: number,"admin_session_seconds"?: number,"decay_bps_per_hour"?: number,"delete_reauth_seconds"?: number,"floor_cents"?: number,"id"?: boolean,"late_payment_grace_seconds"?: number,"legal_city"?: string | null,"legal_contact_email"?: string | null,"legal_effective_date"?: string | null,"legal_payment_provider"?: string | null,"lock_seconds"?: number,"max_anonymous_hails_per_ip_per_reign"?: number,"max_avatar_uploads_per_hour"?: number,"max_email_attempts"?: number,"max_hails_per_ip_per_hour"?: number,"max_locks_per_ip_per_hour"?: number,"max_magic_links_per_hour"?: number,"max_message_length"?: number,"max_moderations_per_ip_per_hour"?: number,"max_name_checks_per_ip_per_hour"?: number,"max_profile_saves_per_hour"?: number,"max_reports_per_ip_per_hour"?: number,"min_first_season_days"?: number,"name_change_days"?: number,"paused"?: boolean,"prelaunch"?: boolean,"refund_alert_interval_seconds"?: number,"refund_retry_base_seconds"?: number,"refund_retry_max_seconds"?: number,"season_ready_alert_days"?: number,"step_bps"?: number,"updated_at"?: string
                   }
                   Update: {
-                    "admin_reauth_seconds"?: number,"admin_session_seconds"?: number,"decay_bps_per_hour"?: number,"delete_reauth_seconds"?: number,"floor_cents"?: number,"id"?: boolean,"late_payment_grace_seconds"?: number,"legal_city"?: string | null,"legal_contact_email"?: string | null,"legal_effective_date"?: string | null,"legal_payment_provider"?: string | null,"lock_seconds"?: number,"max_avatar_uploads_per_hour"?: number,"max_email_attempts"?: number,"max_locks_per_ip_per_hour"?: number,"max_magic_links_per_hour"?: number,"max_message_length"?: number,"max_moderations_per_ip_per_hour"?: number,"max_name_checks_per_ip_per_hour"?: number,"max_profile_saves_per_hour"?: number,"max_reports_per_ip_per_hour"?: number,"min_first_season_days"?: number,"name_change_days"?: number,"paused"?: boolean,"prelaunch"?: boolean,"refund_alert_interval_seconds"?: number,"refund_retry_base_seconds"?: number,"refund_retry_max_seconds"?: number,"season_ready_alert_days"?: number,"step_bps"?: number,"updated_at"?: string
+                    "admin_reauth_seconds"?: number,"admin_session_seconds"?: number,"decay_bps_per_hour"?: number,"delete_reauth_seconds"?: number,"floor_cents"?: number,"id"?: boolean,"late_payment_grace_seconds"?: number,"legal_city"?: string | null,"legal_contact_email"?: string | null,"legal_effective_date"?: string | null,"legal_payment_provider"?: string | null,"lock_seconds"?: number,"max_anonymous_hails_per_ip_per_reign"?: number,"max_avatar_uploads_per_hour"?: number,"max_email_attempts"?: number,"max_hails_per_ip_per_hour"?: number,"max_locks_per_ip_per_hour"?: number,"max_magic_links_per_hour"?: number,"max_message_length"?: number,"max_moderations_per_ip_per_hour"?: number,"max_name_checks_per_ip_per_hour"?: number,"max_profile_saves_per_hour"?: number,"max_reports_per_ip_per_hour"?: number,"min_first_season_days"?: number,"name_change_days"?: number,"paused"?: boolean,"prelaunch"?: boolean,"refund_alert_interval_seconds"?: number,"refund_retry_base_seconds"?: number,"refund_retry_max_seconds"?: number,"season_ready_alert_days"?: number,"step_bps"?: number,"updated_at"?: string
                   }
                   Relationships: [
                     
@@ -408,6 +408,80 @@ isOneToOne: false
                   }
                   Relationships: [
                     
+                  ]
+                },"reign_hail_counts": {
+                  Row: {
+                    "hails": number,"reign_id": number
+                  }
+                  Insert: {
+                    "hails"?: number,"reign_id": number
+                  }
+                  Update: {
+                    "hails"?: number,"reign_id"?: number
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "reign_hail_counts_reign_id_fkey"
+      columns: ["reign_id"]
+isOneToOne: true
+      referencedRelation: "public_chronicle"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "reign_hail_counts_reign_id_fkey"
+      columns: ["reign_id"]
+isOneToOne: true
+      referencedRelation: "public_reigns"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "reign_hail_counts_reign_id_fkey"
+      columns: ["reign_id"]
+isOneToOne: true
+      referencedRelation: "reigns"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"reign_hails": {
+                  Row: {
+                    "created_at": string,"hailer_key": string,"id": number,"ip_hash": string | null,"profile_id": string | null,"reign_id": number
+                  }
+                  Insert: {
+                    "created_at"?: string,"hailer_key": string,"id"?: never,"ip_hash"?: string | null,"profile_id"?: string | null,"reign_id": number
+                  }
+                  Update: {
+                    "created_at"?: string,"hailer_key"?: string,"id"?: never,"ip_hash"?: string | null,"profile_id"?: string | null,"reign_id"?: number
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "reign_hails_profile_id_fkey"
+      columns: ["profile_id"]
+isOneToOne: false
+      referencedRelation: "profile_stats"
+      referencedColumns: ["profile_id"]
+    },{
+      foreignKeyName: "reign_hails_profile_id_fkey"
+      columns: ["profile_id"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "reign_hails_reign_id_fkey"
+      columns: ["reign_id"]
+isOneToOne: false
+      referencedRelation: "public_chronicle"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "reign_hails_reign_id_fkey"
+      columns: ["reign_id"]
+isOneToOne: false
+      referencedRelation: "public_reigns"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "reign_hails_reign_id_fkey"
+      columns: ["reign_id"]
+isOneToOne: false
+      referencedRelation: "reigns"
+      referencedColumns: ["id"]
+    }
                   ]
                 },"reigns": {
                   Row: {
@@ -855,6 +929,9 @@ isOneToOne: false
                            },
 "generate_profile_name":
 { Args: Record<PropertyKey, never>; Returns: string
+                           },
+"hail_reign":
+{ Args: { "p_hailer_key": string,"p_ip_hash": string,"p_profile_id"?: string,"p_reign_id": number }; Returns: Json
                            },
 "hall_of_fame":
 { Args: { "p_limit"?: number,"p_season_id"?: number }; Returns: {

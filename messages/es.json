@@ -97,6 +97,19 @@
     "soon": "Muy pronto",
     "soonNote": "Tomar la corona se abre el día del lanzamiento. Todo lo demás ya está abierto.",
     "adminTest": "Prelanzamiento · solo los admins pueden tomar la corona, con pagos de prueba.",
+    "hail": {
+      "button": "¡Viva el rey!",
+      "sending": "Aclamando…",
+      "done": "Has aclamado al rey",
+      "count": "{count, plural, =0 {Aún sin aclamaciones en este reinado} one {# aclamación en este reinado} other {# aclamaciones en este reinado}}",
+      "countLabel": "Aclamaciones de este reinado",
+      "limit": "Demasiadas aclamaciones desde esta conexión. Inténtalo más tarde.",
+      "rate": "Demasiados intentos. Espera un poco e inténtalo de nuevo.",
+      "human": "No pudimos comprobar que eres una persona. Inténtalo de nuevo.",
+      "ended": "Este reinado acaba de terminar. Ya puedes aclamar al nuevo rey.",
+      "self": "Un rey no puede aclamarse a sí mismo.",
+      "error": "Algo salió mal. Inténtalo de nuevo."
+    },
     "pitch": {
       "title": "Una corona. Un rey a la vez.",
       "body": "Paga para tomar el trono y consérvalo hasta que otra persona lo tome. Tu gloria es el tiempo que reinas.",

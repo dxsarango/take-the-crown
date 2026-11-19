@@ -33,6 +33,8 @@ const GAME_TABLES = [
   "events",
   "profile_achievements",
   "crown_state",
+  "reign_hail_counts",
+  "reign_hails",
   "reigns",
   "webhook_events",
   "payments",

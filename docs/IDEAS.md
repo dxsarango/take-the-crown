@@ -17,7 +17,7 @@ Step 1, landing and attribution (one PR):
 - Home above the fold understood in 5 seconds: the king (avatar, name), live reign counter, current takeover price from the SQL pricing function, one call to action, and a live feed of recent takeovers. Viewable without signing up; mobile first and light, for TikTok's in-app browser.
 - One short route per video (`/7`, `/8`, …) that serves the home page. Vercel Web Analytics (already live, path kept) reports visits per route: no custom table, no new dependency. Check the routes do not collide with profile or season paths.
 
-Step 2, free entry for spectators: ship "Hail the king" below, and decide whether TikTok viewers may hail without an account (Turnstile and IP rate limit) or only signed-in users. Boo or dislike reactions are not an option (see Never).
+Step 2, free entry for spectators: "Hail the king" below. Decided 2026-11-12: visitors may hail without an account (Turnstile, an hourly limit per address, one hail per browser and reign, a few per address and reign). Boo or dislike reactions are not an option (see Never).
 
 How we judge it: visits per video route, hails and new accounts, payments. Traffic without payments points at the offer; no traffic points at distribution.
 
@@ -27,9 +27,9 @@ A button in edit profile that ends every session of the account (`signOut({ scop
 ### Hail the king
 A single reaction for the current king: "Long live the king!" / "¡Viva el rey!", with a pixel crown or banner icon.
 
-- Signed-in users only, one hail per account per reign, Turnstile and an IP rate limit.
-- Live counter on the throne.
-- Stored per reign, aggregated per season and all time.
+- Built (docs/PROGRESS.md, milestone 12): the button and live counter on the throne, hails stored per reign, open to visitors without an account (one per browser or account and reign, Turnstile, address limits). Signed-in players hail under their account. A king cannot hail themselves.
+- Not built yet: the rest of this list. Hails from accounts are the ones that count for it; hails without an account only feed the throne counter.
+- Aggregated per season and all time.
 - Profile shows total hails received (all time, never resets).
 - New hall of fame category per season: People's King / Rey del pueblo (most hails in the season).
 - Achievements: Beloved / Amado (100 hails in one reign), People's King / Rey del pueblo (most hails in a season), Loyal subject / Súbdito leal (hailed 50 different kings).

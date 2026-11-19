@@ -40,7 +40,7 @@ test.describe("the home page", () => {
   test("links to the rules, the questions, the history, the hall of fame and the season", async ({ request }) => {
     for (const locale of ["en", "es"]) {
       const html = await (await request.get(`/${locale}`)).text();
-      const about = /<section aria-labelledby="about-title"[\s\S]*?<\/section>/.exec(html)?.[0] ?? "";
+      const about = /<section[^>]*aria-labelledby="about-title"[\s\S]*?<\/section>/.exec(html)?.[0] ?? "";
       const hrefs = [...about.matchAll(/<a [^>]*href="([^"]*)"/g)].map((m) => m[1]);
       expect(hrefs).toEqual([`/${locale}/rules`, `/${locale}/faq`, `/${locale}/kingdom`, `/${locale}/hall-of-fame`, `/${locale}/seasons/genesis`]);
     }
