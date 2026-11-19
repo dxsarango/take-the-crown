@@ -10,6 +10,7 @@ import { TopBar } from "@/components/top-bar";
 import type { Monarch } from "@/lib/art/coronation";
 import type { HomeData } from "@/lib/home/data";
 import { heroState } from "@/lib/home/hero";
+import { type PendingCheckout, clearPendingCheckout, readPendingCheckout } from "@/lib/locks/pending";
 import { Hero, type HomeNotice, KingMessage } from "./hero";
 import { About, Feed, Footer, HallOfFamePreview, Pitch, Succession } from "./sections";
 import { ThroneScene } from "./throne-scene";
@@ -139,6 +140,7 @@ export function HomeView({ initial }: { initial: HomeData }) {
   const locked = useServerClock(initial.readAt, (now) => heroState(data.crown, data.king?.startedAt ?? null, now).mode === "locked");
   const [modal, setModal] = useState<{ draft: Draft; detected: boolean; returning?: CheckoutReturn } | null>(null);
   const [notice, setNotice] = useState<HomeNotice | null>(null);
+  const [pending, setPending] = useState<PendingCheckout | null>(null);
   const geo = useRef<string | null>(null);
   const prelaunchAtLoad = useRef(initial.crown.prelaunch);
   const { viewer, openLogin } = useAuth();
@@ -185,6 +187,43 @@ export function HomeView({ initial }: { initial: HomeData }) {
       .catch(() => undefined);
   }, []);
 
+  // Back from the provider's page with the browser's Back button: the lock on the crown is still
+  // the buyer's, so offer to resume it. Read again when the page returns from the back/forward cache.
+  useEffect(() => {
+    let stopped = false;
+    const check = () => {
+      const stored = readPendingCheckout(Date.now());
+      if (!stored) return setPending(null);
+      setPending(stored);
+      fetch(`/api/locks/${stored.lockId}`, { cache: "no-store" })
+        .then((r) => r.json() as Promise<{ status: string }>)
+        .then((lock) => {
+          if (stopped || lock.status === "active") return;
+          clearPendingCheckout(stored.lockId);
+          setPending(null);
+          refresh();
+        })
+        .catch(() => undefined);
+    };
+    check();
+    window.addEventListener("pageshow", check);
+    return () => {
+      stopped = true;
+      window.removeEventListener("pageshow", check);
+    };
+  }, [refresh]);
+
+  const resumeCheckout = () => {
+    if (pending) window.location.assign(pending.url);
+  };
+
+  const releaseCheckout = () => {
+    if (!pending) return;
+    releaseLock(pending.lockId);
+    setPending(null);
+    refresh();
+  };
+
   const openPayment = () => {
     setNotice(null);
     const country = viewer ? viewer.countryCode : geo.current;
@@ -223,7 +262,7 @@ export function HomeView({ initial }: { initial: HomeData }) {
         <div aria-live="polite" className="sr-only">
           {data.king && <PlayerName name={data.king.name} />}
         </div>
-        <Hero king={data.king} crown={data.crown} readAt={data.readAt} season={season} notice={notice} onTake={openPayment} />
+        <Hero king={data.king} crown={data.crown} readAt={data.readAt} season={season} notice={notice} onTake={openPayment} resume={pending} onResume={resumeCheckout} onRelease={releaseCheckout} />
         {data.king && (data.king.message || data.king.link) && (
           <div className="mx-4 flex flex-col gap-2.5 pt-4 pb-6 shadow-[var(--crown-bar-top)] lg:hidden">
             <KingMessage king={data.king} size="mobile" />

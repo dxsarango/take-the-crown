@@ -119,6 +119,8 @@
     "reigning": "Reigning for",
     "someone": "Someone is taking the crown…",
     "reservedNote": "If they don't pay in time, the crown opens up again.",
+    "resume": "Resume checkout ({time})",
+    "release": "Cancel and release the crown",
     "onHold": "Price on hold",
     "empty1": "The throne is empty",
     "empty2": "Be the first king of Season {n}.",

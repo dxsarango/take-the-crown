@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useEffectEvent, useState } from "react";
 import type { LockFailure, LockField, LockOutcome } from "@/lib/locks/outcome";
+import { clearPendingCheckout, savePendingCheckout } from "@/lib/locks/pending";
 
 export type Draft = {
   name: string;
@@ -58,6 +59,7 @@ async function postJson(url: string, body: unknown): Promise<Response> {
 }
 
 export function releaseLock(lockId: string): void {
+  clearPendingCheckout(lockId);
   void fetch(`/api/locks/${lockId}/release`, { method: "POST", keepalive: true }).catch(() => undefined);
 }
 
@@ -79,6 +81,7 @@ export function usePayment({ locale, now, onDone, onCrowned, returning = null }:
   const finish = useEffectEvent((result: PaymentResult) => onDone(result));
   /** The reign clock starts when the database crowned the buyer, not when this page found out. */
   const crowned = useEffectEvent((lock: Extract<LockResponse, { status: "applied" }>, moderationPending: (p: PaymentPhase) => boolean) => {
+    clearPendingCheckout();
     const crownedAt = lock.startedAt ? new Date(lock.startedAt).getTime() : now;
     setPhase((p) => ({ kind: "success", reignId: lock.reignId, crownedAt, moderationPending: moderationPending(p) }));
     if (lock.reignId !== null) onCrowned?.(lock.reignId);
@@ -135,6 +138,7 @@ export function usePayment({ locale, now, onDone, onCrowned, returning = null }:
       if (outcome.checkout.mode === "redirect") {
         // The success screen after the provider's page shows what the buyer typed.
         saveDraft(draft);
+        savePendingCheckout({ lockId: outcome.lockId, url: outcome.checkout.url, expiresAt: outcome.expiresAt });
         window.location.assign(outcome.checkout.url);
         return;
       }

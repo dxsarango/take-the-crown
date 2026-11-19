@@ -119,6 +119,8 @@
     "reigning": "Reina desde hace",
     "someone": "Alguien está tomando la corona…",
     "reservedNote": "Si no paga a tiempo, la corona vuelve a estar disponible.",
+    "resume": "Reanudar el pago ({time})",
+    "release": "Cancelar y liberar la corona",
     "onHold": "Precio en espera",
     "empty1": "El trono está vacío",
     "empty2": "Sé el primer rey de la Temporada {n}.",
