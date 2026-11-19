@@ -12,6 +12,7 @@ import { ReportDialog } from "./report-dialog";
 import { PlayerName } from "@/components/player-name";
 import { useAuth } from "@/components/auth/auth-provider";
 import { useServerNow } from "@/components/use-server-now";
+import type { PendingCheckout } from "@/lib/locks/pending";
 
 /** Shown after the buyer's own payment attempt fails or their lock runs out (design states 4 and 5). */
 export type HomeNotice = "payment_failed" | "lock_expired";
@@ -24,6 +25,10 @@ type Props = {
   season: number;
   notice: HomeNotice | null;
   onTake: () => void;
+  /** This browser's own unfinished checkout, if any: the lock on the crown is then the buyer's. */
+  resume?: PendingCheckout | null;
+  onResume?: () => void;
+  onRelease?: () => void;
 };
 
 const LOCK_SEGMENTS = 20;
@@ -161,6 +166,23 @@ function Reserved({ secondsLeft, lockSeconds, align }: { secondsLeft: number; lo
   );
 }
 
+/** The buyer's own lock: they can go back to the provider's page or give the crown up. */
+function ResumeCheckout({ secondsLeft, onResume, onRelease, align }: { secondsLeft: number; onResume: () => void; onRelease: () => void; align: "left" | "right" }) {
+  const t = useTranslations("homeStates");
+  return (
+    <div className="flex flex-col gap-2" role="status">
+      <TakeButton label={t("resume", { time: formatCountdown(secondsLeft) })} onClick={onResume} className="tabular-nums" />
+      <button
+        type="button"
+        onClick={onRelease}
+        className={`hit-area mx-1 h-10 text-14 font-medium text-crown-muted hover:text-crown-text ${align === "right" ? "self-end" : "self-start"}`}
+      >
+        {t("release")}
+      </button>
+    </div>
+  );
+}
+
 /** Reports the king's message (one per IP per reign); the admin reviews it. */
 function ReportButton({ reignId }: { reignId: number }) {
   const home = useTranslations("home");
@@ -238,9 +260,11 @@ function Notice({ notice, priceCents, locale }: { notice: HomeNotice; priceCents
   );
 }
 
-export function Hero({ king, crown, readAt, season, notice, onTake }: Props) {
+export function Hero({ king, crown, readAt, season, notice, onTake, resume = null, onResume, onRelease }: Props) {
   // The only per-second render on the page: the clock, the price and the lock bar live here.
-  const state = heroState(crown, king?.startedAt ?? null, useServerNow(readAt));
+  const now = useServerNow(readAt);
+  const state = heroState(crown, king?.startedAt ?? null, now);
+  const mine = resume !== null && onResume && onRelease ? { secondsLeft: (Date.parse(resume.expiresAt) - now) / 1000, onResume, onRelease } : null;
   const locale = useLocale() as Locale;
   const { viewer } = useAuth();
   const closed = crown.prelaunch && !viewer?.isAdmin;
@@ -281,7 +305,9 @@ export function Hero({ king, crown, readAt, season, notice, onTake }: Props) {
             <PriceNotes mode={state.mode} crown={crown} locale={locale} />
           </div>
         )}
-        {locked ? (
+        {locked && mine && mine.secondsLeft > 0 ? (
+          <ResumeCheckout {...mine} align="left" />
+        ) : locked ? (
           <Reserved secondsLeft={state.lockSecondsLeft} lockSeconds={crown.lockSeconds} align="left" />
         ) : closed ? (
           <LaunchingSoon align="left" />
@@ -323,7 +349,11 @@ export function Hero({ king, crown, readAt, season, notice, onTake }: Props) {
               <Price cents={state.priceCents} locale={locale} />
             </div>
           )}
-          {locked ? (
+          {locked && mine && mine.secondsLeft > 0 ? (
+            <div className="w-[400px]">
+              <ResumeCheckout {...mine} align="right" />
+            </div>
+          ) : locked ? (
             <div className="w-[400px]">
               <Reserved secondsLeft={state.lockSecondsLeft} lockSeconds={crown.lockSeconds} align="right" />
             </div>

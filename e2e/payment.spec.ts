@@ -32,6 +32,27 @@ test("link and message problems show when the buyer leaves the field", async ({ 
   await expect(page.getByText(en.payment.rejMsgLineOther)).toHaveCount(0);
 });
 
+test("the buyer who steps back from the provider's page can resume or release their own lock", async ({ page }) => {
+  await seedKingdom();
+  const lock = await (await takeLock(page.request, buyer("stepback").name)).json();
+  await page.addInitScript((pending) => localStorage.setItem("crown:pending-checkout", JSON.stringify(pending)), {
+    lockId: lock.lockId,
+    url: "https://checkout.test.invalid/session/abc",
+    expiresAt: lock.expiresAt,
+  });
+  await page.goto("/en");
+  const resume = page.getByRole("button", { name: /^Resume checkout \(\d+:\d{2}\)$/ }).filter({ visible: true });
+  await expect(resume).toBeVisible({ timeout: 15_000 });
+  await expect(page.getByText(en.homeStates.someone).filter({ visible: true })).toHaveCount(0);
+
+  const released = page.waitForResponse((r) => r.request().method() === "POST" && RELEASE_URL.test(r.url()));
+  await page.getByRole("button", { name: en.homeStates.release }).filter({ visible: true }).click();
+  expect((await released).status()).toBe(204);
+  await expect(resume).toHaveCount(0);
+  expect(await sql("select 1 from crown_state where active_lock_id is null")).toHaveLength(1);
+  expect(await page.evaluate(() => localStorage.getItem("crown:pending-checkout"))).toBeNull();
+});
+
 
 test.afterAll(resetKingdom);
 
